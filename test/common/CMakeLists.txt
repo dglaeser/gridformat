@@ -1,0 +1,7 @@
+gridformat_add_test(test_ascii_range_writer test_ascii_range_writer.cpp)
+gridformat_add_test(test_buffer test_buffer.cpp)
+gridformat_add_test(test_precision test_precision.cpp)
+gridformat_add_test(test_field_storage test_field_storage.cpp)
+gridformat_add_test(test_type_traits test_type_traits.cpp)
+gridformat_add_test(test_scalar_field test_scalar_field.cpp)
+gridformat_add_test(test_writer test_writer.cpp)
