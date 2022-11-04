@@ -42,82 +42,65 @@ int main() {
     using namespace boost::ut;
     using namespace boost::ut::literals;
 
-    "tensor_field_stream"_test = [] () {
-        std::vector<std::vector<std::vector<int>>> data{
-            {{1, 2}, {3, 4}},
-            {{5, 6}, {7, 8}}
-        };
-        GridFormat::TensorField field{std::ranges::ref_view{data}};
-        check_streamed_field(field, "1 2 3 4 5 6 7 8");
-        expect(eq(field.number_of_components(), 4));
+    "vector_field_stream"_test = [] () {
+        std::vector<std::vector<int>> data{{1, 2}, {3, 4}};
+        GridFormat::VectorField field{std::ranges::ref_view{data}};
+        check_streamed_field(field, "1 2 3 4");
+        expect(eq(field.number_of_components(), 2));
         check_field_precision<int>(field);
     };
 
-    "tensor_field_custom_delimiter_stream"_test = [] () {
-        std::vector<std::vector<std::vector<int>>> data{
-            {{1, 2}, {3, 4}},
-            {{5, 6}, {7, 8}}
-        };
-        GridFormat::TensorField field{
+    "vector_field_custom_delimiter_stream"_test = [] () {
+        std::vector<std::vector<int>> data{{1, 2}, {3, 4}};
+        GridFormat::VectorField field{
             std::ranges::ref_view{data},
             GridFormat::RangeFormatter{{.delimiter = ","}}
         };
-        check_streamed_field(field, "1,2,3,4,5,6,7,8");
-        expect(eq(field.number_of_components(), 4));
+        check_streamed_field(field, "1,2,3,4");
+        expect(eq(field.number_of_components(), 2));
         check_field_precision<int>(field);
     };
 
-    "tensor_field_custom_prefix_stream"_test = [] () {
-        std::vector<std::vector<std::vector<int>>> data{
-            {{1, 2}, {3, 4}},
-            {{5, 6}, {7, 8}}
-        };
-        GridFormat::TensorField field{
+    "vector_field_custom_prefix_stream"_test = [] () {
+        std::vector<std::vector<int>> data{{1, 2}, {3, 4}};
+        GridFormat::VectorField field{
             std::ranges::ref_view{data},
             GridFormat::RangeFormatter{{
                 .delimiter = ",",
                 .line_prefix = "P"
             }}
         };
-        check_streamed_field(field, "P1,2,3,4,5,6,7,8");
-        expect(eq(field.number_of_components(), 4));
+        check_streamed_field(field, "P1,2,3,4");
+        expect(eq(field.number_of_components(), 2));
         check_field_precision<int>(field);
     };
 
-    "tensor_field_custom_number_of_line_entries_stream"_test = [] () {
-        std::vector<std::vector<std::vector<int>>> data{
-            {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}
-        };
-        GridFormat::TensorField field{
+    "vector_field_custom_number_of_line_entries_stream"_test = [] () {
+        std::vector<std::vector<int>> data{{1, 2, 3}, {4, 5, 6}};
+        GridFormat::VectorField field{
             std::ranges::ref_view{data},
             GridFormat::RangeFormatter{{
                 .delimiter = ",",
                 .line_prefix = "P",
-                .num_entries_per_line = 4
+                .num_entries_per_line = 3
             }}
         };
-        check_streamed_field(field, "P1,2,3,4\nP5,6,7,8\nP9");
-        expect(eq(field.number_of_components(), 9));
+        check_streamed_field(field, "P1,2,3\nP4,5,6");
+        expect(eq(field.number_of_components(), 3));
         check_field_precision<int>(field);
     };
 
-    "tensor_field_serialization"_test = [] () {
-        std::vector<std::vector<std::vector<int>>> data{
-            {{1, 2}, {3, 4}},
-            {{5, 6}, {7, 8}}
-        };
-        GridFormat::TensorField field{std::ranges::ref_view(data)};
-        check_serialization(field.serialized(), std::views::join(std::views::join(data)));
+    "vector_field_serialization"_test = [] () {
+        std::vector<std::vector<int>> data{{1, 2}, {3, 4}};
+        GridFormat::VectorField field{std::ranges::ref_view(data)};
+        check_serialization(field.serialized(), std::views::join(data));
         check_field_precision<int>(field);
     };
 
     "vector_field_custom_precision"_test = [] () {
-        std::vector<std::vector<std::vector<int>>> data{
-            {{1, 2}, {3, 4}},
-            {{5, 6}, {7, 8}}
-        };
-        GridFormat::TensorField field{data | std::views::all, GridFormat::Precision<double>{}};
-        check_serialization(field.serialized(), std::vector<double>{1, 2, 3, 4, 5, 6, 7, 8});
+        std::vector<std::vector<int>> data{{1, 2, 3}, {4, 5, 6}};
+        GridFormat::VectorField field{data | std::views::all, GridFormat::Precision<double>{}};
+        check_serialization(field.serialized(), std::vector<double>{1, 2, 3, 4, 5, 6});
         check_field_precision<double>(field);
     };
 

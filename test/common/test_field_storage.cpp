@@ -5,8 +5,12 @@
 #include <gridformat/common/field_storage.hpp>
 
 class MyField : public GridFormat::Field {
+    using ParentType = GridFormat::Field;
+    static constexpr int dummy_num_components = 1;
+    static constexpr auto dummy_precision = GridFormat::DynamicPrecision::int32;
+
  public:
-    MyField(int id) : _id(id) {}
+    MyField(int id) : Field(dummy_num_components, dummy_precision), _id(id) {}
     int id() const { return _id; }
 
  private:

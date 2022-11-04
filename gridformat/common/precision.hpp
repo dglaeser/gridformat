@@ -12,6 +12,7 @@
 #include <concepts>
 #include <type_traits>
 
+#include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/format.hpp>
 
 namespace GridFormat {
@@ -42,6 +43,30 @@ inline constexpr Precision<std::uint8_t> uint8;
 inline constexpr Precision<std::uint16_t> uint16;
 inline constexpr Precision<std::uint32_t> uint32;
 inline constexpr Precision<std::uint64_t> uint64;
+
+enum class DynamicPrecision {
+    float32, float64,
+    int8, int16, int32, int64,
+    uint8, uint16, uint32, uint64
+};
+
+template<typename T>
+DynamicPrecision as_dynamic(const Precision<T>&) {
+    if constexpr (std::same_as<T, float>) return DynamicPrecision::float32;
+    if constexpr (std::same_as<T, double>) return DynamicPrecision::float64;
+
+    if constexpr (std::same_as<T, std::int8_t>) return DynamicPrecision::int8;
+    if constexpr (std::same_as<T, std::int16_t>) return DynamicPrecision::int16;
+    if constexpr (std::same_as<T, std::int32_t>) return DynamicPrecision::int32;
+    if constexpr (std::same_as<T, std::int64_t>) return DynamicPrecision::int64;
+
+    if constexpr (std::same_as<T, std::uint8_t>) return DynamicPrecision::uint8;
+    if constexpr (std::same_as<T, std::uint16_t>) return DynamicPrecision::uint16;
+    if constexpr (std::same_as<T, std::uint32_t>) return DynamicPrecision::uint32;
+    if constexpr (std::same_as<T, std::uint64_t>) return DynamicPrecision::uint64;
+
+    throw InvalidState("Unknown precision format");
+}
 
 }  // namespace GridFormat
 
