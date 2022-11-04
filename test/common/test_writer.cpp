@@ -51,6 +51,17 @@ int main() {
         );
     };
 
+    "writer_custom_formatter"_test = [] () {
+        std::vector<int> data{1, 2, 3, 4};
+        MyWriter writer;
+        writer.set_range_formatter(GridFormat::RangeFormatter{{.delimiter=","}});
+        writer.set_point_data("test", data);
+        check_streamed_field(
+            writer.get_point_data("test"),
+            "1,2,3,4"
+        );
+    };
+
     "writer_point_data_set_by_reference"_test = [] () {
         std::vector<int> data{1, 2, 3, 4};
         MyWriter writer;
