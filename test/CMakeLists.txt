@@ -15,3 +15,4 @@ function(gridformat_add_test NAME SOURCE)
 endfunction()
 
 add_subdirectory(common)
+add_subdirectory(grid)

@@ -8,40 +8,18 @@
 #ifndef GRIDFORMAT_VTK_VTU_WRITER_HPP_
 #define GRIDFORMAT_VTK_VTU_WRITER_HPP_
 
-#include <ranges>
-#include <unordered_map>
-
-#include <gridformat/common/scalar.hpp>
+#include <gridformat/common/writer.hpp>
 
 namespace GridFormat {
 
 /*!
  * \ingroup VTK
- * \brief TODO: Doc me (mention max_chars_per_line neglects indentation)
+ * \brief TODO: Doc me
  */
-class VTKWriter {
+template<typename Grid>
+class VTKWriter : public Writer {
  public:
-    template<std::ranges::forward_range R>
-    void set_point_data(std::string_view name, R&& range) {
-        using T = MDRangeScalarType<R>;
-        set_point_data(name, std::forward<R>(range), Scalar<T>{});
-    }
 
-    template<std::ranges::forward_range R>
-    void set_point_data(std::string_view name, R&& range, const Scalar<T>&) {
-        // TODO
-    }
-
-    template<std::ranges::forward_range R>
-    void set_cell_data(std::string_view name, R&& range) {
-        using T = MDRangeScalarType<R>;
-        set_cell_data(name, std::forward<R>(range), Scalar<T>{});
-    }
-
-    template<std::ranges::forward_range R>
-    void set_cell_data(std::string_view name, R&& range, const Scalar<T>&) {
-        // TODO
-    }
 
  private:
 

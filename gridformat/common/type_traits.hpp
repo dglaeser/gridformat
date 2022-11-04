@@ -1,20 +1,5 @@
-// Copyright [2022] <Dennis Gläser>
-/*****************************************************************************
- *   See the file COPYING for full copying permissions.                      *
- *                                                                           *
- *   This program is free software: you can redistribute it and/or modify    *
- *   it under the terms of the GNU General Public License as published by    *
- *   the Free Software Foundation, either version 2 of the License, or       *
- *   (at your option) any later version.                                     *
- *                                                                           *
- *   This program is distributed in the hope that it will be useful,         *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of          *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the            *
- *   GNU General Public License for more details.                            *
- *                                                                           *
- *   You should have received a copy of the GNU General Public License       *
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
- *****************************************************************************/
+// SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
  * \ingroup Common
@@ -60,8 +45,13 @@ struct MDRangeDimension<R, std::enable_if_t<!Detail::has_sub_range<R>>> {
     static constexpr std::size_t value = 1;
 };
 
+template<typename T, std::size_t s = sizeof(T)>
+std::false_type isIncomplete(T*);
+std::true_type isIncomplete(...);
+
 }  // end namespace Detail
 #endif  // DOXYGEN
+
 
 template<std::ranges::range R>
 using MDRangeScalar = typename Detail::MDRangeScalar<R>::type;
@@ -71,6 +61,12 @@ inline constexpr std::size_t mdrange_dimension = Detail::MDRangeDimension<R>::va
 
 template<std::ranges::range R>
 inline constexpr bool has_sub_range = Detail::has_sub_range<R>;
+
+template<typename T>
+inline constexpr bool is_incomplete = decltype(Detail::isIncomplete(std::declval<T*>()))::value;
+
+template<typename T>
+inline constexpr bool is_complete = !is_incomplete<T>;
 
 }  // end namespace GridFormat
 

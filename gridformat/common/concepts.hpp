@@ -20,6 +20,9 @@ concept Streamable = requires(const T& t, std::ostream& s) {
     { s << t } -> std::same_as<std::ostream&>;
 };
 
+template<typename T, typename ValueType>
+concept RangeOf = std::ranges::range<T> and std::convertible_to<std::ranges::range_value_t<T>, ValueType>;
+
 template<typename T, std::size_t dim>
 concept MDRange = std::ranges::range<T> and mdrange_dimension<T> == dim;
 
