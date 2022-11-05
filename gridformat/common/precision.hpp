@@ -44,28 +44,30 @@ inline constexpr Precision<std::uint16_t> uint16;
 inline constexpr Precision<std::uint32_t> uint32;
 inline constexpr Precision<std::uint64_t> uint64;
 
-enum class DynamicPrecision {
-    float32, float64,
-    int8, int16, int32, int64,
-    uint8, uint16, uint32, uint64
+class DynamicPrecision {
+ public:
+    template<typename T>
+    DynamicPrecision(const Precision<T>&)
+    : _is_integral{std::is_integral_v<T>}
+    , _is_signed{std::is_signed_v<T>}
+    , _number_of_bytes{sizeof(T)}
+    {}
+
+    bool operator==(const DynamicPrecision& other) const {
+        return _is_integral == other._is_integral
+            && _is_signed == other._is_signed
+            && _number_of_bytes == other._number_of_bytes;
+    }
+
+ private:
+    bool _is_integral;
+    bool _is_signed;
+    std::size_t _number_of_bytes;
 };
 
 template<typename T>
-DynamicPrecision as_dynamic(const Precision<T>&) {
-    if constexpr (std::same_as<T, float>) return DynamicPrecision::float32;
-    if constexpr (std::same_as<T, double>) return DynamicPrecision::float64;
-
-    if constexpr (std::same_as<T, std::int8_t>) return DynamicPrecision::int8;
-    if constexpr (std::same_as<T, std::int16_t>) return DynamicPrecision::int16;
-    if constexpr (std::same_as<T, std::int32_t>) return DynamicPrecision::int32;
-    if constexpr (std::same_as<T, std::int64_t>) return DynamicPrecision::int64;
-
-    if constexpr (std::same_as<T, std::uint8_t>) return DynamicPrecision::uint8;
-    if constexpr (std::same_as<T, std::uint16_t>) return DynamicPrecision::uint16;
-    if constexpr (std::same_as<T, std::uint32_t>) return DynamicPrecision::uint32;
-    if constexpr (std::same_as<T, std::uint64_t>) return DynamicPrecision::uint64;
-
-    throw InvalidState("Unknown precision format");
+DynamicPrecision as_dynamic(const Precision<T>& prec) {
+    return DynamicPrecision{prec};
 }
 
 }  // namespace GridFormat

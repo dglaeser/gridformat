@@ -13,4 +13,8 @@ target_include_directories(${PROJECT_NAME}
 
 enable_testing()
 add_library(${GFMT_NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+# set(CMAKE_CXX_CLANG_TIDY
+#     clang-tidy;
+#     -header-filter=./gridformat/*;
+#     -checks=*;)
 add_subdirectory(test)

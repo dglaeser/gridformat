@@ -1,5 +1,6 @@
 #include <array>
-#include <boost/ut.hpp>
+
+#include <gridformat/common/exceptions.hpp>
 #include <gridformat/grid/grid.hpp>
 
 class MockGrid {
@@ -51,9 +52,34 @@ struct PointId<MockGrid, typename MockGrid::Point> {
     }
 };
 
+template<>
+struct CellType<MockGrid, typename MockGrid::Cell> {
+    static auto get([[maybe_unused]] const MockGrid& grid,
+                    [[maybe_unused]] const typename MockGrid::Cell& cell) {
+        return GridFormat::CellType::segment;
+    }
+};
+
+template<>
+struct CellCornerPoints<MockGrid, typename MockGrid::Cell> {
+    static auto get(const MockGrid& grid, [[maybe_unused]] const typename MockGrid::Cell& cell) {
+        return grid.points();
+    }
+};
+
 }  // namespace GridFormat::Traits
 
 int main() {
     static_assert(GridFormat::Concepts::UnstructuredGrid<MockGrid>);
+
+    std::size_t cell_count = 0;
+    std::size_t point_count = 0;
+
+    MockGrid grid;
+    for ([[maybe_unused]] const auto& point : GridFormat::Traits::Points<MockGrid>::get(grid)) point_count++;
+    for ([[maybe_unused]] const auto& cell : GridFormat::Traits::Cells<MockGrid>::get(grid)) cell_count++;
+    if (point_count != 2) throw GridFormat::InvalidState("Unexpected point count");
+    if (cell_count != 1) throw GridFormat::InvalidState("Unexpected cell count");
+
     return 0;
 }
