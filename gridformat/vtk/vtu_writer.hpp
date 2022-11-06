@@ -9,6 +9,7 @@
 #define GRIDFORMAT_VTK_VTU_WRITER_HPP_
 
 #include <gridformat/common/writer.hpp>
+#include <gridformat/grid/concepts.hh>
 
 namespace GridFormat {
 
@@ -16,13 +17,15 @@ namespace GridFormat {
  * \ingroup VTK
  * \brief TODO: Doc me
  */
-template<typename Grid>
-class VTKWriter : public Writer {
+template<Concepts::UnstructuredGrid Grid>
+class VTUWriter : public Writer {
  public:
-
+    explicit VTUWriter(const Grid& grid)
+    : _grid(grid)
+    {}
 
  private:
-
+    const Grid& _grid;
 };
 
 }  // namespace GridFormat

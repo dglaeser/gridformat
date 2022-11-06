@@ -1,0 +1,1 @@
+gridformat_add_test(test_vtu_writer test_vtu_writer.cpp)

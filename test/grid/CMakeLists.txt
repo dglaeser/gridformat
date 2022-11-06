@@ -1,1 +1,1 @@
-gridformat_add_test(test_grid test_grid.cpp)
+gridformat_add_test(test_unstructured_grid test_unstructured_grid.cpp)
