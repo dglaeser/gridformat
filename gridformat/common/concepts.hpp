@@ -15,9 +15,12 @@
 
 namespace GridFormat::Concepts {
 
-template<typename T>
-concept Streamable = requires(const T& t, std::ostream& s) {
-    { s << t } -> std::same_as<std::ostream&>;
+template<typename T1, typename T2>
+concept Interoperable = std::is_convertible_v<T1, T2> || std::is_convertible_v<T2, T1>;
+
+template<typename T, typename Stream = std::ostream&>
+concept Streamable = requires(const T& t, Stream& s) {
+    { s << t } -> std::same_as<Stream&>;
 };
 
 template<typename T, typename ValueType>
@@ -36,13 +39,13 @@ template<typename T>
 concept Tensor = MDRange<T, 2>;
 
 template<typename T>
-concept Scalars = std::ranges::range<T> and Scalar<std::ranges::range_value_t<T>>;
+concept Scalars = std::ranges::forward_range<T> and Scalar<std::ranges::range_value_t<T>>;
 
 template<typename T>
-concept Vectors = std::ranges::range<T> and Vector<std::ranges::range_value_t<T>>;
+concept Vectors = std::ranges::forward_range<T> and Vector<std::ranges::range_value_t<T>>;
 
 template<typename T>
-concept Tensors = std::ranges::range<T> and Tensor<std::ranges::range_value_t<T>>;
+concept Tensors = std::ranges::forward_range<T> and Tensor<std::ranges::range_value_t<T>>;
 
 template<typename T>
 concept ScalarsView = Scalars<T> and std::ranges::view<T>;

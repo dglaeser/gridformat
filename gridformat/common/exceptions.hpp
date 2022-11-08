@@ -50,6 +50,11 @@ class InvalidState : public Exception {
     using Exception::Exception;
 };
 
+class ValueError : public Exception {
+ public:
+    using Exception::Exception;
+};
+
 //! \} group Common
 
 }  // end namespace GridFormat

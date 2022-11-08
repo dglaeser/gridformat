@@ -44,6 +44,7 @@ inline constexpr Precision<std::uint16_t> uint16;
 inline constexpr Precision<std::uint32_t> uint32;
 inline constexpr Precision<std::uint64_t> uint64;
 
+// TODO: Better name
 class DynamicPrecision {
  public:
     template<typename T>
@@ -58,6 +59,10 @@ class DynamicPrecision {
             && _is_signed == other._is_signed
             && _number_of_bytes == other._number_of_bytes;
     }
+
+    bool is_integral() const { return _is_integral; }
+    bool is_signed() const { return _is_signed; }
+    std::size_t number_of_bytes() const { return _number_of_bytes; }
 
  private:
     bool _is_integral;

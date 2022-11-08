@@ -11,6 +11,7 @@
 #include <concepts>
 #include <ostream>
 #include <utility>
+#include <cstddef>
 
 #include <gridformat/common/precision.hpp>
 

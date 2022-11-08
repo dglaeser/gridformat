@@ -13,10 +13,10 @@
 #include <ranges>
 #include <type_traits>
 
-#include <gridformat/common/range_formatter.hpp>
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/concepts.hpp>
+#include <gridformat/common/streams.hpp>
 
 #include <gridformat/common/field_storage.hpp>
 #include <gridformat/common/fields.hpp>
@@ -30,7 +30,7 @@ template<typename T>
 inline constexpr bool is_rvalue_view_or_lvalue_range =
     std::ranges::range<T> and
     (std::ranges::view<T> and !std::is_lvalue_reference_v<T>) or
-    (!std::ranges::view<T> and std::is_lvalue_reference_v<T>);
+    (!std::ranges::view<T> and std::is_lvalue_reference_v<T> and std::ranges::viewable_range<T>);
 
 }  // namespace Detail
 #endif  // DOXYGEN
@@ -45,57 +45,61 @@ class Writer {
  public:
     using Field = typename FieldStorage::Field;
 
-    void set_range_formatter(const RangeFormatter& formatter) {
-        _formatter = formatter;
-    }
+    Writer() = default;
+    explicit Writer(RangeFormatOptions opts)
+    : _format_opts(std::move(opts))
+    {}
 
-    template<Concepts::Tensors R, typename T = MDRangeScalar<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
-    void set_point_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-        _point_data.set(name, TensorField{std::views::all(std::forward<R>(range)), prec, _make_formatter()});
-    }
+    // template<Concepts::Tensors R, typename T = MDRangeScalar<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
+    // void set_point_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
+    //     _point_data.set(name, TensorField{std::views::all(std::forward<R>(range)), prec, _format_opts});
+    // }
 
     template<Concepts::Vectors R, typename T = MDRangeScalar<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
     void set_point_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-        _point_data.set(name, VectorField{std::views::all(std::forward<R>(range)), prec, _make_formatter()});
+        _point_data.set(name, VectorField{std::views::all(std::forward<R>(range)), prec, _format_opts});
     }
 
     template<Concepts::Scalars R, typename T = std::ranges::range_value_t<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
     void set_point_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-        _point_data.set(name, ScalarField{std::views::all(std::forward<R>(range)), prec, _make_formatter()});
+        _point_data.set(name, ScalarField{std::views::all(std::forward<R>(range)), prec, _format_opts});
     }
 
-   template<Concepts::Tensors R, typename T = MDRangeScalar<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
-    void set_cell_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-        _cell_data.set(name, TensorField{std::views::all(std::forward<R>(range)), prec, _make_formatter()});
-    }
+//    template<Concepts::Tensors R, typename T = MDRangeScalar<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
+//     void set_cell_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
+//         _cell_data.set(name, TensorField{std::views::all(std::forward<R>(range)), prec, _format_opts});
+//     }
 
     template<Concepts::Vectors R, typename T = MDRangeScalar<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
     void set_cell_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-        _cell_data.set(name, VectorField{std::views::all(std::forward<R>(range)), prec, _make_formatter()});
+        _cell_data.set(name, VectorField{std::views::all(std::forward<R>(range)), prec, _format_opts});
     }
 
     template<Concepts::Scalars R, typename T = std::ranges::range_value_t<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
     void set_cell_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-        _cell_data.set(name, ScalarField{std::views::all(std::forward<R>(range)), prec, _make_formatter()});
+        _cell_data.set(name, ScalarField{std::views::all(std::forward<R>(range)), prec, _format_opts});
     }
 
  protected:
-    const Field& get_point_data(const std::string& name) const {
+    std::ranges::range auto _point_data_names() const {
+        return _point_data.field_names();
+    }
+
+    std::ranges::range auto _cell_data_names() const {
+        return _cell_data.field_names();
+    }
+
+    const Field& _get_point_data(const std::string& name) const {
         return _point_data.get(name);
     }
 
-    const Field& get_cell_data(const std::string& name) const {
+    const Field& _get_cell_data(const std::string& name) const {
         return _cell_data.get(name);
-    }
-
- private:
-    RangeFormatter _make_formatter() const {
-        return {_formatter};
     }
 
     FieldStorage _point_data;
     FieldStorage _cell_data;
-    RangeFormatter _formatter;
+    RangeFormatOptions _format_opts;
 };
 
 }  // namespace GridFormat

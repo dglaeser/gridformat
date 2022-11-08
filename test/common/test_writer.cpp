@@ -7,11 +7,11 @@
 class MyWriter : public GridFormat::Writer {
  public:
     decltype(auto) get_point_data(const std::string& name) const {
-        return GridFormat::Writer::get_point_data(name);
+        return GridFormat::Writer::_get_point_data(name);
     }
 
     decltype(auto) get_cell_data(const std::string& name) const {
-        return GridFormat::Writer::get_cell_data(name);
+        return GridFormat::Writer::_get_cell_data(name);
     }
 };
 

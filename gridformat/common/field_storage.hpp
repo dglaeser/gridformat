@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <ranges>
 #include <utility>
 #include <unordered_map>
 
@@ -33,6 +34,10 @@ class FieldStorage {
 
     const Field& get(const std::string& name) const {
         return *(_fields.at(name));
+    }
+
+    std::ranges::range auto field_names() const {
+        return std::views::keys(_fields);
     }
 
  private:

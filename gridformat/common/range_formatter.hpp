@@ -38,7 +38,7 @@ class RangeFormatter {
 
     template<std::ranges::range R> requires(
         Concepts::Streamable<std::ranges::range_value_t<R>>)
-    void write(std::ostream& stream, const R& input_range) const {
+    void write(std::ostream& stream, R&& input_range) const {
         std::size_t entries_per_line = 0;
         for (const auto& value : input_range) {
             if (entries_per_line == _opts.num_entries_per_line) {

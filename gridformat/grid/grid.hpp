@@ -33,6 +33,7 @@ std::ranges::range auto cells(const Grid& grid) {
     return Traits::Cells<Grid>::get(grid);
 }
 
+// TODO: on all of these - entity first, grid second?
 template<typename Grid> requires(Detail::exposes_point_id<Grid>)
 std::integral auto id(const Grid& grid, const Point<Grid>& point) {
     return Traits::PointId<Grid, Point<Grid>>::get(grid, point);
@@ -51,6 +52,16 @@ CellType type(const Grid& grid, const Cell<Grid>& cell) {
 template<typename Grid> requires(Detail::exposes_cell_corners<Grid>)
 std::ranges::range auto corners(const Grid& grid, const Cell<Grid>& cell) {
     return Traits::CellCornerPoints<Grid, Cell<Grid>>::get(grid, cell);
+}
+
+template<typename Grid>
+std::size_t num_cells(const Grid& grid) {
+    return std::ranges::distance(cells(grid));
+}
+
+template<typename Grid>
+std::size_t num_points(const Grid& grid) {
+    return std::ranges::distance(points(grid));
 }
 
 }  // namespace GridFormat::Grid

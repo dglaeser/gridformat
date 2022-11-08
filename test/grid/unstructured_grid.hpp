@@ -7,6 +7,7 @@
 #include <vector>
 #include <utility>
 #include <ranges>
+#include <algorithm>
 
 #include <gridformat/grid/traits.hpp>
 #include <gridformat/grid/cell_type.hpp>
@@ -18,6 +19,9 @@ template<int dim>
 struct Point {
     std::array<double, dim> coordinates;
     std::size_t id;
+
+    auto begin() const { return coordinates.begin(); }
+    auto end() const { return coordinates.end(); }
 
     bool operator==(const Point& other) const {
         return id == other.id && std::ranges::equal(

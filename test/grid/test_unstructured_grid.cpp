@@ -24,6 +24,8 @@ void check_grid(const Grid& grid) {
     using boost::ut::eq;
     expect(eq(point_count, grid.points().size()));
     expect(eq(cell_count, grid.cells().size()));
+    expect(eq(GridFormat::Grid::num_cells(grid), grid.cells().size()));
+    expect(eq(GridFormat::Grid::num_points(grid), grid.points().size()));
     expect(std::ranges::equal(cells, grid.cells()));
     expect(std::ranges::equal(points, grid.points()));
 
