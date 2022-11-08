@@ -21,6 +21,7 @@
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/streams.hpp>
+#include <gridformat/common/serialization.hpp>
 
 namespace GridFormat {
 
@@ -53,7 +54,7 @@ int _deduce_number_of_components(const R& range) {
     return ncomps;
 }
 
-template<typename Serialization = std::vector<std::byte>, std::ranges::range R, typename T>
+template<std::ranges::range R, typename T>
 Serialization _prepare_serialization(R&& range, const Precision<T>&, const int number_of_components) {
     const auto num_values = std::ranges::distance(range);
     const auto num_bytes = num_values*sizeof(T)*number_of_components;

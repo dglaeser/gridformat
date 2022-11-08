@@ -16,6 +16,7 @@ function(gridformat_add_test NAME SOURCE)
 endfunction()
 
 add_subdirectory(common)
+add_subdirectory(compression)
 add_subdirectory(grid)
 add_subdirectory(vtk)
 add_subdirectory(xml)

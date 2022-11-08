@@ -11,6 +11,9 @@ target_include_directories(${PROJECT_NAME}
               $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
+include(cmake/link_external_libs.cmake)
+
 enable_testing()
 add_library(${GFMT_NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 # set(CMAKE_CXX_CLANG_TIDY

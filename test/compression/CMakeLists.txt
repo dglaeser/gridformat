@@ -1,0 +1,1 @@
+gridformat_add_test(test_lzma_compression test_lzma_compression.cpp)

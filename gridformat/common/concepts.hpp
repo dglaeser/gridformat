@@ -10,6 +10,7 @@
 
 #include <concepts>
 #include <ostream>
+#include <cstddef>
 
 #include <gridformat/common/type_traits.hpp>
 
@@ -21,6 +22,14 @@ concept Interoperable = std::is_convertible_v<T1, T2> || std::is_convertible_v<T
 template<typename T, typename Stream = std::ostream&>
 concept Streamable = requires(const T& t, Stream& s) {
     { s << t } -> std::same_as<Stream&>;
+};
+
+template<typename T>
+concept Serialization = requires(const T& t_const, T& t) {
+    { t_const.size() } -> std::integral;
+    { t_const.data() } -> std::convertible_to<const std::byte*>;
+    { t.data() } -> std::convertible_to<std::byte*>;
+    { t.resize(std::size_t{}) };
 };
 
 template<typename T, typename ValueType>

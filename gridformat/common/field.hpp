@@ -14,6 +14,7 @@
 #include <cstddef>
 
 #include <gridformat/common/precision.hpp>
+#include <gridformat/common/serialization.hpp>
 
 namespace GridFormat {
 
@@ -21,27 +22,24 @@ namespace GridFormat {
  * \ingroup Common
  * \brief Interface for fields.
  */
+template<typename S = GridFormat::Serialization>;
 class Field {
  public:
-    using Serialization = std::vector<std::byte>;
+    using Serialization = S;
 
     virtual ~Field() = default;
-    explicit Field(int ncomps, DynamicPrecision prec)
+    explicit Field(int ncomps, PrecisionTraits prec)
     : _ncomps(ncomps)
     , _prec(prec)
     {}
 
-    DynamicPrecision precision() const { return _prec; }
+    PrecisionTraits precision() const { return _prec; }
     int number_of_components() const { return _ncomps; }
-
-    void stream(std::ostream& s) const { _stream(s); }
     Serialization serialized() const { return _serialized(); }
 
  private:
     int _ncomps;
-    DynamicPrecision _prec;
-
-    virtual void _stream(std::ostream&) const = 0;
+    PrecisionTraits _prec;
     virtual Serialization _serialized() const = 0;
 };
 

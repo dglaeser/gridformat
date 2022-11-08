@@ -49,6 +49,15 @@ std::string as_warning(std::string_view msg) {
     return codes.format(msg);
 }
 
-}  // namespace GridFormat::Colors
+/*!
+ * \ingroup Common
+ * \brief TODO: Doc me
+ */
+std::string as_error(std::string_view msg) {
+    Detail::AnsiiCodes codes{{1, 31}};
+    return codes.format(msg);
+}
+
+}  // namespace GridFormat::Format
 
 #endif  // GRIDFORMAT_COMMON_FORMAT_HPP_

@@ -36,10 +36,13 @@ std::vector<T> make_cell_data(const Grid& grid) {
 
 int main() {
     const auto grid = GridFormat::Test::make_unstructured_2d();
-    auto double_point_data = make_point_data<double>(grid);
-    auto double_cell_data = make_cell_data<double>(grid);
-
     GridFormat::VTUWriter writer{grid};
 
+    auto double_point_data = make_point_data<double>(grid);
+    auto double_cell_data = make_cell_data<double>(grid);
+    writer.set_point_data("double_values", double_point_data);
+    writer.set_cell_data("double_values", double_cell_data);
+
+    writer.write("file.vtu");
     return 0;
 }
