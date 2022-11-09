@@ -62,6 +62,8 @@ class FormattedAsciiStream {
     std::size_t _entries_on_current_line = 0;
 };
 
+using FormattedAsciiOutputStream = FormattedAsciiStream<std::ostream>;
+
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_COMMON_STREAMS_HPP_

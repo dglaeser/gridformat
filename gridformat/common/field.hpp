@@ -10,10 +10,12 @@
 
 #include <utility>
 #include <cstddef>
+#include <ostream>
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
+#include <gridformat/common/streams.hpp>
 
 namespace GridFormat {
 
@@ -34,11 +36,13 @@ class Field {
     const MDLayout& layout() const { return _layout; }
     PrecisionTraits precision() const { return _prec; }
     Serialization serialized() const { return _serialized(); }
+    void stream(FormattedAsciiOutputStream& s) const { _stream(s); }
 
  private:
     MDLayout _layout;
     PrecisionTraits _prec;
     virtual Serialization _serialized() const = 0;
+    virtual void _stream(FormattedAsciiOutputStream&) const = 0;
 };
 
 }  // namespace GridFormat

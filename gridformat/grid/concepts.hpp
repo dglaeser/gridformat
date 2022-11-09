@@ -14,12 +14,12 @@ namespace GridFormat::Concepts {
 
 template<typename T>
 concept UnstructuredGrid =
-    Grid::Detail::exposes_point_range<T> and
-    Grid::Detail::exposes_cell_range<T> and
-    Grid::Detail::exposes_point_coordinates<T> and
-    Grid::Detail::exposes_point_id<T> and
-    Grid::Detail::exposes_cell_type<T> and
-    Grid::Detail::exposes_cell_corners<T>;
+    GridDetail::exposes_point_range<T> and
+    GridDetail::exposes_cell_range<T> and
+    GridDetail::exposes_point_coordinates<T> and
+    GridDetail::exposes_point_id<T> and
+    GridDetail::exposes_cell_type<T> and
+    GridDetail::exposes_cell_corners<T>;
 
 template<typename T>
 concept Grid = UnstructuredGrid<T>;

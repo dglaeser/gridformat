@@ -1,5 +1,6 @@
 #include <vector>
 #include <cmath>
+#include <fstream>
 
 #include "../grid/unstructured_grid.hpp"
 #include <gridformat/vtk/vtu_writer.hpp>
@@ -12,10 +13,10 @@ T evaluate_function(const Position& pos) {
 template<typename T, typename Grid>
 std::vector<T> make_point_data(const Grid& grid) {
     std::vector<T> result;
-    result.reserve(GridFormat::Grid::num_points(grid));
-    for (const auto& p : GridFormat::Grid::points(grid))
+    result.reserve(GridFormat::number_of_points(grid));
+    for (const auto& p : GridFormat::points(grid))
         result.push_back(evaluate_function<T>(
-            GridFormat::Grid::coordinates(grid, p)
+            GridFormat::coordinates(grid, p)
         ));
     return result;
 }
@@ -23,12 +24,12 @@ std::vector<T> make_point_data(const Grid& grid) {
 template<typename T, typename Grid>
 std::vector<T> make_cell_data(const Grid& grid) {
     std::vector<T> result;
-    result.reserve(GridFormat::Grid::num_cells(grid));
-    for (const auto& c : GridFormat::Grid::cells(grid))
+    result.reserve(GridFormat::number_of_cells(grid));
+    for (const auto& c : GridFormat::cells(grid))
         result.push_back(evaluate_function<T>(
-            GridFormat::Grid::coordinates(
+            GridFormat::coordinates(
                 grid,
-                *begin(GridFormat::Grid::corners(grid, c))
+                *begin(GridFormat::corners(grid, c))
             )
         ));
     return result;
@@ -75,7 +76,7 @@ int main() {
     writer.set_cell_field("cvector", cell_vectors);
     writer.set_cell_field("ctensor", cell_tensors);
 
-    writer.write(std::cout);
+    writer.write("file");
 
     return 0;
 }

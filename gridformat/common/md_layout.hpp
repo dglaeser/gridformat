@@ -60,7 +60,7 @@ class MDLayout {
 namespace Detail {
 
 template<Concepts::Scalar T>
-constexpr auto push_extents(const T&, std::vector<std::size_t>&){}
+constexpr auto push_extents(const T&, std::vector<std::size_t>&) {}
 
 template<std::ranges::range R>
 constexpr auto push_extents(R&& r, std::vector<std::size_t>& extents) {

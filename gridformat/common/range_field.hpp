@@ -23,7 +23,7 @@ namespace GridFormat {
  * \ingroup Common
  * \brief Interface for fields.
  */
-template<Concepts::FieldValuesRange R, Concepts::Scalar ValueType = std::ranges::range_value_t<R>>
+template<Concepts::FieldValuesRange R, Concepts::Scalar ValueType = MDRangeScalar<R>>
 class RangeField : public Field {
  public:
     template<typename _R> requires(std::convertible_to<_R, R>)
@@ -33,22 +33,32 @@ class RangeField : public Field {
     {}
 
  private:
+    void _stream(FormattedAsciiOutputStream& stream) const override {
+        _visit(_range, [&] (const ValueType& value) {
+            stream << value;
+        });
+    }
+
     typename Field::Serialization _serialized() const override {
         typename Field::Serialization serialization{this->layout().number_of_entries()*sizeof(ValueType)};
         ValueType* data = reinterpret_cast<ValueType*>(serialization.data());
         std::size_t offset = 0;
-        _copy(_range, data, offset);
+        _visit(_range, [&] (const ValueType& value) {
+            data[offset++] = value;
+        });
         return serialization;
     }
 
-    void _copy(const std::ranges::range auto& r, ValueType* data, std::size_t& offset) const {
+    template<typename Action>
+    void _visit(const std::ranges::range auto& r, const Action& action) const {
         std::ranges::for_each(r, [&] (const auto& entry) {
-            _copy(entry, data, offset);
+            _visit(entry, action);
         });
     }
 
-    void _copy(const Concepts::Scalar auto& value, ValueType* data, std::size_t& offset) const {
-        data[offset++] = static_cast<ValueType>(value);
+    template<typename Action>
+    void _visit(const Concepts::Scalar auto& value, const Action& action) const {
+        action(static_cast<ValueType>(value));
     }
 
     R _range;

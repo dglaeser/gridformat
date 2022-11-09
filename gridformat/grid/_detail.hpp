@@ -14,7 +14,7 @@
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
 
-namespace GridFormat::Grid::Detail {
+namespace GridFormat::GridDetail {
 
 template<typename T, typename Grid>
 concept EntityRange = requires(const Grid& grid) {
@@ -60,6 +60,6 @@ inline constexpr bool exposes_cell_corners
     { Traits::CellCornerPoints<T, Cell<T>>::get(grid, std::declval<const Cell<T>&>()) } -> Concepts::RangeOf<Point<T>>;
 };
 
-}  // namespace GridFormat::Grid::Detail
+}  // namespace GridFormat::GridDetail
 #endif // DOXYGEN
 #endif  // GRIDFORMAT_GRID_DETAIL_HPP_

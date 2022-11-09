@@ -11,57 +11,20 @@
 #include <type_traits>
 
 #include <gridformat/common/precision.hpp>
-#include <gridformat/vtk/common.hpp>
+#include <gridformat/vtk/options.hpp>
 
 namespace GridFormat::VTK::Traits {
 
 template<typename T>
-struct Encoder;
-template<>
-struct Encoder<DataFormat::InlineAscii> : public std::type_identity<Encoding::Ascii> {};
-template<>
-struct Encoder<DataFormat::InlineBase64> : public std::type_identity<Encoding::Base64> {};
-template<>
-struct Encoder<DataFormat::Appen> : public std::type_identity<Encoding::Base64> {};
-
-template<typename T>
 struct SupportsCompression : public std::true_type {};
 template<>
-struct SupportsCompression<DataFormat::InlineAscii> : public std::false_type {};
+struct SupportsCompression<Encoding::Ascii> : public std::false_type {};
 
-template<typename T>
-struct Name;
-template<>
-struct Name<DynamicPrecision> {
-    static std::string get(const DynamicPrecision& prec) {
-        std::string prefix = prec.is_integral() ? (prec.is_signed() ? "Int" : "UInt") : "Float";
-        return prefix + std::to_string(prec.number_of_bytes()*8);
-    }
+std::string name(const PrecisionTraits& prec) {
+    std::string prefix = prec.is_integral ? (prec.is_signed ? "Int" : "UInt") : "Float";
+    return prefix + std::to_string(prec.number_of_bytes*8);
 }
-template<>
-struct Name<DataFormat::InlineAscii> {
-    static std::string get() {
-        return "ascii";
-    }
-};
-template<>
-struct Name<DataFormat::InlineBase64> {
-    static std::string get() {
-        return "binary";
-    }
-};
-template<>
-struct Name<DataFormat::AppendedBinary> {
-    static std::string get() {
-        return "appended";
-    }
-};
-template<>
-struct Name<DataFormat::AppendedBase64> {
-    static std::string get() {
-        return "appended";
-    }
-};
+
 
 }  // namespace GridFormat::VTK::Traits
 

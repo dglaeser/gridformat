@@ -104,7 +104,7 @@ constexpr auto make_extended(R&& range, const std::ranges::range_value_t<R>& val
 }
 
 template<std::size_t target_dimension, std::ranges::range R> requires(!std::is_lvalue_reference_v<R>)
-constexpr auto make_extended(R&& range, const std::ranges::range_value_t<R>& value = {0.0}) {
+constexpr auto make_extended(R&& range, const std::ranges::range_value_t<R>& value = {0}) {
     return ExtendedRange<target_dimension, std::decay_t<R>>{std::forward<R>(range), value};
 }
 

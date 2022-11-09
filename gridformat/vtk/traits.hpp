@@ -10,28 +10,6 @@
 
 namespace GridFormat::VTK {
 
-namespace DataFormat {
-
-struct Inlined {};
-struct Appended {};
-
-inline constexpr Inline inlined;
-inline constexpr Appended appended;
-
-}  // namespace DataFormat
-
-namespace Encoding {
-
-struct Base64 {};
-struct Ascii {};
-struct Raw {};
-
-inline constexpr Base64 base64;
-inline constexpr Ascii ascii;
-inline constexpr Raw raw;
-
-}  // namespace Encoding
-
 }  // namespace GridFormat::VTK
 
 #endif  // GRIDFORMAT_VTK_TRAITS_HPP_

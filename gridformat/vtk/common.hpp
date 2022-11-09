@@ -27,26 +27,6 @@ inline constexpr std::uint8_t cell_type_number(CellType t) {
     throw NotImplemented("VTK cell type for the given cell type");
 }
 
-inline std::string data_format(DynamicPrecision prec) {
-    std::string prefix = prec.is_integral() ? (prec.is_signed() ? "Int" : "UInt") : "Float";
-    return prefix + std::to_string(prec.number_of_bytes()*8);
-}
-
-namespace DataFormat {
-
-struct Inline {};
-struct Appended {};
-
-}  // namespace DataFormat
-
-namespace Encoding {
-
-struct Base64 {};
-struct Ascii {};
-struct Raw {};
-
-}  // namespace Encoding
-
 }  // namespace GridFormat::VTK
 
 #endif  // GRIDFORMAT_VTK_COMMON_HPP_
