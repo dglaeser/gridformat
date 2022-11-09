@@ -58,9 +58,9 @@ struct PrecisionTraits {
     {}
 
     bool operator==(const PrecisionTraits& other) const {
-        return _is_integral == other._is_integral
-            && _is_signed == other._is_signed
-            && _number_of_bytes == other._number_of_bytes;
+        return is_integral == other.is_integral
+            && is_signed == other.is_signed
+            && number_of_bytes == other.number_of_bytes;
     }
 };
 

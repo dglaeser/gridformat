@@ -11,29 +11,18 @@
 #include <string>
 #include <utility>
 #include <ranges>
+#include <fstream>
+#include <ostream>
 #include <type_traits>
 
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/concepts.hpp>
-#include <gridformat/common/streams.hpp>
 
 #include <gridformat/common/field_storage.hpp>
-#include <gridformat/common/fields.hpp>
+#include <gridformat/common/range_field.hpp>
 
 namespace GridFormat {
-
-#ifndef DOXYGEN
-namespace Detail {
-
-template<typename T>
-inline constexpr bool is_rvalue_view_or_lvalue_range =
-    std::ranges::range<T> and
-    (std::ranges::view<T> and !std::is_lvalue_reference_v<T>) or
-    (!std::ranges::view<T> and std::is_lvalue_reference_v<T> and std::ranges::viewable_range<T>);
-
-}  // namespace Detail
-#endif  // DOXYGEN
 
 /*!
  * \ingroup Common
@@ -45,61 +34,72 @@ class Writer {
  public:
     using Field = typename FieldStorage::Field;
 
-    Writer() = default;
-    explicit Writer(RangeFormatOptions opts)
-    : _format_opts(std::move(opts))
-    {}
-
-    // template<Concepts::Tensors R, typename T = MDRangeScalar<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
-    // void set_point_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-    //     _point_data.set(name, TensorField{std::views::all(std::forward<R>(range)), prec, _format_opts});
-    // }
-
-    template<Concepts::Vectors R, typename T = MDRangeScalar<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
-    void set_point_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-        _point_data.set(name, VectorField{std::views::all(std::forward<R>(range)), prec, _format_opts});
+    template<Concepts::FieldValuesRange R, typename T = MDRangeScalar<std::decay_t<R>>>
+    void set_point_field(const std::string& name, R&& range, const Precision<T>& prec = {}) {
+        set_point_field(name, RangeField{std::forward<R>(range), prec});
     }
 
-    template<Concepts::Scalars R, typename T = std::ranges::range_value_t<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
-    void set_point_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-        _point_data.set(name, ScalarField{std::views::all(std::forward<R>(range)), prec, _format_opts});
+    template<std::derived_from<Field> F> requires(!std::is_lvalue_reference_v<F>)
+    void set_point_field(const std::string& name, F&& field) {
+        _point_fields.set(name, std::forward<F>(field));
     }
 
-//    template<Concepts::Tensors R, typename T = MDRangeScalar<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
-//     void set_cell_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-//         _cell_data.set(name, TensorField{std::views::all(std::forward<R>(range)), prec, _format_opts});
-//     }
-
-    template<Concepts::Vectors R, typename T = MDRangeScalar<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
-    void set_cell_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-        _cell_data.set(name, VectorField{std::views::all(std::forward<R>(range)), prec, _format_opts});
+    template<Concepts::FieldValuesRange R, typename T = MDRangeScalar<std::decay_t<R>>>
+    void set_cell_field(const std::string& name, R&& range, const Precision<T>& prec = {}) {
+        set_cell_field(name, RangeField{std::forward<R>(range), prec});
     }
 
-    template<Concepts::Scalars R, typename T = std::ranges::range_value_t<R>> requires(Detail::is_rvalue_view_or_lvalue_range<R>)
-    void set_cell_data(const std::string& name, R&& range, const Precision<T>& prec = {}) {
-        _cell_data.set(name, ScalarField{std::views::all(std::forward<R>(range)), prec, _format_opts});
+    template<std::derived_from<Field> F> requires(!std::is_lvalue_reference_v<F>)
+    void set_cell_field(const std::string& name, F&& field) {
+        _cell_fields.set(name, std::forward<F>(field));
     }
 
  protected:
-    std::ranges::range auto _point_data_names() const {
-        return _point_data.field_names();
+    std::ranges::range auto _point_field_names() const {
+        return _point_fields.field_names();
     }
 
-    std::ranges::range auto _cell_data_names() const {
-        return _cell_data.field_names();
+    std::ranges::range auto _cell_field_names() const {
+        return _cell_fields.field_names();
     }
 
-    const Field& _get_point_data(const std::string& name) const {
-        return _point_data.get(name);
+    const Field& _get_point_field(const std::string& name) const {
+        return _point_fields.get(name);
     }
 
-    const Field& _get_cell_data(const std::string& name) const {
-        return _cell_data.get(name);
+    const Field& _get_cell_field(const std::string& name) const {
+        return _cell_fields.get(name);
     }
 
-    FieldStorage _point_data;
-    FieldStorage _cell_data;
-    RangeFormatOptions _format_opts;
+ private:
+    FieldStorage _point_fields;
+    FieldStorage _cell_fields;
+};
+
+class WriterBase : public Writer {
+ public:
+    void write(const std::string& filename) const {
+        std::ofstream result_file(filename, std::ios::out);
+        write(result_file);
+    }
+
+    void write(std::ostream& s) const {
+        _write(s);
+    }
+
+ private:
+    virtual void _write(std::ostream& s) const = 0;
+};
+
+template<Concepts::Scalar Time = double>
+class TimeSeriesWriterBase : public Writer {
+ public:
+    void write(const Time& t) const {
+        _write(t);
+    }
+
+ private:
+    virtual void _write(const Time& t) const = 0;
 };
 
 }  // namespace GridFormat

@@ -8,11 +8,10 @@
 #ifndef GRIDFORMAT_COMMON_FIELD_HPP_
 #define GRIDFORMAT_COMMON_FIELD_HPP_
 
-#include <concepts>
-#include <ostream>
 #include <utility>
 #include <cstddef>
 
+#include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
 
@@ -22,23 +21,22 @@ namespace GridFormat {
  * \ingroup Common
  * \brief Interface for fields.
  */
-template<typename S = GridFormat::Serialization>;
 class Field {
  public:
-    using Serialization = S;
+    using Serialization = GridFormat::Serialization;
 
     virtual ~Field() = default;
-    explicit Field(int ncomps, PrecisionTraits prec)
-    : _ncomps(ncomps)
+    Field(MDLayout layout, PrecisionTraits prec)
+    : _layout(std::move(layout))
     , _prec(prec)
     {}
 
+    const MDLayout& layout() const { return _layout; }
     PrecisionTraits precision() const { return _prec; }
-    int number_of_components() const { return _ncomps; }
     Serialization serialized() const { return _serialized(); }
 
  private:
-    int _ncomps;
+    MDLayout _layout;
     PrecisionTraits _prec;
     virtual Serialization _serialized() const = 0;
 };

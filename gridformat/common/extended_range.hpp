@@ -17,8 +17,7 @@
 
 namespace GridFormat {
 
-template<std::size_t target_dimension,
-         std::ranges::view R> requires(std::ranges::forward_range<R>)
+template<std::size_t target_dimension, std::ranges::forward_range R>
 class ExtendedRange {
     using ValueType = std::ranges::range_value_t<R>;
 
@@ -85,8 +84,9 @@ class ExtendedRange {
     };
 
  public:
-    explicit ExtendedRange(R&& range, ValueType value)
-    : _range(std::move(range))
+    template<std::ranges::range _R> requires(std::convertible_to<_R, R>)
+    explicit ExtendedRange(_R&& range, ValueType value)
+    : _range(std::forward<_R>(range))
     , _value(value)
     {}
 
@@ -98,7 +98,12 @@ class ExtendedRange {
     ValueType _value;
 };
 
-template<std::size_t target_dimension, std::ranges::range R>
+template<std::size_t target_dimension, std::ranges::range R> requires(std::is_lvalue_reference_v<R>)
+constexpr auto make_extended(R&& range, const std::ranges::range_value_t<R>& value = {0.0}) {
+    return ExtendedRange<target_dimension, const std::decay_t<R>&>{std::forward<R>(range), value};
+}
+
+template<std::size_t target_dimension, std::ranges::range R> requires(!std::is_lvalue_reference_v<R>)
 constexpr auto make_extended(R&& range, const std::ranges::range_value_t<R>& value = {0.0}) {
     return ExtendedRange<target_dimension, std::decay_t<R>>{std::forward<R>(range), value};
 }

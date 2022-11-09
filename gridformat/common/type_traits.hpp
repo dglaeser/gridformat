@@ -12,6 +12,8 @@
 #include <ranges>
 #include <type_traits>
 
+#include <gridformat/common/traits.hpp>
+
 namespace GridFormat {
 
 #ifndef DOXYGEN
@@ -67,6 +69,9 @@ inline constexpr bool is_incomplete = decltype(Detail::isIncomplete(std::declval
 
 template<typename T>
 inline constexpr bool is_complete = !is_incomplete<T>;
+
+template<typename T>
+using ByteType = typename Traits::Byte<T>::type;
 
 }  // end namespace GridFormat
 

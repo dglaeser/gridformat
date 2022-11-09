@@ -21,6 +21,9 @@ concept UnstructuredGrid =
     Detail::exposes_cell_type<T> and
     Detail::exposes_cell_corners<T>;
 
+template<typename T>
+concept Grid = UnstructuredGrid<T>;
+
 }  // namespace GridFormat::Concepts
 
 #endif  // GRIDFORMAT_GRID_CONCEPTS_HPP_

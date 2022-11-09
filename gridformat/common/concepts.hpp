@@ -35,6 +35,10 @@ concept Serialization = requires(const T& t_const, T& t) {
 template<typename T, typename ValueType>
 concept RangeOf = std::ranges::range<T> and std::convertible_to<std::ranges::range_value_t<T>, ValueType>;
 
+template<typename T>
+concept FieldValuesRange = std::ranges::forward_range<T>;
+
+
 template<typename T, std::size_t dim>
 concept MDRange = std::ranges::range<T> and mdrange_dimension<T> == dim;
 
