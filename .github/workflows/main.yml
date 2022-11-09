@@ -1,1 +1,28 @@
+name: test-suite
 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: install-gcc-12
+        run: |
+          sudo apt install gcc-12 g++-12
+
+      - name: checkout-repository
+        uses: actions/checkout@v2
+
+      - name: configure
+        run: |
+          mkdir build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 ../ && cd ..
+
+      - name: test
+        run: |
+          cd build && make test_vtu_writer && ctest -R test_vtu_writer -V
