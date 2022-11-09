@@ -18,7 +18,7 @@
 #include <gridformat/grid/type_traits.hpp>
 #include <gridformat/grid/grid.hpp>
 
-#include <gridformat/vtk/xml_writer.hpp>
+#include <gridformat/vtk/xml_writer_base.hpp>
 #include <gridformat/vtk/options.hpp>
 
 namespace GridFormat {
@@ -32,7 +32,9 @@ class VTUWriter : public VTK::XMLWriterBase<Grid> {
     using ParentType = VTK::XMLWriterBase<Grid>;
 
  public:
-    explicit VTUWriter(const Grid& grid) : ParentType(grid) {}
+    explicit VTUWriter(const Grid& grid)
+    : ParentType(grid)
+    {}
 
  private:
     void _write(std::ostream& s) const override {

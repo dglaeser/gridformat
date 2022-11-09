@@ -19,6 +19,9 @@ namespace Traits {
 template<typename T>
 struct Byte;
 
+template<typename T>
+struct StaticSize;
+
 }  // namespace Traits
 }  // namespace GridFormat
 

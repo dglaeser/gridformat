@@ -15,10 +15,10 @@
 namespace GridFormat {
 
 template<typename T>
-using Point = Detail::Point<T>;
+using Point = Grid::Detail::Point<T>;
 
 template<typename T>
-using Cell = Detail::Cell<T>;
+using Cell = Grid::Detail::Cell<T>;
 
 template<typename T>
 using CoordinateType = std::ranges::range_value_t<Point<T>>;

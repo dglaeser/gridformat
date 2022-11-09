@@ -35,10 +35,25 @@ std::vector<T> make_cell_data(const Grid& grid) {
 }
 
 template<typename T>
-std::vector<std::array<T, 2>> make_vector_data(const std::vector<T>& scalars) {
-    std::vector<std::array<T, 2>> result(scalars.size());
+auto make_vector_data(const std::vector<T>& scalars) {
+    using Vector = std::array<T, 2>;
+    std::vector<Vector> result(scalars.size());
     std::transform(scalars.begin(), scalars.end(), result.begin(), [] (T value) {
-        return std::array<T, 2>{value, value};
+        return Vector{value, value};
+    });
+    return result;
+}
+
+template<typename T>
+auto make_tensor_data(const std::vector<T>& scalars) {
+    using Vector = std::array<T, 2>;
+    using Tensor = std::array<Vector, 2>;
+    std::vector<Tensor> result(scalars.size());
+    std::transform(scalars.begin(), scalars.end(), result.begin(), [] (T value) {
+        return Tensor{
+            Vector{value, value},
+            Vector{value, value}
+        };
     });
     return result;
 }
@@ -47,14 +62,18 @@ int main() {
     const auto grid = GridFormat::Test::make_unstructured_2d();
     auto point_scalars = make_point_data<double>(grid);
     auto point_vectors = make_vector_data(point_scalars);
+    auto point_tensors = make_tensor_data(point_scalars);
     auto cell_scalars = make_cell_data<double>(grid);
     auto cell_vectors = make_vector_data(cell_scalars);
+    auto cell_tensors = make_tensor_data(cell_scalars);
 
     GridFormat::VTUWriter writer{grid};
     writer.set_point_field("pscalar", point_scalars);
-    writer.set_cell_field("cscalar", cell_scalars);
     writer.set_point_field("pvector", point_vectors);
+    writer.set_point_field("ptensor", point_tensors);
+    writer.set_cell_field("cscalar", cell_scalars);
     writer.set_cell_field("cvector", cell_vectors);
+    writer.set_cell_field("ctensor", cell_tensors);
 
     writer.write(std::cout);
 

@@ -11,10 +11,33 @@
 #include <concepts>
 #include <ostream>
 #include <cstddef>
+#include <type_traits>
+#include <array>
+#include <span>
 
 #include <gridformat/common/type_traits.hpp>
 
 namespace GridFormat::Concepts {
+
+#ifndef DOXYGEN
+namespace Detail {
+
+template<typename T>
+struct is_std_array : public std::false_type {};
+template<typename T, std::size_t N>
+struct is_std_array<std::array<T, N>> : public std::true_type {};
+template<typename T>
+inline constexpr bool is_std_array_v = is_std_array<T>::value;
+
+template<typename T>
+struct is_std_span : public std::false_type {};
+template<typename T, std::size_t N>
+struct is_std_span<std::span<T, N>> : public std::true_type {};
+template<typename T>
+inline constexpr bool is_std_span_v = is_std_span<T>::value;
+
+}  // namespace Detail
+#endif  // DOXYGEN
 
 template<typename T1, typename T2>
 concept Interoperable = std::is_convertible_v<T1, T2> || std::is_convertible_v<T2, T1>;
@@ -31,6 +54,16 @@ concept Serialization = requires(const T& t_const, T& t) {
     { t.data() } -> std::convertible_to<std::byte*>;
     { t.resize(std::size_t{}) };
 };
+
+template<typename T>
+concept StaticallySized
+    = requires { { T::size() } -> std::integral; }
+    or (!is_incomplete<Traits::StaticSize<T>> and requires {
+            { Traits::StaticSize<T>::value } -> std::convertible_to<std::size_t>;
+        })
+    or std::is_bounded_array_v<T>
+    or Detail::is_std_array_v<T>
+    or (Detail::is_std_span_v<T> and T::extent != std::dynamic_extent);
 
 template<typename T, typename ValueType>
 concept RangeOf = std::ranges::range<T> and std::convertible_to<std::ranges::range_value_t<T>, ValueType>;
