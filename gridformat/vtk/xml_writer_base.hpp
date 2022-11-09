@@ -123,10 +123,11 @@ class XMLWriterBase : public WriterBase {
         _access_element(context, _get_element_names(xml_group)).set_attribute(attr_name, attr_value);
     }
 
+    template<typename F> requires(std::derived_from<std::decay_t<F>, Field>)
     void _set_data_array(WriteContext& context,
                          std::string_view xml_group,
                          std::string data_array_name,
-                         const Field& field) const {
+                         F&& field) const {
         XMLElement& da = _access_element(context, _get_element_names(xml_group)).add_child("DataArray");
         da.set_attribute("Name", std::move(data_array_name));
         da.set_attribute("type", attribute_name(field.precision()));
@@ -134,7 +135,7 @@ class XMLWriterBase : public WriterBase {
             da.set_attribute("NumberOfComponents", "1");
         else
             da.set_attribute("NumberOfComponents", field.layout().sub_layout(1).number_of_entries());
-        da.set_content(StreamableField{field, _range_format_opts});
+        da.set_content(make_streamable(std::forward<F>(field), _range_format_opts));
     }
 
     XMLElement& _access_element(WriteContext& context, const std::vector<std::string>& sub_elem_names) const {

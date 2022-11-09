@@ -59,7 +59,10 @@ class XMLElement : public XMLTag {
         }
 
         std::any get_as_any() const override {
-            return {_c};
+            if constexpr (std::is_constructible_v<std::any, C>)
+                return {_c};
+            else
+                throw InvalidState("Cannot parse content");
         }
 
      private:

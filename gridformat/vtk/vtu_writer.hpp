@@ -18,87 +18,9 @@
 
 #include <gridformat/vtk/xml_writer_base.hpp>
 #include <gridformat/vtk/options.hpp>
-
-
-#include <gridformat/common/range_field.hpp>
-#include <gridformat/common/ranges.hpp>
 #include <gridformat/vtk/common.hpp>
 
 namespace GridFormat {
-
-template<typename Grid>
-auto make_points_field(const Grid& grid) {
-    return RangeField{
-        points(grid)
-            | std::views::all
-            | std::views::transform([&] (const auto& point) {
-                return make_extended<3>(coordinates(grid, point));
-            })
-    };
-}
-
-template<typename Grid>
-auto make_connectivity_field(const Grid& grid) {
-    std::vector<std::size_t> connectivity;
-    connectivity.reserve(number_of_cells(grid)*8);
-    for (const auto& c : cells(grid))
-        for (const auto& p : corners(grid, c))
-            connectivity.push_back(id(grid, p));
-    connectivity.shrink_to_fit();
-    return RangeField{std::move(connectivity)};
-    // Problem: with join_view we end up with input_iterator
-    //          but we currently require forward_iterator...
-    //          Do we really need forward ranges?
-    // return RangeField{
-    //     cells(grid)
-    //         | std::views::all
-    //         | std::views::transform([&] (const auto& cell) {
-    //             return corners(grid, cell)
-    //                 | std::views::all
-    //                 | std::views::transform([&] (const auto& point) {
-    //                     return id(grid, point);
-    //                 })
-    //         })
-    //         | std::views::join
-    // };
-}
-
-template<typename Grid>
-auto make_offsets_field(const Grid& grid) {
-    std::vector<std::size_t> offsets;
-    offsets.reserve(number_of_cells(grid));
-    for (const auto& c : cells(grid))
-        offsets.push_back(
-            offsets.empty() ? Ranges::size(corners(grid, c))
-                            : Ranges::size(corners(grid, c)) + offsets.back()
-        );
-    return RangeField{std::move(offsets)};
-    // Problem: with the "mutable" keyword, this does not compile.
-    //          also, this would break multiple passes of the range...
-    // return RangeField{
-    //     cells(grid)
-    //         | std::views::all
-    //         | std::views::transform([&] (const auto& cell) {
-    //             return corners(grid, cell)
-    //                 | std::views::all
-    //                 | std::views::transform([&] (const auto& point) {
-    //                     return id(grid, point);
-    //                 })
-    //         })
-    //         | std::views::join
-    // };
-}
-
-template<typename Grid>
-auto make_types_field(const Grid& grid) {
-    return RangeField{
-        cells(grid)
-            | std::views::all
-            | std::views::transform([&] (const auto& cell) {
-                return VTK::cell_type_number(type(grid, cell));
-            })
-    };
-}
 
 /*!
  * \ingroup VTK
@@ -122,11 +44,6 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, Format, Encoding> {
         const auto num_points = number_of_points(this->_grid);
         const auto num_cells = number_of_cells(this->_grid);
 
-        const auto point_coords_field = make_points_field(this->_grid);
-        const auto connectivity_field = make_connectivity_field(this->_grid);
-        const auto offsets_field = make_offsets_field(this->_grid);
-        const auto types_field = make_types_field(this->_grid);
-
         auto context = this->_get_write_context("UnstructuredGrid");
         this->_set_attribute(context, "Piece", "NumberOfPoints", num_points);
         this->_set_attribute(context, "Piece", "NumberOfCells", num_cells);
@@ -136,10 +53,16 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, Format, Encoding> {
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& n) {
             this->_set_data_array(context, "Piece.CellData", n, this->_get_cell_field(n));
         });
-        this->_set_data_array(context, "Piece.Points", "Coordinates", point_coords_field);
-        this->_set_data_array(context, "Piece.Cells", "connectivity", connectivity_field);
-        this->_set_data_array(context, "Piece.Cells", "offsets", offsets_field);
-        this->_set_data_array(context, "Piece.Cells", "types", types_field);
+        invoke_with_precision(this->_coordinate_precision, [&] <typename T> (const Precision<T>&) {
+            this->_set_data_array(context, "Piece.Points", "Coordinates", VTK::make_points_field<T>(this->_grid));
+        });
+        invoke_with_precision(this->_header_precision, [&] <typename T> (const Precision<T>&) {
+            this->_set_data_array(context, "Piece.Cells", "connectivity", VTK::make_connectivity_field<T>(this->_grid));
+        });
+        invoke_with_precision(this->_header_precision, [&] <typename T> (const Precision<T>&) {
+            this->_set_data_array(context, "Piece.Cells", "offsets", VTK::make_offsets_field<T>(this->_grid));
+        });
+        this->_set_data_array(context, "Piece.Cells", "types", VTK::make_types_field(this->_grid));
         this->_write_xml(context, s);
     }
 };

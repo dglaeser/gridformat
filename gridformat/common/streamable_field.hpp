@@ -8,6 +8,7 @@
 #ifndef GRIDFORMAT_COMMON_STREAMABLE_FIELD_HPP_
 #define GRIDFORMAT_COMMON_STREAMABLE_FIELD_HPP_
 
+#include <memory>
 #include <utility>
 #include <ostream>
 #include <concepts>
@@ -22,12 +23,13 @@ namespace GridFormat {
  * \ingroup Common
  * \brief Interface for fields.
  */
-class StreamableField {
+template<typename F>
+class StreamableField;
+
+template<std::derived_from<Field> F>
+class StreamableField<F> {
  public:
-    template<typename F> requires(
-        std::derived_from<std::decay_t<F>, Field> or
-        std::is_lvalue_reference_v<F>)
-    StreamableField(F&& field, RangeFormatOptions opts = {})
+    StreamableField(const F& field, RangeFormatOptions opts = {})
     : _field(field)
     , _opts(std::move(opts))
     {}
@@ -39,9 +41,42 @@ class StreamableField {
     }
 
  private:
-    const Field& _field;
+    const F& _field;
     RangeFormatOptions _opts;
 };
+
+template<std::derived_from<Field> F>
+class StreamableField<std::unique_ptr<F>> {
+ public:
+    StreamableField(F&& field, RangeFormatOptions opts = {})
+    : _field_ptr(std::make_unique<F>(std::move(field)))
+    , _opts(std::move(opts))
+    {}
+
+    friend std::ostream& operator<<(std::ostream& s, const StreamableField& field) {
+        FormattedAsciiOutputStream formatted_stream{s, field._opts};
+        field._field_ptr->stream(formatted_stream);
+        return s;
+    }
+
+ private:
+    std::unique_ptr<F> _field_ptr;
+    RangeFormatOptions _opts;
+};
+
+template<typename F> requires(
+    std::derived_from<std::decay_t<F>, Field> and
+    std::is_lvalue_reference_v<F>)
+auto make_streamable(F&& field, RangeFormatOptions opts = {}) {
+    return StreamableField<std::decay_t<F>>{field, std::move(opts)};
+}
+
+template<typename F> requires(
+    std::derived_from<std::decay_t<F>, Field> and
+    !std::is_lvalue_reference_v<F>)
+auto make_streamable(F&& field, RangeFormatOptions opts = {}) {
+    return StreamableField<std::unique_ptr<std::decay_t<F>>>{std::move(field), std::move(opts)};
+}
 
 }  // namespace GridFormat
 
