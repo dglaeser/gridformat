@@ -20,10 +20,11 @@
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/range_formatter.hpp>
-// #include <gridformat/common/streamable_field.hpp>
+#include <gridformat/common/streamable_field.hpp>
 #include <gridformat/common/logging.hpp>
 
 #include <gridformat/compression/compression.hpp>
+#include <gridformat/encoding/ascii.hpp>
 
 #include <gridformat/grid/concepts.hpp>
 #include <gridformat/grid/grid.hpp>
@@ -120,6 +121,9 @@ class XMLWriterBase : public WriterBase {
     >;
     static constexpr bool use_compression = !std::is_same_v<
         typename Detail::Compression<XMLOpts>::type, Compression::None
+    >;
+    static constexpr bool write_inline = std::is_same_v<
+        typename Detail::Format<XMLOpts>::type, DataFormat::Inlined
     >;
 
  public:
@@ -218,6 +222,8 @@ class XMLWriterBase : public WriterBase {
             da.set_attribute("NumberOfComponents", "1");
         else
             da.set_attribute("NumberOfComponents", field.layout().number_of_entries(1));
+        if (write_inline)
+            da.set_content(StreamableField{field, Encoding::ascii});
         // TODO: How to structure the actual write??
         // da.set_content(StreamableField{field, _range_format_opts});
     }

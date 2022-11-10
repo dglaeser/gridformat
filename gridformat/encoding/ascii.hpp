@@ -14,43 +14,31 @@
 
 namespace GridFormat {
 
-template<Concepts::Stream Stream = std::ostream>
 class AsciiStream {
  public:
-    explicit Base64Stream(Stream& s)
+    explicit AsciiStream(std::ostream& s)
     : _stream(s)
     {}
 
-    void write(const std::byte* data, std::streamsize size) const {
-        std::size_t num_full_chunks = size/chunk_size;
-        std::ranges::for_each(
-            std::views::iota(std::size_t{0}, num_full_chunks),
-            [&] (std::size_t chunk_idx) {
-                _flush_triplet(
-                    data + chunk_idx*chunk_size,
-                    chunk_size,
-                );
-        });
-        int last_chunk_size = size%chunk_size;
-        if (last_chunk_size > 0)
-            _flush_triplet(
-                data + chunk_size*num_full_chunks,
-                last_chunk_size
-            );
+    template<typename T>
+    void write(const T* data, std::streamsize size) const {
+        std::copy_n(data, size, std::ostream_iterator<T>(_stream));
     }
 
  private:
-    Stream& _stream;
+    std::ostream& _stream;
 };
 
 namespace Encoding {
 
-struct Base64 {
+struct Ascii {
     template<Concepts::Stream S>
-    Base64Stream<S> operator()(S& s) const {
-        return Base64Stream{s};
+    Concepts::Stream auto operator()(S& s) const {
+        return AsciiStream{s};
     }
 };
+
+inline constexpr Ascii ascii;
 
 }  // namespace Encoding
 }  // namespace GridFormat
