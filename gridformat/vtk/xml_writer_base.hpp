@@ -12,6 +12,7 @@
 #include <ranges>
 #include <utility>
 #include <iterator>
+#include <type_traits>
 
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/writer.hpp>
@@ -19,6 +20,8 @@
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/range_formatter.hpp>
 #include <gridformat/common/streamable_field.hpp>
+
+#include <gridformat/compression/compression.hpp>
 
 #include <gridformat/grid/concepts.hpp>
 #include <gridformat/grid/grid.hpp>
@@ -30,38 +33,90 @@
 
 namespace GridFormat::VTK {
 
+template<typename Encoding = Encoding::Ascii,
+         typename Compression = Compression::None,
+         typename DataFormat = Automatic>
+struct XMLOptions {
+    Encoding encoding = Encoding{};
+    Compression compression = Compression{};
+    DataFormat format = DataFormat{};
+};
+
+template<typename C = Automatic,
+         typename H = std::size_t>
+struct PrecisionOptions {
+    Precision<C> coordinate_precision = {};
+    Precision<H> header_precision = {};
+};
+
+#ifndef DOXYGEN
+namespace Detail {
+
+template<typename Opts> struct Format;
+template<typename Opts> struct Encoding;
+template<typename Opts> struct Compression;
+template<typename Opts> struct CoordinatePrecision;
+template<typename Opts> struct HeaderPrecision;
+
+template<typename E, typename C, typename F>
+struct Encoding<XMLOptions<E, C, F>> : public std::type_identity<E> {};
+template<typename E, typename C, typename F>
+struct Compression<XMLOptions<E, C, F>> : public std::type_identity<C> {};
+template<typename E, typename C, typename F>
+struct Format<XMLOptions<E, C, F>> : public std::type_identity<F> {};
+template<typename E, typename C>
+struct Format<XMLOptions<E, C, Automatic>>
+: public std::type_identity<
+    std::conditional_t<
+        std::is_same_v<E, VTK::Encoding::Raw>,
+        DataFormat::Appended,
+        DataFormat::Inlined
+    >
+>
+{};
+
+template<typename C, typename H>
+struct CoordinatePrecision<PrecisionOptions<C, H>> : public std::type_identity<C> {};
+template<typename C, typename H>
+struct HeaderPrecision<PrecisionOptions<C, H>> : public std::type_identity<H> {};
+
+template<typename Opts, typename Grid>
+using CoordinateType = std::conditional_t<
+    std::is_same_v<typename CoordinatePrecision<Opts>::type, Automatic>,
+    CoordinateType<Grid>,
+    typename CoordinatePrecision<Opts>::type
+>;
+
+template<typename Opts>
+using HeaderType = typename HeaderPrecision<Opts>::type;
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
 /*!
  * \ingroup VTK
  * \brief TODO: Doc me
  */
 template<Concepts::Grid Grid,
-         typename Format = VTK::DataFormat::Inlined,
-         typename Encoding = VTK::Encoding::Ascii>
+         typename XMLOpts = XMLOptions<>,
+         typename PrecOpts = PrecisionOptions<>>
 class XMLWriterBase : public WriterBase {
     static constexpr std::size_t vtk_space_dim = 3;
 
  public:
     explicit XMLWriterBase(const Grid& grid,
                            std::string extension,
-                           [[maybe_unused]] const Format& = {},
-                           [[maybe_unused]] const Encoding& = {})
-    : _grid(grid)
-    , _extension(std::move(extension))
+                           XMLOpts xml_opts = {},
+                           PrecOpts prec_opts = {})
+    : _grid{grid}
+    , _extension{std::move(extension)}
+    , _xml_opts{std::move(xml_opts)}
+    , _prec_opts{std::move(prec_opts)}
     {}
 
     using WriterBase::write;
     void write(const std::string& filename) const {
         WriterBase::write(filename + _extension);
-    }
-
-    template<typename T>
-    void set_header_precision(const Precision<T>& prec) {
-        _header_precision = prec;
-    }
-
-    template<typename T>
-    void set_coordinate_precision(const Precision<T>& prec) {
-        _coordinate_precision = prec;
     }
 
     using WriterBase::set_point_field;
@@ -92,10 +147,13 @@ class XMLWriterBase : public WriterBase {
     }
 
  protected:
+    using CoordinateType = Detail::CoordinateType<PrecOpts, Grid>;
+    using HeaderType = Detail::HeaderType<PrecOpts>;
+
     const Grid& _grid;
     std::string _extension;
-    PrecisionTraits _header_precision = Precision<std::size_t>{};
-    PrecisionTraits _coordinate_precision = Precision<CoordinateType<Grid>>{};
+    XMLOpts _xml_opts;
+    PrecOpts _prec_opts;
     RangeFormatOptions _range_format_opts = {.delimiter = " ", .line_prefix = std::string(10, ' ')};
 
     struct WriteContext {

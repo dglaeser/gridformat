@@ -68,7 +68,18 @@ int main() {
     auto cell_vectors = make_vector_data(cell_scalars);
     auto cell_tensors = make_tensor_data(cell_scalars);
 
-    GridFormat::VTUWriter writer{grid};
+    GridFormat::VTK::XMLOptions xml_opts{
+        .encoding = GridFormat::VTK::Encoding::ascii,
+        .compression = GridFormat::Compression::none,
+        .format = GridFormat::VTK::DataFormat::inlined
+    };
+
+    GridFormat::VTK::PrecisionOptions prec_opts{
+        .coordinate_precision = GridFormat::Precision<float>{},
+        .header_precision = GridFormat::Precision<int>{}
+    };
+
+    GridFormat::VTUWriter writer{grid, xml_opts, prec_opts};
     writer.set_point_field("pscalar", point_scalars);
     writer.set_point_field("pvector", point_vectors);
     writer.set_point_field("ptensor", point_tensors);

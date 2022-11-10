@@ -54,6 +54,7 @@ std::true_type isIncomplete(...);
 }  // end namespace Detail
 #endif  // DOXYGEN
 
+struct Automatic {};
 
 template<std::ranges::range R>
 using MDRangeScalar = typename Detail::MDRangeScalar<R>::type;

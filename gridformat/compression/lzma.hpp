@@ -47,14 +47,13 @@ class LZMA {
     : _opts(std::move(opts))
     {}
 
-    template<std::integral HeaderType = std::size_t,
-             Concepts::Serialization Bytes>
+    template<std::integral HeaderType = std::size_t, Concepts::Serialization Bytes>
     CompressedBlockSizes<HeaderType> compress(Bytes& bytes) const {
         using T = ByteType<Bytes>;
         static_assert(sizeof(T) == sizeof(LZMAByte));
 
         LZMAByte* data = reinterpret_cast<LZMAByte*>(bytes.data());
-        const std::size_t size_in_bytes = sizeof(T)*bytes.size();
+        const HeaderType size_in_bytes = sizeof(T)*bytes.size();
 
         BlockSizes<HeaderType> block_sizes{size_in_bytes, _opts.block_size};
         std::vector<LZMAByte> block_buffer;
@@ -90,10 +89,7 @@ class LZMA {
             throw InvalidState(Format::as_error("(LZMACompressor) unexpected number of bytes processed"));
 
         bytes.resize(cur_out);
-        return CompressedBlockSizes{
-            std::move(block_sizes),
-            std::move(compressed_block_sizes)
-        };
+        return {std::move(block_sizes), std::move(compressed_block_sizes)};
     }
 
  private:

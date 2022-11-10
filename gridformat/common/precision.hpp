@@ -64,33 +64,33 @@ struct PrecisionTraits {
     }
 };
 
-template<typename Action>
-void invoke_with_precision(const PrecisionTraits& prec, Action&& action) {
-    if (prec.is_integral) {
-        if (prec.is_signed) {
-            switch (prec.number_of_bytes) {
-                case 1: { action(int8); return; }
-                case 2: { action(int16); return; }
-                case 4: { action(int32); return; }
-                case 8: { action(int64); return; }
-            }
-        } else {
-            switch (prec.number_of_bytes) {
-                case 1: { action(uint8); return; }
-                case 2: { action(uint16); return; }
-                case 4: { action(uint32); return; }
-                case 8: { action(uint64); return; }
-            }
-        }
-    } else {
-        switch (prec.number_of_bytes) {
-            case 4: { action(float32); return; }
-            case 8: { action(float64); return; }
-        }
-    }
+// template<typename Action>
+// void invoke_with_precision(const PrecisionTraits& prec, Action&& action) {
+//     if (prec.is_integral) {
+//         if (prec.is_signed) {
+//             switch (prec.number_of_bytes) {
+//                 case 1: { action(int8); return; }
+//                 case 2: { action(int16); return; }
+//                 case 4: { action(int32); return; }
+//                 case 8: { action(int64); return; }
+//             }
+//         } else {
+//             switch (prec.number_of_bytes) {
+//                 case 1: { action(uint8); return; }
+//                 case 2: { action(uint16); return; }
+//                 case 4: { action(uint32); return; }
+//                 case 8: { action(uint64); return; }
+//             }
+//         }
+//     } else {
+//         switch (prec.number_of_bytes) {
+//             case 4: { action(float32); return; }
+//             case 8: { action(float64); return; }
+//         }
+//     }
 
-    throw InvalidState("Could not parse given precision traits");
-}
+//     throw InvalidState("Could not parse given precision traits");
+// }
 
 }  // namespace GridFormat
 
