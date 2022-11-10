@@ -20,7 +20,7 @@
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/range_formatter.hpp>
-#include <gridformat/common/streamable_field.hpp>
+// #include <gridformat/common/streamable_field.hpp>
 #include <gridformat/common/logging.hpp>
 
 #include <gridformat/compression/compression.hpp>
@@ -218,7 +218,8 @@ class XMLWriterBase : public WriterBase {
             da.set_attribute("NumberOfComponents", "1");
         else
             da.set_attribute("NumberOfComponents", field.layout().number_of_entries(1));
-        da.set_content(StreamableField{field, _range_format_opts});
+        // TODO: How to structure the actual write??
+        // da.set_content(StreamableField{field, _range_format_opts});
     }
 
     XMLElement& _access_element(WriteContext& context, const std::vector<std::string>& sub_elem_names) const {

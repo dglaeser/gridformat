@@ -20,12 +20,6 @@ struct SupportsCompression : public std::true_type {};
 template<>
 struct SupportsCompression<Encoding::Ascii> : public std::false_type {};
 
-std::string name(const PrecisionTraits& prec) {
-    std::string prefix = prec.is_integral ? (prec.is_signed ? "Int" : "UInt") : "Float";
-    return prefix + std::to_string(prec.number_of_bytes*8);
-}
-
-
 }  // namespace GridFormat::VTK::Traits
 
 #endif  // GRIDFORMAT_VTK_TRAITS_HPP_

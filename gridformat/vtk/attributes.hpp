@@ -9,6 +9,7 @@
 #define GRIDFORMAT_VTK_ATTRIBUTES_HPP_
 
 #include <bit>
+#include <type_traits>
 
 #include <gridformat/common/precision.hpp>
 #include <gridformat/compression/compression.hpp>
@@ -16,9 +17,9 @@
 
 namespace GridFormat::VTK {
 
-std::string attribute_name(const PrecisionTraits& prec) {
-    std::string prefix = prec.is_integral ? (prec.is_signed ? "Int" : "UInt") : "Float";
-    return prefix + std::to_string(prec.number_of_bytes*8);
+std::string attribute_name(const DynamicPrecision& prec) {
+    std::string prefix = prec.is_integral() ? (prec.is_signed() ? "Int" : "UInt") : "Float";
+    return prefix + std::to_string(prec.number_of_bytes()*8);
 }
 
 std::string attribute_name(std::endian e) {
