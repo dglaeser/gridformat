@@ -25,6 +25,8 @@ class FieldVisitor {
     void take_field_values(const DynamicPrecision& prec,
                            const std::byte* data,
                            const std::size_t size) {
+        if (size%prec.number_of_bytes() != 0)
+            throw InvalidState("Number of bytes is not an integer multiple of given precision");
         _take_field_values(prec, data, size);
     }
 
@@ -53,10 +55,10 @@ class Field {
     void visit(FieldVisitor& v) const { _visit(v); }
 
  private:
+    virtual void _visit(FieldVisitor& v) const = 0;
+
     MDLayout _layout;
     DynamicPrecision _prec;
-
-    virtual void _visit(FieldVisitor& v) const = 0;
 };
 
 }  // namespace GridFormat

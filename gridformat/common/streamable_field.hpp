@@ -19,6 +19,19 @@
 
 namespace GridFormat {
 
+template<typename Stream = std::ostream>
+class NullEncoderStream {
+ public:
+    explicit NullEncoderStream(Stream& s)
+    : _stream(s)
+    {}
+
+    void operator<<()
+
+ private:
+    Stream& _stream;
+};
+
 struct NullEncoder {
     std::ostream& operator()(std::ostream& s) const {
         return s;
@@ -29,18 +42,16 @@ struct NullEncoder {
  * \ingroup Common
  * \brief TODO: Doc me
  */
-template<std::derived_from<Field> F,
-         typename Encoder = NullEncoder>
+template<std::derived_from<Field> F, typename Encoder = NullEncoder>
 class StreamableField {
  public:
-    StreamableField(const F& field,
-                    NullEncoder enc = {})
+    StreamableField(const F& field, NullEncoder enc = {})
     : _field(field)
     , _encoder(std::move(enc))
     {}
 
     friend std::ostream& operator<<(std::ostream& s, const StreamableField& field) {
-        FormattedAsciiOutputStream formatted_stream{s, field._opts};
+        encoded_stream(s) << formatted_stream{s, field._opts};
         field._field.stream(formatted_stream);
         return s;
     }

@@ -11,12 +11,9 @@
 #include <cstdint>
 #include <variant>
 #include <utility>
-#include <concepts>
 #include <type_traits>
 
-#include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/concepts.hpp>
-#include <gridformat/common/format.hpp>
 
 namespace GridFormat {
 
@@ -86,69 +83,6 @@ class DynamicPrecision {
         Precision<std::uint64_t>
     > _precision;
 };
-
-
-
-
-
-template<std::integral To, std::integral From>
-To cast_to(const Precision<To>&, const From& from) {
-    return static_cast<To>(from);
-}
-
-template<std::floating_point To, Concepts::Scalar From> requires(
-    std::integral<From> or std::floating_point<From>)
-To cast_to(const Precision<To>&, const From& from) {
-    return static_cast<To>(from);
-}
-
-
-struct PrecisionTraits {
-    bool is_integral;
-    bool is_signed;
-    std::size_t number_of_bytes;
-
-    template<typename T>
-    PrecisionTraits(const Precision<T>&)
-    : is_integral{std::is_integral_v<T>}
-    , is_signed{std::is_signed_v<T>}
-    , number_of_bytes{sizeof(T)}
-    {}
-
-    bool operator==(const PrecisionTraits& other) const {
-        return is_integral == other.is_integral
-            && is_signed == other.is_signed
-            && number_of_bytes == other.number_of_bytes;
-    }
-};
-
-// template<typename Action>
-// void invoke_with_precision(const PrecisionTraits& prec, Action&& action) {
-//     if (prec.is_integral) {
-//         if (prec.is_signed) {
-//             switch (prec.number_of_bytes) {
-//                 case 1: { action(int8); return; }
-//                 case 2: { action(int16); return; }
-//                 case 4: { action(int32); return; }
-//                 case 8: { action(int64); return; }
-//             }
-//         } else {
-//             switch (prec.number_of_bytes) {
-//                 case 1: { action(uint8); return; }
-//                 case 2: { action(uint16); return; }
-//                 case 4: { action(uint32); return; }
-//                 case 8: { action(uint64); return; }
-//             }
-//         }
-//     } else {
-//         switch (prec.number_of_bytes) {
-//             case 4: { action(float32); return; }
-//             case 8: { action(float64); return; }
-//         }
-//     }
-
-//     throw InvalidState("Could not parse given precision traits");
-// }
 
 }  // namespace GridFormat
 
