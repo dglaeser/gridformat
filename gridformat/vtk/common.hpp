@@ -34,7 +34,7 @@ inline constexpr std::uint8_t cell_type_number(CellType t) {
 }
 
 template<typename ctype, typename Grid> requires(GridDetail::exposes_point_range<Grid>)
-auto make_points_field(const Grid& grid) {
+auto make_coordinates_field(const Grid& grid) {
     return RangeField{
         points(grid)
             | std::views::all

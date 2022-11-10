@@ -13,6 +13,7 @@
 #include <utility>
 #include <iterator>
 #include <type_traits>
+#include <bit>
 
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/writer.hpp>
@@ -20,6 +21,7 @@
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/range_formatter.hpp>
 #include <gridformat/common/streamable_field.hpp>
+#include <gridformat/common/logging.hpp>
 
 #include <gridformat/compression/compression.hpp>
 
@@ -68,17 +70,23 @@ template<typename E, typename C>
 struct Format<XMLOptions<E, C, Automatic>>
 : public std::type_identity<
     std::conditional_t<
-        std::is_same_v<E, VTK::Encoding::Raw>,
+        std::is_same_v<E, VTK::Encoding::RawBinary>,
         DataFormat::Appended,
         DataFormat::Inlined
     >
->
-{};
+> {};
 
 template<typename C, typename H>
 struct CoordinatePrecision<PrecisionOptions<C, H>> : public std::type_identity<C> {};
 template<typename C, typename H>
 struct HeaderPrecision<PrecisionOptions<C, H>> : public std::type_identity<H> {};
+
+template<typename XMLOpts>
+inline constexpr bool is_valid_data_format
+    = !(std::is_same_v<typename Encoding<XMLOpts>::type, VTK::Encoding::Ascii> &&
+        std::is_same_v<typename Format<XMLOpts>::type, DataFormat::Appended>)
+    && !(std::is_same_v<typename Encoding<XMLOpts>::type, VTK::Encoding::RawBinary> &&
+        std::is_same_v<typename Format<XMLOpts>::type, DataFormat::Inlined>);
 
 template<typename Opts, typename Grid>
 using CoordinateType = std::conditional_t<
@@ -101,7 +109,18 @@ template<Concepts::Grid Grid,
          typename XMLOpts = XMLOptions<>,
          typename PrecOpts = PrecisionOptions<>>
 class XMLWriterBase : public WriterBase {
+    static_assert(
+        Detail::is_valid_data_format<XMLOpts>,
+        "Incompatible choice of encoding (ascii/base64/binary) and data format (inlined/appended)"
+    );
+
     static constexpr std::size_t vtk_space_dim = 3;
+    static constexpr bool use_ascii = std::is_same_v<
+        typename Detail::Encoding<XMLOpts>::type, Encoding::Ascii
+    >;
+    static constexpr bool use_compression = !std::is_same_v<
+        typename Detail::Compression<XMLOpts>::type, Compression::None
+    >;
 
  public:
     explicit XMLWriterBase(const Grid& grid,
@@ -111,8 +130,10 @@ class XMLWriterBase : public WriterBase {
     : _grid{grid}
     , _extension{std::move(extension)}
     , _xml_opts{std::move(xml_opts)}
-    , _prec_opts{std::move(prec_opts)}
-    {}
+    , _prec_opts{std::move(prec_opts)} {
+        if constexpr (use_compression && use_ascii)
+            Logging::as_warning("Cannot compress ascii-encoded output, ignoring chosen compression");
+    }
 
     using WriterBase::write;
     void write(const std::string& filename) const {
@@ -165,7 +186,11 @@ class XMLWriterBase : public WriterBase {
     WriteContext _get_write_context(std::string vtk_grid_type) const {
         XMLElement xml("VTKFile");
         xml.set_attribute("type", vtk_grid_type);
+        xml.set_attribute("header_type", attribute_name(Precision<HeaderType>{}));
+        xml.set_attribute("byte_order", attribute_name(std::endian::native));
         xml.add_child(vtk_grid_type);
+        if constexpr (use_compression)
+            xml.set_attribute("compressor", attribute_name(_xml_opts.compression));
         return {
             .vtk_grid_type = std::move(vtk_grid_type),
             .xml_representation = std::move(xml),
@@ -181,19 +206,19 @@ class XMLWriterBase : public WriterBase {
         _access_element(context, _get_element_names(xml_group)).set_attribute(attr_name, attr_value);
     }
 
-    template<typename F> requires(std::derived_from<std::decay_t<F>, Field>)
     void _set_data_array(WriteContext& context,
                          std::string_view xml_group,
                          std::string data_array_name,
-                         F&& field) const {
+                         const Field& field) const {
         XMLElement& da = _access_element(context, _get_element_names(xml_group)).add_child("DataArray");
         da.set_attribute("Name", std::move(data_array_name));
         da.set_attribute("type", attribute_name(field.precision()));
+        da.set_attribute("format", data_format_name(_xml_opts.encoding, _xml_opts.format));
         if (field.layout().dimension() == 1)
             da.set_attribute("NumberOfComponents", "1");
         else
-            da.set_attribute("NumberOfComponents", field.layout().sub_layout(1).number_of_entries());
-        da.set_content(make_streamable(std::forward<F>(field), _range_format_opts));
+            da.set_attribute("NumberOfComponents", field.layout().number_of_entries(1));
+        da.set_content(StreamableField{field, _range_format_opts});
     }
 
     XMLElement& _access_element(WriteContext& context, const std::vector<std::string>& sub_elem_names) const {

@@ -15,7 +15,7 @@ int main() {
 
     "lzma_compression_custom_block_size"_test = [] () {
         GridFormat::Serialization bytes(1000);
-        const auto compressor = GridFormat::Compression::lzma({.block_size = 100});
+        const auto compressor = GridFormat::Compression::lzma_with({.block_size = 100});
         const auto block_sizes = compressor.compress(bytes);
         expect(bytes.size() <= 1000);
         expect(block_sizes.num_blocks() == 10);
@@ -23,7 +23,7 @@ int main() {
 
     "lzma_compression_custom_block_size_with_residual"_test = [] () {
         GridFormat::Serialization bytes(1000);
-        const auto compressor = GridFormat::Compression::lzma({.block_size = 300});
+        const auto compressor = GridFormat::Compression::lzma_with({.block_size = 300});
         const auto block_sizes = compressor.compress(bytes);
         expect(bytes.size() <= 1000);
         expect(block_sizes.num_blocks() == 4);

@@ -19,19 +19,24 @@
 
 namespace GridFormat {
 
+struct NullEncoder {
+    std::ostream& operator()(std::ostream& s) const {
+        return s;
+    }
+};
+
 /*!
  * \ingroup Common
- * \brief Interface for fields.
+ * \brief TODO: Doc me
  */
-template<typename F>
-class StreamableField;
-
-template<std::derived_from<Field> F>
-class StreamableField<F> {
+template<std::derived_from<Field> F,
+         typename Encoder = NullEncoder>
+class StreamableField {
  public:
-    StreamableField(const F& field, RangeFormatOptions opts = {})
+    StreamableField(const F& field,
+                    NullEncoder enc = {})
     : _field(field)
-    , _opts(std::move(opts))
+    , _encoder(std::move(enc))
     {}
 
     friend std::ostream& operator<<(std::ostream& s, const StreamableField& field) {
@@ -42,41 +47,8 @@ class StreamableField<F> {
 
  private:
     const F& _field;
-    RangeFormatOptions _opts;
+    Encoder _encoder;
 };
-
-template<std::derived_from<Field> F>
-class StreamableField<std::unique_ptr<F>> {
- public:
-    StreamableField(F&& field, RangeFormatOptions opts = {})
-    : _field_ptr(std::make_unique<F>(std::move(field)))
-    , _opts(std::move(opts))
-    {}
-
-    friend std::ostream& operator<<(std::ostream& s, const StreamableField& field) {
-        FormattedAsciiOutputStream formatted_stream{s, field._opts};
-        field._field_ptr->stream(formatted_stream);
-        return s;
-    }
-
- private:
-    std::unique_ptr<F> _field_ptr;
-    RangeFormatOptions _opts;
-};
-
-template<typename F> requires(
-    std::derived_from<std::decay_t<F>, Field> and
-    std::is_lvalue_reference_v<F>)
-auto make_streamable(F&& field, RangeFormatOptions opts = {}) {
-    return StreamableField<std::decay_t<F>>{field, std::move(opts)};
-}
-
-template<typename F> requires(
-    std::derived_from<std::decay_t<F>, Field> and
-    !std::is_lvalue_reference_v<F>)
-auto make_streamable(F&& field, RangeFormatOptions opts = {}) {
-    return StreamableField<std::unique_ptr<std::decay_t<F>>>{std::move(field), std::move(opts)};
-}
 
 }  // namespace GridFormat
 

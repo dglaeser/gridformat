@@ -14,6 +14,7 @@
 #include <type_traits>
 #include <array>
 #include <span>
+#include <ios>
 
 #include <gridformat/common/type_traits.hpp>
 
@@ -41,6 +42,16 @@ inline constexpr bool is_std_span_v = is_std_span<T>::value;
 
 template<typename T1, typename T2>
 concept Interoperable = std::is_convertible_v<T1, T2> || std::is_convertible_v<T2, T1>;
+
+template<typename T, typename Data = std::byte, typename SizeType = std::streamsize>
+concept Stream = requires(T& t, const Data* data, const SizeType& size) {
+    { t.write(data, size) };
+};
+
+template<typename T, typename S = std::ostream>
+concept Encoder = Stream<S> and requires(const T& encoder, S& stream) {
+    { encoder(stream) } -> Stream;
+};
 
 template<typename T, typename Stream = std::ostream&>
 concept Streamable = requires(const T& t, Stream& s) {

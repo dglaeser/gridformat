@@ -44,6 +44,10 @@ class MDLayout {
         );
     }
 
+    std::size_t number_of_entries(std::size_t codim) const {
+        return sub_layout(codim).number_of_entries();
+    }
+
     MDLayout sub_layout(std::size_t codim) const {
         assert(codim < dimension());
         return MDLayout{std::vector<std::size_t>{

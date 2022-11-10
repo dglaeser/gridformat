@@ -12,12 +12,27 @@
 #include <cstddef>
 #include <ostream>
 
+#include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
 #include <gridformat/common/streams.hpp>
 
 namespace GridFormat {
+
+class FieldVisitor {
+ public:
+    void take_field_values(const DynamicPrecision& prec,
+                           const std::byte* data,
+                           const std::size_t size) {
+        _take_field_values(prec, data, size);
+    }
+
+ private:
+    virtual void _take_field_values(const DynamicPrecision&, const std::byte*, const std::size_t) {
+        throw NotImplemented("Visitor does not implement take_field_values()");
+    }
+};
 
 /*!
  * \ingroup Common
@@ -28,21 +43,20 @@ class Field {
     using Serialization = GridFormat::Serialization;
 
     virtual ~Field() = default;
-    Field(MDLayout layout, PrecisionTraits prec)
+    Field(MDLayout layout, DynamicPrecision prec)
     : _layout(std::move(layout))
-    , _prec(prec)
+    , _prec(std::move(prec))
     {}
 
     const MDLayout& layout() const { return _layout; }
-    PrecisionTraits precision() const { return _prec; }
-    Serialization serialized() const { return _serialized(); }
-    void stream(FormattedAsciiOutputStream& s) const { _stream(s); }
+    DynamicPrecision precision() const { return _prec; }
+    void visit(FieldVisitor& v) const { _visit(v); }
 
  private:
     MDLayout _layout;
-    PrecisionTraits _prec;
-    virtual Serialization _serialized() const = 0;
-    virtual void _stream(FormattedAsciiOutputStream&) const = 0;
+    DynamicPrecision _prec;
+
+    virtual void _visit(FieldVisitor& v) const = 0;
 };
 
 }  // namespace GridFormat

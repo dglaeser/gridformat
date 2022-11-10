@@ -43,7 +43,7 @@ class LZMA {
  public:
     using Options = LZMAOptions;
 
-    explicit LZMA(Options opts = {})
+    explicit constexpr LZMA(Options opts = {})
     : _opts(std::move(opts))
     {}
 
@@ -108,7 +108,8 @@ struct LZMAAdapter {
 }  // end namespace Detail
 #endif  // DOXYGEN_SKIP_DETAILS
 
-inline constexpr Detail::LZMAAdapter lzma;
+inline constexpr Detail::LZMAAdapter lzma_with;
+inline constexpr LZMA lzma = LZMA{};
 
 //! @} end Compression group
 

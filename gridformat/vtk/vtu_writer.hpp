@@ -56,10 +56,15 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& n) {
             this->_set_data_array(context, "Piece.CellData", n, this->_get_cell_field(n));
         });
-        this->_set_data_array(context, "Piece.Points", "Coordinates", VTK::make_points_field<CoordinateType>(this->_grid));
-        this->_set_data_array(context, "Piece.Cells", "connectivity", VTK::make_connectivity_field<HeaderType>(this->_grid));
-        this->_set_data_array(context, "Piece.Cells", "offsets", VTK::make_offsets_field<HeaderType>(this->_grid));
-        this->_set_data_array(context, "Piece.Cells", "types", VTK::make_types_field(this->_grid));
+
+        const auto coords_field = VTK::make_coordinates_field<CoordinateType>(this->_grid);
+        const auto connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_grid);
+        const auto offsets_field = VTK::make_offsets_field<HeaderType>(this->_grid);
+        const auto types_field = VTK::make_types_field(this->_grid);
+        this->_set_data_array(context, "Piece.Points", "Coordinates", coords_field);
+        this->_set_data_array(context, "Piece.Cells", "connectivity", connectivity_field);
+        this->_set_data_array(context, "Piece.Cells", "offsets", offsets_field);
+        this->_set_data_array(context, "Piece.Cells", "types", types_field);
         this->_write_xml(context, s);
     }
 };

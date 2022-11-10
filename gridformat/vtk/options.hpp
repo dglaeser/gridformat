@@ -24,11 +24,11 @@ namespace Encoding {
 
 struct Base64 {};
 struct Ascii {};
-struct Raw {};
+struct RawBinary {};
 
 inline constexpr Base64 base64;
 inline constexpr Ascii ascii;
-inline constexpr Raw raw;
+inline constexpr RawBinary raw_binary;
 
 }  // namespace Encoding
 
