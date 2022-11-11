@@ -1,0 +1,1 @@
+gridformat_add_test(test_base64 test_base64.cpp)

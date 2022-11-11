@@ -20,17 +20,17 @@ inline constexpr Appended appended;
 
 }  // namespace DataFormat
 
-namespace Encoding {
+// namespace Encoding {
 
-struct Base64 {};
-struct Ascii {};
-struct RawBinary {};
+// struct Base64 {};
+// struct Ascii {};
+// struct RawBinary {};
 
-inline constexpr Base64 base64;
-inline constexpr Ascii ascii;
-inline constexpr RawBinary raw_binary;
+// inline constexpr Base64 base64;
+// inline constexpr Ascii ascii;
+// inline constexpr RawBinary raw_binary;
 
-}  // namespace Encoding
+// }  // namespace Encoding
 
 }  // namespace GridFormat::VTK
 

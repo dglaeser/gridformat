@@ -59,6 +59,7 @@ class StreamableField {
         Visitor visitor{[&] <typename T> (const T* data, std::size_t size) {
             encoded.write(data, size);
         }};
+        field._field.visit(visitor);
         return s;
     }
 

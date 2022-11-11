@@ -17,6 +17,7 @@ endfunction()
 
 add_subdirectory(common)
 add_subdirectory(compression)
+add_subdirectory(encoding)
 add_subdirectory(grid)
 add_subdirectory(vtk)
 add_subdirectory(xml)

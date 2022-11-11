@@ -36,20 +36,79 @@
 
 namespace GridFormat::VTK {
 
-template<typename Encoding = Encoding::Ascii,
+template<typename T>
+struct IsAscii : public std::false_type {};
+template<>
+struct IsAscii<GridFormat::Encoding::Ascii> : public std::true_type {};
+
+template<typename Encoder>
+class DataArray {
+    template<typename Visit>
+    class Visitor : public FieldVisitor {
+     public:
+        explicit Visitor(Visit&& v)
+        : _visit(std::move(v))
+        {}
+
+     private:
+        void _take_field_values(const DynamicPrecision& prec,
+                                const std::byte* data,
+                                const std::size_t size) override {
+            prec.visit([&] <typename T> (const Precision<T>&) {
+                const T* _real_data = reinterpret_cast<const T*>(data);
+                const std::size_t _real_size = size/sizeof(T);
+                _visit(_real_data, _real_size);
+            });
+        }
+
+        Visit _visit;
+    };
+ public:
+    DataArray(const Field& field, Encoder encoder)
+    : _field(field)
+    , _encoder(std::move(encoder))
+    {}
+
+    friend std::ostream& operator<<(std::ostream& s, const DataArray& da) {
+        if constexpr (IsAscii<Encoder>::value) {
+            s << StreamableField{da._field, da._encoder};
+        } else {
+            auto encoded = da._encoder(s);
+            // compress
+            // TODO get actual header type
+            const std::uint64_t number_of_bytes =
+                da._field.layout().number_of_entries()
+                *da._field.precision().number_of_bytes(); // todo: provide info directly in field?
+            encoded.write(&number_of_bytes, 1); // todo substitute with compression header
+            s << StreamableField{da._field, da._encoder};
+            // auto encoded = da._encoder(s);
+            // Visitor visitor{[&] <typename T> (const T* data, std::size_t size) {
+            //     encoded.write(data, size);
+            // }};
+            // da._field.visit(visitor);
+        }
+        return s;
+    }
+
+ private:
+    const Field& _field;
+    Encoder _encoder;
+};
+
+template<typename Encoding = GridFormat::Encoding::Ascii,
          typename Compression = Compression::None,
          typename DataFormat = Automatic>
 struct XMLOptions {
-    Encoding encoding = Encoding{};
+    Encoding encoder = Encoding{};
     Compression compression = Compression{};
     DataFormat format = DataFormat{};
 };
 
-template<typename C = Automatic,
-         typename H = std::size_t>
+template<typename CoordPrecision = DefaultPrecision,
+         typename HeaderPrecision = Precision<std::size_t>>
 struct PrecisionOptions {
-    Precision<C> coordinate_precision = {};
-    Precision<H> header_precision = {};
+    CoordPrecision coordinate_precision = {};
+    HeaderPrecision header_precision = {};
 };
 
 #ifndef DOXYGEN
@@ -65,28 +124,33 @@ template<typename E, typename C, typename F>
 struct Encoding<XMLOptions<E, C, F>> : public std::type_identity<E> {};
 template<typename E, typename C, typename F>
 struct Compression<XMLOptions<E, C, F>> : public std::type_identity<C> {};
+
+
 template<typename E, typename C, typename F>
 struct Format<XMLOptions<E, C, F>> : public std::type_identity<F> {};
 template<typename E, typename C>
 struct Format<XMLOptions<E, C, Automatic>>
 : public std::type_identity<
     std::conditional_t<
-        std::is_same_v<E, VTK::Encoding::RawBinary>,
+        std::is_same_v<E, GridFormat::Encoding::RawBinary>,
         DataFormat::Appended,
         DataFormat::Inlined
     >
 > {};
 
 template<typename C, typename H>
-struct CoordinatePrecision<PrecisionOptions<C, H>> : public std::type_identity<C> {};
+struct CoordinatePrecision<PrecisionOptions<C, H>>
+: public std::type_identity<PrecisionType<C>> {};
+
 template<typename C, typename H>
-struct HeaderPrecision<PrecisionOptions<C, H>> : public std::type_identity<H> {};
+struct HeaderPrecision<PrecisionOptions<C, H>>
+: public std::type_identity<PrecisionType<H>> {};
 
 template<typename XMLOpts>
 inline constexpr bool is_valid_data_format
-    = !(std::is_same_v<typename Encoding<XMLOpts>::type, VTK::Encoding::Ascii> &&
+    = !(std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::Ascii> &&
         std::is_same_v<typename Format<XMLOpts>::type, DataFormat::Appended>)
-    && !(std::is_same_v<typename Encoding<XMLOpts>::type, VTK::Encoding::RawBinary> &&
+    && !(std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::RawBinary> &&
         std::is_same_v<typename Format<XMLOpts>::type, DataFormat::Inlined>);
 
 template<typename Opts, typename Grid>
@@ -97,7 +161,11 @@ using CoordinateType = std::conditional_t<
 >;
 
 template<typename Opts>
-using HeaderType = typename HeaderPrecision<Opts>::type;
+using HeaderType = std::conditional_t<
+    std::is_same_v<typename HeaderPrecision<Opts>::type, Automatic>,
+    std::uint64_t,
+    typename HeaderPrecision<Opts>::type
+>;
 
 }  // namespace Detail
 #endif  // DOXYGEN
@@ -113,6 +181,10 @@ class XMLWriterBase : public WriterBase {
     static_assert(
         Detail::is_valid_data_format<XMLOpts>,
         "Incompatible choice of encoding (ascii/base64/binary) and data format (inlined/appended)"
+    );
+    static_assert(
+        std::is_integral_v<Detail::HeaderType<PrecOpts>>,
+        "Only integral types can be used for headers"
     );
 
     static constexpr std::size_t vtk_space_dim = 3;
@@ -217,13 +289,13 @@ class XMLWriterBase : public WriterBase {
         XMLElement& da = _access_element(context, _get_element_names(xml_group)).add_child("DataArray");
         da.set_attribute("Name", std::move(data_array_name));
         da.set_attribute("type", attribute_name(field.precision()));
-        da.set_attribute("format", data_format_name(_xml_opts.encoding, _xml_opts.format));
+        da.set_attribute("format", data_format_name(_xml_opts.encoder, _xml_opts.format));
         if (field.layout().dimension() == 1)
             da.set_attribute("NumberOfComponents", "1");
         else
             da.set_attribute("NumberOfComponents", field.layout().number_of_entries(1));
-        if (write_inline)
-            da.set_content(StreamableField{field, Encoding::ascii});
+        if constexpr (write_inline)
+            da.set_content(DataArray{field, _xml_opts.encoder});
         // TODO: How to structure the actual write??
         // da.set_content(StreamableField{field, _range_format_opts});
     }

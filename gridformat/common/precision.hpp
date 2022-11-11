@@ -13,16 +13,44 @@
 #include <utility>
 #include <type_traits>
 
+#include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/concepts.hpp>
 
 namespace GridFormat {
 
+template<typename T>
+struct Precision;
+
+#ifndef DOXYGEN
+namespace Detail {
+
+template<typename T>
+struct PrecisionType;
+
+template<typename T>
+struct PrecisionType<Precision<T>> : public std::type_identity<T> {};
+
+}  // namespace Detail
+#endif // DOXYGEN
+
 template<Concepts::Scalar T>
-struct Precision {
+struct Precision<T> {
     static constexpr bool is_integral = std::is_integral_v<T>;
     static constexpr bool is_signed = std::is_signed_v<T>;
     static constexpr std::size_t number_of_bytes = sizeof(T);
 };
+
+template<>
+struct Precision<Automatic> {
+    static constexpr bool is_integral = false;
+    static constexpr bool is_signed = false;
+    static constexpr std::size_t number_of_bytes = 0;
+};
+
+using DefaultPrecision = Precision<Automatic>;
+
+template<typename T>
+using PrecisionType = Detail::PrecisionType<T>::type;
 
 inline constexpr Precision<float> float32;
 inline constexpr Precision<double> float64;
@@ -36,6 +64,8 @@ inline constexpr Precision<std::uint8_t> uint8;
 inline constexpr Precision<std::uint16_t> uint16;
 inline constexpr Precision<std::uint32_t> uint32;
 inline constexpr Precision<std::uint64_t> uint64;
+
+inline constexpr DefaultPrecision default_precision;
 
 class DynamicPrecision {
  public:

@@ -69,14 +69,14 @@ int main() {
     auto cell_tensors = make_tensor_data(cell_scalars);
 
     GridFormat::VTK::XMLOptions xml_opts{
-        .encoding = GridFormat::VTK::Encoding::ascii,
+        .encoder = GridFormat::Encoding::base64,
         .compression = GridFormat::Compression::none,
         .format = GridFormat::VTK::DataFormat::inlined
     };
 
     GridFormat::VTK::PrecisionOptions prec_opts{
-        .coordinate_precision = GridFormat::Precision<float>{},
-        .header_precision = GridFormat::Precision<int>{}
+        GridFormat::default_precision,
+        GridFormat::default_precision
     };
 
     GridFormat::VTUWriter writer{grid, xml_opts, prec_opts};
