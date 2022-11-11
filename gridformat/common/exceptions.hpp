@@ -55,6 +55,11 @@ class ValueError : public Exception {
     using Exception::Exception;
 };
 
+class TypeError : public Exception {
+ public:
+    using Exception::Exception;
+};
+
 //! \} group Common
 
 }  // end namespace GridFormat

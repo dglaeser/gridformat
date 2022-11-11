@@ -41,7 +41,14 @@ struct IsAscii : public std::false_type {};
 template<>
 struct IsAscii<GridFormat::Encoding::Ascii> : public std::true_type {};
 
-template<typename Encoder>
+template<typename T>
+struct DoesCompression : public std::true_type {};
+template<>
+struct DoesCompression<GridFormat::Compression::None> : public std::false_type {};
+
+template<typename Encoder,
+         typename Compressor,
+         typename HeaderType>
 class DataArray {
     template<typename Visit>
     class Visitor : public FieldVisitor {
@@ -63,36 +70,65 @@ class DataArray {
 
         Visit _visit;
     };
+
  public:
-    DataArray(const Field& field, Encoder encoder)
+    DataArray(const Field& field,
+              Encoder encoder,
+              Compressor compressor,
+              [[maybe_unused]] const Precision<HeaderType>& = {})
     : _field(field)
-    , _encoder(std::move(encoder))
+    , _encoder{std::move(encoder)}
+    , _compressor{std::move(compressor)}
     {}
 
     friend std::ostream& operator<<(std::ostream& s, const DataArray& da) {
-        if constexpr (IsAscii<Encoder>::value) {
-            s << StreamableField{da._field, da._encoder};
-        } else {
-            auto encoded = da._encoder(s);
-            // compress
-            // TODO get actual header type
-            const std::uint64_t number_of_bytes =
-                da._field.layout().number_of_entries()
-                *da._field.precision().number_of_bytes(); // todo: provide info directly in field?
-            encoded.write(&number_of_bytes, 1); // todo substitute with compression header
-            s << StreamableField{da._field, da._encoder};
-            // auto encoded = da._encoder(s);
-            // Visitor visitor{[&] <typename T> (const T* data, std::size_t size) {
-            //     encoded.write(data, size);
-            // }};
-            // da._field.visit(visitor);
-        }
+        da.stream(s);
         return s;
     }
 
+    void stream(std::ostream& s) const {
+        if constexpr (IsAscii<Encoder>::value)
+            _export_ascii(s);
+        else if constexpr (DoesCompression<Compressor>::value)
+            _export_compressed_binary(s);
+        else
+            _export_binary(s);
+    }
+
  private:
+    void _export_ascii(std::ostream& s) const {
+        s << StreamableField{_field, _encoder};
+    }
+
+    void _export_binary(std::ostream& s) const {
+        auto encoded = _encoder(s);
+        // todo: provide info directly in field?
+        const HeaderType number_of_bytes =
+            _field.layout().number_of_entries()
+            *_field.precision().number_of_bytes();
+        encoded.write(&number_of_bytes, 1);
+        s << StreamableField{_field, _encoder};
+    }
+
+    void _export_compressed_binary(std::ostream& s) const {
+        [[maybe_unused]] auto encoded = _encoder(s);
+        Visitor visitor{[&] <typename T> (const T* data, std::size_t size) {
+            const auto [compressed, block_sizes] = _compressor.template compress<HeaderType>(data, size);
+            std::vector<HeaderType> header;
+            header.reserve(block_sizes.compressed_block_sizes().size() + 3);
+            header.push_back(block_sizes.num_blocks());
+            header.push_back(block_sizes.block_size());
+            header.push_back(block_sizes.residual_block_size());
+            std::ranges::copy(block_sizes.compressed_block_sizes(), std::back_inserter(header));
+            encoded.write(header.data(), header.size());
+            encoded.write(compressed.data(), block_sizes.compressed_size());
+        }};
+        _field.visit(visitor);
+    }
+
     const Field& _field;
     Encoder _encoder;
+    Compressor _compressor;
 };
 
 template<typename Encoding = GridFormat::Encoding::Ascii,
@@ -295,7 +331,7 @@ class XMLWriterBase : public WriterBase {
         else
             da.set_attribute("NumberOfComponents", field.layout().number_of_entries(1));
         if constexpr (write_inline)
-            da.set_content(DataArray{field, _xml_opts.encoder});
+            da.set_content(DataArray{field, _xml_opts.encoder, _xml_opts.compression, Precision<HeaderType>{}});
         // TODO: How to structure the actual write??
         // da.set_content(StreamableField{field, _range_format_opts});
     }

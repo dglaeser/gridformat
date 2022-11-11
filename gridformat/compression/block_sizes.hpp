@@ -13,6 +13,7 @@
 #include <cassert>
 #include <utility>
 #include <algorithm>
+#include <numeric>
 
 namespace GridFormat::Compression {
 
@@ -53,10 +54,13 @@ class CompressedBlockSizes {
     : _raw_sizes(std::move(raw_sizes))
     , _compressed_block_sizes(std::move(compressed_block_sizes)) {
         assert(_compressed_block_sizes.size() == _raw_sizes.num_blocks());
-        assert(
-            _raw_sizes.residual_block_size() == 0
-            || _compressed_block_sizes.back() <= _raw_sizes.residual_block_size()
-        );
+        // std::cout << "RES = " << _raw_sizes.residual_block_size() << "; "
+        //          << "BACK: " << _compressed_block_sizes.back() << "; "
+        //          << "RA: " << _raw_sizes.block_size() << std::endl;
+        // assert(
+        //     _raw_sizes.residual_block_size() == 0
+        //     || _compressed_block_sizes.back() <= _raw_sizes.residual_block_size()
+        // );
         assert(std::ranges::all_of(_compressed_block_sizes, [&] (HeaderType size) {
             return size <= _raw_sizes.block_size();
         }));
@@ -66,6 +70,13 @@ class CompressedBlockSizes {
     HeaderType block_size() const { return _raw_sizes.block_size(); }
     HeaderType residual_block_size() const { return _raw_sizes.residual_block_size(); }
     const auto& compressed_block_sizes() const { return _compressed_block_sizes; }
+    HeaderType compressed_size() const {
+        return std::accumulate(
+            _compressed_block_sizes.begin(),
+            _compressed_block_sizes.end(),
+            std::size_t{0}
+        );
+    }
 
  private:
     BlockSizes<HeaderType> _raw_sizes;
