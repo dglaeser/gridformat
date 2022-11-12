@@ -50,27 +50,6 @@ template<typename Encoder,
          typename Compressor,
          typename HeaderType>
 class DataArray {
-    template<typename Visit>
-    class Visitor : public FieldVisitor {
-     public:
-        explicit Visitor(Visit&& v)
-        : _visit(std::move(v))
-        {}
-
-     private:
-        void _take_field_values(const DynamicPrecision& prec,
-                                const std::byte* data,
-                                const std::size_t size) override {
-            prec.visit([&] <typename T> (const Precision<T>&) {
-                const T* _real_data = reinterpret_cast<const T*>(data);
-                const std::size_t _real_size = size/sizeof(T);
-                _visit(_real_data, _real_size);
-            });
-        }
-
-        Visit _visit;
-    };
-
  public:
     DataArray(const Field& field,
               Encoder encoder,
@@ -111,19 +90,21 @@ class DataArray {
     }
 
     void _export_compressed_binary(std::ostream& s) const {
-        [[maybe_unused]] auto encoded = _encoder(s);
-        Visitor visitor{[&] <typename T> (const T* data, std::size_t size) {
-            const auto [compressed, block_sizes] = _compressor.template compress<HeaderType>(data, size);
+        _field.precision().visit([&] <typename T> (const Precision<T>&) {
+            auto encoded = _encoder(s);
+            auto serialization = _field.serialized();
+            const auto block_sizes = _compressor.template compress<HeaderType>(serialization);
+
             std::vector<HeaderType> header;
             header.reserve(block_sizes.compressed_block_sizes().size() + 3);
             header.push_back(block_sizes.num_blocks());
             header.push_back(block_sizes.block_size());
             header.push_back(block_sizes.residual_block_size());
+
             std::ranges::copy(block_sizes.compressed_block_sizes(), std::back_inserter(header));
             encoded.write(header.data(), header.size());
-            encoded.write(compressed.data(), block_sizes.compressed_size());
-        }};
-        _field.visit(visitor);
+            encoded.write(serialization.data(), serialization.size());
+        });
     }
 
     const Field& _field;

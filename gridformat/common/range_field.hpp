@@ -34,7 +34,8 @@ class RangeField : public Field {
     static constexpr bool use_range_value_type =
         std::is_same_v<std::ranges::range_value_t<std::decay_t<R>>, ValueType>;
 
-    static constexpr bool skip_cast = is_contiguous_scalar_range && use_range_value_type;
+    static constexpr bool skip_cast =
+        is_contiguous_scalar_range && use_range_value_type;
 
  public:
     template<typename _R> requires(std::convertible_to<_R, R>)
@@ -44,29 +45,26 @@ class RangeField : public Field {
     {}
 
  private:
-    void _visit(FieldVisitor& visitor) const override {
-        if constexpr (skip_cast)
-            _visit_without_cast(visitor);
-        else
-            _visit_with_cast(visitor);
+    Serialization _serialized() const override {
+        Serialization serialization(this->size_in_bytes());
+        _fill(serialization);
+        return serialization;
     }
 
-    void _visit_without_cast(FieldVisitor& visitor) const requires(skip_cast) {
+    void _fill(Serialization& serialization) const requires(skip_cast) {
         const auto range_size = std::ranges::size(_range);
         const auto* data = reinterpret_cast<const std::byte*>(std::ranges::data(_range));
-        visitor.take_field_values(this->precision(), data, range_size*sizeof(ValueType));
+        assert(range_size == this->layout().number_of_entries());
+        std::copy_n(data, this->size_in_bytes(), serialization.data());
     }
 
-    void _visit_with_cast(FieldVisitor& visitor) const requires(!skip_cast) {
-        std::vector<ValueType> data(this->layout().number_of_entries());
+    void _fill(Serialization& serialization) const requires(!skip_cast) {
         std::size_t offset = 0;
-        _fill_buffer(_range, data, offset);
-        const std::byte* byte_ptr = reinterpret_cast<const std::byte*>(data.data());
-        visitor.take_field_values(this->precision(),byte_ptr, data.size()*sizeof(ValueType));
+        _fill_buffer(_range, serialization.data(), offset);
     }
 
     void _fill_buffer(const std::ranges::range auto& r,
-                      std::vector<ValueType>& data,
+                      std::byte* data,
                       std::size_t& offset) const {
         std::ranges::for_each(r, [&] (const auto& entry) {
             _fill_buffer(entry, data, offset);
@@ -74,9 +72,12 @@ class RangeField : public Field {
     }
 
     void _fill_buffer(const Concepts::Scalar auto& value,
-                      std::vector<ValueType>& data,
+                      std::byte* data,
                       std::size_t& offset) const {
-        data[offset++] = static_cast<ValueType>(value);
+        const auto cast_value = static_cast<ValueType>(value);
+        const auto* bytes = reinterpret_cast<const std::byte*>(&cast_value);
+        std::copy_n(bytes, sizeof(ValueType), data + offset);
+        offset += sizeof(ValueType);
     }
 
     R _range;

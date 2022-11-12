@@ -11,10 +11,6 @@
 #include <vector>
 #include <cstddef>
 #include <concepts>
-#include <type_traits>
-
-#include <gridformat/common/concepts.hpp>
-#include <gridformat/common/traits.hpp>
 
 namespace GridFormat {
 
@@ -37,12 +33,6 @@ class Serialization {
     std::vector<std::byte> _data;
 };
 
-namespace Traits {
-
-template<>
-struct Byte<Serialization> : public std::type_identity<typename Serialization::Byte> {};
-
-}  // namespace Traits
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_COMMON_SERIALIZATION_HPP_

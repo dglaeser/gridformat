@@ -26,27 +26,6 @@ namespace GridFormat {
  */
 template<std::derived_from<Field> F, Concepts::Encoder Encoder>
 class StreamableField {
-    template<typename Visit>
-    class Visitor : public FieldVisitor {
-     public:
-        explicit Visitor(Visit&& v)
-        : _visit(std::move(v))
-        {}
-
-     private:
-        void _take_field_values(const DynamicPrecision& prec,
-                                const std::byte* data,
-                                const std::size_t size) override {
-            prec.visit([&] <typename T> (const Precision<T>&) {
-                const T* _real_data = reinterpret_cast<const T*>(data);
-                const std::size_t _real_size = size/sizeof(T);
-                _visit(_real_data, _real_size);
-            });
-        }
-
-        Visit _visit;
-    };
-
  public:
     template<std::convertible_to<const F&> _F> requires(std::is_lvalue_reference_v<_F>)
     StreamableField(_F&& field, Encoder enc)
@@ -56,10 +35,12 @@ class StreamableField {
 
     friend std::ostream& operator<<(std::ostream& s, const StreamableField& field) {
         auto encoded = field._encoder(s);
-        Visitor visitor{[&] <typename T> (const T* data, std::size_t size) {
-            encoded.write(data, size);
-        }};
-        field._field.visit(visitor);
+        auto serialization = field._field.serialized();
+        field._field.precision().visit([&] <typename T> (const Precision<T>&) {
+            assert(serialization.size()%sizeof(T) == 0);
+            const auto* values = reinterpret_cast<const T*>(serialization.data());
+            encoded.write(values, serialization.size()/sizeof(T));
+        });
         return s;
     }
 
