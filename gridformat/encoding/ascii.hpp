@@ -42,15 +42,15 @@ class AsciiStream {
     , _opts(std::move(opts))
     {}
 
-    template<typename T>
-    void write(const T* data, std::streamsize size) const {
+    template<typename T, std::size_t size>
+    void write(std::span<T, size> data) const {
         std::size_t count = 0;
-        while (count + _opts.num_entries_per_line < static_cast<unsigned>(size)) {
-            _write(data + count, _opts.num_entries_per_line);
+        while (count + _opts.num_entries_per_line < size) {
+            _write(data.data() + count, _opts.num_entries_per_line);
             count += _opts.num_entries_per_line;
             _stream << "\n";
         }
-        _write(data + count, size - count);
+        _write(data.data() + count, size - count);
     }
 
  private:

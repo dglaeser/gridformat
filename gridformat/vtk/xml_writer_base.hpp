@@ -82,9 +82,7 @@ class DataArray {
     void _export_binary(std::ostream& s) const {
         auto encoded = _encoder(s);
         // todo: provide info directly in field?
-        const HeaderType number_of_bytes =
-            _field.layout().number_of_entries()
-            *_field.precision().number_of_bytes();
+        const HeaderType number_of_bytes = _field.size_in_bytes();
         encoded.write(&number_of_bytes, 1);
         s << StreamableField{_field, _encoder};
     }
@@ -92,18 +90,17 @@ class DataArray {
     void _export_compressed_binary(std::ostream& s) const {
         _field.precision().visit([&] <typename T> (const Precision<T>&) {
             auto encoded = _encoder(s);
-            auto serialization = _field.serialized();
-            const auto block_sizes = _compressor.template compress<HeaderType>(serialization);
+            Serialization serialization = _field.serialized();
+            const auto blocks = _compressor.template compress<HeaderType>(serialization);
 
             std::vector<HeaderType> header;
-            header.reserve(block_sizes.compressed_block_sizes().size() + 3);
-            header.push_back(block_sizes.num_blocks());
-            header.push_back(block_sizes.block_size());
-            header.push_back(block_sizes.residual_block_size());
-
-            std::ranges::copy(block_sizes.compressed_block_sizes(), std::back_inserter(header));
-            encoded.write(header.data(), header.size());
-            encoded.write(serialization.data(), serialization.size());
+            header.reserve(blocks.compressed_block_sizes.size() + 3);
+            header.push_back(blocks.number_of_blocks);
+            header.push_back(blocks.block_size);
+            header.push_back(blocks.residual_block_size);
+            std::ranges::copy(blocks.compressed_block_sizes, std::back_inserter(header));
+            encoded.write(std::span{header});
+            encoded.write(serialization.as_span());
         });
     }
 
@@ -307,10 +304,10 @@ class XMLWriterBase : public WriterBase {
         da.set_attribute("Name", std::move(data_array_name));
         da.set_attribute("type", attribute_name(field.precision()));
         da.set_attribute("format", data_format_name(_xml_opts.encoder, _xml_opts.format));
-        if (field.layout().dimension() == 1)
+        if (field.dimension() == 1)
             da.set_attribute("NumberOfComponents", "1");
         else
-            da.set_attribute("NumberOfComponents", field.layout().number_of_entries(1));
+            da.set_attribute("NumberOfComponents", field.number_of_entries(1));
         if constexpr (write_inline)
             da.set_content(DataArray{field, _xml_opts.encoder, _xml_opts.compression, Precision<HeaderType>{}});
         // TODO: How to structure the actual write??

@@ -11,6 +11,7 @@
 #include <vector>
 #include <cstddef>
 #include <concepts>
+#include <span>
 
 namespace GridFormat {
 
@@ -26,8 +27,11 @@ class Serialization {
     std::size_t size() const { return _data.size(); }
     void resize(std::size_t size) { _data.resize(size); }
 
-    std::byte* data() { return _data.data(); }
-    const std::byte* data() const { return _data.data(); }
+    std::span<std::byte> as_span() { return {_data}; }
+    std::span<const std::byte> as_span() const { return {_data}; }
+
+    operator std::span<const std::byte>() const { return {_data}; }
+    operator std::span<std::byte>() { return {_data}; }
 
  private:
     std::vector<std::byte> _data;

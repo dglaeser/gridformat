@@ -52,19 +52,19 @@ class Base64Stream {
     : _stream(s)
     {}
 
-    template<typename T>
-    void write(const T* data, std::streamsize size) {
-        const Byte* binary_data = reinterpret_cast<const Byte*>(data);
-        const std::size_t binary_size = size*sizeof(T);
-        for (std::size_t i = 0; i < binary_size; ++i)
-            _insert(binary_data[i]);
+    template<typename T, std::size_t size>
+    void write(std::span<T, size> data) {
+        std::ranges::for_each(std::as_bytes(data), [&] (const std::byte& byte) {
+            _insert(static_cast<Byte>(byte));
+        });
         if (_num_buffered_bytes() > 0)
             _flush();
     }
 
  private:
     std::size_t _num_buffered_bytes() const {
-        return std::distance(_buffer.begin(), static_cast<typename Buffer::const_iterator>(_it));
+        const auto const_it = static_cast<typename Buffer::const_iterator>(_it);
+        return std::distance(_buffer.begin(), const_it);
     }
 
     void _insert(const Byte byte) {

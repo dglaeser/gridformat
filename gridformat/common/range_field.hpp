@@ -52,31 +52,30 @@ class RangeField : public Field {
     }
 
     void _fill(Serialization& serialization) const requires(skip_cast) {
-        const auto range_size = std::ranges::size(_range);
-        const auto* data = reinterpret_cast<const std::byte*>(std::ranges::data(_range));
-        assert(range_size == this->layout().number_of_entries());
-        std::copy_n(data, this->size_in_bytes(), serialization.data());
+        const auto data = std::as_bytes(std::span{_range});
+        assert(data.size() == this->size_in_bytes());
+        std::ranges::copy(data, serialization.as_span().begin());
     }
 
     void _fill(Serialization& serialization) const requires(!skip_cast) {
         std::size_t offset = 0;
-        _fill_buffer(_range, serialization.data(), offset);
+        _fill_buffer(_range, serialization, offset);
     }
 
     void _fill_buffer(const std::ranges::range auto& r,
-                      std::byte* data,
+                      Serialization& serialization,
                       std::size_t& offset) const {
         std::ranges::for_each(r, [&] (const auto& entry) {
-            _fill_buffer(entry, data, offset);
+            _fill_buffer(entry, serialization, offset);
         });
     }
 
     void _fill_buffer(const Concepts::Scalar auto& value,
-                      std::byte* data,
+                      Serialization& serialization,
                       std::size_t& offset) const {
         const auto cast_value = static_cast<ValueType>(value);
         const auto* bytes = reinterpret_cast<const std::byte*>(&cast_value);
-        std::copy_n(bytes, sizeof(ValueType), data + offset);
+        std::copy_n(bytes, sizeof(ValueType), std::span<std::byte>(serialization).data() + offset);
         offset += sizeof(ValueType);
     }
 

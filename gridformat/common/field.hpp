@@ -9,6 +9,7 @@
 #define GRIDFORMAT_COMMON_FIELD_HPP_
 
 #include <utility>
+#include <cassert>
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
@@ -22,25 +23,18 @@ namespace GridFormat {
  */
 class Field {
  public:
-    using Serialization = GridFormat::Serialization;
-
     virtual ~Field() = default;
     Field(MDLayout layout, DynamicPrecision prec)
     : _layout(std::move(layout))
     , _prec(std::move(prec))
     {}
 
-    const MDLayout& layout() const {
-        return _layout;
-    } // TODO: expose layout stuff directly
-
-    DynamicPrecision precision() const {
-        return _prec;
-    }
-
-    std::size_t size_in_bytes() const {
-        return layout().number_of_entries()*precision().number_of_bytes();
-    }
+    std::size_t dimension() const { return _layout.dimension(); }
+    std::size_t number_of_entries() const { return _layout.number_of_entries(); }
+    std::size_t number_of_entries(std::size_t codim) const { return _layout.number_of_entries(codim); }
+    std::size_t extent(std::size_t codim) const { return _layout.extent(codim); }
+    std::size_t size_in_bytes() const { return number_of_entries()*precision().number_of_bytes(); }
+    const DynamicPrecision& precision() const { return _prec; }
 
     Serialization serialized() const {
         auto serialization = _serialized();

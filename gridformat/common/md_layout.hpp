@@ -56,6 +56,10 @@ class MDLayout {
         }};
     }
 
+    bool operator==(const MDLayout& other) const {
+        return std::ranges::equal(_extents, other._extents);
+    }
+
  private:
     std::vector<std::size_t> _extents;
 };

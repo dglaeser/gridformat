@@ -43,9 +43,9 @@ inline constexpr bool is_std_span_v = is_std_span<T>::value;
 template<typename T1, typename T2>
 concept Interoperable = std::is_convertible_v<T1, T2> || std::is_convertible_v<T2, T1>;
 
-template<typename T, typename Data = char, typename SizeType = std::streamsize>
-concept Stream = requires(T& t, const Data* data, const SizeType& size) {
-    { t.write(data, size) };
+template<typename T, typename Data = char>
+concept Stream = requires(T& t, const std::span<Data> data) {
+    { t.write(data) };
 };
 
 template<typename T, typename Data = char>

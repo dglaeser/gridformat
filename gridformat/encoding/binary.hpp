@@ -22,11 +22,10 @@ class RawBinaryStream {
     : _stream(s)
     {}
 
-    template<typename T>
-    void write(const T* data, std::streamsize size) const {
-        const std::byte* binary_data = reinterpret_cast<const std::byte*>(data);
-        const std::size_t binary_size = size*sizeof(T);
-        _stream.write(binary_data, binary_size);
+    template<typename T, std::size_t size>
+    void write(std::span<T, size> data) const {
+        const auto binary_data = std::as_bytes(data);
+        _stream.write(binary_data.data(), binary_data.size());
     }
 
  private:

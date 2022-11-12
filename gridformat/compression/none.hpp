@@ -10,13 +10,9 @@
 #define GRIDFORMAT_COMPRESSION_NONE_HPP_
 
 #include <concepts>
-#include <cstdint>
-#include <vector>
 
-#include <gridformat/common/concepts.hpp>
-#include <gridformat/common/traits.hpp>
-
-#include <gridformat/compression/block_sizes.hpp>
+#include <gridformat/common/serialization.hpp>
+#include <gridformat/compression/common.hpp>
 
 namespace GridFormat::Compression {
 
@@ -24,13 +20,11 @@ namespace GridFormat::Compression {
 //! @{
 
 struct None {
-    template<std::integral HeaderType = std::size_t, Concepts::Serialization Bytes>
-    CompressedBlockSizes<HeaderType> compress(Bytes& bytes) const {
-        using T = ByteType<Bytes>;
-        const HeaderType size_in_bytes = sizeof(T)*bytes.size();
+    template<std::integral HeaderType = std::size_t>
+    CompressedBlocks<HeaderType> compress(Serialization& in) const {
         return {
-            BlockSizes<HeaderType>{size_in_bytes, size_in_bytes},
-            std::vector<HeaderType>{size_in_bytes}
+            Blocks<HeaderType>{in.size(), in.size()},
+            std::vector<HeaderType>{}
         };
     }
 };
