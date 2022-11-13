@@ -16,7 +16,9 @@
 #include <span>
 #include <ios>
 
+#include <gridformat/common/traits.hpp>
 #include <gridformat/common/type_traits.hpp>
+#include <gridformat/common/serialization.hpp>
 
 namespace GridFormat::Concepts {
 
@@ -37,6 +39,15 @@ struct is_std_span<std::span<T, N>> : public std::true_type {};
 template<typename T>
 inline constexpr bool is_std_span_v = is_std_span<T>::value;
 
+template<typename T>
+concept CompressionResult = requires(const T& t) {
+    { t.block_size } -> std::convertible_to<std::size_t>;
+    { t.residual_block_size } -> std::convertible_to<std::size_t>;
+    { t.number_of_blocks } -> std::convertible_to<std::size_t>;
+    { t.compressed_block_sizes } -> std::ranges::range;
+    { *std::ranges::begin(t.compressed_block_sizes) } -> std::convertible_to<std::size_t>;
+};
+
 }  // namespace Detail
 #endif  // DOXYGEN
 
@@ -51,22 +62,19 @@ concept Streamable = requires(const T& t, Stream& s) {
 template<typename T, typename Data>
 concept FormattedStream = Streamable<Data, T>;
 
-template<typename T, typename Data = char>
+template<typename T, typename Data>
 concept Stream = requires(T& t, std::span<Data>& data) {
     { t.write(data) };
 };
 
-template<typename T, typename S = std::ostream>
+template<typename T, typename S>
 concept Encoder = requires(const T& encoder, S& stream) {
-    { encoder(stream) } -> Stream;
+    { encoder(stream) };
 };
 
 template<typename T>
-concept Serialization = requires(const T& t_const, T& t) {
-    { t_const.size() } -> std::integral;
-    { t_const.data() } -> std::convertible_to<const std::byte*>;
-    { t.data() } -> std::convertible_to<std::byte*>;
-    { t.resize(std::size_t{}) };
+concept Compressor = requires(const T& t, Serialization& s) {
+    { t.compress(s) } -> Detail::CompressionResult;
 };
 
 template<typename T>
@@ -84,7 +92,6 @@ concept RangeOf = std::ranges::range<T> and std::convertible_to<std::ranges::ran
 
 template<typename T>
 concept FieldValuesRange = std::ranges::forward_range<T>;
-
 
 template<typename T, std::size_t dim>
 concept MDRange = std::ranges::range<T> and mdrange_dimension<T> == dim;
@@ -106,15 +113,6 @@ concept Vectors = std::ranges::forward_range<T> and Vector<std::ranges::range_va
 
 template<typename T>
 concept Tensors = std::ranges::forward_range<T> and Tensor<std::ranges::range_value_t<T>>;
-
-template<typename T>
-concept ScalarsView = Scalars<T> and std::ranges::view<T>;
-
-template<typename T>
-concept VectorsView = Vectors<T> and std::ranges::view<T>;
-
-template<typename T>
-concept TensorsView = Tensors<T> and std::ranges::view<T>;
 
 }  // namespace GridFormat
 

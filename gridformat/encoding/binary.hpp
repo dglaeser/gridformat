@@ -14,28 +14,25 @@
 
 namespace GridFormat {
 
-template<Concepts::Stream Stream = std::ostream>
-class RawBinaryStream {
+template<typename Stream = std::ostream>
+class RawBinaryStream : public StreamWrapperBase<Stream> {
     using Byte = std::byte;
  public:
-    explicit RawBinaryStream(Stream& s)
-    : _stream(s)
+    explicit constexpr RawBinaryStream(Stream& s)
+    : StreamWrapperBase<Stream>(s)
     {}
 
     template<typename T, std::size_t size>
     void write(std::span<T, size> data) const {
-        _stream.write(std::as_bytes(data));
+        this->_write_raw(data);
     }
-
- private:
-    Stream& _stream;
 };
 
 namespace Encoding {
 
 struct RawBinary {
-    template<Concepts::Stream S>
-    Concepts::Stream auto operator()(S& s) const {
+    template<typename S>
+    constexpr auto operator()(S& s) const noexcept {
         return RawBinaryStream{s};
     }
 };

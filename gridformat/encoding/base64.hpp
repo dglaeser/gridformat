@@ -100,7 +100,7 @@ namespace Encoding {
 
 struct Base64 {
     template<typename Stream>
-    Concepts::Stream auto operator()(Stream& s) const {
+    constexpr auto operator()(Stream& s) const noexcept {
         return Base64Stream{s};
     }
 };

@@ -12,8 +12,6 @@
 #include <ranges>
 #include <type_traits>
 
-#include <gridformat/common/traits.hpp>
-
 namespace GridFormat {
 
 #ifndef DOXYGEN
@@ -55,6 +53,10 @@ std::true_type isIncomplete(...);
 #endif  // DOXYGEN
 
 struct Automatic {};
+inline constexpr Automatic automatic;
+
+struct None {};
+inline constexpr None none;
 
 template<std::ranges::range R>
 using MDRangeScalar = typename Detail::MDRangeScalar<R>::type;
@@ -70,9 +72,6 @@ inline constexpr bool is_incomplete = decltype(Detail::isIncomplete(std::declval
 
 template<typename T>
 inline constexpr bool is_complete = !is_incomplete<T>;
-
-template<typename T>
-using ByteType = typename Traits::Byte<T>::type;
 
 }  // end namespace GridFormat
 

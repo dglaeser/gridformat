@@ -44,7 +44,7 @@ struct IsAscii<GridFormat::Encoding::Ascii> : public std::true_type {};
 template<typename T>
 struct DoesCompression : public std::true_type {};
 template<>
-struct DoesCompression<GridFormat::Compression::None> : public std::false_type {};
+struct DoesCompression<GridFormat::None> : public std::false_type {};
 
 template<typename Encoder,
          typename Compressor,
@@ -86,7 +86,7 @@ class DataArray {
         s << StreamableField{_field, _encoder};
     }
 
-    void _export_compressed_binary(std::ostream& s) const {
+    void _export_compressed_binary(std::ostream& s) const requires(Concepts::Compressor<Compressor>) {
         _field.precision().visit([&] <typename T> (const Precision<T>&) {
             auto encoded = _encoder(s);
             Serialization serialization = _field.serialized();
@@ -109,7 +109,7 @@ class DataArray {
 };
 
 template<typename Encoding = GridFormat::Encoding::Ascii,
-         typename Compression = Compression::None,
+         typename Compression = None,
          typename DataFormat = Automatic>
 struct XMLOptions {
     Encoding encoder = Encoding{};
@@ -205,7 +205,7 @@ class XMLWriterBase : public WriterBase {
         typename Detail::Encoding<XMLOpts>::type, Encoding::Ascii
     >;
     static constexpr bool use_compression = !std::is_same_v<
-        typename Detail::Compression<XMLOpts>::type, Compression::None
+        typename Detail::Compression<XMLOpts>::type, None
     >;
     static constexpr bool write_inline = std::is_same_v<
         typename Detail::Format<XMLOpts>::type, DataFormat::Inlined

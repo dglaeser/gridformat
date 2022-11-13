@@ -70,7 +70,7 @@ int main() {
 
     GridFormat::VTK::XMLOptions xml_opts{
         .encoder = GridFormat::Encoding::ascii,
-        .compression = GridFormat::Compression::none,
+        .compression = GridFormat::none,
         .format = GridFormat::VTK::DataFormat::inlined
     };
 

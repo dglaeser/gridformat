@@ -10,7 +10,6 @@
 
 #include <algorithm>
 
-#include <gridformat/common/concepts.hpp>
 #include <gridformat/common/stream.hpp>
 
 namespace GridFormat {
@@ -70,12 +69,12 @@ namespace Encoding {
 
 struct Ascii {
     template<typename S>
-    Concepts::Stream auto operator()(S& s) const {
+    constexpr auto operator()(S& s) const noexcept {
         return AsciiStream{s};
     }
 
     template<typename S>
-    Concepts::Stream auto operator()(S& s, AsciiFormatOptions opts) const {
+    constexpr auto operator()(S& s, AsciiFormatOptions opts) const noexcept {
         return AsciiStream{s, std::move(opts)};
     }
 };

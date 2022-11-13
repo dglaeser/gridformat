@@ -11,13 +11,8 @@
 #include <utility>
 #include <type_traits>
 
-#include <gridformat/common/concepts.hpp>
-
 namespace GridFormat {
 namespace Traits {
-
-template<typename T>
-struct Byte;
 
 template<typename T>
 struct StaticSize;

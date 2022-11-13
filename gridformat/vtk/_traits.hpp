@@ -17,6 +17,7 @@ namespace GridFormat::VTK::Traits {
 
 template<typename T>
 struct SupportsCompression : public std::true_type {};
+
 template<>
 struct SupportsCompression<Encoding::Ascii> : public std::false_type {};
 
