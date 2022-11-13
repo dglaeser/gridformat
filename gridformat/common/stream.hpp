@@ -13,9 +13,6 @@
 #include <ostream>
 #include <concepts>
 
-#include <iomanip>
-
-
 #include <gridformat/common/concepts.hpp>
 
 namespace GridFormat {
@@ -31,12 +28,18 @@ class OutputStream {
     {}
 
     template<Concepts::Streamable<std::ostream> T>
+    requires(not Concepts::Scalar<T>)
     OutputStream& operator<<(const T& t) {
-        // const auto orig_precision = _stream.precision();
-        // _stream.precision(std::numeric_limits<T>::digits10);
-        // std::cout << "normal: " << t << " - prec " << std::setprecision(std::numeric_limits<T>::digits10) << t << std::setprecision(orig_precision) << std::endl;
         _stream << t;
-        // _stream.precision(orig_precision);
+        return *this;
+    }
+
+    template<Concepts::Scalar T>
+    OutputStream& operator<<(const T& t) {
+        auto orig_precision = _stream.precision();
+        _stream.precision(std::numeric_limits<T>::digits10);
+        _stream << t;
+        _stream.precision(orig_precision);
         return *this;
     }
 
