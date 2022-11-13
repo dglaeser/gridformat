@@ -43,24 +43,22 @@ inline constexpr bool is_std_span_v = is_std_span<T>::value;
 template<typename T1, typename T2>
 concept Interoperable = std::is_convertible_v<T1, T2> || std::is_convertible_v<T2, T1>;
 
+template<typename T, typename Stream>
+concept Streamable = requires(const T& t, Stream& s) {
+    { s << t } -> std::same_as<Stream&>;
+};
+
+template<typename T, typename Data>
+concept FormattedStream = Streamable<Data, T>;
+
 template<typename T, typename Data = char>
-concept Stream = requires(T& t, const std::span<Data> data) {
+concept Stream = requires(T& t, std::span<Data>& data) {
     { t.write(data) };
 };
 
-template<typename T, typename Data = char>
-concept FormattedStream = requires(T& t, const Data& data) {
-    { t << data } -> std::same_as<T&>;
-};
-
 template<typename T, typename S = std::ostream>
-concept Encoder = Stream<S> and requires(const T& encoder, S& stream) {
+concept Encoder = requires(const T& encoder, S& stream) {
     { encoder(stream) } -> Stream;
-};
-
-template<typename T, typename Stream = std::ostream&>
-concept Streamable = requires(const T& t, Stream& s) {
-    { s << t } -> std::same_as<Stream&>;
 };
 
 template<typename T>

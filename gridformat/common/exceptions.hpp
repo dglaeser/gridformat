@@ -60,6 +60,11 @@ class TypeError : public Exception {
     using Exception::Exception;
 };
 
+class SizeError : public Exception {
+ public:
+    using Exception::Exception;
+};
+
 //! \} group Common
 
 }  // end namespace GridFormat

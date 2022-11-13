@@ -14,12 +14,12 @@
 #include <iterator>
 #include <type_traits>
 #include <bit>
+#include <array>
 
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/writer.hpp>
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/ranges.hpp>
-#include <gridformat/common/range_formatter.hpp>
 #include <gridformat/common/streamable_field.hpp>
 #include <gridformat/common/logging.hpp>
 
@@ -81,9 +81,8 @@ class DataArray {
 
     void _export_binary(std::ostream& s) const {
         auto encoded = _encoder(s);
-        // todo: provide info directly in field?
-        const HeaderType number_of_bytes = _field.size_in_bytes();
-        encoded.write(&number_of_bytes, 1);
+        std::array<HeaderType, 1> number_of_bytes{_field.size_in_bytes()};
+        encoded.write(std::span{number_of_bytes});
         s << StreamableField{_field, _encoder};
     }
 
@@ -265,7 +264,7 @@ class XMLWriterBase : public WriterBase {
     std::string _extension;
     XMLOpts _xml_opts;
     PrecOpts _prec_opts;
-    RangeFormatOptions _range_format_opts = {.delimiter = " ", .line_prefix = std::string(10, ' ')};
+    AsciiFormatOptions _range_format_opts = {.delimiter = " ", .line_prefix = std::string(10, ' ')};
 
     struct WriteContext {
         std::string vtk_grid_type;

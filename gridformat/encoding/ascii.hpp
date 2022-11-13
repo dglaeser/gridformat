@@ -8,72 +8,75 @@
 #ifndef GRIDFORMAT_COMMON_ENCODING_ASCII_HPP_
 #define GRIDFORMAT_COMMON_ENCODING_ASCII_HPP_
 
-#include <ostream>
-#include <iterator>
 #include <algorithm>
 
 #include <gridformat/common/concepts.hpp>
+#include <gridformat/common/stream.hpp>
 
 namespace GridFormat {
 
 #ifndef DOXYGEN
-namespace Detail {
+namespace Encoding::Detail {
 
 template<typename T>
-struct Print : std::type_identity<T> {};
+struct AsciiPrintType : std::type_identity<T> {};
 template<std::signed_integral T>
-struct Print<T> : std::type_identity<std::intmax_t> {};
+struct AsciiPrintType<T> : std::type_identity<std::intmax_t> {};
 template<std::unsigned_integral T>
-struct Print<T> : std::type_identity<std::uintmax_t> {};
+struct AsciiPrintType<T> : std::type_identity<std::uintmax_t> {};
 
-}  // namespace Detail
+}  // namespace Encoding::Detail
 #endif  // DOXYGEN
 
 struct AsciiFormatOptions {
     std::string delimiter = " ";
     std::string line_prefix = "";
-    std::size_t num_entries_per_line = 10;
+    std::size_t entries_per_line = 10;
 };
 
-class AsciiStream {
+template<typename Stream>
+class AsciiStream : public StreamWrapperBase<Stream> {
  public:
-    AsciiStream(std::ostream& s, AsciiFormatOptions opts = {})
-    : _stream(s)
+    AsciiStream(Stream& s, AsciiFormatOptions opts = {})
+    : StreamWrapperBase<Stream>(s)
     , _opts(std::move(opts))
     {}
 
     template<typename T, std::size_t size>
-    void write(std::span<T, size> data) const {
+    void write(std::span<T, size> data) {
         std::size_t count = 0;
-        while (count + _opts.num_entries_per_line < size) {
-            _write(data.data() + count, _opts.num_entries_per_line);
-            count += _opts.num_entries_per_line;
-            _stream << "\n";
+        while (count + _opts.entries_per_line < data.size()) {
+            _write(data.data() + count, _opts.entries_per_line);
+            count += _opts.entries_per_line;
+            this->_write_formatted("\n");
         }
-        _write(data.data() + count, size - count);
+        _write(data.data() + count, data.size() - count);
     }
 
  private:
     template<typename T>
-    void _write(const T* data, std::size_t num_entries) const {
-        using PrintType = typename Detail::Print<T>::type;
-        std::copy_n(
-            data,
-            num_entries,
-            std::ostream_iterator<PrintType>(_stream, _opts.delimiter.c_str())
-        );
+    void _write(const T* data, std::size_t num_entries) {
+        using PrintType = typename Encoding::Detail::AsciiPrintType<T>::type;
+        std::for_each_n(data, num_entries, [&] (const T& value) {
+            this->_write_formatted(static_cast<PrintType>(value));
+            this->_write_formatted(_opts.delimiter);
+        });
     }
 
-    std::ostream& _stream;
     AsciiFormatOptions _opts;
 };
 
 namespace Encoding {
 
 struct Ascii {
-    template<Concepts::Stream S>
+    template<typename S>
     Concepts::Stream auto operator()(S& s) const {
         return AsciiStream{s};
+    }
+
+    template<typename S>
+    Concepts::Stream auto operator()(S& s, AsciiFormatOptions opts) const {
+        return AsciiStream{s, std::move(opts)};
     }
 };
 

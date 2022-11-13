@@ -8,14 +8,12 @@
 #ifndef GRIDFORMAT_COMMON_STREAMABLE_FIELD_HPP_
 #define GRIDFORMAT_COMMON_STREAMABLE_FIELD_HPP_
 
-#include <memory>
 #include <utility>
 #include <ostream>
 #include <concepts>
 #include <type_traits>
 
-#include <gridformat/common/range_formatter.hpp>
-#include <gridformat/common/streams.hpp>
+#include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/field.hpp>
 
 namespace GridFormat {
@@ -24,7 +22,7 @@ namespace GridFormat {
  * \ingroup Common
  * \brief TODO: Doc me
  */
-template<std::derived_from<Field> F, Concepts::Encoder Encoder>
+template<std::derived_from<Field> F, Concepts::Encoder<std::ostream> Encoder>
 class StreamableField {
  public:
     template<std::convertible_to<const F&> _F> requires(std::is_lvalue_reference_v<_F>)
@@ -37,9 +35,15 @@ class StreamableField {
         auto encoded = field._encoder(s);
         auto serialization = field._field.serialized();
         field._field.precision().visit([&] <typename T> (const Precision<T>&) {
-            assert(serialization.size()%sizeof(T) == 0);
-            const auto* values = reinterpret_cast<const T*>(serialization.data());
-            encoded.write(values, serialization.size()/sizeof(T));
+            if (serialization.size() != field._field.number_of_entries()*sizeof(T))
+                throw SizeError("Serialized size does not match field specifications");
+
+            const auto bytes = serialization.as_span();
+            const std::span<const T> values{
+                reinterpret_cast<const T*>(bytes.data()),
+                field._field.number_of_entries()
+            };
+            encoded.write(values);
         });
         return s;
     }

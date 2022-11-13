@@ -69,8 +69,8 @@ int main() {
     auto cell_tensors = make_tensor_data(cell_scalars);
 
     GridFormat::VTK::XMLOptions xml_opts{
-        .encoder = GridFormat::Encoding::base64,
-        .compression = GridFormat::Compression::lzma,
+        .encoder = GridFormat::Encoding::ascii,
+        .compression = GridFormat::Compression::none,
         .format = GridFormat::VTK::DataFormat::inlined
     };
 

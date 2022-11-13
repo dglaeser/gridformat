@@ -12,11 +12,13 @@
 #include <cassert>
 #include <algorithm>
 
+#include <gridformat/common/stream.hpp>
 #include <gridformat/common/concepts.hpp>
 
 namespace GridFormat {
 
-class Base64Stream {
+template<typename Stream = std::ostream>
+class Base64Stream : public StreamWrapperBase<Stream> {
     using Byte = char;
     using Buffer = std::array<Byte, 3>;
 
@@ -48,8 +50,8 @@ class Base64Stream {
     }
 
  public:
-    explicit Base64Stream(std::ostream& s)
-    : _stream(s)
+    explicit Base64Stream(Stream& s)
+    : StreamWrapperBase<Stream>(s)
     {}
 
     template<typename T, std::size_t size>
@@ -75,12 +77,13 @@ class Base64Stream {
 
     void _flush() {
         const auto num_bytes = std::distance(_buffer.begin(), _it);
-        Byte out[4];
-        out[0] = num_bytes > 0 ? _encodeSextet0() : '=';
-        out[1] = num_bytes > 0 ? _encodeSextet1() : '=';
-        out[2] = num_bytes > 1 ? _encodeSextet2() : '=';
-        out[3] = num_bytes > 2 ? _encodeSextet3() : '=';
-        _stream.write(out, 4);
+        const Byte out[4] = {
+            num_bytes > 0 ? _encodeSextet0() : '=',
+            num_bytes > 0 ? _encodeSextet1() : '=',
+            num_bytes > 1 ? _encodeSextet2() : '=',
+            num_bytes > 2 ? _encodeSextet3() : '='
+        };
+        this->_stream.write(std::span{out});
         _reset_buffer();
     }
 
@@ -89,7 +92,6 @@ class Base64Stream {
         _it = _buffer.begin();
     }
 
-    std::ostream& _stream;
     Buffer _buffer;
     typename Buffer::iterator _it = _buffer.begin();
 };
@@ -97,7 +99,8 @@ class Base64Stream {
 namespace Encoding {
 
 struct Base64 {
-    Concepts::Stream auto operator()(std::ostream& s) const {
+    template<typename Stream>
+    Concepts::Stream auto operator()(Stream& s) const {
         return Base64Stream{s};
     }
 };

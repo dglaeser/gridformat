@@ -24,8 +24,7 @@ class RawBinaryStream {
 
     template<typename T, std::size_t size>
     void write(std::span<T, size> data) const {
-        const auto binary_data = std::as_bytes(data);
-        _stream.write(binary_data.data(), binary_data.size());
+        _stream.write(std::as_bytes(data));
     }
 
  private:
