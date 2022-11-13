@@ -13,12 +13,8 @@
 
 #include <gridformat/common/precision.hpp>
 #include <gridformat/compression/compression.hpp>
-
-#include <gridformat/encoding/ascii.hpp>
-#include <gridformat/encoding/base64.hpp>
-#include <gridformat/encoding/binary.hpp>
-
-#include <gridformat/vtk/options.hpp>
+#include <gridformat/encoding/encoding.hpp>
+#include <gridformat/vtk/common.hpp>
 
 namespace GridFormat::VTK {
 

@@ -30,7 +30,7 @@
 #include <gridformat/grid/grid.hpp>
 
 #include <gridformat/xml/element.hpp>
-#include <gridformat/vtk/options.hpp>
+#include <gridformat/vtk/common.hpp>
 #include <gridformat/vtk/attributes.hpp>
 #include <gridformat/vtk/_traits.hpp>
 

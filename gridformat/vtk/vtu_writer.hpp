@@ -17,7 +17,6 @@
 #include <gridformat/grid/grid.hpp>
 
 #include <gridformat/vtk/xml_writer_base.hpp>
-#include <gridformat/vtk/options.hpp>
 #include <gridformat/vtk/common.hpp>
 
 namespace GridFormat {

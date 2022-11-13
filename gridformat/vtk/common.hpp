@@ -19,6 +19,15 @@
 #include <gridformat/grid/grid.hpp>
 
 namespace GridFormat::VTK {
+namespace DataFormat {
+
+struct Inlined {};
+struct Appended {};
+
+inline constexpr Inlined inlined;
+inline constexpr Appended appended;
+
+}  // namespace DataFormat
 
 inline constexpr std::uint8_t cell_type_number(CellType t) {
     switch (t) {

@@ -9,9 +9,7 @@
 #define GRIDFORMAT_VTK_TRAITS_HPP_
 
 #include <type_traits>
-
-#include <gridformat/common/precision.hpp>
-#include <gridformat/vtk/options.hpp>
+#include <gridformat/vtk/common.hpp>
 
 namespace GridFormat::VTK::Traits {
 
