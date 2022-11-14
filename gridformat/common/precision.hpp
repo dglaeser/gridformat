@@ -62,6 +62,7 @@ class DynamicPrecision {
         }, _precision);
     }
 
+    // TODO: size_in_bytes() ???
     std::size_t number_of_bytes() const {
         return std::visit([] <typename T> (const Precision<T>&) {
             return sizeof(T);

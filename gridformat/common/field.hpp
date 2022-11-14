@@ -14,6 +14,7 @@
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
+#include <gridformat/common/exceptions.hpp>
 
 namespace GridFormat {
 
@@ -38,7 +39,8 @@ class Field {
 
     Serialization serialized() const {
         auto serialization = _serialized();
-        assert(serialization.size() == size_in_bytes());
+        if (serialization.size() != size_in_bytes())
+            throw SizeError("Unexpected serialized size");
         return serialization;
     }
 

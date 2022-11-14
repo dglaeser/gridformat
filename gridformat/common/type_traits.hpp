@@ -84,6 +84,12 @@ struct UniqueVariant<std::tuple<Uniques...>, T, Types...> {
     >;
 };
 
+template<typename T> struct FieldScalar;
+template<typename T> requires(std::integral<T> or std::floating_point<T>)
+struct FieldScalar<T> : public std::type_identity<T> {};
+template<std::ranges::range R>
+struct FieldScalar<R> : public std::type_identity<typename MDRangeScalar<R>::type> {};
+
 }  // end namespace Detail
 #endif  // DOXYGEN
 
@@ -95,6 +101,9 @@ inline constexpr None none;
 
 template<std::ranges::range R>
 using MDRangeScalar = typename Detail::MDRangeScalar<R>::type;
+
+template<typename T>
+using FieldScalar = typename Detail::FieldScalar<T>::type;
 
 template<std::ranges::range R>
 inline constexpr std::size_t mdrange_dimension = Detail::MDRangeDimension<R>::value;

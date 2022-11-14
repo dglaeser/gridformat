@@ -33,6 +33,7 @@ struct Point {
 struct Cell {
     std::vector<std::size_t> corners;
     CellType cell_type;
+    std::size_t id;
 
     bool operator==(const Cell& other) const {
         return cell_type == other.cell_type && std::ranges::equal(
@@ -69,8 +70,8 @@ auto make_unstructured_1d() {
             {{3.0}, 2}
         },
         {
-            {{0, 1}, CellType::segment},
-            {{1, 2}, CellType::segment}
+            {{0, 1}, CellType::segment, 0},
+            {{1, 2}, CellType::segment, 1}
         }
     };
 }
@@ -85,8 +86,8 @@ auto make_unstructured_2d() {
             {{2.0, 1.0}, 4}
         },
         {
-            {{0, 1, 2, 3}, CellType::quadrilateral},
-            {{1, 2, 4}, CellType::triangle}
+            {{0, 1, 2, 3}, CellType::quadrilateral, 0},
+            {{1, 2, 4}, CellType::triangle, 1}
         }
     };
 }

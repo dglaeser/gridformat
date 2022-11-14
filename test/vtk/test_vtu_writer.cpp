@@ -80,12 +80,12 @@ int main() {
             .header_precision = GridFormat::automatic
         }
     };
-    writer.set_point_field("pscalar", point_scalars);
-    writer.set_point_field("pvector", point_vectors);
-    writer.set_point_field("ptensor", point_tensors);
-    writer.set_cell_field("cscalar", cell_scalars);
-    writer.set_cell_field("cvector", cell_vectors);
-    writer.set_cell_field("ctensor", cell_tensors);
+    writer.set_point_field("pscalar", [&] (const auto& p) { return point_scalars[p.id]; });
+    writer.set_point_field("pvector", [&] (const auto& p) { return point_vectors[p.id]; });
+    writer.set_point_field("ptensor", [&] (const auto& p) { return point_tensors[p.id]; });
+    writer.set_cell_field("cscalar", [&] (const auto& c) { return cell_scalars[c.id]; });
+    writer.set_cell_field("cvector", [&] (const auto& c) { return cell_vectors[c.id]; });
+    writer.set_cell_field("ctensor", [&] (const auto& c) { return cell_tensors[c.id]; });
 
     writer.write("file");
 
