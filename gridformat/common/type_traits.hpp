@@ -10,6 +10,7 @@
 #define GRIDFORMAT_COMMON_TYPE_TRAITS_HPP_
 
 #include <ranges>
+#include <variant>
 #include <type_traits>
 
 namespace GridFormat {
@@ -59,6 +60,30 @@ struct IsAnyOf<T, Type> {
     static constexpr bool value = std::is_same_v<T, Type>;
 };
 
+template<typename T, typename... Types>
+struct UniqueVariant {
+    using type = std::conditional_t<
+        IsAnyOf<T, Types...>::value,
+        typename UniqueVariant<Types...>::type,
+        typename UniqueVariant<std::tuple<T>, Types...>::type
+    >;
+};
+
+template<typename T>
+struct UniqueVariant<T> : public std::type_identity<std::variant<T>> {};
+
+template<typename... Uniques>
+struct UniqueVariant<std::tuple<Uniques...>> : public std::type_identity<std::variant<Uniques...>> {};
+
+template<typename... Uniques, typename T, typename... Types>
+struct UniqueVariant<std::tuple<Uniques...>, T, Types...> {
+    using type = std::conditional_t<
+        IsAnyOf<T, Uniques...>::value,
+        typename UniqueVariant<std::tuple<Uniques...>, Types...>::type,
+        typename UniqueVariant<std::tuple<Uniques..., T>, Types...>::type
+    >;
+};
+
 }  // end namespace Detail
 #endif  // DOXYGEN
 
@@ -88,6 +113,9 @@ struct IsAnyOf : public Detail::IsAnyOf<T, Type, Types...> {};
 
 template<typename T, typename Type, typename... Types>
 inline constexpr bool is_any_of = IsAnyOf<T, Type, Types...>::value;
+
+template<typename T, typename... Types>
+using UniqueVariant = typename Detail::UniqueVariant<T, Types...>::type;
 
 }  // end namespace GridFormat
 

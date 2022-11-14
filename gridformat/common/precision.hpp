@@ -28,15 +28,15 @@ struct Precision {
 inline constexpr Precision<float> float32;
 inline constexpr Precision<double> float64;
 
-inline constexpr Precision<std::int8_t> int8;
-inline constexpr Precision<std::int16_t> int16;
-inline constexpr Precision<std::int32_t> int32;
-inline constexpr Precision<std::int64_t> int64;
+inline constexpr Precision<std::int_least8_t> int8;
+inline constexpr Precision<std::int_least16_t> int16;
+inline constexpr Precision<std::int_least32_t> int32;
+inline constexpr Precision<std::int_least64_t> int64;
 
-inline constexpr Precision<std::uint8_t> uint8;
-inline constexpr Precision<std::uint16_t> uint16;
-inline constexpr Precision<std::uint32_t> uint32;
-inline constexpr Precision<std::uint64_t> uint64;
+inline constexpr Precision<std::uint_least8_t> uint8;
+inline constexpr Precision<std::uint_least16_t> uint16;
+inline constexpr Precision<std::uint_least32_t> uint32;
+inline constexpr Precision<std::uint_least64_t> uint64;
 
 inline constexpr Precision<std::size_t> default_integral;
 inline constexpr Precision<double> default_floating_point;
@@ -74,7 +74,7 @@ class DynamicPrecision {
     }
 
  private:
-    std::variant<
+    UniqueVariant<
         Precision<float>,
         Precision<double>,
         Precision<std::int8_t>,
