@@ -6,9 +6,9 @@
  * \ingroup Compression
  * \brief Includes all available compressors.
  */
-#ifndef GRIDFORMAT_COMPRESSION_COMPRESSION_HPP_
-#define GRIDFORMAT_COMPRESSION_COMPRESSION_HPP_
+#ifndef GRIDFORMAT_COMPRESSION_HPP_
+#define GRIDFORMAT_COMPRESSION_HPP_
 
 #include <gridformat/compression/lzma.hpp>
 
-#endif  // GRIDFORMAT_COMPRESSION_COMPRESSION_HPP_
+#endif  // GRIDFORMAT_COMPRESSION_HPP_

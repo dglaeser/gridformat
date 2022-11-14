@@ -12,8 +12,10 @@
 #include <type_traits>
 
 #include <gridformat/common/precision.hpp>
-#include <gridformat/compression/compression.hpp>
-#include <gridformat/encoding/encoding.hpp>
+#include <gridformat/compression/lzma.hpp>
+#include <gridformat/encoding/ascii.hpp>
+#include <gridformat/encoding/base64.hpp>
+#include <gridformat/encoding/binary.hpp>
 #include <gridformat/vtk/common.hpp>
 
 namespace GridFormat::VTK {
@@ -36,6 +38,7 @@ std::string attribute_name(const Compression::LZMA&) { return "vtkLZMADataCompre
 template<typename Encoding>
 std::string data_format_name(const Encoding&, const DataFormat::Appended&) { return "appended"; }
 std::string data_format_name(const Encoding::Ascii&, const DataFormat::Inlined&) { return "ascii"; }
+std::string data_format_name(const Encoding::AsciiWithOptions&, const DataFormat::Inlined&) { return "ascii"; }
 std::string data_format_name(const Encoding::Base64&, const DataFormat::Inlined&) { return "binary"; }
 
 }  // namespace GridFormat::VTK

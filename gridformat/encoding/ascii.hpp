@@ -8,6 +8,8 @@
 #ifndef GRIDFORMAT_COMMON_ENCODING_ASCII_HPP_
 #define GRIDFORMAT_COMMON_ENCODING_ASCII_HPP_
 
+#include <cmath>
+#include <limits>
 #include <algorithm>
 
 #include <gridformat/common/stream.hpp>
@@ -28,9 +30,9 @@ struct AsciiPrintType<T> : std::type_identity<std::uintmax_t> {};
 #endif  // DOXYGEN
 
 struct AsciiFormatOptions {
-    std::string delimiter = " ";
+    std::string delimiter = "";
     std::string line_prefix = "";
-    std::size_t entries_per_line = 10;
+    std::size_t entries_per_line = std::numeric_limits<std::size_t>::max();
 };
 
 template<typename Stream>
@@ -43,13 +45,15 @@ class AsciiStream : public StreamWrapperBase<Stream> {
 
     template<typename T, std::size_t size>
     void write(std::span<T, size> data) {
+        using std::min;
         std::size_t count = 0;
-        while (count + _opts.entries_per_line < data.size()) {
-            _write(data.data() + count, _opts.entries_per_line);
-            count += _opts.entries_per_line;
-            this->_write_formatted("\n");
+        while (count < data.size()) {
+            const auto num_entries = min(_opts.entries_per_line, data.size() - count);
+            this->_write_formatted(count > 0 ? "\n" : "");
+            this->_write_formatted(_opts.line_prefix);
+            _write(data.data() + count, num_entries);
+            count += num_entries;
         }
-        _write(data.data() + count, data.size() - count);
     }
 
  private:
@@ -67,15 +71,29 @@ class AsciiStream : public StreamWrapperBase<Stream> {
 
 namespace Encoding {
 
+class AsciiWithOptions {
+ public:
+    explicit AsciiWithOptions(AsciiFormatOptions opts)
+    : _opts(std::move(opts))
+    {}
+
+    template<typename S>
+    constexpr auto operator()(S& s) const noexcept {
+        return AsciiStream{s, _opts};
+    }
+
+ public:
+    AsciiFormatOptions _opts;
+};
+
 struct Ascii {
     template<typename S>
     constexpr auto operator()(S& s) const noexcept {
         return AsciiStream{s};
     }
 
-    template<typename S>
-    constexpr auto operator()(S& s, AsciiFormatOptions opts) const noexcept {
-        return AsciiStream{s, std::move(opts)};
+    auto with(AsciiFormatOptions opts) const {
+        return AsciiWithOptions{std::move(opts)};
     }
 };
 

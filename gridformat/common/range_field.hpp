@@ -34,7 +34,7 @@ class RangeField : public Field {
     static constexpr bool use_range_value_type =
         std::is_same_v<std::ranges::range_value_t<std::decay_t<R>>, ValueType>;
 
-    static constexpr bool skip_cast =
+    static constexpr bool is_contiguous_result_range =
         is_contiguous_scalar_range && use_range_value_type;
 
  public:
@@ -51,13 +51,13 @@ class RangeField : public Field {
         return serialization;
     }
 
-    void _fill(Serialization& serialization) const requires(skip_cast) {
+    void _fill(Serialization& serialization) const requires(is_contiguous_result_range) {
         const auto data = std::as_bytes(std::span{_range});
         assert(data.size() == this->size_in_bytes());
         std::ranges::copy(data, serialization.as_span().begin());
     }
 
-    void _fill(Serialization& serialization) const requires(!skip_cast) {
+    void _fill(Serialization& serialization) const requires(!is_contiguous_result_range) {
         std::size_t offset = 0;
         _fill_buffer(_range, serialization, offset);
     }

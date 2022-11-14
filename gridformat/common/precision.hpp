@@ -18,39 +18,12 @@
 
 namespace GridFormat {
 
-template<typename T>
-struct Precision;
-
-#ifndef DOXYGEN
-namespace Detail {
-
-template<typename T>
-struct PrecisionType;
-
-template<typename T>
-struct PrecisionType<Precision<T>> : public std::type_identity<T> {};
-
-}  // namespace Detail
-#endif // DOXYGEN
-
 template<Concepts::Scalar T>
-struct Precision<T> {
+struct Precision {
     static constexpr bool is_integral = std::is_integral_v<T>;
     static constexpr bool is_signed = std::is_signed_v<T>;
     static constexpr std::size_t number_of_bytes = sizeof(T);
 };
-
-template<>
-struct Precision<Automatic> {
-    static constexpr bool is_integral = false;
-    static constexpr bool is_signed = false;
-    static constexpr std::size_t number_of_bytes = 0;
-};
-
-using DefaultPrecision = Precision<Automatic>;
-
-template<typename T>
-using PrecisionType = Detail::PrecisionType<T>::type;
 
 inline constexpr Precision<float> float32;
 inline constexpr Precision<double> float64;
@@ -65,15 +38,16 @@ inline constexpr Precision<std::uint16_t> uint16;
 inline constexpr Precision<std::uint32_t> uint32;
 inline constexpr Precision<std::uint64_t> uint64;
 
-inline constexpr DefaultPrecision default_precision;
+inline constexpr Precision<std::size_t> default_integral;
+inline constexpr Precision<double> default_floating_point;
 
 class DynamicPrecision {
  public:
     DynamicPrecision() = default;
 
     template<typename T>
-    DynamicPrecision(const Precision<T>& prec)
-    : _precision{prec}
+    DynamicPrecision(Precision<T> prec)
+    : _precision{std::move(prec)}
     {}
 
     bool is_integral() const {
@@ -110,7 +84,8 @@ class DynamicPrecision {
         Precision<std::uint8_t>,
         Precision<std::uint16_t>,
         Precision<std::uint32_t>,
-        Precision<std::uint64_t>
+        Precision<std::uint64_t>,
+        Precision<std::size_t>
     > _precision;
 };
 

@@ -8,10 +8,16 @@
 #ifndef GRIDFORMAT_VTK_COMMON_HPP_
 #define GRIDFORMAT_VTK_COMMON_HPP_
 
+#include <type_traits>
+
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/range_field.hpp>
 #include <gridformat/common/ranges.hpp>
+
+#include <gridformat/encoding/ascii.hpp>
+#include <gridformat/encoding/base64.hpp>
+#include <gridformat/encoding/binary.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/concepts.hpp>
@@ -28,6 +34,25 @@ inline constexpr Inlined inlined;
 inline constexpr Appended appended;
 
 }  // namespace DataFormat
+
+namespace Traits {
+
+template<typename T> struct ProducesValidXML;
+template<> struct ProducesValidXML<Encoding::Ascii> : public std::true_type {};
+template<> struct ProducesValidXML<Encoding::AsciiWithOptions> : public std::true_type {};
+template<> struct ProducesValidXML<Encoding::Base64> : public std::true_type {};
+template<> struct ProducesValidXML<Encoding::RawBinary> : public std::false_type {};
+
+}  // namespace Traits
+
+template<typename Encoder>
+inline constexpr bool produces_valid_xml(const Encoder&) {
+    static_assert(
+        is_complete<Traits::ProducesValidXML<Encoder>>,
+        "Traits::ProducesValidXML was not specialized for the given encoder"
+    );
+    return Traits::ProducesValidXML<Encoder>::value;
+}
 
 inline constexpr std::uint8_t cell_type_number(CellType t) {
     switch (t) {

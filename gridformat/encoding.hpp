@@ -5,11 +5,11 @@
  * \ingroup Common
  * \brief TODO: Doc me
  */
-#ifndef GRIDFORMAT_COMMON_ENCODING_HPP_
-#define GRIDFORMAT_COMMON_ENCODING_HPP_
+#ifndef GRIDFORMAT_ENCODING_HPP_
+#define GRIDFORMAT_ENCODING_HPP_
 
 #include <gridformat/encoding/ascii.hpp>
 #include <gridformat/encoding/base64.hpp>
 #include <gridformat/encoding/binary.hpp>
 
-#endif  // GRIDFORMAT_COMMON_ENCODING_HPP_
+#endif  // GRIDFORMAT_ENCODING_HPP_

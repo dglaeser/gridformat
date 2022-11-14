@@ -70,4 +70,4 @@ std::size_t number_of_points(const Grid& grid) {
 
 }  // namespace GridFormat
 
-#endif  // GRIDFORMAT_GRID_TRAITS_HPP_
+#endif  // GRIDFORMAT_GRID_GRID_HPP_

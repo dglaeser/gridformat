@@ -23,7 +23,7 @@ class RawBinaryStream : public StreamWrapperBase<Stream> {
     {}
 
     template<typename T, std::size_t size>
-    void write(std::span<T, size> data) const {
+    void write(std::span<const T, size> data) {
         this->_write_raw(data);
     }
 };

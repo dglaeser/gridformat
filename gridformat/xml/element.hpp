@@ -172,7 +172,7 @@ class XMLElement : public XMLTag {
 };
 
 #ifndef DOXYGEN_SKIP_DETAILS
-namespace Detail {
+namespace XML::Detail {
 
 void write_xml_tag_open(const XMLElement& e,
                         std::ostream& s,
@@ -231,13 +231,13 @@ void write_xml_element(const XMLElement& e,
     }
 }
 
-}  // end namespace Detail
+}  // end namespace XML::Detail
 #endif  // DOXYGEN_SKIP_DETAILS
 
 inline void write_xml(const XMLElement& e,
                       std::ostream& s,
                       Indentation ind = {}) {
-    Detail::write_xml_element(e, s, ind);
+    XML::Detail::write_xml_element(e, s, ind);
 }
 
 inline void write_xml_with_version_header(const XMLElement& e,

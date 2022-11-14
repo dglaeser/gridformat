@@ -14,10 +14,10 @@
 #include <gridformat/common/extended_range.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/concepts.hpp>
-#include <gridformat/grid/grid.hpp>
+#include <gridformat/grid.hpp>
 
-#include <gridformat/vtk/xml_writer_base.hpp>
 #include <gridformat/vtk/common.hpp>
+#include <gridformat/vtk/xml.hpp>
 
 namespace GridFormat {
 
@@ -42,7 +42,7 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
     using typename ParentType::CoordinateType;
     using typename ParentType::HeaderType;
 
-    void _write([[maybe_unused]] std::ostream& s) const override {
+    void _write(std::ostream& s) const override {
         const auto num_points = number_of_points(this->_grid);
         const auto num_cells = number_of_cells(this->_grid);
 
@@ -64,7 +64,7 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
         this->_set_data_array(context, "Piece.Cells", "connectivity", connectivity_field);
         this->_set_data_array(context, "Piece.Cells", "offsets", offsets_field);
         this->_set_data_array(context, "Piece.Cells", "types", types_field);
-        this->_write_xml(context, s);
+        this->_write_xml(std::move(context), s);
     }
 };
 

@@ -44,7 +44,7 @@ class OutputStream {
     }
 
     template<typename T, std::size_t size>
-    void write(std::span<T, size> data) {
+    void write(std::span<const T, size> data) {
         _write(std::as_bytes(data));
     }
 

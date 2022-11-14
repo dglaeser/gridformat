@@ -49,6 +49,16 @@ template<typename T, std::size_t s = sizeof(T)>
 std::false_type isIncomplete(T*);
 std::true_type isIncomplete(...);
 
+template<typename T, typename Type, typename... Types>
+struct IsAnyOf {
+    static constexpr bool value = std::is_same_v<T, Type> || IsAnyOf<T, Types...>::value;
+};
+
+template<typename T, typename Type>
+struct IsAnyOf<T, Type> {
+    static constexpr bool value = std::is_same_v<T, Type>;
+};
+
 }  // end namespace Detail
 #endif  // DOXYGEN
 
@@ -72,6 +82,12 @@ inline constexpr bool is_incomplete = decltype(Detail::isIncomplete(std::declval
 
 template<typename T>
 inline constexpr bool is_complete = !is_incomplete<T>;
+
+template<typename T, typename Type, typename... Types>
+struct IsAnyOf : public Detail::IsAnyOf<T, Type, Types...> {};
+
+template<typename T, typename Type, typename... Types>
+inline constexpr bool is_any_of = IsAnyOf<T, Type, Types...>::value;
 
 }  // end namespace GridFormat
 

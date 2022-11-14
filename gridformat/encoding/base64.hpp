@@ -55,7 +55,7 @@ class Base64Stream : public StreamWrapperBase<Stream> {
     {}
 
     template<typename T, std::size_t size>
-    void write(std::span<T, size> data) {
+    void write(std::span<const T, size> data) {
         std::ranges::for_each(std::as_bytes(data), [&] (const std::byte& byte) {
             _insert(static_cast<Byte>(byte));
         });
