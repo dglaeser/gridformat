@@ -10,18 +10,42 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        cxx_compiler: [g++-12]
 
     steps:
-      - name: install-gcc-12
+      - name: install-compiler
         run: |
-          sudo apt install gcc-12 g++-12
+          sudo apt install ${{ matrix.cxx_compiler }}
 
       - name: checkout-repository
         uses: actions/checkout@v2
 
       - name: configure
         run: |
-          mkdir build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 ../ && cd ..
+          CXX_COMPILER="${{ matrix.cxx_compiler }}"
+          C_COMPILER="${CXX_COMPILER/++/}"
+          mkdir build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/$C_COMPILER -DCMAKE_CXX_COMPILER=/usr/bin/$CXX_COMPILER ../ && cd ..
+
+      - name: test
+        run: |
+          cd build && make test_vtu_writer && ctest -R test_vtu_writer -V
+
+  clang-14:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: install-clang-14
+        run: |
+          sudo apt install clang-14 clang++-14
+
+      - name: checkout-repository
+        uses: actions/checkout@v2
+
+      - name: configure
+        run: |
+          mkdir build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/clang-14 -DCMAKE_CXX_COMPILER=/usr/bin/clang++-14 ../ && cd ..
 
       - name: test
         run: |
