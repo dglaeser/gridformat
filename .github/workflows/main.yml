@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: install-compiler
         run: |
-          sudo apt install ${{ matrix.c_compiler }} ${{ matrix.cxx_compiler }}
+          sudo apt install ${{ matrix.pkg_name }}
 
       - name: checkout-repository
         uses: actions/checkout@v2
