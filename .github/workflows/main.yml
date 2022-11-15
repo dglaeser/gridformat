@@ -15,7 +15,7 @@ jobs:
         cxx_compiler: [g++-12]
         include:
            - c_compiler: gcc
-              cxx_compiler: g++-12
+             cxx_compiler: g++-12
 
     steps:
       - name: install-compiler
