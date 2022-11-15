@@ -13,6 +13,9 @@ jobs:
     strategy:
       matrix:
         cxx_compiler: [g++-12]
+        include:
+           - c_compiler: gcc
+              cxx_compiler: g++-12
 
     steps:
       - name: install-compiler
@@ -25,28 +28,10 @@ jobs:
       - name: configure
         run: |
           CXX_COMPILER="${{ matrix.cxx_compiler }}"
-          C_COMPILER="${CXX_COMPILER/++/}"
+          C_COMPILER="${{ matrix.c_compiler }}"
           mkdir build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/$C_COMPILER -DCMAKE_CXX_COMPILER=/usr/bin/$CXX_COMPILER ../ && cd ..
 
       - name: test
         run: |
           cd build && make test_vtu_writer && ctest -R test_vtu_writer -V
 
-  clang-14:
-    runs-on: ubuntu-22.04
-
-    steps:
-      - name: install-clang-14
-        run: |
-          sudo apt install clang-14 clang++-14
-
-      - name: checkout-repository
-        uses: actions/checkout@v2
-
-      - name: configure
-        run: |
-          mkdir build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/clang-14 -DCMAKE_CXX_COMPILER=/usr/bin/clang++-14 ../ && cd ..
-
-      - name: test
-        run: |
-          cd build && make test_vtu_writer && ctest -R test_vtu_writer -V
