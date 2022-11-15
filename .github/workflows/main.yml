@@ -14,13 +14,13 @@ jobs:
       matrix:
         cxx_compiler: [g++-12]
         include:
-           - c_compiler: gcc
+           - c_compiler: gcc-12
              cxx_compiler: g++-12
 
     steps:
       - name: install-compiler
         run: |
-          sudo apt install ${{ matrix.cxx_compiler }}
+          sudo apt install ${{ matrix.c_compiler }} ${{ matrix.cxx_compiler }}
 
       - name: checkout-repository
         uses: actions/checkout@v2
