@@ -12,25 +12,21 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        compiler: [gcc-12, clang-14]
+        compiler_pkg: [g++-12, clang-14]
         include:
            - c_compiler: gcc-12
-             compiler: gcc-12
+             compiler_pkg: g++-12
            - c_compiler: clang-14
-             compiler: clang-14
+             compiler_pkg: clang-14
            - cxx_compiler: g++-12
-             compiler: gcc-12
-           - c_compiler: clang++-14
-             compiler: clang-14
-           - pkg_name: g++-12
-             compiler: gcc-12
-           - pkg_name: clang-14
-             compiler: clang-14
+             compiler_pkg: g++-12
+           - cxx_compiler: clang++-14
+             compiler_pkg: clang-14
 
     steps:
       - name: install-compiler
         run: |
-          sudo apt install ${{ matrix.pkg_name }}
+          sudo apt install ${{ matrix.compiler_pkg }}
 
       - name: checkout-repository
         uses: actions/checkout@v2
