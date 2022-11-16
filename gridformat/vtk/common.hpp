@@ -13,9 +13,9 @@
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/extended_range.hpp>
+#include <gridformat/common/counted_range.hpp>
 #include <gridformat/common/range_field.hpp>
 #include <gridformat/common/ranges.hpp>
-
 
 #include <gridformat/encoding/ascii.hpp>
 #include <gridformat/encoding/base64.hpp>
@@ -114,28 +114,11 @@ auto make_connectivity_field(const Grid& grid) {
 
 template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
 auto make_offsets_field(const Grid& grid) {
-    std::vector<HeaderType> offsets;
-    offsets.reserve(number_of_cells(grid));
-    for (const auto& c : cells(grid))
-        offsets.push_back(
-            offsets.empty() ? Ranges::size(corners(grid, c))
-                            : Ranges::size(corners(grid, c)) + offsets.back()
-        );
-    return RangeField{std::move(offsets)};
-    // Problem: with the "mutable" keyword, this does not compile.
-    //          also, this would break multiple passes of the range...
-    // return RangeField{
-    //     cells(grid)
-    //         | std::views::all
-    //         | std::views::transform([&] (const auto& cell) {
-    //             return corners(grid, cell)
-    //                 | std::views::all
-    //                 | std::views::transform([&] (const auto& point) {
-    //                     return id(grid, point);
-    //                 })
-    //         })
-    //         | std::views::join
-    // };
+    return RangeField{CountedRange{
+        cells(grid) | std::views::transform([&] (const auto& cell) {
+            return Ranges::size(corners(grid, cell));
+        })
+    }};
 }
 
 template<Concepts::UnstructuredGrid Grid>
