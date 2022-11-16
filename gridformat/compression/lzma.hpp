@@ -30,7 +30,7 @@ namespace GridFormat::Compression {
 //! @{
 
 struct LZMAOptions {
-    std::size_t block_size = 32768;
+    std::size_t block_size = default_block_size;
     std::uint32_t compression_level = LZMA_PRESET_DEFAULT;
 };
 

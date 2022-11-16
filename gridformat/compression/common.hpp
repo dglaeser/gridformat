@@ -20,6 +20,8 @@ namespace GridFormat::Compression {
 //! \addtogroup Compression
 //! \{
 
+inline constexpr std::size_t default_block_size = (1 << 15);  // as in VTK (https://gitlab.kitware.com/vtk/vtk/-/blob/65fc526a83ac829628a9462f61fa57f1801e2c7e/IO/XML/vtkXMLWriterBase.cxx#L44)
+
 //! Stores the block sizes used for compressing the given amount of bytes
 template<std::integral HeaderType = std::size_t>
 struct Blocks {
