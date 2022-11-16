@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Common
- * \brief TODO: Doc me
+ * \copydoc GridFormat::MDLayout
  */
 #ifndef GRIDFORMAT_COMMON_MD_LAYOUT_HPP_
 #define GRIDFORMAT_COMMON_MD_LAYOUT_HPP_
@@ -19,6 +19,10 @@
 
 namespace GridFormat {
 
+/*!
+ * \ingroup Common
+ * \brief Represents the layout (dimension, extents) of a multi-dimensional range.
+ */
 class MDLayout {
  public:
     template<std::ranges::input_range R>
@@ -85,16 +89,18 @@ constexpr auto push_extents(R&& r, std::vector<std::size_t>& extents) {
 }  // namespace Detail
 #endif  // DOXYGEN
 
-template<Concepts::Scalar T>
-MDLayout get_layout(const T&) {
-    return MDLayout{std::vector<std::size_t>{1}};
-}
-
+//! Get the multi-dimensional layout for the given range
 template<std::ranges::range R>
-MDLayout get_layout(const R& r) {
+MDLayout get_md_layout(const R& r) {
     std::vector<std::size_t> extents;
     Detail::push_extents(r, extents);
     return MDLayout{extents};
+}
+
+//! overload for scalars
+template<Concepts::Scalar T>
+MDLayout get_md_layout(const T&) {
+    return MDLayout{std::vector<std::size_t>{1}};
 }
 
 }  // namespace GridFormat

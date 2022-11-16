@@ -1,8 +1,10 @@
 #include <vector>
 
-#include <boost/ut.hpp>
-
+#include <gridformat/common/field.hpp>
 #include <gridformat/common/field_storage.hpp>
+#include <gridformat/common/serialization.hpp>
+
+#include "../testing.hpp"
 
 class MyField : public GridFormat::Field {
     using ParentType = GridFormat::Field;
@@ -19,9 +21,9 @@ class MyField : public GridFormat::Field {
  private:
     int _id;
 
-    typename ParentType::Serialization _serialized() const override {
-        typename ParentType::Serialization result(sizeof(int));
-        int* data = reinterpret_cast<int*>(result.data());
+    typename GridFormat::Serialization _serialized() const override {
+        typename GridFormat::Serialization result(sizeof(int));
+        int* data = reinterpret_cast<int*>(result.as_span().data());
         data[0] = _id;
         return result;
     }
@@ -29,15 +31,17 @@ class MyField : public GridFormat::Field {
 
 int get_id_from_serialization(const GridFormat::Field& field) {
     const auto serialization = field.serialized();
-    using boost::ut::expect;
-    using boost::ut::eq;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::eq;
     expect(eq(serialization.size(), std::size_t{sizeof(int)}));
-    const int* data = reinterpret_cast<const int*>(serialization.data());
+    const int* data = reinterpret_cast<const int*>(serialization.as_span().data());
     return data[0];
 }
 
 int main() {
-    using namespace boost::ut;
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::eq;
 
     "field_storage_set"_test = [] () {
         GridFormat::FieldStorage storage;

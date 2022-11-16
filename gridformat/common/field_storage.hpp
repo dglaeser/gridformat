@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Common
- * \brief TODO: Doc me
+ * \copydoc GridFormat::FieldStorage
  */
 #ifndef GRIDFORMAT_COMMON_FIELD_STORAGE_HPP_
 #define GRIDFORMAT_COMMON_FIELD_STORAGE_HPP_
@@ -20,7 +20,7 @@ namespace GridFormat {
 
 /*!
  * \ingroup Common
- * \brief TODO: Doc me
+ * \brief Class to store field instances by name.
  */
 template<typename _F = Field>
 class FieldStorage {

@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Common
- * \brief TODO: Doc me
+ * \brief Types to represent different precisions.
  */
 #ifndef GRIDFORMAT_COMMON_PRECISION_HPP_
 #define GRIDFORMAT_COMMON_PRECISION_HPP_
@@ -18,6 +18,10 @@
 
 namespace GridFormat {
 
+/*!
+ * \ingroup Common
+ * \brief Represents a precision known at compile-time
+ */
 template<Concepts::Scalar T>
 struct Precision {
     static constexpr bool is_integral = std::is_integral_v<T>;
@@ -41,6 +45,11 @@ inline constexpr Precision<std::uint_least64_t> uint64;
 inline constexpr Precision<std::size_t> default_integral;
 inline constexpr Precision<double> default_floating_point;
 
+/*!
+ * \ingroup Common
+ * \brief Represents a dynamic precision.
+ * \note This can only represent the precisions predefined in this header.
+ */
 class DynamicPrecision {
  public:
     DynamicPrecision() = default;
@@ -62,8 +71,7 @@ class DynamicPrecision {
         }, _precision);
     }
 
-    // TODO: size_in_bytes() ???
-    std::size_t number_of_bytes() const {
+    std::size_t size_in_bytes() const {
         return std::visit([] <typename T> (const Precision<T>&) {
             return sizeof(T);
         }, _precision);

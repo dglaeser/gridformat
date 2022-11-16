@@ -3,13 +3,12 @@
 /*!
  * \file
  * \ingroup Common
- * \brief TODO: Doc me
+ * \copydoc GridFormat::Field
  */
 #ifndef GRIDFORMAT_COMMON_FIELD_HPP_
 #define GRIDFORMAT_COMMON_FIELD_HPP_
 
 #include <utility>
-#include <cassert>
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
@@ -20,7 +19,7 @@ namespace GridFormat {
 
 /*!
  * \ingroup Common
- * \brief Interface for fields.
+ * \brief Interface for fields of values.
  */
 class Field {
  public:

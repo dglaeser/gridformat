@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef GRIDFORMAT_COMMON_DETAIL_CRTP_HPP_
 #define GRIDFORMAT_COMMON_DETAIL_CRTP_HPP_
+#ifndef DOXYGEN
 
-#ifndef DOXYGEN_SKIP_DETAILS
 namespace GridFormat::Detail {
 
 template<typename Impl, typename Base>
@@ -28,5 +28,5 @@ class CRTPBase {
 
 }  // end namespace GridFormat::Detail
 
-#endif  // DOXYGEN_SKIP_DETAILS
+#endif  // DOXYGEN
 #endif  // GRIDFORMAT_COMMON_DETAIL_CRTP_HPP_

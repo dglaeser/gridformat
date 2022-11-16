@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Common
- * \brief Exception handling facilities.
+ * \brief Custom exception classes.
  */
 #ifndef GRIDFORMAT_COMMON_EXCEPTIONS_HPP_
 #define GRIDFORMAT_COMMON_EXCEPTIONS_HPP_

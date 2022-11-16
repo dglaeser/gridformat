@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Common
- * \brief TODO: Doc me
+ * \copydoc GridFormat::ExtendedRange
  */
 #ifndef GRIDFORMAT_COMMON_EXTENDED_RANGE_HPP_
 #define GRIDFORMAT_COMMON_EXTENDED_RANGE_HPP_
@@ -17,6 +17,12 @@
 
 namespace GridFormat {
 
+/*!
+ * \ingroup Common
+ * \brief Extends a given range up to the given target
+ *        dimension by apppending the given value.
+ * \note This expects the range to be smaller than `target_dimension`
+ */
 template<std::size_t target_dimension, std::ranges::forward_range R>
 class ExtendedRange {
     using ValueType = std::ranges::range_value_t<R>;

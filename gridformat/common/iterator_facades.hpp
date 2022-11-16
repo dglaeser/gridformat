@@ -18,8 +18,8 @@
 
 namespace GridFormat {
 
-/// \addtogroup Common
-/// @{
+//! \addtogroup Common
+//! @{
 
 /*!
  * \brief Gateway for granting the iterator facades access to
@@ -47,16 +47,14 @@ class IteratorAccess {
         return impl->_decrement();
     }
 
-    template<typename IteratorImpl, std::signed_integral DiffType>
-    static void advance(IteratorImpl* impl, DiffType n) {
+    template<typename IteratorImpl>
+    static void advance(IteratorImpl* impl, std::signed_integral auto n) {
         return impl->_advance(n);
     }
 
-    template<std::signed_integral DiffType, typename IteratorImpl1, typename IteratorImpl2>
-    static DiffType distance(IteratorImpl1* lhs, IteratorImpl2* rhs) {
-        const auto d = lhs->_distance_to(*rhs);
-        static_assert(std::signed_integral<decltype(d)>);
-        return d;
+    template<std::signed_integral Difference, typename IteratorImpl1, typename IteratorImpl2>
+    static Difference distance(IteratorImpl1* lhs, IteratorImpl2* rhs) {
+        return lhs->_distance_to(*rhs);
     }
 
     template<typename IteratorImpl1, typename IteratorImpl2>
@@ -255,7 +253,7 @@ using RandomAccessIteratorFacade = IteratorFacade<Impl,
                                                   Pointer,
                                                   Difference>;
 
-/// @} end Common group
+//! @} end Common group
 
 }  // end namespace GridFormat
 

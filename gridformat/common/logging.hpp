@@ -3,26 +3,59 @@
 /*!
  * \file
  * \ingroup Common
- * \brief TODO: Doc me
+ * \brief Functionality for styling and logging strings.
  */
 #ifndef GRIDFORMAT_COMMON_LOGGING_HPP_
 #define GRIDFORMAT_COMMON_LOGGING_HPP_
 
-#include <string_view>
+#include <vector>
 #include <iostream>
+#include <string_view>
+#include <string>
 
-#include <gridformat/common/format.hpp>
+namespace GridFormat {
 
-namespace GridFormat::Logging {
+#ifndef DOXYGEN
+namespace Detail {
 
-/*!
- * \ingroup Common
- * \brief TODO: Doc me
- */
-void as_warning(std::string_view msg, std::ostream& s = std::cout) {
+struct AnsiiCodes {
+    std::vector<int> codes;
+
+    std::string format(std::string_view msg) const {
+        std::string result;
+        for (auto _code : codes)
+            result += _format_code(_code);
+        result += msg;
+        result += _format_code(0);
+        return result;
+    }
+
+ private:
+    std::string _format_code(int code) const {
+        return std::string{"\033["} + std::to_string(code) + "m";
+    }
+};
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
+//! Style the given string as a warning
+std::string as_warning(std::string_view msg) {
+    Detail::AnsiiCodes codes{{1, 33}};
+    return codes.format(msg);
+}
+
+//! Style the given string as an error
+std::string as_error(std::string_view msg) {
+    Detail::AnsiiCodes codes{{1, 31}};
+    return codes.format(msg);
+}
+
+//! Log a warning message.
+void log_warning(std::string_view msg, std::ostream& s = std::cout) {
     s << "[GFMT] " << Format::as_warning("Warning") << ": " << msg << "\n";
 }
 
-}  // namespace GridFormat::Logging
+}  // namespace GridFormat
 
 #endif  // GRIDFORMAT_COMMON_LOGGING_HPP_

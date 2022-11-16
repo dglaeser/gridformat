@@ -1,11 +1,12 @@
 #include <string>
 
-#include <boost/ut.hpp>
-
 #include <gridformat/common/indentation.hpp>
+#include "../testing.hpp"
 
 int main() {
-    using namespace boost::ut;
+    using GridFormat::Testing::eq;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::operator""_test;
 
     "indentation"_test = [] () {
         for (unsigned width : {0, 1, 2}) {

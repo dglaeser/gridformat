@@ -1,23 +1,24 @@
-#include <boost/ut.hpp>
-
 #include <gridformat/common/precision.hpp>
-
-namespace bt = boost::ut;
+#include "../testing.hpp"
 
 template<typename T>
 void _test(const GridFormat::Precision<T>& prec) {
     GridFormat::DynamicPrecision precision;
     precision = prec;
-    bt::expect(bt::eq(precision.is_integral(), std::is_integral_v<T>));
-    bt::expect(bt::eq(precision.is_signed(), std::is_signed_v<T>));
-    bt::expect(bt::eq(precision.number_of_bytes(), sizeof(T)));
+
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::eq;
+    expect(eq(precision.is_integral(), std::is_integral_v<T>));
+    expect(eq(precision.is_signed(), std::is_signed_v<T>));
+    expect(eq(precision.size_in_bytes(), sizeof(T)));
     precision.visit([] <typename _T> (const GridFormat::Precision<_T>&) {
-        bt::expect(std::is_same_v<T, _T>);
+        expect(std::is_same_v<T, _T>);
     });
 }
 
 int main() {
-    using bt::operator""_test;
+    using GridFormat::Testing::operator""_test;
+
     "dynamic_precision_float32"_test = [&] () { _test(GridFormat::float32); };
     "dynamic_precision_float64"_test = [&] () { _test(GridFormat::float64); };
     "dynamic_precision_int8"_test = [&] () { _test(GridFormat::int8); };
