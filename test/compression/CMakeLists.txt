@@ -1,1 +1,1 @@
-gridformat_add_test(test_lzma_compression test_lzma_compression.cpp)
+gridformat_add_test_if(GRIDFORMAT_HAVE_LZMA test_lzma_compression test_lzma_compression.cpp)

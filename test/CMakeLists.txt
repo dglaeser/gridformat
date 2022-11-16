@@ -15,6 +15,24 @@ function(gridformat_add_test NAME SOURCE)
     add_dependencies(build_tests ${NAME})
 endfunction()
 
+function(gridformat_add_test_if CONDITION NAME SOURCE)
+    if (${CONDITION})
+        gridformat_add_test(${NAME} ${SOURCE})
+    else ()
+        set(DUMMY_MAIN "${CMAKE_CURRENT_BINARY_DIR}/test_dummy_${NAME}.cpp")
+        file(WRITE ${DUMMY_MAIN}
+            "#include <iostream>\n\n"
+            "int main()\n"
+            "{\n"
+            "    std::cout << \"Test is skipped due to unmet condition '${CONDITION}'\" << std::endl;\n"
+            "    return 255;\n"
+            "}"
+        )
+        gridformat_add_test(${NAME} ${DUMMY_MAIN})
+        set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE 255)
+    endif ()
+endfunction()
+
 add_subdirectory(common)
 add_subdirectory(compression)
 add_subdirectory(encoding)
