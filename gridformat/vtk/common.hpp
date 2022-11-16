@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup VTK
- * \brief TODO: Doc me
+ * \brief Common functionality for VTK writers
  */
 #ifndef GRIDFORMAT_VTK_COMMON_HPP_
 #define GRIDFORMAT_VTK_COMMON_HPP_
@@ -12,12 +12,14 @@
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
+#include <gridformat/common/extended_range.hpp>
 #include <gridformat/common/range_field.hpp>
 #include <gridformat/common/ranges.hpp>
 
+
 #include <gridformat/encoding/ascii.hpp>
 #include <gridformat/encoding/base64.hpp>
-#include <gridformat/encoding/binary.hpp>
+#include <gridformat/encoding/raw.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/concepts.hpp>
@@ -25,6 +27,10 @@
 #include <gridformat/grid/grid.hpp>
 
 namespace GridFormat::VTK {
+
+//! \addtogroup VTK
+//! \{
+
 namespace DataFormat {
 
 struct Inlined {};
@@ -88,9 +94,10 @@ auto make_connectivity_field(const Grid& grid) {
             connectivity.push_back(id(grid, p));
     connectivity.shrink_to_fit();
     return RangeField{std::move(connectivity)};
-    // Problem: with join_view we end up with input_iterator
-    //          but we currently require forward_iterator...
-    //          Do we really need forward ranges?
+    // Problem: with join_view we end up with input_iterator but
+    //          we currently require forward_iterator. With c++23
+    //          std::views::cache_latest this could be fixed and
+    //          we may avoid having to create the connectiviy vector.
     // return RangeField{
     //     cells(grid)
     //         | std::views::all
@@ -141,6 +148,8 @@ auto make_types_field(const Grid& grid) {
             })
     };
 }
+
+//! \} group VTK
 
 }  // namespace GridFormat::VTK
 

@@ -2,14 +2,18 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup VTK
- * \brief TODO: Doc me
+ * \ingroup Grid
+ * \copydoc GridFormat::CellType
  */
 #ifndef GRIDFORMAT_GRID_CELL_TYPE_HPP_
 #define GRIDFORMAT_GRID_CELL_TYPE_HPP_
 
 namespace GridFormat {
 
+/*!
+ * \ingroup Grid
+ * \brief Defines the supported cell types
+ */
 enum class CellType {
     vertex,
     segment,

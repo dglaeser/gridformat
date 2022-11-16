@@ -26,8 +26,8 @@ class Indentation {
 
     Indentation() : Indentation(Options{}) {}
     explicit Indentation(Options opts)
-    : _width(std::string(opts.width, ' '))
-    , _indent(std::string(opts.width*opts.level, ' '))
+    : _width{std::string(opts.width, ' ')}
+    , _indent{std::string(opts.width*opts.level, ' ')}
     {}
 
     const std::string& get() const { return _indent; }

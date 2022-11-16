@@ -3,12 +3,11 @@
 #include <iterator>
 #include <type_traits>
 
-#include <boost/ut.hpp>
-
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/field.hpp>
 #include <gridformat/grid/writer.hpp>
 #include "unstructured_grid.hpp"
+#include "../testing.hpp"
 
 template<typename Grid>
 class MyWriter : public GridFormat::GridWriter<Grid> {
@@ -61,22 +60,20 @@ void check_serialization(const GridFormat::Field& field, const std::vector<T>& r
         throw GridFormat::SizeError("Precision (signedness) does not match reference");
     if (field.precision().is_integral() != std::is_integral_v<T>)
         throw GridFormat::SizeError("Precision (is_integral) does not match reference");
-    if (field.precision().number_of_bytes() != sizeof(T))
+    if (field.precision().size_in_bytes() != sizeof(T))
         throw GridFormat::SizeError("Precision (byte size) does not match reference");
     if (serialization.size() != reference.size()*sizeof(T))
         throw GridFormat::SizeError("Serialization size does not match the reference");
 
-    using boost::ut::eq;
-    using boost::ut::expect;
+    using GridFormat::Testing::eq;
+    using GridFormat::Testing::expect;
     const T* values = reinterpret_cast<const T*>(serialization.as_span().data());
     for (std::size_t i = 0; i < reference.size(); ++i)
         expect(eq(values[i], reference[i]));
 }
 
 int main() {
-
-    namespace bt = boost::ut;
-    using bt::operator""_test;
+    using GridFormat::Testing::operator""_test;
 
     const auto grid = GridFormat::Test::make_unstructured_2d();
 

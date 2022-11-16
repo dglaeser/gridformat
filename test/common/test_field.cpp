@@ -43,7 +43,7 @@ int main() {
         expect(eq(field->extent(0), 4_ul));
         expect(eq(field->precision().is_integral(), true));
         expect(eq(field->precision().is_signed(), true));
-        expect(eq(field->precision().number_of_bytes(), sizeof(int)));
+        expect(eq(field->precision().size_in_bytes(), sizeof(int)));
     };
 
     return 0;

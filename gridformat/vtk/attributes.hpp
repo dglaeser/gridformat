@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup VTK
- * \brief TODO: Doc me
+ * \brief Helper functions to get the VTK-specific names of things.
  */
 #ifndef GRIDFORMAT_VTK_ATTRIBUTES_HPP_
 #define GRIDFORMAT_VTK_ATTRIBUTES_HPP_
@@ -15,14 +15,17 @@
 #include <gridformat/compression/lzma.hpp>
 #include <gridformat/encoding/ascii.hpp>
 #include <gridformat/encoding/base64.hpp>
-#include <gridformat/encoding/binary.hpp>
+#include <gridformat/encoding/raw.hpp>
 #include <gridformat/vtk/common.hpp>
 
 namespace GridFormat::VTK {
 
+//! \addtogroup VTK
+//! \{
+
 std::string attribute_name(const DynamicPrecision& prec) {
     std::string prefix = prec.is_integral() ? (prec.is_signed() ? "Int" : "UInt") : "Float";
-    return prefix + std::to_string(prec.number_of_bytes()*8);
+    return prefix + std::to_string(prec.size_in_bytes()*8);
 }
 
 std::string attribute_name(std::endian e) {
@@ -40,6 +43,8 @@ std::string data_format_name(const Encoding&, const DataFormat::Appended&) { ret
 std::string data_format_name(const Encoding::Ascii&, const DataFormat::Inlined&) { return "ascii"; }
 std::string data_format_name(const Encoding::AsciiWithOptions&, const DataFormat::Inlined&) { return "ascii"; }
 std::string data_format_name(const Encoding::Base64&, const DataFormat::Inlined&) { return "binary"; }
+
+//! \} group VTK
 
 }  // namespace GridFormat::VTK
 

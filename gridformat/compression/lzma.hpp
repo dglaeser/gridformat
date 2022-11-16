@@ -14,12 +14,13 @@
 #include <utility>
 #include <vector>
 #include <cassert>
+#include <algorithm>
 
 #include <lzma.h>
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/serialization.hpp>
-#include <gridformat/common/format.hpp>
+#include <gridformat/common/logging.hpp>
 
 #include <gridformat/compression/common.hpp>
 
@@ -89,7 +90,7 @@ class LZMA {
                 block_buffer.data(), &out_pos, block_buffer.capacity()
             );
             if (lzma_ret != LZMA_OK)
-                throw InvalidState(Format::as_error("(LZMACompressor) Error upon compression"));
+                throw InvalidState(as_error("(LZMACompressor) Error upon compression"));
 
             std::copy_n(block_buffer.data(),
                         out_pos,
@@ -100,7 +101,7 @@ class LZMA {
         }
 
         if (cur_in != size_in_bytes)
-            throw InvalidState(Format::as_error("(LZMACompressor) unexpected number of bytes processed"));
+            throw InvalidState(as_error("(LZMACompressor) unexpected number of bytes processed"));
 
         return {blocks, std::move(compressed_block_sizes)};
     }
@@ -123,7 +124,7 @@ struct LZMAAdapter {
 inline constexpr Detail::LZMAAdapter lzma_with;
 inline constexpr LZMA lzma = lzma_with();
 
-//! @} end Compression group
+//! @} group Compression
 
 }  // end namespace GridFormat::Compression
 

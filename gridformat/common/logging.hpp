@@ -53,7 +53,7 @@ std::string as_error(std::string_view msg) {
 
 //! Log a warning message.
 void log_warning(std::string_view msg, std::ostream& s = std::cout) {
-    s << "[GFMT] " << Format::as_warning("Warning") << ": " << msg << "\n";
+    s << "[GFMT] " << as_warning("Warning") << ": " << msg << "\n";
 }
 
 }  // namespace GridFormat

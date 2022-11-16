@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup Common
- * \brief TODO: Doc me
+ * \ingroup VTK
+ * \brief Helper classes for writing VTK appendices of xml formats
  */
 #ifndef GRIDFORMAT_VTK_APPENDIX_HPP_
 #define GRIDFORMAT_VTK_APPENDIX_HPP_
@@ -15,6 +15,7 @@
 #include <vector>
 #include <memory>
 #include <limits>
+#include <type_traits>
 
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/indentation.hpp>
@@ -25,6 +26,12 @@
 
 namespace GridFormat::VTK {
 
+/*!
+ * \ingroup VTK
+ * \brief Observer for appendices.
+ *        Allows registering the offsets when streaming
+ *        all fields that are part of the appendix.
+ */
 class AppendixStreamObserver {
  public:
     void register_offset(std::size_t offset) {
@@ -39,11 +46,15 @@ class AppendixStreamObserver {
     std::vector<std::size_t> _offsets;
 };
 
+/*!
+ * \ingroup VTK
+ * \brief Stores vtk data arrays to be exported as vtk-xml appendix.
+ */
 class Appendix {
     struct DataArrayModel {
         virtual ~DataArrayModel() = default;
-        friend std::ostream& operator<<(std::ostream& s, const DataArrayModel& array) {
-            array.stream(s);
+        friend std::ostream& operator<<(std::ostream& s, const DataArrayModel& arr) {
+            arr.stream(s);
             return s;
         }
 
@@ -54,7 +65,9 @@ class Appendix {
     template<Concepts::Streamable<std::ostream> DataArray>
     class DataArrayImpl : public DataArrayModel {
      public:
-        explicit DataArrayImpl(DataArray&& arr) : _data_array(std::move(arr)) {}
+        explicit DataArrayImpl(DataArray&& arr)
+        : _data_array(std::move(arr))
+        {}
 
      private:
         DataArray _data_array;
@@ -163,11 +176,12 @@ std::vector<std::size_t> write_xml_element_with_offsets(const XMLElement& e,
     return offset_positions;
 }
 
-template<bool is_valid_xml = false, typename Context, typename Encoder>
-inline void write_with_appendix([[maybe_unused]] Context&& context,
-                                [[maybe_unused]] std::ostream& s,
-                                [[maybe_unused]] const Encoder& encoder,
-                                [[maybe_unused]] Indentation indentation = {}) {
+template<typename Context, typename Encoder>
+requires(!std::is_const_v<std::remove_reference_t<Context>>)
+inline void write_with_appendix(Context&& context,
+                                std::ostream& s,
+                                const Encoder& encoder,
+                                Indentation indentation = {}) {
     if (produces_valid_xml(encoder))
         s << "<?xml version=\"1.0\"?>\n";
 
@@ -183,7 +197,7 @@ inline void write_with_appendix([[maybe_unused]] Context&& context,
     );
     const auto& offsets = observer.offsets();
     if (offsets.size() != offset_positions.size())
-        throw SizeError("Number of written & registered offset does not match");
+        throw SizeError("Number of written & registered offsets does not match");
 
     const auto cur_pos = s.tellp();
     for (std::size_t i = 0; i < offsets.size(); ++i) {

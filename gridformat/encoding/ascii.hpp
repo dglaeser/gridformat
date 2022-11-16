@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup Common
- * \brief TODO: Doc me
+ * \ingroup Encoding
+ * \brief Encoder and stream using ascii
  */
 #ifndef GRIDFORMAT_COMMON_ENCODING_ASCII_HPP_
 #define GRIDFORMAT_COMMON_ENCODING_ASCII_HPP_
@@ -12,9 +12,12 @@
 #include <limits>
 #include <algorithm>
 
-#include <gridformat/common/stream.hpp>
+#include <gridformat/common/output_stream.hpp>
 
 namespace GridFormat {
+
+//! \addtogroup Encoding
+//! \{
 
 #ifndef DOXYGEN
 namespace Encoding::Detail {
@@ -35,12 +38,12 @@ struct AsciiFormatOptions {
     std::size_t entries_per_line = std::numeric_limits<std::size_t>::max();
 };
 
-template<typename Stream>
-class AsciiStream : public StreamWrapperBase<Stream> {
+template<typename OStream>
+class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
  public:
-    AsciiStream(Stream& s, AsciiFormatOptions opts = {})
-    : StreamWrapperBase<Stream>(s)
-    , _opts(std::move(opts))
+    AsciiOutputStream(OStream& s, AsciiFormatOptions opts = {})
+    : OutputStreamWrapperBase<OStream>(s)
+    , _opts{std::move(opts)}
     {}
 
     template<typename T, std::size_t size>
@@ -79,7 +82,7 @@ class AsciiWithOptions {
 
     template<typename S>
     constexpr auto operator()(S& s) const noexcept {
-        return AsciiStream{s, _opts};
+        return AsciiOutputStream{s, _opts};
     }
 
  public:
@@ -89,7 +92,7 @@ class AsciiWithOptions {
 struct Ascii {
     template<typename S>
     constexpr auto operator()(S& s) const noexcept {
-        return AsciiStream{s};
+        return AsciiOutputStream{s};
     }
 
     auto with(AsciiFormatOptions opts) const {
@@ -100,6 +103,9 @@ struct Ascii {
 inline constexpr Ascii ascii;
 
 }  // namespace Encoding
+
+//! \} group Encoding
+
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_COMMON_ENCODING_ASCII_HPP_

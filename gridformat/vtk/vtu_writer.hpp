@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup VTK
- * \brief TODO: Doc me
+ * \copydoc GridFormat::VTUWriter
  */
 #ifndef GRIDFORMAT_VTK_VTU_WRITER_HPP_
 #define GRIDFORMAT_VTK_VTU_WRITER_HPP_
@@ -11,11 +11,7 @@
 #include <ranges>
 #include <ostream>
 
-#include <gridformat/common/extended_range.hpp>
-#include <gridformat/common/precision.hpp>
-#include <gridformat/common/concepts.hpp>
 #include <gridformat/grid.hpp>
-
 #include <gridformat/vtk/common.hpp>
 #include <gridformat/vtk/xml.hpp>
 
@@ -23,7 +19,7 @@ namespace GridFormat {
 
 /*!
  * \ingroup VTK
- * \brief TODO: Doc me
+ * \brief Writer for .vtu file format
  */
 template<Concepts::UnstructuredGrid Grid,
          typename XMLOpts = VTK::XMLOptions<>,

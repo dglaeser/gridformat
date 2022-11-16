@@ -3,25 +3,28 @@
 /*!
  * \file
  * \ingroup Common
- * \brief TODO: Doc me
+ * \copydoc GridFormat::Serialization
  */
 #ifndef GRIDFORMAT_COMMON_SERIALIZATION_HPP_
 #define GRIDFORMAT_COMMON_SERIALIZATION_HPP_
 
 #include <vector>
 #include <cstddef>
-#include <concepts>
 #include <span>
 
 namespace GridFormat {
 
+/*!
+ * \ingroup Common
+ * \brief Represents the serialization (vector of bytes) of an object
+ */
 class Serialization {
  public:
     using Byte = std::byte;
 
     Serialization() = default;
-    explicit Serialization(std::integral auto size)
-    : _data(size)
+    explicit Serialization(std::size_t size)
+    : _data{size}
     {}
 
     std::size_t size() const { return _data.size(); }

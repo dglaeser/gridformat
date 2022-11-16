@@ -4,13 +4,15 @@
 #include <string>
 #include <algorithm>
 
-#include <boost/ut.hpp>
-
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/xml/tag.hpp>
+#include "../testing.hpp"
 
 int main () {
-    using namespace boost::ut;
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::throws;
+    using GridFormat::Testing::eq;
 
     "xml_tag_name"_test = [] () {
         GridFormat::XMLTag tag("some_tag");

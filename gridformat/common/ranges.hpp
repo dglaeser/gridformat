@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Common
- * \brief TODO: Doc me
+ * \brief Helper functions for ranges
  */
 #ifndef GRIDFORMAT_COMMON_RANGES_HPP_
 #define GRIDFORMAT_COMMON_RANGES_HPP_

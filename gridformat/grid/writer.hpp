@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup Common
- * \brief TODO: Doc me
+ * \ingroup Grid
+ * \brief Base classes for grid data writers
  */
 #ifndef GRIDFORMAT_GRID_WRITER_HPP_
 #define GRIDFORMAT_GRID_WRITER_HPP_
@@ -26,59 +26,17 @@
 #include <gridformat/grid/grid.hpp>
 
 namespace GridFormat {
-namespace Concepts {
 
-template<typename T, typename Entity>
-concept EntityFunction = std::invocable<T, const std::decay_t<Entity>&>;
+//! \addtogroup Grid
+//! \{
 
-template<typename T, typename Grid>
-concept PointFunction = EntityFunction<T, Point<Grid>>;
-
-template<typename T, typename Grid>
-concept CellFunction = EntityFunction<T, Cell<Grid>>;
-
-template<typename T, typename Grid>
-concept GridEntityFunction = PointFunction<T, Grid> or CellFunction<T, Grid>;
-
-template<typename T, typename Entity>
-concept ScalarFunction = Scalar<std::invoke_result_t<T, const std::decay_t<Entity>&>>;
-
-template<typename T, typename Entity>
-concept VectorFunction = Vector<std::invoke_result_t<T, const std::decay_t<Entity>&>>;
-
-template<typename T, typename Entity>
-concept TensorFunction = Tensor<std::invoke_result_t<T, const std::decay_t<Entity>&>>;
-
-template<typename T, typename Grid>
-concept ScalarPointFunction = PointFunction<T, Grid> and ScalarFunction<T, Point<Grid>>;
-
-template<typename T, typename Grid>
-concept ScalarCellFunction = CellFunction<T, Grid> and ScalarFunction<T, Point<Grid>>;
-
-template<typename T, typename Grid>
-concept VectorPointFunction = PointFunction<T, Grid> and VectorFunction<T, Point<Grid>>;
-
-template<typename T, typename Grid>
-concept VectorCellFunction = CellFunction<T, Grid> and VectorFunction<T, Point<Grid>>;
-
-template<typename T, typename Grid>
-concept TensorPointFunction = PointFunction<T, Grid> and TensorFunction<T, Point<Grid>>;
-
-template<typename T, typename Grid>
-concept TensorCellFunction = CellFunction<T, Grid> and TensorFunction<T, Point<Grid>>;
-
-}  // namespace Concepts
-
-template<typename F, typename E> requires(Concepts::EntityFunction<F, E>)
-using EntityFunctionResult = std::decay_t<std::invoke_result_t<F, const E&>>;
+template<typename F, typename E> requires(Concepts::Detail::EntityFunction<F, E>)
+using EntityFunctionValueType = GridDetail::EntityFunctionValueType<F, E>;
 
 template<typename F, typename E>
-using EntityFunctionScalar = FieldScalar<EntityFunctionResult<F, E>>;
+using EntityFunctionScalar = FieldScalar<EntityFunctionValueType<F, E>>;
 
-/*!
- * \ingroup Common
- * \brief TODO: Doc me
- */
+//! Base class for grid data writers
 template<typename Grid>
 class GridWriter {
     using FieldStorage = GridFormat::FieldStorage<>;
@@ -113,19 +71,19 @@ class GridWriter {
     }
 
  protected:
-    template<Concepts::GridEntityFunction<Grid> F,
+    template<Concepts::EntityFunction<Grid> F,
              std::ranges::range EntityRange,
              Concepts::Scalar T>
     auto _make_entity_field(F&& f, EntityRange&& entities, const Precision<T>& prec) const {
         return _make_entity_field(_make_entity_function_range(std::move(f), std::move(entities)), prec);
     }
 
-    template<std::ranges::forward_range R, Concepts::Scalar T>
+    template<std::ranges::range R, Concepts::Scalar T>
     auto _make_entity_field(R&& r, const Precision<T>& prec) const {
         return RangeField{std::move(r), prec};
     }
 
-    template<Concepts::GridEntityFunction<Grid> F, std::ranges::range EntityRange>
+    template<Concepts::EntityFunction<Grid> F, std::ranges::range EntityRange>
     auto _make_entity_function_range(F&& f, EntityRange&& entities) const {
         using Entity = std::ranges::range_value_t<EntityRange>;
         return std::move(entities)
@@ -160,6 +118,7 @@ class GridWriter {
     FieldStorage _cell_fields;
 };
 
+//! Virtual base class for grid data writers
 template<typename Grid>
 class GridWriterBase : public GridWriter<Grid> {
     using ParentType = GridWriter<Grid>;
@@ -180,6 +139,7 @@ class GridWriterBase : public GridWriter<Grid> {
     virtual void _write(std::ostream& s) const = 0;
 };
 
+//! Virtual base class for time series writers
 template<typename Grid, Concepts::Scalar Time = double>
 class TimeSeriesGridWriterBase : public GridWriter<Grid> {
     using ParentType = GridWriter<Grid>;
@@ -194,6 +154,8 @@ class TimeSeriesGridWriterBase : public GridWriter<Grid> {
  private:
     virtual void _write(const Time& t) const = 0;
 };
+
+//! \} group Grid
 
 }  // namespace GridFormat
 

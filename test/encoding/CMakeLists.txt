@@ -1,1 +1,4 @@
+gridformat_add_test(test_ascii test_ascii.cpp)
 gridformat_add_test(test_base64 test_base64.cpp)
+gridformat_add_test(test_raw test_raw.cpp)
+gridformat_add_test(test_encoded_field test_encoded_field.cpp)

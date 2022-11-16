@@ -33,12 +33,12 @@ class ExtendedRange {
      public:
         Iterator() = default;
         explicit Iterator(ConstRange& range, ValueType value, bool is_end = false)
-        : _range(&range)
-        , _it(is_end ? std::ranges::end(*_range) : std::ranges::begin(*_range))
-        , _extension_value(value)
-        , _extension_size(_compute_extension_size())
-        , _idx_in_extension(is_end ? _extension_size : 0)
-        , _is_end(is_end)
+        : _range{&range}
+        , _it{is_end ? std::ranges::end(*_range) : std::ranges::begin(*_range)}
+        , _extension_value{value}
+        , _extension_size{_compute_extension_size()}
+        , _idx_in_extension{is_end ? _extension_size : 0}
+        , _is_end{is_end}
         {}
 
      private:
@@ -92,8 +92,8 @@ class ExtendedRange {
  public:
     template<std::ranges::range _R> requires(std::convertible_to<_R, R>)
     explicit ExtendedRange(_R&& range, ValueType value)
-    : _range(std::forward<_R>(range))
-    , _value(value)
+    : _range{std::forward<_R>(range)}
+    , _value{value}
     {}
 
     auto begin() const { return Iterator{_range, _value}; }

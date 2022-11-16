@@ -94,7 +94,8 @@ class DynamicPrecision {
         Precision<std::uint16_t>,
         Precision<std::uint32_t>,
         Precision<std::uint64_t>,
-        Precision<std::size_t>
+        Precision<std::size_t>,
+        Precision<char>
     > _precision;
 };
 

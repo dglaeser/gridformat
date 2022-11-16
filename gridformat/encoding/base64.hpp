@@ -2,23 +2,24 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup Common
- * \brief TODO: Doc me
+ * \ingroup Encoding
+ * \brief Encoder and stream using base64
  */
 #ifndef GRIDFORMAT_COMMON_ENCODING_BASE64_HPP_
 #define GRIDFORMAT_COMMON_ENCODING_BASE64_HPP_
 
-#include <ostream>
 #include <cassert>
 #include <algorithm>
 
-#include <gridformat/common/stream.hpp>
-#include <gridformat/common/concepts.hpp>
+#include <gridformat/common/output_stream.hpp>
 
 namespace GridFormat {
 
-template<typename Stream = std::ostream>
-class Base64Stream : public StreamWrapperBase<Stream> {
+//! \addtogroup Encoding
+//! \{
+
+template<typename OStream>
+class Base64Stream : public OutputStreamWrapperBase<OStream> {
     using Byte = char;
     using Buffer = std::array<Byte, 3>;
 
@@ -50,12 +51,12 @@ class Base64Stream : public StreamWrapperBase<Stream> {
     }
 
  public:
-    explicit Base64Stream(Stream& s)
-    : StreamWrapperBase<Stream>(s)
+    explicit Base64Stream(OStream& s)
+    : OutputStreamWrapperBase<OStream>(s)
     {}
 
     template<typename T, std::size_t size>
-    void write(std::span<const T, size> data) {
+    void write(std::span<T, size> data) {
         std::ranges::for_each(std::as_bytes(data), [&] (const std::byte& byte) {
             _insert(static_cast<Byte>(byte));
         });
@@ -108,6 +109,9 @@ struct Base64 {
 inline constexpr Base64 base64;
 
 }  // namespace Encoding
+
+//! \} group Encoding
+
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_COMMON_ENCODING_BASE64_HPP_

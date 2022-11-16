@@ -7,6 +7,7 @@
 #include <ranges>
 #include <utility>
 #include <concepts>
+#include <type_traits>
 
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/concepts.hpp>
@@ -18,7 +19,7 @@ namespace GridFormat::GridDetail {
 
 template<typename T, typename Grid>
 concept EntityRange = requires(const Grid& grid) {
-    { T::get(grid) } -> std::ranges::input_range;
+    { T::get(grid) } -> std::ranges::range;
 };
 
 template<typename Grid, EntityRange<Grid> Range>
@@ -59,6 +60,9 @@ inline constexpr bool exposes_cell_corners
     = is_complete<Traits::CellCornerPoints<T, Cell<T>>> && requires(const T& grid) {
     { Traits::CellCornerPoints<T, Cell<T>>::get(grid, std::declval<const Cell<T>&>()) } -> Concepts::RangeOf<Point<T>>;
 };
+
+template<typename F, typename Entity>
+using EntityFunctionValueType = std::decay_t<std::invoke_result_t<F, const std::decay_t<Entity>&>>;
 
 }  // namespace GridFormat::GridDetail
 #endif // DOXYGEN

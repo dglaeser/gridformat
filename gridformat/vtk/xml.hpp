@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup VTK
- * \brief TODO: Doc me
+ * \brief Funcionality for writing VTK XML-type file formats
  */
 #ifndef GRIDFORMAT_VTK_XML_HPP_
 #define GRIDFORMAT_VTK_XML_HPP_
@@ -14,10 +14,10 @@
 #include <utility>
 #include <type_traits>
 
+#include <gridformat/common/extended_range.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/ranges.hpp>
-#include <gridformat/common/streamable_field.hpp>
 #include <gridformat/common/logging.hpp>
 
 #include <gridformat/encoding/ascii.hpp>
@@ -33,13 +33,16 @@
 
 namespace GridFormat::VTK {
 
+//! \addtogroup VTK
+//! \{
+
 template<typename Encoding = GridFormat::Encoding::Base64,
          typename Compression = None,
          typename DataFormat = Automatic>
 struct XMLOptions {
     Encoding encoder = Encoding{};
     Compression compression = Compression{};
-    DataFormat format = DataFormat{};
+    DataFormat data_format = DataFormat{};
 };
 
 template<typename CoordPrecision = Automatic,
@@ -52,9 +55,9 @@ struct PrecisionOptions {
 #ifndef DOXYGEN
 namespace Detail {
 
-template<typename Opts> struct Format;
 template<typename Opts> struct Encoding;
 template<typename Opts> struct Compression;
+template<typename Opts> struct DataFormat;
 template<typename Opts> struct CoordinatePrecision;
 template<typename Opts> struct HeaderPrecision;
 
@@ -64,14 +67,14 @@ template<typename E, typename C, typename F>
 struct Compression<XMLOptions<E, C, F>> : public std::type_identity<C> {};
 
 template<typename E, typename C, typename F>
-struct Format<XMLOptions<E, C, F>> : public std::type_identity<F> {};
+struct DataFormat<XMLOptions<E, C, F>> : public std::type_identity<F> {};
 template<typename E, typename C>
-struct Format<XMLOptions<E, C, Automatic>>
+struct DataFormat<XMLOptions<E, C, Automatic>>
 : public std::type_identity<
     std::conditional_t<
         is_any_of<E, GridFormat::Encoding::Ascii, GridFormat::Encoding::AsciiWithOptions>,
-        DataFormat::Inlined,
-        DataFormat::Appended
+        VTK::DataFormat::Inlined,
+        VTK::DataFormat::Appended
     >
 > {};
 
@@ -87,9 +90,9 @@ struct HeaderPrecision<PrecisionOptions<C, H>> : public PrecisionType<H> {};
 template<typename XMLOpts>
 inline constexpr bool is_valid_data_format
     = !(std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::Ascii> &&
-        std::is_same_v<typename Format<XMLOpts>::type, DataFormat::Appended>)
+        std::is_same_v<typename DataFormat<XMLOpts>::type, VTK::DataFormat::Appended>)
     && !(std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::RawBinary> &&
-        std::is_same_v<typename Format<XMLOpts>::type, DataFormat::Inlined>);
+        std::is_same_v<typename DataFormat<XMLOpts>::type, VTK::DataFormat::Inlined>);
 
 template<typename Opts, typename Grid>
 using CoordinateType = std::conditional_t<
@@ -137,7 +140,7 @@ class XMLWriterBase : public GridWriterBase<Grid> {
         typename Detail::Compression<XMLOpts>::type, None
     >;
     static constexpr bool write_inline = std::is_same_v<
-        typename Detail::Format<XMLOpts>::type, DataFormat::Inlined
+        typename Detail::DataFormat<XMLOpts>::type, DataFormat::Inlined
     >;
 
  public:
@@ -150,7 +153,7 @@ class XMLWriterBase : public GridWriterBase<Grid> {
     , _xml_opts{std::move(xml_opts)}
     , _prec_opts{std::move(prec_opts)} {
         if constexpr (use_compression && use_ascii)
-            Logging::as_warning("Cannot compress ascii-encoded output, ignoring chosen compression");
+            log_warning("Cannot compress ascii-encoded output, ignoring chosen compression");
     }
 
     using ParentType::write;
@@ -193,11 +196,11 @@ class XMLWriterBase : public GridWriterBase<Grid> {
     XMLOpts _xml_opts;
     PrecOpts _prec_opts;
 
-    auto _format() const {
-        if constexpr (std::is_same_v<decltype(_xml_opts.format), Automatic>)
-            return typename Detail::Format<XMLOpts>::type{};
+    auto _data_format() const {
+        if constexpr (std::is_same_v<decltype(_xml_opts.data_format), Automatic>)
+            return typename Detail::DataFormat<XMLOpts>::type{};
         else
-            return _xml_opts.format;
+            return _xml_opts.data_format;
     }
 
     struct WriteContext {
@@ -236,7 +239,7 @@ class XMLWriterBase : public GridWriterBase<Grid> {
         XMLElement& da = _access_element(context, _get_element_names(xml_group)).add_child("DataArray");
         da.set_attribute("Name", std::move(data_array_name));
         da.set_attribute("type", attribute_name(field.precision()));
-        da.set_attribute("format", data_format_name(_xml_opts.encoder, _format()));
+        da.set_attribute("format", data_format_name(_xml_opts.encoder, _data_format()));
         if (field.dimension() == 1)
             da.set_attribute("NumberOfComponents", "1");
         else
@@ -338,7 +341,10 @@ class XMLWriterBase : public GridWriterBase<Grid> {
             | std::views::transform([] <std::ranges::range Tensor> (Tensor outer) {
                 using Vector = std::ranges::range_value_t<Tensor>;
                 using Scalar = std::ranges::range_value_t<Vector>;
-                static_assert(Concepts::StaticallySized<Vector> && "Tensor expansion expects statically sized tensor rows");
+                static_assert(
+                    Concepts::StaticallySizedRange<Vector>,
+                    "Tensor expansion expects statically sized tensor rows"
+                );
 
                 Vector last_row;
                 std::ranges::fill(last_row, Scalar{0.0});
@@ -352,6 +358,8 @@ class XMLWriterBase : public GridWriterBase<Grid> {
         );
     }
 };
+
+//! \} group VTK
 
 }  // namespace GridFormat::VTK
 

@@ -19,15 +19,15 @@
 
 namespace GridFormat {
 
-/// \addtogroup Common
-/// @{
+//! \addtogroup Common
+//! @{
 
 /*!
  * \name String conversions
  *       Helper functions for obtaining a string representation of objects.
  *       Users may provide an overload for their types to be consumed by GridFormat.
  */
-///@{
+//!@{
 
 template<Concepts::Scalar T>
 inline std::string as_string(const T& t) {
@@ -67,8 +67,8 @@ inline T from_string(const std::string& t) {
     return T{t};
 }
 
-/// @} converter functions
-/// @} Common group
+//! @} converter functions
+//! @} Common group
 
 }  // namespace GridFormat
 

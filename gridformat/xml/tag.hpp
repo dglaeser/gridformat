@@ -15,6 +15,7 @@
 #include <vector>
 #include <algorithm>
 
+#include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/string_conversion.hpp>
 
 namespace GridFormat {

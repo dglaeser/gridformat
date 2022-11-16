@@ -2,22 +2,32 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup Common
- * \brief TODO: Doc me
+ * \ingroup VTK
+ * \copydoc GridFormat::VTK::DataArray
  */
 #ifndef GRIDFORMAT_VTK_DATA_ARRAY_HPP_
 #define GRIDFORMAT_VTK_DATA_ARRAY_HPP_
 
+#include <span>
 #include <utility>
 #include <ostream>
-#include <concepts>
 #include <vector>
+#include <iterator>
+#include <type_traits>
 
-#include <gridformat/common/type_traits.hpp>
 #include <gridformat/encoding/ascii.hpp>
+#include <gridformat/encoding/concepts.hpp>
+#include <gridformat/encoding/encoded_field.hpp>
+#include <gridformat/compression/concepts.hpp>
 
 namespace GridFormat::VTK {
 
+/*!
+ * \ingroup VTK
+ * \brief Wraps a field and exposes it as VTK data array.
+ *        Essentially, this implements the operator<< to stream
+ *        the field data in the way that VTK file formats require it.
+ */
 template<typename Encoder,
          typename Compressor,
          typename HeaderType>
@@ -44,7 +54,7 @@ class DataArray {
             _export_ascii(s, Encoding::ascii.with({
                 .delimiter = " ",
                 .line_prefix = std::string(10, ' '),
-                .entries_per_line = 10
+                .entries_per_line = 15
             }));
         else if constexpr (std::is_same_v<Encoder, GridFormat::Encoding::AsciiWithOptions>)
             _export_ascii(s, _encoder);
@@ -57,14 +67,14 @@ class DataArray {
  private:
     template<typename _Enc>
     void _export_ascii(std::ostream& s, _Enc encoder) const {
-        s << StreamableField{_field, encoder};
+        s << EncodedField{_field, encoder};
     }
 
     void _export_binary(std::ostream& s) const {
         auto encoded = _encoder(s);
         std::array<const HeaderType, 1> number_of_bytes{static_cast<HeaderType>(_field.size_in_bytes())};
         encoded.write(std::span{number_of_bytes});
-        s << StreamableField{_field, _encoder};
+        s << EncodedField{_field, _encoder};
     }
 
     void _export_compressed_binary(std::ostream& s) const requires(Concepts::Compressor<Compressor>) {

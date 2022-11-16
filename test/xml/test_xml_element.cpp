@@ -5,12 +5,14 @@
 #include <sstream>
 #include <algorithm>
 
-#include <boost/ut.hpp>
-
 #include <gridformat/xml/element.hpp>
+#include "../testing.hpp"
 
 int main() {
-    using namespace boost::ut;
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::throws;
+    using GridFormat::Testing::eq;
 
     "xml_element_child_access"_test = [] () {
         GridFormat::XMLElement element("some_element");

@@ -2,13 +2,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup VTK
- * \brief TODO: Doc me
+ * \ingroup Grid
+ * \brief Traits classes for grid implementations to specialize.
  */
 #ifndef GRIDFORMAT_GRID_TRAITS_HPP_
 #define GRIDFORMAT_GRID_TRAITS_HPP_
 
 namespace GridFormat::Traits {
+
+//! \addtogroup Grid
+//! \{
 
 //! Exposes the range over all points of the grid via a static function `get(const Grid&)`
 template<typename Grid>
@@ -33,6 +36,8 @@ struct PointCoordinates;
 //! Metafunction to obtain a unique id for a point via a static function `get(const Grid&, const Point&)`
 template<typename Grid, typename Point>
 struct PointId;
+
+//! \} group Grid
 
 }  // namespace GridFormat::Traits
 

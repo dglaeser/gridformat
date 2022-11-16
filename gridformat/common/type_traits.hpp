@@ -42,15 +42,15 @@ namespace Detail {
     inline constexpr bool has_sub_range = std::ranges::range<std::ranges::range_value_t<R>>;
 
     template<std::ranges::range R, typename Enable = void>
-    struct MDRangeScalar;
+    struct MDRangeValueType;
 
     template<std::ranges::range R>
-    struct MDRangeScalar<R, std::enable_if_t<has_sub_range<R>>> {
-        using type = typename MDRangeScalar<std::ranges::range_value_t<R>>::type;
+    struct MDRangeValueType<R, std::enable_if_t<has_sub_range<R>>> {
+        using type = typename MDRangeValueType<std::ranges::range_value_t<R>>::type;
     };
 
     template<std::ranges::range R>
-    struct MDRangeScalar<R, std::enable_if_t<!has_sub_range<R>>> {
+    struct MDRangeValueType<R, std::enable_if_t<!has_sub_range<R>>> {
         using type = std::ranges::range_value_t<R>;
     };
 
@@ -58,7 +58,10 @@ namespace Detail {
 #endif // DOXYGEN
 
 template<std::ranges::range R>
-using MDRangeScalar = typename Detail::MDRangeScalar<R>::type;
+using MDRangeValueType = typename Detail::MDRangeValueType<R>::type;
+
+template<std::ranges::range R> requires(is_scalar<MDRangeValueType<R>>)
+using MDRangeScalar = MDRangeValueType<R>;
 
 template<std::ranges::range R>
 inline constexpr bool has_sub_range = Detail::has_sub_range<R>;
@@ -192,8 +195,8 @@ namespace Detail {
     template<typename T> requires(std::integral<T> or std::floating_point<T>)
     struct FieldScalar<T> : public std::type_identity<T> {};
 
-    template<std::ranges::range R>
-    struct FieldScalar<R> : public std::type_identity<typename MDRangeScalar<R>::type> {};
+    template<std::ranges::range R> requires(is_scalar<MDRangeScalar<R>>)
+    struct FieldScalar<R> : public std::type_identity<MDRangeScalar<R>> {};
 
 }  // end namespace Detail
 #endif  // DOXYGEN

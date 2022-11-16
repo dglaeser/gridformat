@@ -25,15 +25,15 @@ class Field {
  public:
     virtual ~Field() = default;
     Field(MDLayout layout, DynamicPrecision prec)
-    : _layout(std::move(layout))
-    , _prec(std::move(prec))
+    : _layout{std::move(layout)}
+    , _prec{std::move(prec)}
     {}
 
     std::size_t dimension() const { return _layout.dimension(); }
     std::size_t number_of_entries() const { return _layout.number_of_entries(); }
     std::size_t number_of_entries(std::size_t codim) const { return _layout.number_of_entries(codim); }
     std::size_t extent(std::size_t codim) const { return _layout.extent(codim); }
-    std::size_t size_in_bytes() const { return number_of_entries()*precision().number_of_bytes(); }
+    std::size_t size_in_bytes() const { return number_of_entries()*precision().size_in_bytes(); }
     const DynamicPrecision& precision() const { return _prec; }
 
     Serialization serialized() const {

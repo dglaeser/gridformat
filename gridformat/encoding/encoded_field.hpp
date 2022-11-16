@@ -2,36 +2,38 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup Common
- * \brief TODO: Doc me
+ * \ingroup Encoding
+ * \brief Wraps a field and makes it streamable using encoding
  */
-#ifndef GRIDFORMAT_COMMON_STREAMABLE_FIELD_HPP_
-#define GRIDFORMAT_COMMON_STREAMABLE_FIELD_HPP_
+#ifndef GRIDFORMAT_ENCODING_ENCODED_FIELD_HPP_
+#define GRIDFORMAT_ENCODING_ENCODED_FIELD_HPP_
 
 #include <utility>
 #include <ostream>
 #include <concepts>
 #include <type_traits>
 
-#include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/field.hpp>
+#include <gridformat/common/precision.hpp>
+#include <gridformat/common/exceptions.hpp>
+#include <gridformat/encoding/concepts.hpp>
 
 namespace GridFormat {
 
 /*!
- * \ingroup Common
- * \brief TODO: Doc me
+ * \ingroup Encoding
+ * \brief Wraps a field and makes it streamable using encoding
  */
 template<std::derived_from<Field> F, Concepts::Encoder<std::ostream> Encoder>
-class StreamableField {
+class EncodedField {
  public:
     template<std::convertible_to<const F&> _F> requires(std::is_lvalue_reference_v<_F>)
-    StreamableField(_F&& field, Encoder enc)
+    EncodedField(_F&& field, Encoder enc)
     : _field(field)
     , _encoder(std::move(enc))
     {}
 
-    friend std::ostream& operator<<(std::ostream& s, const StreamableField& field) {
+    friend std::ostream& operator<<(std::ostream& s, const EncodedField& field) {
         auto encoded = field._encoder(s);
         auto serialization = field._field.serialized();
         field._field.precision().visit([&] <typename T> (const Precision<T>&) {
@@ -54,8 +56,8 @@ class StreamableField {
 };
 
 template<typename F, typename Enc>
-StreamableField(F&&, Enc&&) -> StreamableField<std::decay_t<F>, std::decay_t<Enc>>;
+EncodedField(F&&, Enc&&) -> EncodedField<std::decay_t<F>, std::decay_t<Enc>>;
 
 }  // namespace GridFormat
 
-#endif  // GRIDFORMAT_COMMON_STREAMABLE_FIELD_HPP_
+#endif  // GRIDFORMAT_ENCODING_ENCODED_FIELD_HPP_

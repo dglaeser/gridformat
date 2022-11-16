@@ -1,9 +1,11 @@
 #include <vector>
 #include <cmath>
-#include <fstream>
+#include <string>
 
-#include "../grid/unstructured_grid.hpp"
+#include <gridformat/compression/lzma.hpp>
+#include <gridformat/encoding/base64.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
+#include "../grid/unstructured_grid.hpp"
 
 template<typename T, typename Position>
 T evaluate_function(const Position& pos) {
@@ -59,7 +61,13 @@ auto make_tensor_data(const std::vector<T>& scalars) {
     return result;
 }
 
-int main() {
+template<typename XMLOptions,
+         typename PrecisionOptions,
+         typename FieldPrecision = GridFormat::Precision<double>>
+void write(const XMLOptions& xml_opts,
+           const PrecisionOptions& prec_opts,
+           const std::string& filename,
+           const FieldPrecision& prec = {}) {
     const auto grid = GridFormat::Test::make_unstructured_2d();
     auto point_scalars = make_point_data<double>(grid);
     auto point_vectors = make_vector_data(point_scalars);
@@ -68,18 +76,7 @@ int main() {
     auto cell_vectors = make_vector_data(cell_scalars);
     auto cell_tensors = make_tensor_data(cell_scalars);
 
-    GridFormat::VTUWriter writer{
-        grid,
-        GridFormat::VTK::XMLOptions{
-            .encoder = GridFormat::Encoding::raw_binary,
-            .compression = GridFormat::none,
-            .format = GridFormat::automatic
-        },
-        GridFormat::VTK::PrecisionOptions{
-            .coordinate_precision = GridFormat::automatic,
-            .header_precision = GridFormat::automatic
-        }
-    };
+    GridFormat::VTUWriter writer{grid, xml_opts, prec_opts};
     writer.set_point_field("pscalar", [&] (const auto& p) { return point_scalars[p.id]; });
     writer.set_point_field("pvector", [&] (const auto& p) { return point_vectors[p.id]; });
     writer.set_point_field("ptensor", [&] (const auto& p) { return point_tensors[p.id]; });
@@ -87,7 +84,51 @@ int main() {
     writer.set_cell_field("cvector", [&] (const auto& c) { return cell_vectors[c.id]; });
     writer.set_cell_field("ctensor", [&] (const auto& c) { return cell_tensors[c.id]; });
 
-    writer.write("file");
+    writer.set_point_field("pscalar_custom_prec", [&] (const auto& p) { return point_scalars[p.id]; }, prec);
+    writer.set_point_field("pvector_custom_prec", [&] (const auto& p) { return point_vectors[p.id]; }, prec);
+    writer.set_point_field("ptensor_custom_prec", [&] (const auto& p) { return point_tensors[p.id]; }, prec);
+    writer.set_cell_field("cscalar_custom_prec", [&] (const auto& c) { return cell_scalars[c.id]; }, prec);
+    writer.set_cell_field("cvector_custom_prec", [&] (const auto& c) { return cell_vectors[c.id]; }, prec);
+    writer.set_cell_field("ctensor_custom_prec", [&] (const auto& c) { return cell_tensors[c.id]; }, prec);
+
+    std::cout << "Writing " << filename << ".vtu" << std::endl;
+    writer.write(filename);
+}
+
+int main() {
+    write(GridFormat::VTK::XMLOptions{}, GridFormat::VTK::PrecisionOptions{}, "vtu_default");
+    write(
+        GridFormat::VTK::XMLOptions{.encoder = GridFormat::Encoding::ascii},
+        GridFormat::VTK::PrecisionOptions{},
+        "vtu_ascii"
+    );
+    write(
+        GridFormat::VTK::XMLOptions{
+            .encoder = GridFormat::Encoding::base64,
+            .data_format = GridFormat::VTK::DataFormat::inlined
+        },
+        GridFormat::VTK::PrecisionOptions{},
+        "vtu_base64_inlined"
+    );
+    write(
+        GridFormat::VTK::XMLOptions{
+            .encoder = GridFormat::Encoding::base64,
+            .compression = GridFormat::Compression::lzma,
+            .data_format = GridFormat::VTK::DataFormat::inlined
+        },
+        GridFormat::VTK::PrecisionOptions{},
+        "vtu_base64_inlined_lzma_compression"
+    );
+    write(
+        GridFormat::VTK::XMLOptions{
+            .encoder = GridFormat::Encoding::base64,
+            .compression = GridFormat::Compression::lzma,
+            .data_format = GridFormat::VTK::DataFormat::inlined
+        },
+        GridFormat::VTK::PrecisionOptions{},
+        "vtu_base64_inlined_lzma_compression_custom_field_precision",
+        GridFormat::Precision<float>{}
+    );
 
     return 0;
 }

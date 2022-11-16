@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Common
- * \brief TODO: Doc me
+ * \copydoc GridFormat::RangeField
  */
 #ifndef GRIDFORMAT_COMMON_RANGE_FIELD_HPP_
 #define GRIDFORMAT_COMMON_RANGE_FIELD_HPP_
@@ -16,15 +16,16 @@
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
+#include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/field.hpp>
 
 namespace GridFormat {
 
 /*!
  * \ingroup Common
- * \brief Interface for fields.
+ * \brief Field implementation around a given range
  */
-template<Concepts::FieldValuesRange R, Concepts::Scalar ValueType = MDRangeScalar<R>>
+template<std::ranges::forward_range R, Concepts::Scalar ValueType = MDRangeScalar<R>>
 class RangeField : public Field {
     static constexpr bool is_contiguous_scalar_range =
         Concepts::MDRange<std::decay_t<R>, 1> and
@@ -40,8 +41,8 @@ class RangeField : public Field {
  public:
     template<typename _R> requires(std::convertible_to<_R, R>)
     explicit RangeField(_R&& range, const Precision<ValueType>& prec = {})
-    : Field(get_layout(range), prec)
-    , _range(std::forward<_R>(range))
+    : Field(get_md_layout(range), prec)
+    , _range{std::forward<_R>(range)}
     {}
 
  private:
@@ -53,7 +54,8 @@ class RangeField : public Field {
 
     void _fill(Serialization& serialization) const requires(is_contiguous_result_range) {
         const auto data = std::as_bytes(std::span{_range});
-        assert(data.size() == this->size_in_bytes());
+        if (data.size() != this->size_in_bytes())
+            throw SizeError("Range size does not match the expected serialized size");
         std::ranges::copy(data, serialization.as_span().begin());
     }
 
@@ -82,14 +84,14 @@ class RangeField : public Field {
     R _range;
 };
 
-template<Concepts::FieldValuesRange R> requires(std::is_lvalue_reference_v<R>)
+template<std::ranges::forward_range R> requires(std::is_lvalue_reference_v<R>)
 RangeField(R&& r) -> RangeField<const std::decay_t<R>&, MDRangeScalar<std::decay_t<R>>>;
-template<Concepts::FieldValuesRange R, Concepts::Scalar T> requires(std::is_lvalue_reference_v<R>)
+template<std::ranges::forward_range R, Concepts::Scalar T> requires(std::is_lvalue_reference_v<R>)
 RangeField(R&& r, const Precision<T>&) -> RangeField<const std::decay_t<R>&, T>;
 
-template<Concepts::FieldValuesRange R> requires(!std::is_lvalue_reference_v<R>)
+template<std::ranges::forward_range R> requires(!std::is_lvalue_reference_v<R>)
 RangeField(R&& r) -> RangeField<std::decay_t<R>>;
-template<Concepts::FieldValuesRange R, Concepts::Scalar T> requires(!std::is_lvalue_reference_v<R>)
+template<std::ranges::forward_range R, Concepts::Scalar T> requires(!std::is_lvalue_reference_v<R>)
 RangeField(R&& r, const Precision<T>&) -> RangeField<std::decay_t<R>, T>;
 
 }  // namespace GridFormat

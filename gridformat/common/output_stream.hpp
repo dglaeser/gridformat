@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Common
- * \brief TODO: Doc me
+ * \brief Helper classes & wrappers around output streams
  */
 #ifndef GRIDFORMAT_COMMON_STREAM_HPP_
 #define GRIDFORMAT_COMMON_STREAM_HPP_
@@ -19,12 +19,14 @@ namespace GridFormat {
 
 /*!
  * \ingroup Common
- * \brief TODO: Doc me
+ * \brief Wrapper around an output stream to expose our required interface
+ *        We require being able to write spans into output streams, and use
+ *        our desired precision for formatted output of floating point values.
  */
 class OutputStream {
  public:
     explicit OutputStream(std::ostream& s)
-    : _stream(s)
+    : _stream{s}
     {}
 
     template<Concepts::Streamable<std::ostream> T>
@@ -44,7 +46,7 @@ class OutputStream {
     }
 
     template<typename T, std::size_t size>
-    void write(std::span<const T, size> data) {
+    void write(std::span<T, size> data) {
         _write(std::as_bytes(data));
     }
 
@@ -60,37 +62,37 @@ class OutputStream {
 
 /*!
  * \ingroup Common
- * \brief TODO: Doc me
+ * \brief Base class for wrappers around output streams.
  */
-template<typename Stream>
-class StreamWrapperBase {
+template<typename OStream>
+class OutputStreamWrapperBase {
  public:
-    explicit StreamWrapperBase(Stream& s)
-    : _stream(s)
+    explicit OutputStreamWrapperBase(OStream& s)
+    : _stream{s}
     {}
 
  protected:
     template<typename T>
-    requires(Concepts::FormattedStream<Stream, T>)
+    requires(Concepts::FormattedOutputStream<OStream, T>)
     void _write_formatted(const T& t) {
         _stream << t;
     }
 
     template<typename T, std::size_t size>
-    requires(Concepts::Stream<Stream, T>)
+    requires(Concepts::OutputStream<OStream, T>)
     void _write_raw(std::span<const T, size> data) {
         _stream.write(data);
     }
 
-    Stream& _stream;
+    OStream& _stream;
 };
 
 //! Specialization for std ostreams
-template<std::derived_from<std::ostream> Stream>
-class StreamWrapperBase<Stream> {
+template<std::derived_from<std::ostream> OStream>
+class OutputStreamWrapperBase<OStream> {
  public:
-    explicit StreamWrapperBase(Stream& s)
-    : _stream(s)
+    explicit OutputStreamWrapperBase(OStream& s)
+    : _stream{s}
     {}
 
  protected:
@@ -100,7 +102,7 @@ class StreamWrapperBase<Stream> {
     }
 
     template<typename T, std::size_t size>
-    void _write_raw(std::span<const T, size> data) {
+    void _write_raw(std::span<T, size> data) {
         _stream.write(std::as_bytes(data));
     }
 

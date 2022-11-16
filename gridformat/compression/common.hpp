@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Compression
- * \brief TODO: Doc
+ * \brief Common classes used in the context of data compression
  */
 #ifndef GRIDFORMAT_COMPRESSION_COMMON_HPP_
 #define GRIDFORMAT_COMPRESSION_COMMON_HPP_
@@ -11,11 +11,16 @@
 #include <vector>
 #include <utility>
 #include <cassert>
+#include <numeric>
 
 #include <gridformat/common/serialization.hpp>
 
 namespace GridFormat::Compression {
 
+//! \addtogroup Compression
+//! \{
+
+//! Stores the block sizes used for compressing the given amount of bytes
 template<std::integral HeaderType = std::size_t>
 struct Blocks {
     const HeaderType block_size;
@@ -23,12 +28,13 @@ struct Blocks {
     const HeaderType number_of_blocks;
 
     Blocks(HeaderType size_in_bytes, HeaderType block_size)
-    : block_size(block_size)
-    , residual_block_size(size_in_bytes%block_size)
-    , number_of_blocks(residual_block_size ? size_in_bytes/block_size + 1 : size_in_bytes/block_size)
+    : block_size{block_size}
+    , residual_block_size{size_in_bytes%block_size}
+    , number_of_blocks{residual_block_size ? size_in_bytes/block_size + 1 : size_in_bytes/block_size}
     {}
 };
 
+//! Stores the uncompressed/compressed block sizes after completion of a compression
 template<std::integral HeaderType = std::size_t>
 struct CompressedBlocks {
     const HeaderType block_size;
@@ -44,7 +50,17 @@ struct CompressedBlocks {
     , compressed_block_sizes{std::move(comp_block_sizes)} {
         assert(compressed_block_sizes.size() == number_of_blocks);
     }
+
+    std::size_t compressed_size() const {
+        return std::accumulate(
+            compressed_block_sizes.begin(),
+            compressed_block_sizes.end(),
+            1
+        );
+    }
 };
+
+//! \} group Compression
 
 }  // end namespace GridFormat::Compression
 
