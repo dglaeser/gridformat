@@ -3,10 +3,10 @@
 /*!
  * \file
  * \ingroup Common
- * \copydoc GridFormat::CountedRange
+ * \copydoc GridFormat::AccumulatedRange
  */
-#ifndef GRIDFORMAT_COMMON_COUNTED_RANGE_HPP_
-#define GRIDFORMAT_COMMON_COUNTED_RANGE_HPP_
+#ifndef GRIDFORMAT_COMMON_ACCUMULATED_RANGE_HPP_
+#define GRIDFORMAT_COMMON_ACCUMULATED_RANGE_HPP_
 
 #include <ranges>
 #include <cassert>
@@ -25,7 +25,7 @@ namespace GridFormat {
  */
 template<Concepts::MDRange<1> R>
 requires(std::integral<MDRangeValueType<R>> and std::ranges::forward_range<R>)
-class CountedRange {
+class AccumulatedRange {
     class Iterator : public ForwardIteratorFacade<Iterator, std::size_t, const std::size_t&> {
         using ConstRange = std::add_const_t<std::decay_t<R>>;
 
@@ -74,7 +74,7 @@ class CountedRange {
 
  public:
     template<std::ranges::range _R> requires(std::convertible_to<_R, R>)
-    explicit CountedRange(_R&& range)
+    explicit AccumulatedRange(_R&& range)
     : _range{std::forward<_R>(range)}
     {}
 
@@ -86,9 +86,9 @@ class CountedRange {
 };
 
 template<std::ranges::range R> requires(!std::is_lvalue_reference_v<R>)
-CountedRange(R&& r) -> CountedRange<std::decay_t<R>>;
+AccumulatedRange(R&& r) -> AccumulatedRange<std::decay_t<R>>;
 template<std::ranges::range R> requires(std::is_lvalue_reference_v<R>)
-CountedRange(R&& r) -> CountedRange<R&>;
+AccumulatedRange(R&& r) -> AccumulatedRange<R&>;
 
 }  // namespace GridFormat
 

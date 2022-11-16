@@ -13,7 +13,7 @@
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/extended_range.hpp>
-#include <gridformat/common/counted_range.hpp>
+#include <gridformat/common/accumulated_range.hpp>
 #include <gridformat/common/range_field.hpp>
 #include <gridformat/common/ranges.hpp>
 
@@ -114,7 +114,7 @@ auto make_connectivity_field(const Grid& grid) {
 
 template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
 auto make_offsets_field(const Grid& grid) {
-    return RangeField{CountedRange{
+    return RangeField{AccumulatedRange{
         cells(grid) | std::views::transform([&] (const auto& cell) {
             return Ranges::size(corners(grid, cell));
         })
