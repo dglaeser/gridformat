@@ -48,6 +48,15 @@ class GridWriter {
     : _grid(grid)
     {}
 
+    void write(const std::string& filename) const {
+        std::ofstream result_file(filename, std::ios::out);
+        write(result_file);
+    }
+
+    void write(std::ostream& s) const {
+        _write(s);
+    }
+
     template<Concepts::PointFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Point<Grid>>>
     requires(!std::is_lvalue_reference_v<F>)
     void set_point_field(const std::string& name, F&& point_function, const Precision<T>& prec = {}) {
@@ -116,43 +125,8 @@ class GridWriter {
     const Grid& _grid;
     FieldStorage _point_fields;
     FieldStorage _cell_fields;
-};
 
-//! Virtual base class for grid data writers
-template<typename Grid>
-class GridWriterBase : public GridWriter<Grid> {
-    using ParentType = GridWriter<Grid>;
-
- public:
-    using ParentType::ParentType;
-
-    void write(const std::string& filename) const {
-        std::ofstream result_file(filename, std::ios::out);
-        write(result_file);
-    }
-
-    void write(std::ostream& s) const {
-        _write(s);
-    }
-
- private:
     virtual void _write(std::ostream& s) const = 0;
-};
-
-//! Virtual base class for time series writers
-template<typename Grid, Concepts::Scalar Time = double>
-class TimeSeriesGridWriterBase : public GridWriter<Grid> {
-    using ParentType = GridWriter<Grid>;
-
- public:
-    using ParentType::ParentType;
-
-    void write(const Time& t) const {
-        _write(t);
-    }
-
- private:
-    virtual void _write(const Time& t) const = 0;
 };
 
 //! \} group Grid

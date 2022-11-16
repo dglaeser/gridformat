@@ -25,6 +25,11 @@ class MyWriter : public GridFormat::GridWriter<Grid> {
     decltype(auto) get_cell_field(const std::string& name) const {
         return ParentType::_get_cell_field(name);
     }
+
+ private:
+    void _write(std::ostream&) const override {
+        throw GridFormat::NotImplemented("_write()");
+    }
 };
 
 template<typename T = int>

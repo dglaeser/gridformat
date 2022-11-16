@@ -118,8 +118,8 @@ using HeaderType = std::conditional_t<
 template<Concepts::Grid Grid,
          typename XMLOpts = XMLOptions<>,
          typename PrecOpts = PrecisionOptions<>>
-class XMLWriterBase : public GridWriterBase<Grid> {
-    using ParentType = GridWriterBase<Grid>;
+class XMLWriterBase : public GridWriter<Grid> {
+    using ParentType = GridWriter<Grid>;
 
     static_assert(
         Detail::is_valid_data_format<XMLOpts>,
