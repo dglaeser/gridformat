@@ -35,5 +35,5 @@ jobs:
 
       - name: test
         run: |
-          cd build && make test_vtu_writer && ctest -R test_vtu_writer -V
+          cd build && make && ctest --output-on-failure
 
