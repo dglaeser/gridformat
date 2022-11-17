@@ -19,6 +19,7 @@ enum class CellType {
     segment,
     triangle,
     quadrilateral,
+    polygon,
     tetrahedron,
     hexahedron
 };
