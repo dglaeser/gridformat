@@ -66,6 +66,7 @@ inline constexpr std::uint8_t cell_type_number(CellType t) {
         case (CellType::segment): return 3;
         case (CellType::triangle): return 5;
         case (CellType::quadrilateral): return 9;
+        case (CellType::polygon): return 7;
         case (CellType::tetrahedron): return 10;
         case (CellType::hexahedron): return 12;
     }
@@ -85,11 +86,15 @@ auto make_coordinates_field(const Grid& grid) {
     };
 }
 
-template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
-auto make_connectivity_field(const Grid& grid) {
+template<typename HeaderType = std::size_t,
+         Concepts::UnstructuredGrid Grid,
+         std::ranges::forward_range Cells>
+auto make_connectivity_field(const Grid& grid, Cells&& cells) {
+    // TODO: improve this by turning this into a view somehow!
+    static constexpr std::size_t max_num_cell_corners = 8;
     std::vector<HeaderType> connectivity;
-    connectivity.reserve(number_of_cells(grid)*8);
-    for (const auto& c : cells(grid))
+    connectivity.reserve(Ranges::size(cells)*max_num_cell_corners);
+    for (const auto& c : cells)
         for (const auto& p : corners(grid, c))
             connectivity.push_back(id(grid, p));
     connectivity.shrink_to_fit();
@@ -113,12 +118,26 @@ auto make_connectivity_field(const Grid& grid) {
 }
 
 template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
-auto make_offsets_field(const Grid& grid) {
+auto make_connectivity_field(const Grid& grid) {
+    return make_connectivity_field<HeaderType>(grid, cells(grid));
+}
+
+
+template<typename HeaderType = std::size_t,
+         Concepts::UnstructuredGrid Grid,
+         std::ranges::range Cells>
+auto make_offsets_field(const Grid& grid, Cells&& cells) {
     return RangeField{AccumulatedRange{
-        cells(grid) | std::views::transform([&] (const auto& cell) {
+        std::forward<Cells>(cells)
+        | std::views::transform([&] (const Cell<Grid>& cell) {
             return Ranges::size(corners(grid, cell));
         })
     }};
+}
+
+template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
+auto make_offsets_field(const Grid& grid) {
+    return make_offsets_field(grid, cells(grid));
 }
 
 template<Concepts::UnstructuredGrid Grid>
