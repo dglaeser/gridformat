@@ -1,6 +1,7 @@
 gridformat_add_test(test_type_traits test_type_traits.cpp)
 gridformat_add_test(test_concepts test_concepts.cpp)
 gridformat_add_test(test_accumulated_range test_accumulated_range.cpp)
+gridformat_add_test(test_filtered_range test_filtered_range.cpp)
 gridformat_add_test(test_extended_range test_extended_range.cpp)
 gridformat_add_test(test_field test_field.cpp)
 gridformat_add_test(test_field_storage test_field_storage.cpp)
