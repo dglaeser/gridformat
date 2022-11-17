@@ -85,9 +85,9 @@ class RangeField : public Field {
 };
 
 template<std::ranges::forward_range R> requires(std::is_lvalue_reference_v<R>)
-RangeField(R&& r) -> RangeField<const std::decay_t<R>&, MDRangeScalar<std::decay_t<R>>>;
+RangeField(R&& r) -> RangeField<std::remove_reference_t<R>&, MDRangeScalar<std::decay_t<R>>>;
 template<std::ranges::forward_range R, Concepts::Scalar T> requires(std::is_lvalue_reference_v<R>)
-RangeField(R&& r, const Precision<T>&) -> RangeField<const std::decay_t<R>&, T>;
+RangeField(R&& r, const Precision<T>&) -> RangeField<std::remove_reference_t<R>&, T>;
 
 template<std::ranges::forward_range R> requires(!std::is_lvalue_reference_v<R>)
 RangeField(R&& r) -> RangeField<std::decay_t<R>>;
