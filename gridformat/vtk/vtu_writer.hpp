@@ -11,7 +11,7 @@
 #include <ranges>
 #include <ostream>
 
-#include <gridformat/grid.hpp>
+#include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/common.hpp>
 #include <gridformat/vtk/xml.hpp>
 
