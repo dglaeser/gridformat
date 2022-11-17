@@ -126,8 +126,8 @@ class XMLWriterBase : public GridWriter<Grid> {
         "Incompatible choice of encoding (ascii/base64/binary) and data format (inlined/appended)"
     );
     static_assert(
-        std::is_integral_v<Detail::HeaderType<PrecOpts>>,
-        "Only integral types can be used for headers"
+        std::unsigned_integral<Detail::HeaderType<PrecOpts>>,
+        "Only unsigned integral types can be used for headers"
     );
 
     static constexpr std::size_t vtk_space_dim = 3;

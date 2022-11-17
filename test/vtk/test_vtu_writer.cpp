@@ -63,8 +63,8 @@ int main() {
             .compression = GridFormat::Compression::lzma,
             .data_format = GridFormat::VTK::DataFormat::inlined
         },
-        GridFormat::VTK::PrecisionOptions{},
-        "vtu_base64_inlined_lzma_compression"
+        GridFormat::VTK::PrecisionOptions{.header_precision = GridFormat::uint32},
+        "vtu_base64_inlined_lzma_compression_custom_header_precision"
     );
     write(
         GridFormat::VTK::XMLOptions{
