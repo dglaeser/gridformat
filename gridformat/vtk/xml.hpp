@@ -148,17 +148,11 @@ class XMLWriterBase : public GridWriter<Grid> {
                            std::string extension,
                            XMLOpts xml_opts = {},
                            PrecOpts prec_opts = {})
-    : ParentType(grid)
-    , _extension{std::move(extension)}
+    : ParentType(grid, std::move(extension))
     , _xml_opts{std::move(xml_opts)}
     , _prec_opts{std::move(prec_opts)} {
         if constexpr (use_compression && use_ascii)
             log_warning("Cannot compress ascii-encoded output, ignoring chosen compression");
-    }
-
-    using ParentType::write;
-    void write(const std::string& filename) const {
-        ParentType::write(filename + _extension);
     }
 
     using ParentType::set_point_field;
@@ -192,7 +186,6 @@ class XMLWriterBase : public GridWriter<Grid> {
     using CoordinateType = Detail::CoordinateType<PrecOpts, Grid>;
     using HeaderType = Detail::HeaderType<PrecOpts>;
 
-    std::string _extension;
     XMLOpts _xml_opts;
     PrecOpts _prec_opts;
 

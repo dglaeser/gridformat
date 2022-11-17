@@ -44,13 +44,16 @@ class GridWriter {
  public:
     using Field = typename FieldStorage::Field;
 
-    explicit GridWriter(const Grid& grid)
+    explicit GridWriter(const Grid& grid, std::string extension)
     : _grid(grid)
+    , _extension(std::move(extension))
     {}
 
-    void write(const std::string& filename) const {
-        std::ofstream result_file(filename, std::ios::out);
+    std::string write(const std::string& filename) const {
+        std::string filename_with_ext = filename + _extension;
+        std::ofstream result_file(filename_with_ext, std::ios::out);
         write(result_file);
+        return filename_with_ext;
     }
 
     void write(std::ostream& s) const {
@@ -123,6 +126,7 @@ class GridWriter {
 
  private:
     const Grid& _grid;
+    std::string _extension;
     FieldStorage _point_fields;
     FieldStorage _cell_fields;
 

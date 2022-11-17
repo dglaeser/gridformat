@@ -15,7 +15,7 @@ class MyWriter : public GridFormat::GridWriter<Grid> {
 
  public:
     explicit MyWriter(const Grid& grid)
-    : ParentType(grid)
+    : ParentType(grid, "")
     {}
 
     decltype(auto) get_point_field(const std::string& name) const {
