@@ -27,8 +27,8 @@ class MDLayout {
  public:
     template<std::ranges::input_range R>
     explicit MDLayout(R&& extents)
-    : _extents{std::ranges::cbegin(extents),
-               std::ranges::cend(extents)}
+    : _extents{std::ranges::begin(extents),
+               std::ranges::end(extents)}
     {}
 
     std::size_t dimension() const {
@@ -91,7 +91,7 @@ constexpr auto push_extents(R&& r, std::vector<std::size_t>& extents) {
 
 //! Get the multi-dimensional layout for the given range
 template<std::ranges::range R>
-MDLayout get_md_layout(const R& r) {
+MDLayout get_md_layout(R&& r) {
     std::vector<std::size_t> extents;
     Detail::push_extents(r, extents);
     return MDLayout{extents};
