@@ -92,6 +92,11 @@ constexpr auto push_extents(R&& r, std::vector<std::size_t>& extents) {
 //! Get the multi-dimensional layout for the given range
 template<std::ranges::range R>
 MDLayout get_md_layout(R&& r) {
+    if (std::ranges::empty(r)) {
+        std::array<std::size_t, mdrange_dimension<R>> extents;
+        std::ranges::fill(extents, 0.0);
+        return MDLayout{extents};
+    }
     std::vector<std::size_t> extents;
     Detail::push_extents(r, extents);
     return MDLayout{extents};
