@@ -51,6 +51,7 @@ int main() {
         GridFormat::VTK::PrecisionOptions{},
         "vtp_base64_inlined"
     );
+#if GRIDFORMAT_HAVE_LZMA
     write(
         GridFormat::VTK::XMLOptions{
             .encoder = GridFormat::Encoding::base64,
@@ -70,6 +71,7 @@ int main() {
         "vtp_base64_inlined_lzma_compression_custom_field_precision",
         GridFormat::Precision<float>{}
     );
+#endif  // GRIDFORMAT_HAVE_LZMA
 
     return 0;
 }
