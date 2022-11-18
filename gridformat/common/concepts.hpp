@@ -44,12 +44,9 @@ inline constexpr bool is_std_span_v = is_std_span<T>::value;
 
 template<typename T>
 concept StaticallySizedRange
-    = std::ranges::range<T> and (
-        requires { { T::size() } -> std::integral; }
-        or std::is_bounded_array_v<T>
-        or Detail::is_std_array_v<T>
-        or (Detail::is_std_span_v<T> and T::extent != std::dynamic_extent)
-    );
+    = std::ranges::range<T> and
+    is_complete<GridFormat::StaticSize<T>> and
+    requires {{ GridFormat::StaticSize<T>::value } -> std::convertible_to<std::size_t>; };
 
 template<typename T1, typename T2>
 concept Interoperable = std::is_convertible_v<T1, T2> || std::is_convertible_v<T2, T1>;

@@ -13,6 +13,8 @@
 #include <utility>
 #include <cmath>
 
+#include <gridformat/common/ranges.hpp>
+#include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/iterator_facades.hpp>
 
 namespace GridFormat {
@@ -93,8 +95,9 @@ class ExtendedRange {
     template<std::ranges::range _R> requires(std::convertible_to<_R, R>)
     explicit ExtendedRange(_R&& range, ValueType value)
     : _range{std::forward<_R>(range)}
-    , _value{value}
-    {}
+    , _value{value} {
+        assert(Ranges::size(_range) <= target_dimension);
+    }
 
     auto begin() const { return Iterator{_range, _value}; }
     auto end() const { return Iterator{_range, _value, true}; }
@@ -113,6 +116,12 @@ template<std::size_t target_dimension, std::ranges::range R> requires(!std::is_l
 constexpr auto make_extended(R&& range, const std::ranges::range_value_t<R>& value = {0}) {
     return ExtendedRange<target_dimension, std::decay_t<R>>{std::forward<R>(range), value};
 }
+
+// specialization
+template<typename R, std::size_t target_dim>
+struct StaticSize<ExtendedRange<target_dim, R>> {
+    static constexpr std::size_t value = target_dim;
+};
 
 }  // namespace GridFormat
 

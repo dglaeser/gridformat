@@ -8,6 +8,8 @@
 #ifndef GRIDFORMAT_COMMON_TYPE_TRAITS_HPP_
 #define GRIDFORMAT_COMMON_TYPE_TRAITS_HPP_
 
+#include <span>
+#include <array>
 #include <ranges>
 #include <variant>
 #include <concepts>
@@ -203,6 +205,22 @@ namespace Detail {
 
 template<typename T>
 using FieldScalar = typename Detail::FieldScalar<T>::type;
+
+
+template<typename T>
+struct StaticSize;
+template<typename T, std::size_t s>
+struct StaticSize<std::array<T, s>> {
+    static constexpr std::size_t value = s;
+};
+template<typename T, std::size_t s> requires(s != std::dynamic_extent)
+struct StaticSize<std::span<T, s>> {
+    static constexpr std::size_t value = s;
+};
+template<typename T, std::size_t s>
+struct StaticSize<T[s]> {
+    static constexpr std::size_t value = s;
+};
 
 //! \} group Common
 
