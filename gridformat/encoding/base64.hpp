@@ -52,8 +52,9 @@ class Base64Stream : public OutputStreamWrapperBase<OStream> {
 
  public:
     explicit Base64Stream(OStream& s)
-    : OutputStreamWrapperBase<OStream>(s)
-    {}
+    : OutputStreamWrapperBase<OStream>(s) {
+        _reset_buffer();
+    }
 
     template<typename T, std::size_t size>
     void write(std::span<T, size> data) {
