@@ -86,32 +86,20 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
         const auto coords_field = VTK::make_coordinates_field<CoordinateType>(this->_get_grid());
         this->_set_data_array(context, "Piece.Points", "Coordinates", coords_field);
 
-        if (num_verts > 0) {
-            std::cout << "CALLING VERTS" << std::endl;
-            const auto verts_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), verts_range);
-            const auto verts_offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid(), verts_range);
-            this->_set_data_array(context, "Piece.Verts", "connectivity", verts_connectivity_field);
-            this->_set_data_array(context, "Piece.Verts", "offsets", verts_offsets_field);
-            std::cout << "DONE" << std::endl;
-        }
+        const auto verts_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), verts_range);
+        const auto verts_offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid(), verts_range);
+        this->_set_data_array(context, "Piece.Verts", "connectivity", verts_connectivity_field);
+        this->_set_data_array(context, "Piece.Verts", "offsets", verts_offsets_field);
 
-        if (num_lines > 0) {
-            std::cout << "CALLING LINES" << std::endl;
-            const auto lines_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), lines_range);
-            const auto lines_offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid(), lines_range);
-            this->_set_data_array(context, "Piece.Lines", "connectivity", lines_connectivity_field);
-            this->_set_data_array(context, "Piece.Lines", "offsets", lines_offsets_field);
-            std::cout << "DONE" << std::endl;
-        }
+        const auto lines_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), lines_range);
+        const auto lines_offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid(), lines_range);
+        this->_set_data_array(context, "Piece.Lines", "connectivity", lines_connectivity_field);
+        this->_set_data_array(context, "Piece.Lines", "offsets", lines_offsets_field);
 
-        if (num_polys > 0) {
-            std::cout << "CALLING POLYS" << std::endl;
-            const auto polys_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), polys_range);
-            const auto polys_offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid(), polys_range);
-            this->_set_data_array(context, "Piece.Polys", "connectivity", polys_connectivity_field);
-            this->_set_data_array(context, "Piece.Polys", "offsets", polys_offsets_field);
-            std::cout << "DONE" << std::endl;
-        }
+        const auto polys_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), polys_range);
+        const auto polys_offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid(), polys_range);
+        this->_set_data_array(context, "Piece.Polys", "connectivity", polys_connectivity_field);
+        this->_set_data_array(context, "Piece.Polys", "offsets", polys_offsets_field);
 
         this->_write_xml(std::move(context), s);
     }
