@@ -54,9 +54,10 @@ int main() {
             .encoder = GridFormat::Encoding::base64,
             .data_format = GridFormat::VTK::DataFormat::inlined
         },
-        GridFormat::VTK::PrecisionOptions{},
+        GridFormat::VTK::PrecisionOptions{.header_precision = GridFormat::uint32},
         "vtu_base64_inlined"
     );
+#if GRIDFORMAT_HAVE_LZMA
     write(
         GridFormat::VTK::XMLOptions{
             .encoder = GridFormat::Encoding::base64,
@@ -76,6 +77,7 @@ int main() {
         "vtu_base64_inlined_lzma_compression_custom_field_precision",
         GridFormat::Precision<float>{}
     );
+#endif  // GRIDFORMAT_HAVE_LZMA
 
     return 0;
 }
