@@ -18,6 +18,7 @@
 #include <gridformat/encoding/raw.hpp>
 #include <gridformat/vtk/common.hpp>
 
+namespace GridFormat::Compression { struct LZMA; }
 namespace GridFormat::VTK {
 
 //! \addtogroup VTK
