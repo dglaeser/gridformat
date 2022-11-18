@@ -62,6 +62,23 @@ class UnstructuredGrid {
     std::vector<Cell> _cells;
 };
 
+
+auto make_unstructured_0d() {
+    return UnstructuredGrid<1>{
+        {
+            {{0.0}, 0},
+            {{1.0}, 1},
+            {{3.0}, 2}
+        },
+        {
+            {{0}, CellType::vertex, 0},
+            {{1}, CellType::vertex, 1},
+            {{2}, CellType::vertex, 2}
+        }
+    };
+}
+
+
 auto make_unstructured_1d() {
     return UnstructuredGrid<1>{
         {
