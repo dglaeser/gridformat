@@ -14,6 +14,7 @@
 #include <numeric>
 #include <algorithm>
 
+#include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/ranges.hpp>
 
@@ -71,19 +72,34 @@ class MDLayout {
 #ifndef DOXYGEN
 namespace Detail {
 
-template<Concepts::Scalar T>
-constexpr auto push_extents(const T&, std::vector<std::size_t>&) {}
+template<std::ranges::range R, std::size_t size>
+constexpr void set_sub_extents(std::array<std::size_t, size>& extents, std::size_t dim) {
+    assert(dim < size);
+    if constexpr (Concepts::StaticallySizedRange<R>)
+        extents[dim] = StaticSize<R>::value;
+    else
+        extents[dim] = 0;
+    if constexpr (has_sub_range<R>)
+        set_sub_extents<std::ranges::range_value_t<R>>(extents, dim + 1);
+}
 
-template<std::ranges::range R>
-constexpr auto push_extents(R&& r, std::vector<std::size_t>& extents) {
-    extents.push_back(Ranges::size(r));
-    if constexpr (mdrange_dimension<R> > 1)
-        assert(std::ranges::all_of(r,
-            [&, first_size = Ranges::size(*std::ranges::begin(r))]
-            (const std::ranges::range auto& sub_range) {
-                return Ranges::size(sub_range) == first_size;
-        }));
-    push_extents(*std::ranges::begin(r), extents);
+template<std::ranges::range R, std::size_t size>
+constexpr void set_sub_extents_from_instance(R&& r, std::array<std::size_t, size>& extents, std::size_t dim) {
+    assert(dim < size);
+    if constexpr (Concepts::StaticallySizedRange<R>)
+        extents[dim] = StaticSize<R>::value;
+    else
+        extents[dim] = Ranges::size(r);
+    if constexpr (has_sub_range<R>) {
+        if (extents[dim] == 0)
+            set_sub_extents<std::ranges::range_value_t<R>>(extents, dim + 1);
+        else {
+            set_sub_extents_from_instance(*std::ranges::begin(r), extents, dim + 1);
+            assert(std::ranges::all_of(r, [&] (const std::ranges::range auto& sub_range) {
+                return static_cast<std::size_t>(Ranges::size(sub_range)) == extents[dim + 1];
+            }));
+        }
+    }
 }
 
 }  // namespace Detail
@@ -92,20 +108,15 @@ constexpr auto push_extents(R&& r, std::vector<std::size_t>& extents) {
 //! Get the multi-dimensional layout for the given range
 template<std::ranges::range R>
 MDLayout get_md_layout(R&& r) {
-    if (std::ranges::empty(r)) {
-        std::array<std::size_t, mdrange_dimension<R>> extents;
-        std::ranges::fill(extents, 0.0);
-        return MDLayout{extents};
-    }
-    std::vector<std::size_t> extents;
-    Detail::push_extents(r, extents);
+    std::array<std::size_t, mdrange_dimension<R>> extents;
+    Detail::set_sub_extents_from_instance(r, extents, 0);
     return MDLayout{extents};
 }
 
 //! overload for scalars
 template<Concepts::Scalar T>
 MDLayout get_md_layout(const T&) {
-    return MDLayout{std::vector<std::size_t>{1}};
+    return MDLayout{std::array<std::size_t, 1>{1}};
 }
 
 }  // namespace GridFormat
