@@ -21,9 +21,10 @@ namespace GridFormat {
 template<typename OStream>
 class Base64Stream : public OutputStreamWrapperBase<OStream> {
     using Byte = char;
-    using Buffer = std::array<Byte, 3>;
+    static constexpr int buffer_size = 3;
+    static_assert(sizeof(std::byte) == sizeof(Byte));
 
-    static constexpr unsigned char base64Table[] = {
+    static constexpr unsigned char base64_alphabet[] = {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
@@ -32,70 +33,78 @@ class Base64Stream : public OutputStreamWrapperBase<OStream> {
     };
 
     // Top 6 bits of byte 0
-    inline Byte _encodeSextet0() const {
-        return base64Table[((_buffer[0] & 0b1111'1100) >> 2)];
+    inline Byte _encodeSextet0(const Byte* buffer) const {
+        return base64_alphabet[((buffer[0] & 0b1111'1100) >> 2)];
     }
     // Bottom 2 bits of byte 0, Top 4 bits of byte 1
-    inline Byte _encodeSextet1() const {
-        return base64Table[((_buffer[0] & 0b0000'0011) << 4)
-               | ((_buffer[1] & 0b1111'0000) >> 4)];
+    inline Byte _encodeSextet1(const Byte* buffer) const {
+        return base64_alphabet[((buffer[0] & 0b0000'0011) << 4)
+               | ((buffer[1] & 0b1111'0000) >> 4)];
     }
     // Bottom 4 bits of byte 1, Top 2 bits of byte 2
-    inline Byte _encodeSextet2() const {
-        return base64Table[((_buffer[1] & 0b0000'1111) << 2)
-               | ((_buffer[2] & 0b1100'0000) >> 6)];
+    inline Byte _encodeSextet2(const Byte* buffer) const {
+        return base64_alphabet[((buffer[1] & 0b0000'1111) << 2)
+               | ((buffer[2] & 0b1100'0000) >> 6)];
     }
     // Bottom 6 bits of byte 2
-    inline Byte _encodeSextet3() const {
-        return base64Table[(_buffer[2] & 0b0011'1111)];
+    inline Byte _encodeSextet3(const Byte* buffer) const {
+        return base64_alphabet[(buffer[2] & 0b0011'1111)];
     }
 
  public:
     explicit Base64Stream(OStream& s)
-    : OutputStreamWrapperBase<OStream>(s) {
-        _reset_buffer();
-    }
+    : OutputStreamWrapperBase<OStream>(s)
+    {}
 
     template<typename T, std::size_t size>
     void write(std::span<T, size> data) {
-        std::ranges::for_each(std::as_bytes(data), [&] (const std::byte& byte) {
-            _insert(static_cast<Byte>(byte));
-        });
-        if (_num_buffered_bytes() > 0)
-            _flush();
+        _write(std::as_bytes(data));
     }
 
  private:
-    std::size_t _num_buffered_bytes() const {
-        const auto const_it = static_cast<typename Buffer::const_iterator>(_it);
-        return std::distance(_buffer.begin(), const_it);
+    template<std::size_t size>
+    void _write(std::span<const std::byte, size> data) {
+        const auto num_full_buffers = data.size()/buffer_size;
+        for (const auto i : std::views::iota(std::size_t{0}, num_full_buffers))
+            _flush_full_buffer(data, i*buffer_size);
+
+        const auto residual_bytes = data.size() - num_full_buffers*buffer_size;
+        _flush_buffer(data, num_full_buffers*buffer_size, residual_bytes);
     }
 
-    void _insert(const Byte byte) {
-        *_it = byte;
-        if (++_it; _it == _buffer.end())
-            _flush();
-    }
-
-    void _flush() {
-        const auto num_bytes = std::distance(_buffer.begin(), _it);
+    template<std::size_t size>
+    void _flush_full_buffer(std::span<const std::byte, size> data, std::size_t offset) {
+        assert(data.size() >= offset + buffer_size);
+        const Byte* chars = _buffer_view(data, offset);
         const Byte out[4] = {
-            num_bytes > 0 ? _encodeSextet0() : '=',
-            num_bytes > 0 ? _encodeSextet1() : '=',
-            num_bytes > 1 ? _encodeSextet2() : '=',
-            num_bytes > 2 ? _encodeSextet3() : '='
+            _encodeSextet0(chars),
+            _encodeSextet1(chars),
+            _encodeSextet2(chars),
+            _encodeSextet3(chars)
         };
         this->_stream.write(std::span{out});
-        _reset_buffer();
     }
 
-    void _reset_buffer() {
-        std::ranges::fill(_buffer, 0);
-        _it = _buffer.begin();
+    template<std::size_t size>
+    void _flush_buffer(std::span<const std::byte, size> data, std::size_t offset, std::size_t num_bytes) {
+        if (num_bytes == 0)
+            return;
+
+        assert(data.size() >= offset + num_bytes);
+        const Byte* chars = _buffer_view(data, offset);
+        const Byte out[4] = {
+            num_bytes > 0 ? _encodeSextet0(chars) : '=',
+            num_bytes > 0 ? _encodeSextet1(chars) : '=',
+            num_bytes > 1 ? _encodeSextet2(chars) : '=',
+            num_bytes > 2 ? _encodeSextet3(chars) : '='
+        };
+        this->_stream.write(std::span{out});
     }
 
-    Buffer _buffer;
-    typename Buffer::iterator _it = _buffer.begin();
+    template<std::size_t size>
+    const Byte* _buffer_view(std::span<const std::byte, size> data, std::size_t offset) const {
+        return reinterpret_cast<const Byte*>(data.data()) + offset;
+    }
 };
 
 namespace Encoding {
