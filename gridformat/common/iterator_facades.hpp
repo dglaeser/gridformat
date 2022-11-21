@@ -75,7 +75,7 @@ template<typename Impl,
          typename IteratorTag,
          typename ValueType,
          typename Reference = ValueType&,
-         typename Pointer = ValueType*,
+         typename Pointer = std::remove_reference_t<Reference>*,
          typename Difference = std::ptrdiff_t>
 class IteratorFacade
 : public Detail::CRTPBase<Impl> {
@@ -206,7 +206,7 @@ class IteratorFacade
 template<typename Impl,
          typename ValueType,
          typename Reference = ValueType&,
-         typename Pointer = ValueType*,
+         typename Pointer = std::remove_reference_t<Reference>*,
          typename Difference = std::ptrdiff_t>
 using ForwardIteratorFacade = IteratorFacade<Impl,
                                              std::forward_iterator_tag,
@@ -225,7 +225,7 @@ using ForwardIteratorFacade = IteratorFacade<Impl,
 template<typename Impl,
          typename ValueType,
          typename Reference = ValueType&,
-         typename Pointer = ValueType*,
+         typename Pointer = std::remove_reference_t<Reference>*,
          typename Difference = std::ptrdiff_t>
 using BidirectionalIteratorFacade = IteratorFacade<Impl,
                                                    std::bidirectional_iterator_tag,
@@ -244,7 +244,7 @@ using BidirectionalIteratorFacade = IteratorFacade<Impl,
 template<typename Impl,
          typename ValueType,
          typename Reference = ValueType&,
-         typename Pointer = ValueType*,
+         typename Pointer = std::remove_reference_t<Reference>*,
          typename Difference = std::ptrdiff_t>
 using RandomAccessIteratorFacade = IteratorFacade<Impl,
                                                   std::random_access_iterator_tag,
