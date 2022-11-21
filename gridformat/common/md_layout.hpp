@@ -14,6 +14,7 @@
 #include <numeric>
 #include <iterator>
 #include <algorithm>
+#include <initializer_list>
 
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/concepts.hpp>
@@ -29,6 +30,12 @@ class MDLayout {
  public:
     template<std::ranges::forward_range R>
     explicit MDLayout(R&& extents) {
+        _extents.reserve(Ranges::size(extents));
+        std::ranges::copy(extents, std::back_inserter(_extents));
+    }
+
+    template<std::integral T>
+    explicit MDLayout(std::initializer_list<T> extents) {
         _extents.reserve(Ranges::size(extents));
         std::ranges::copy(extents, std::back_inserter(_extents));
     }

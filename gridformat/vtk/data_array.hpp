@@ -72,7 +72,9 @@ class DataArray {
 
     void _export_binary(std::ostream& s) const {
         auto encoded = _encoder(s);
-        std::array<const HeaderType, 1> number_of_bytes{static_cast<HeaderType>(_field.size_in_bytes())};
+        std::array<const HeaderType, 1> number_of_bytes{static_cast<HeaderType>(
+            _field.layout().number_of_entries()*_field.precision().size_in_bytes()
+        )};
         encoded.write(std::span{number_of_bytes});
         s << EncodedField{_field, _encoder};
     }

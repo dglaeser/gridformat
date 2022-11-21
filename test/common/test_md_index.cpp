@@ -1,17 +1,9 @@
 #include <ranges>
 #include <vector>
 
-
-
-#include <iostream>
-
-
-
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/md_index.hpp>
 #include "../testing.hpp"
-
-
 
 int main() {
     using GridFormat::Testing::operator""_test;

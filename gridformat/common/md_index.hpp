@@ -228,6 +228,10 @@ inline auto reversed(const MDIndexRange& range) {
     return range.reversed();
 }
 
+inline auto reversed_indices(MDLayout layout) {
+    return reversed(indices(std::move(layout)));
+}
+
 
 #ifndef DOXYGEN
 namespace Detail {

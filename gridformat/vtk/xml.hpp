@@ -158,29 +158,29 @@ class XMLWriterBase : public GridWriter<Grid> {
     using ParentType::set_point_field;
     using ParentType::set_cell_field;
 
-    //! Vectors need to be made 3d for VTK
-    template<Concepts::VectorPointFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Point<Grid>>>
-    void set_point_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
-        ParentType::set_point_field(name, _make_point_vector_field(std::forward<F>(f), prec));
-    }
+    // //! Vectors need to be made 3d for VTK
+    // template<Concepts::VectorPointFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Point<Grid>>>
+    // void set_point_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
+    //     ParentType::set_point_field(name, _make_point_vector_field(std::forward<F>(f), prec));
+    // }
 
-    //! Tensors need to be made 3d for VTK
-    template<Concepts::TensorPointFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Point<Grid>>>
-    void set_point_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
-        ParentType::set_point_field(name, _make_point_tensor_field(std::forward<F>(f), prec));
-    }
+    // //! Tensors need to be made 3d for VTK
+    // template<Concepts::TensorPointFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Point<Grid>>>
+    // void set_point_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
+    //     ParentType::set_point_field(name, _make_point_tensor_field(std::forward<F>(f), prec));
+    // }
 
-    //! Vectors need to be made 3d for VTK
-    template<Concepts::VectorCellFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Cell<Grid>>>
-    void set_cell_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
-        ParentType::set_cell_field(name, _make_cell_vector_field(std::forward<F>(f), prec));
-    }
+    // //! Vectors need to be made 3d for VTK
+    // template<Concepts::VectorCellFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Cell<Grid>>>
+    // void set_cell_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
+    //     ParentType::set_cell_field(name, _make_cell_vector_field(std::forward<F>(f), prec));
+    // }
 
-    //! Tensors need to be made 3d for VTK
-    template<Concepts::TensorCellFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Cell<Grid>>>
-    void set_cell_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
-        ParentType::set_cell_field(name, _make_cell_tensor_field(std::forward<F>(f), prec));
-    }
+    // //! Tensors need to be made 3d for VTK
+    // template<Concepts::TensorCellFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Cell<Grid>>>
+    // void set_cell_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
+    //     ParentType::set_cell_field(name, _make_cell_tensor_field(std::forward<F>(f), prec));
+    // }
 
  protected:
     using CoordinateType = Detail::CoordinateType<PrecOpts, Grid>;
@@ -233,10 +233,9 @@ class XMLWriterBase : public GridWriter<Grid> {
         da.set_attribute("Name", std::move(data_array_name));
         da.set_attribute("type", attribute_name(field.precision()));
         da.set_attribute("format", data_format_name(_xml_opts.encoder, _data_format()));
-        if (field.dimension() == 1)
-            da.set_attribute("NumberOfComponents", "1");
-        else
-            da.set_attribute("NumberOfComponents", field.number_of_entries(1));
+
+        const auto layout = field.layout();
+        da.set_attribute("NumberOfComponents", (layout.dimension() == 1 ? 1 : layout.number_of_entries(1)));
         if constexpr (write_inline)
             da.set_content(
                 DataArray{field, _xml_opts.encoder, _xml_opts.compression, Precision<HeaderType>{}}

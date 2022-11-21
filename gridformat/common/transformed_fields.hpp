@@ -10,12 +10,14 @@
 
 #include <utility>
 #include <concepts>
+#include <algorithm>
 #include <type_traits>
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/serialization.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
+#include <gridformat/common/md_index.hpp>
 
 namespace GridFormat {
 
@@ -41,52 +43,17 @@ class IdentityField : public Field {
     }
 };
 
-class ReshapedField : public Field {
+class FlatMDField : public Field {
  public:
-    explicit ReshapedField(const Field& f, const MDLayout& target_sub_layout)
-    : _field(f)
-    , _orig_layout{f.determine_layout()}
-    , _new_layout{_make_new_layout(target_sub_layout)}
-    , _orig_offsets{_make_offsets(_orig_layout)}
-    , _new_offsets{_make_offsets(_new_layout)} {
-        if (std::ranges::any_of(
-                std::views::iota(std::size_t{0}, _orig_layout.dimension()),
-                [&] (const std::integral auto i) {
-                    return _new_layout.extent(i) < _orig_layout.extent(i);
-                }
-            )
-        )
-            throw SizeError("Reshaping only supported into larger extents");
-    }
+    explicit FlatMDField(const Field& field)
+    : _field(field)
+    {}
 
  private:
     const Field& _field;
-    MDLayout _orig_layout;
-    MDLayout _new_layout;
-    std::vector<std::size_t> _orig_offsets;
-    std::vector<std::size_t> _new_offsets;
-
-    MDLayout _make_new_layout(const MDLayout& target_sub_layout) const {
-        if (_orig_layout.dimension() != target_sub_layout.dimension() + 1)
-            throw SizeError("Field sub-dimension does not match given target layout dimension");
-        std::vector<std::size_t> extents{_orig_layout.dimension()};
-        extents[0] = _orig_layout.extent(0);
-        for (std::size_t i = 1; i < _orig_layout.dimension(); ++i)
-            extents[i] = target_sub_layout.extent(i - 1);
-        return MDLayout{std::move(extents)};
-    }
-
-    std::vector<std::size_t> _make_offsets(const MDLayout& layout) const {
-        std::vector<std::size_t> result;
-        result.reserve(layout.dimension());
-        for (std::size_t dim = 0; dim < layout.dimension() - 1; ++i)
-            result.push_back(layout.number_of_entries(dim));
-        result.push_back(1);
-        return result;
-    }
 
     MDLayout _layout() const override {
-        return _new_layout;
+        return MDLayout{{_field.layout().number_of_entries()}};
     }
 
     DynamicPrecision _precision() const override {
@@ -94,12 +61,85 @@ class ReshapedField : public Field {
     }
 
     Serialization _serialized() const override {
+        return _field.serialized();
+    }
+};
+
+class ExtendedMDField : public Field {
+ public:
+    explicit ExtendedMDField(const Field& f, MDLayout target_sub_layout)
+    : _field{f}
+    , _target_sub_layout{std::move(target_sub_layout)}
+    {}
+
+ private:
+    const Field& _field;
+    MDLayout _target_sub_layout;
+
+    MDLayout _new_layout() const {
+        return _new_layout(_field.layout());
+    }
+
+    MDLayout _new_layout(const MDLayout& orig_layout) const {
+        if (orig_layout.dimension() <= 1)
+            throw SizeError("Can only reshape fields with dimension > 1");
+        if (orig_layout.dimension() != _target_sub_layout.dimension() + 1)
+            throw SizeError("Field sub-dimension does not match given target layout dimension");
+        std::vector<std::size_t> extents(orig_layout.dimension());
+        extents[0] = orig_layout.extent(0);
+        for (std::size_t i = 1; i < orig_layout.dimension(); ++i)
+            extents[i] = _target_sub_layout.extent(i - 1);
+        _check_valid_layout(orig_layout, extents);
+        return MDLayout{std::move(extents)};
+    }
+
+    std::vector<std::size_t> _sub_sizes(const MDLayout& layout) const {
+        std::vector<std::size_t> result;
+        result.reserve(layout.dimension());
+        for (std::size_t dim = 0; dim < layout.dimension() - 1; ++dim)
+            result.push_back(layout.number_of_entries(dim + 1));
+        result.push_back(1);
+        return result;
+    }
+
+    MDLayout _layout() const override {
+        return _new_layout();
+    }
+
+    DynamicPrecision _precision() const override {
+        return _field.precision();
+    }
+
+    Serialization _serialized() const override {
+        const auto orig_layout = _field.layout();
+        const auto new_layout = _new_layout(orig_layout);
+
+        const auto orig_sub_sizes = _sub_sizes(orig_layout);
+        const auto new_sub_sizes = _sub_sizes(new_layout);
+
         auto serialization = _field.serialized();
-        serialization.resize(this->_size_in_bytes(layout), typename Serialization::Byte{0});
-        _field.precision().visit([] <typename T> (const Precision<T>&) {
-            for (const auto& index : indices())
+        _field.precision().visit([&] <typename T> (const Precision<T>&) {
+            serialization.resize(new_layout.number_of_entries()*sizeof(T), typename Serialization::Byte{0});
+            const auto data = serialization.template as_span_of<T>();
+            for (const auto& index : reversed_indices(orig_layout)) {
+                const auto orig_flat_index = Detail::flat_index_from_sub_sizes(index, orig_sub_sizes);
+                const auto new_flat_index = Detail::flat_index_from_sub_sizes(index, new_sub_sizes);
+                assert(orig_flat_index < data.size());
+                assert(new_flat_index < data.size());
+                std::swap(data[orig_flat_index], data[new_flat_index]);
+            }
         });
         return serialization;
+    }
+
+    void _check_valid_layout(const MDLayout& orig, const std::vector<std::size_t>& extents) const {
+        if (std::ranges::any_of(
+            std::views::iota(std::size_t{0}, orig.dimension()),
+            [&] (const std::size_t i) {
+                return orig.extent(i) > extents[i];
+            }
+        ))
+            throw SizeError("Given target extension smaller than original extension.");
     }
 };
 
@@ -114,31 +154,68 @@ struct IdentityFieldAdapter {
     }
 };
 
-// class ReshapedFieldAdapter {
-//  public:
-//     explicit ReshapedFieldAdapter(MDLayout sub_layout)
-//     : _sub_layout{std::move(sub_layout)}
-//     {}
+struct FlatMDFieldAdapter {
+    auto operator()(const Field& f) const {
+        return FlatMDField{f};
+    }
+};
 
-//     auto operator()(const Field& f) const {
-//         return ReshapedField{f, _sub_layout};
-//     }
+class ExtendedMDFieldAdapter {
+ public:
+    explicit ExtendedMDFieldAdapter(MDLayout sub_layout)
+    : _sub_layout{std::move(sub_layout)}
+    {}
 
-//  private:
-//     MDLayout _sub_layout;
-// };
+    auto operator()(const Field& f) const {
+        return ExtendedMDField{f, _sub_layout};
+    }
 
-// class ReshapedFieldAdapterClosure {
-//     auto operator()(MDLayout sub_layout) const {
-//         return ReshapedFieldAdapter{std::move(sub_layout)};
-//     }
-// };
+ private:
+    MDLayout _sub_layout;
+};
+
+struct ExtendedMDFieldAdapterClosure {
+    auto operator()(MDLayout sub_layout) const {
+        return ExtendedMDFieldAdapter{std::move(sub_layout)};
+    }
+};
+
+class ExtendedFieldAdapter {
+ public:
+    explicit ExtendedFieldAdapter(std::size_t space_dimension)
+    : _space_dim{space_dimension}
+    {}
+
+    auto operator()(const Field& f) const {
+        const std::size_t dim = f.layout().dimension();
+        if (dim <= 1)
+            throw SizeError("Extension only works for fields with dimension > 1");
+        return ExtendedMDField{
+            f,
+            MDLayout{
+            std::views::iota(std::size_t{1}, dim)
+                | std::views::transform([&] (const auto&) { return _space_dim; })
+            }
+        };
+    }
+
+ private:
+    std::size_t _space_dim;
+};
+
+struct ExtendedFieldAdapterClosure {
+    auto operator()(std::size_t space_dimension) const {
+        return ExtendedFieldAdapter{space_dimension};
+    }
+};
 
 }  // namespace Detail
 #endif  // DOXYGEN
 
 inline constexpr Detail::IdentityFieldAdapter identity;
-// inline constexpr Detail::ReshapedFieldAdapterClosure reshaped;
+inline constexpr Detail::FlatMDFieldAdapter flattened;
+inline constexpr Detail::ExtendedMDFieldAdapterClosure extended_md;
+inline constexpr Detail::ExtendedFieldAdapterClosure extended;
 
 }  // namespace FieldTransformation
 
