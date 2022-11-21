@@ -138,39 +138,34 @@ int main() {
                 MDIndex{{2, 1, 2}}
             }
         ));
+    };
 
-        "md_index_range_3d_reversed"_test = [] () {
-            for (const auto& i : GridFormat::indices(GridFormat::MDLayout{std::vector<int>{3, 2, 3}})
-                | std::views::reverse)
-                std::cout << "I = " << i << std::endl;
-            std::cout << "DONE" << std::endl;
-            expect(std::ranges::equal(
-                GridFormat::indices(GridFormat::MDLayout{std::vector<int>{3, 2, 3}})
-                    | std::views::reverse,
-                std::vector<MDIndex>{
-                    MDIndex{{0, 0, 0}},
-                    MDIndex{{0, 0, 1}},
-                    MDIndex{{0, 0, 2}},
-                    MDIndex{{0, 1, 0}},
-                    MDIndex{{0, 1, 1}},
-                    MDIndex{{0, 1, 2}},
+    "md_index_range_3d_reversed"_test = [] () {
+        expect(std::ranges::equal(
+            GridFormat::indices(GridFormat::MDLayout{std::vector<int>{3, 2, 3}}).reversed(),
+            std::vector<MDIndex>{
+                MDIndex{{0, 0, 0}},
+                MDIndex{{0, 0, 1}},
+                MDIndex{{0, 0, 2}},
+                MDIndex{{0, 1, 0}},
+                MDIndex{{0, 1, 1}},
+                MDIndex{{0, 1, 2}},
 
-                    MDIndex{{1, 0, 0}},
-                    MDIndex{{1, 0, 1}},
-                    MDIndex{{1, 0, 2}},
-                    MDIndex{{1, 1, 0}},
-                    MDIndex{{1, 1, 1}},
-                    MDIndex{{1, 1, 2}},
+                MDIndex{{1, 0, 0}},
+                MDIndex{{1, 0, 1}},
+                MDIndex{{1, 0, 2}},
+                MDIndex{{1, 1, 0}},
+                MDIndex{{1, 1, 1}},
+                MDIndex{{1, 1, 2}},
 
-                    MDIndex{{2, 0, 0}},
-                    MDIndex{{2, 0, 1}},
-                    MDIndex{{2, 0, 2}},
-                    MDIndex{{2, 1, 0}},
-                    MDIndex{{2, 1, 1}},
-                    MDIndex{{2, 1, 2}}
-                } | std::views::reverse
-            ));
-        };
+                MDIndex{{2, 0, 0}},
+                MDIndex{{2, 0, 1}},
+                MDIndex{{2, 0, 2}},
+                MDIndex{{2, 1, 0}},
+                MDIndex{{2, 1, 1}},
+                MDIndex{{2, 1, 2}}
+            } | std::views::reverse
+        ));
     };
 
     return 0;
