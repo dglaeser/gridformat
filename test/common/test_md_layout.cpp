@@ -1,3 +1,5 @@
+#include <vector>
+
 #include <gridformat/common/md_layout.hpp>
 #include "../testing.hpp"
 

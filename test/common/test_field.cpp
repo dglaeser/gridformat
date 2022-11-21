@@ -1,6 +1,5 @@
 #include <vector>
 #include <memory>
-#include <ranges>
 
 #include <gridformat/common/serialization.hpp>
 #include <gridformat/common/exceptions.hpp>

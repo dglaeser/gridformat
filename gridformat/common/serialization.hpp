@@ -28,7 +28,7 @@ class Serialization {
     {}
 
     std::size_t size() const { return _data.size(); }
-    void resize(std::size_t size) { _data.resize(size); }
+    void resize(std::size_t size, Byte value = Byte{0}) { _data.resize(size, value); }
 
     std::span<std::byte> as_span() { return {_data}; }
     std::span<const std::byte> as_span() const { return {_data}; }

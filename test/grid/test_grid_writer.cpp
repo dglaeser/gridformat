@@ -36,7 +36,7 @@ template<typename T = int>
 class MyField : public GridFormat::Field {
  public:
     MyField(std::vector<int> values, const GridFormat::Precision<T>& prec = {})
-    : GridFormat::Field(GridFormat::MDLayout{std::vector{values.size()}}, prec),
+    : GridFormat::Field(prec),
     _values(std::move(values))
     {}
 
@@ -47,6 +47,10 @@ class MyField : public GridFormat::Field {
     }
 
  private:
+    GridFormat::MDLayout _determine_layout() const override {
+        return GridFormat::MDLayout{std::vector{_values.size()}};
+    }
+
     typename GridFormat::Serialization _serialized() const override {
         typename GridFormat::Serialization result(_values.size()*sizeof(T));
         T* data = reinterpret_cast<T*>(result.as_span().data());

@@ -24,31 +24,25 @@ namespace GridFormat {
 class Field {
  public:
     virtual ~Field() = default;
-    Field(MDLayout layout, DynamicPrecision prec)
-    : _layout{std::move(layout)}
-    , _prec{std::move(prec)}
-    {}
 
-    std::size_t dimension() const { return _layout.dimension(); }
-    std::size_t number_of_entries() const { return _layout.number_of_entries(); }
-    std::size_t number_of_entries(std::size_t codim) const { return _layout.number_of_entries(codim); }
-    std::size_t extent(std::size_t codim) const { return _layout.extent(codim); }
-    std::size_t size_in_bytes() const { return number_of_entries()*precision().size_in_bytes(); }
-    const DynamicPrecision& precision() const { return _prec; }
+    MDLayout layout() const { return _layout(); }
+    DynamicPrecision precision() const { return _precision(); }
+    Serialization serialized() const { return _serialized(); }
 
-    Serialization serialized() const {
-        auto serialization = _serialized();
-        if (serialization.size() != size_in_bytes())
-            throw SizeError("Unexpected serialized size");
-        return serialization;
+ protected:
+    std::size_t _size_in_bytes(const MDLayout& layout) const {
+        return layout.number_of_entries()*_prec.size_in_bytes();
     }
 
  private:
-    virtual Serialization _serialized() const = 0;
-
-    MDLayout _layout;
     DynamicPrecision _prec;
+
+    virtual MDLayout _layout() const = 0;
+    virtual DynamicPrecision _precision() const = 0;
+    virtual Serialization _serialized() const = 0;
 };
+
+
 
 }  // namespace GridFormat
 

@@ -41,20 +41,30 @@ class RangeField : public Field {
  public:
     template<typename _R> requires(std::convertible_to<_R, R>)
     explicit RangeField(_R&& range, const Precision<ValueType>& prec = {})
-    : Field(get_md_layout(range), prec)
+    : Field(prec)
     , _range{std::forward<_R>(range)}
     {}
 
  private:
+    MDLayout _layout() const override {
+        return get_md_layout(_range);
+    }
+
+    DynamicPrecision _precision() const override {
+        return DynamicPrecision{Precision<ValueType>{}};
+    }
+
     Serialization _serialized() const override {
-        Serialization serialization(this->size_in_bytes());
+        const auto layout = get_md_layout(_range);
+        Serialization serialization(this->_size_in_bytes(layout));
         _fill(serialization);
         return serialization;
     }
 
     void _fill(Serialization& serialization) const requires(is_contiguous_result_range) {
+        const auto layout = get_md_layout(_range);
         const auto data = std::as_bytes(std::span{_range});
-        if (data.size() != this->size_in_bytes())
+        if (data.size() != this->_size_in_bytes(layout))
             throw SizeError("Range size does not match the expected serialized size");
         std::ranges::copy(data, serialization.as_span().begin());
     }

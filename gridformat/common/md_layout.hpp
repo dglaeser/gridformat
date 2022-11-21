@@ -12,6 +12,7 @@
 #include <vector>
 #include <cassert>
 #include <numeric>
+#include <iterator>
 #include <algorithm>
 
 #include <gridformat/common/type_traits.hpp>
@@ -26,11 +27,11 @@ namespace GridFormat {
  */
 class MDLayout {
  public:
-    template<std::ranges::input_range R>
-    explicit MDLayout(R&& extents)
-    : _extents{std::ranges::begin(extents),
-               std::ranges::end(extents)}
-    {}
+    template<std::ranges::forward_range R>
+    explicit MDLayout(R&& extents) {
+        _extents.reserve(Ranges::size(extents));
+        std::ranges::copy(extents, std::back_inserter(_extents));
+    }
 
     std::size_t dimension() const {
         return _extents.size();
