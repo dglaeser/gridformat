@@ -123,10 +123,6 @@ class XMLWriterBase : public GridWriter<G> {
         Detail::is_valid_data_format<XMLOpts>,
         "Incompatible choice of encoding (ascii/base64/binary) and data format (inlined/appended)"
     );
-    static_assert(
-        std::unsigned_integral<Detail::HeaderType<PrecOpts>>,
-        "Only unsigned integral types can be used for headers"
-    );
 
     static constexpr std::size_t vtk_space_dim = 3;
     static constexpr bool use_ascii = is_any_of<
@@ -159,6 +155,10 @@ class XMLWriterBase : public GridWriter<G> {
  protected:
     using CoordinateType = Detail::CoordinateType<PrecOpts, Grid>;
     using HeaderType = Detail::HeaderType<PrecOpts>;
+    static_assert(
+        std::unsigned_integral<HeaderType> && (sizeof(HeaderType) == 4 || sizeof(HeaderType) == 8),
+        "VTK supports only UInt32 and UInt64 as header types"
+    );
 
     XMLOpts _xml_opts;
     PrecOpts _prec_opts;
@@ -179,6 +179,7 @@ class XMLWriterBase : public GridWriter<G> {
     WriteContext _get_write_context(std::string vtk_grid_type) const {
         XMLElement xml("VTKFile");
         xml.set_attribute("type", vtk_grid_type);
+        xml.set_attribute("version", "2.0");
         xml.set_attribute("header_type", attribute_name(Precision<HeaderType>{}));
         xml.set_attribute("byte_order", attribute_name(std::endian::native));
         xml.add_child(vtk_grid_type);
