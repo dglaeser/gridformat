@@ -13,8 +13,11 @@
 #include <fstream>
 #include <utility>
 #include <string>
+#include <ranges>
 
+#include <gridformat/common/transformed_fields.hpp>
 #include <gridformat/xml/element.hpp>
+#include <gridformat/grid/writer.hpp>
 #include <gridformat/grid.hpp>
 
 namespace GridFormat {
@@ -24,40 +27,41 @@ namespace GridFormat {
  * \brief Writer for .pvd time-series file format
  */
 template<typename VTKWriter>
-class PVDWriter {
+class PVDWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
+    using ParentType = TimeSeriesGridWriter<typename VTKWriter::Grid>;
+
  public:
     explicit PVDWriter(VTKWriter&& writer, std::string base_filename)
-    : _vtk_writer{std::move(writer)}
+    : ParentType(writer.grid())
+    , _vtk_writer{std::move(writer)}
     , _base_filename{std::move(base_filename)}
     , _pvd_filename{_base_filename + ".pvd"}
     , _xml{"VTKFile"} {
         _xml.set_attribute("type", "Collection");
         _xml.set_attribute("version", "1.0");
         _xml.add_child("Collection");
+        _vtk_writer.clear();
     }
 
-    std::string write(const Concepts::Scalar auto _time) {
+ private:
+    std::string _write(double _time) override {
         const auto time_step_index = _xml.get_child("Collection").num_children();
-        const std::string vtk_filename = _vtk_writer.write(
-            _base_filename + "-" + _get_file_number_string(time_step_index)
-        );
+        const auto vtk_filename = _write_time_step_file(time_step_index);
         _add_dataset(_time, vtk_filename);
         std::ofstream pvd_file(_pvd_filename, std::ios::out);
         write_xml_with_version_header(_xml, pvd_file, Indentation{{.width = 2}});
         return _pvd_filename;
     }
 
-    template<typename... Args>
-    void set_point_field(Args&&... args) {
-        _vtk_writer.set_point_field(std::forward<Args>(args)...);
+    std::string _write_time_step_file(const std::integral auto index) {
+        _add_fields_to_writer();
+        const auto filename = _vtk_writer.write(
+            _base_filename + "-" + _get_file_number_string(index)
+        );
+        _vtk_writer.clear();
+        return filename;
     }
 
-    template<typename... Args>
-    void set_cell_field(Args&&... args) {
-        _vtk_writer.set_cell_field(std::forward<Args>(args)...);
-    }
-
- private:
     std::string _get_file_number_string(const std::integral auto index) const {
         std::ostringstream file_number;
         file_number << std::setw(5) << std::setfill('0') << index;
@@ -72,6 +76,19 @@ class PVDWriter {
         dataset.set_attribute("name", "");
         dataset.set_attribute("file", filename);
         return dataset;
+    }
+
+    void _add_fields_to_writer() {
+        std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
+            _vtk_writer.set_point_field(name, _wrapped_field(this->_get_point_field(name)));
+        });
+        std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
+            _vtk_writer.set_cell_field(name, _wrapped_field(this->_get_cell_field(name)));
+        });
+    }
+
+    auto _wrapped_field(const Field& f) const {
+        return TransformedField{f, FieldTransformation::identity};
     }
 
     VTKWriter _vtk_writer;

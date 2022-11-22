@@ -28,6 +28,7 @@ class Field {
     MDLayout layout() const { return _layout(); }
     DynamicPrecision precision() const { return _precision(); }
     Serialization serialized() const { return _serialized(); }
+    std::size_t size_in_bytes() const { return layout().number_of_entries()*precision().size_in_bytes(); }
 
  private:
     DynamicPrecision _prec;

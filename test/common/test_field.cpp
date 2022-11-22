@@ -10,14 +10,16 @@
 #include "../testing.hpp"
 
 class MyField : public GridFormat::Field {
- public:
-    MyField() : GridFormat::Field(
-        GridFormat::MDLayout{std::vector<int>{4}},
-        GridFormat::Precision<int>{}
-    ) {}
-
  private:
     std::vector<int> _values{1, 2, 3, 4};
+
+    GridFormat::MDLayout _layout() const override {
+        return GridFormat::MDLayout{{_values.size()}};
+    }
+
+    GridFormat::DynamicPrecision _precision() const override {
+        return {GridFormat::Precision<int>{}};
+    }
 
     GridFormat::Serialization _serialized() const override {
         GridFormat::Serialization result(_values.size()*sizeof(int));
@@ -38,8 +40,8 @@ int main() {
 
     "field_layout"_test = [] () {
         std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
-        expect(eq(field->dimension(), 1_ul));
-        expect(eq(field->extent(0), 4_ul));
+        expect(eq(field->layout().dimension(), 1_ul));
+        expect(eq(field->layout().extent(0), 4_ul));
         expect(eq(field->precision().is_integral(), true));
         expect(eq(field->precision().is_signed(), true));
         expect(eq(field->precision().size_in_bytes(), sizeof(int)));

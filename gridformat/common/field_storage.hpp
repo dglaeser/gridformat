@@ -40,6 +40,10 @@ class FieldStorage {
         return std::views::keys(_fields);
     }
 
+    void clear() {
+        _fields.clear();
+    }
+
  private:
     std::unordered_map<std::string, std::unique_ptr<Field>> _fields;
 };

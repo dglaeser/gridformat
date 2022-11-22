@@ -1,17 +1,10 @@
 #include <vector>
 #include <memory>
 
-
-#include <iostream>
-
-
 #include <gridformat/common/range_field.hpp>
 #include <gridformat/common/transformed_fields.hpp>
 
 #include "../testing.hpp"
-
-
-
 
 class MyField : public GridFormat::Field {
  private:
@@ -75,6 +68,7 @@ int main() {
         TransformedField extended{field, extended_md(GridFormat::MDLayout{{3}})};
         expect(eq(extended.layout().dimension(), 2_ul));
         expect(eq(extended.layout().extent(0), 2_ul));
+        expect(eq(extended.layout().extent(1), 3_ul));
         expect(eq(extended.precision().is_integral(), false));
         expect(eq(extended.precision().is_signed(), true));
         expect(eq(extended.precision().size_in_bytes(), sizeof(double)));

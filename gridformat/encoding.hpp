@@ -10,6 +10,6 @@
 
 #include <gridformat/encoding/ascii.hpp>
 #include <gridformat/encoding/base64.hpp>
-#include <gridformat/encoding/binary.hpp>
+#include <gridformat/encoding/raw.hpp>
 
 #endif  // GRIDFORMAT_ENCODING_HPP_

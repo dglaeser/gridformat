@@ -38,27 +38,15 @@ using EntityFunctionScalar = FieldScalar<EntityFunctionValueType<F, E>>;
 
 //! Base class for grid data writers
 template<typename Grid>
-class GridWriter {
+class GridWriterBase {
     using FieldStorage = GridFormat::FieldStorage<>;
 
  public:
     using Field = typename FieldStorage::Field;
 
-    explicit GridWriter(const Grid& grid, std::string extension)
+    explicit GridWriterBase(const Grid& grid)
     : _grid(grid)
-    , _extension(std::move(extension))
     {}
-
-    std::string write(const std::string& filename) const {
-        std::string filename_with_ext = filename + _extension;
-        std::ofstream result_file(filename_with_ext, std::ios::out);
-        write(result_file);
-        return filename_with_ext;
-    }
-
-    void write(std::ostream& s) const {
-        _write(s);
-    }
 
     template<Concepts::PointFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Point<Grid>>>
     requires(!std::is_lvalue_reference_v<F>)
@@ -80,6 +68,15 @@ class GridWriter {
     template<std::derived_from<Field> F> requires(!std::is_lvalue_reference_v<F>)
     void set_cell_field(const std::string& name, F&& field) {
         _cell_fields.set(name, std::forward<F>(field));
+    }
+
+    void clear() {
+        _point_fields.clear();
+        _cell_fields.clear();
+    }
+
+    const Grid& grid() {
+        return _grid;
     }
 
  protected:
@@ -126,11 +123,48 @@ class GridWriter {
 
  private:
     const Grid& _grid;
-    std::string _extension;
     FieldStorage _point_fields;
     FieldStorage _cell_fields;
+};
 
-    virtual void _write(std::ostream& s) const = 0;
+template<typename Grid>
+class GridWriter : public GridWriterBase<Grid> {
+ public:
+    explicit GridWriter(const Grid& grid, std::string extension)
+    : GridWriterBase<Grid>(grid)
+    , _extension(std::move(extension))
+    {}
+
+    std::string write(const std::string& filename) const {
+        std::string filename_with_ext = filename + _extension;
+        std::ofstream result_file(filename_with_ext, std::ios::out);
+        write(result_file);
+        return filename_with_ext;
+    }
+
+    void write(std::ostream& s) const {
+        _write(s);
+    }
+
+ private:
+    std::string _extension;
+
+    virtual void _write(std::ostream&) const = 0;
+};
+
+template<typename Grid>
+class TimeSeriesGridWriter : public GridWriterBase<Grid> {
+ public:
+    explicit TimeSeriesGridWriter(const Grid& grid)
+    : GridWriterBase<Grid>(grid)
+    {}
+
+    std::string write(double t) {
+        return _write(t);
+    }
+
+ private:
+    virtual std::string _write(double) = 0;
 };
 
 //! \} group Grid

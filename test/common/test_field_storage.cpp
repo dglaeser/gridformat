@@ -7,19 +7,19 @@
 #include "../testing.hpp"
 
 class MyField : public GridFormat::Field {
-    using ParentType = GridFormat::Field;
-    static constexpr int dummy_num_components = 1;
-
  public:
-    MyField(int id)
-    : ParentType(
-        GridFormat::MDLayout{std::vector<int>{1}},
-        GridFormat::int32
-    ), _id(id)
-    {}
+    MyField(int id) : _id(id) {}
 
  private:
     int _id;
+
+    GridFormat::MDLayout _layout() const override {
+        return GridFormat::MDLayout{{1}};
+    }
+
+    GridFormat::DynamicPrecision _precision() const override {
+        return {GridFormat::Precision<int>{}};
+    }
 
     typename GridFormat::Serialization _serialized() const override {
         typename GridFormat::Serialization result(sizeof(int));

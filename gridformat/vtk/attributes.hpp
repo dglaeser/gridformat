@@ -9,16 +9,13 @@
 #define GRIDFORMAT_VTK_ATTRIBUTES_HPP_
 
 #include <bit>
-#include <type_traits>
 
-#include <gridformat/common/precision.hpp>
-#include <gridformat/compression/lzma.hpp>
-#include <gridformat/encoding/ascii.hpp>
-#include <gridformat/encoding/base64.hpp>
-#include <gridformat/encoding/raw.hpp>
-#include <gridformat/vtk/common.hpp>
-
+// forward declarations
+namespace GridFormat { class DynamicPrecision; }
 namespace GridFormat::Compression { struct LZMA; }
+namespace GridFormat::Encoding { struct Ascii; class AsciiWithOptions; struct Base64; struct RawBinary; }
+// end forward declarations
+
 namespace GridFormat::VTK {
 
 //! \addtogroup VTK
@@ -34,6 +31,7 @@ std::string attribute_name(std::endian e) {
 }
 
 std::string attribute_name(const Encoding::Ascii&) { return "ascii"; }
+std::string attribute_name(const Encoding::AsciiWithOptions&) { return "ascii"; }
 std::string attribute_name(const Encoding::Base64&) { return "base64"; }
 std::string attribute_name(const Encoding::RawBinary&) { return "raw"; }
 

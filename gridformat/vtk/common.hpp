@@ -12,20 +12,20 @@
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
-#include <gridformat/common/extended_range.hpp>
-#include <gridformat/common/accumulated_range.hpp>
-#include <gridformat/common/range_field.hpp>
 #include <gridformat/common/ranges.hpp>
+#include <gridformat/common/accumulated_range.hpp>
 #include <gridformat/common/transformed_fields.hpp>
-
-#include <gridformat/encoding/ascii.hpp>
-#include <gridformat/encoding/base64.hpp>
-#include <gridformat/encoding/raw.hpp>
+#include <gridformat/common/range_field.hpp>
+#include <gridformat/common/flat_field.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/concepts.hpp>
 #include <gridformat/grid/_detail.hpp>
 #include <gridformat/grid/grid.hpp>
+
+// forward declarations
+namespace GridFormat::Encoding { struct Ascii; class AsciiWithOptions; struct Base64; struct RawBinary; }
+// end forward declarations
 
 namespace GridFormat::VTK {
 
@@ -72,34 +72,26 @@ inline constexpr std::uint8_t cell_type_number(CellType t) {
         case (CellType::hexahedron): return 12;
     }
 
-    throw NotImplemented("VTK cell type for the given cell type");
+    throw NotImplemented("VTK cell type number for the given cell type");
 }
 
 template<typename ctype, typename Grid> requires(GridDetail::exposes_point_range<Grid>)
-auto make_coordinates_range_field(const Grid& grid) {
-    return RangeField{
-        points(grid)
-            | std::views::transform([&] (const auto& point) {
+auto make_coordinates_field(const Grid& grid) {
+    return TransformedField{
+        RangeField{
+            points(grid) | std::views::transform([&] (const auto& point) {
                 return coordinates(grid, point);
             }),
-        Precision<ctype>{}
+            Precision<ctype>{}
+        },
+        FieldTransformation::extended(3)
     };
-}
-
-template<typename Field> requires(std::is_lvalue_reference_v<Field>)
-auto make_3d(Field&& f) {
-    return TransformedField{std::forward<Field>(f), FieldTransformation::extended(3)};
-}
-
-template<typename Field>
-auto make_flat(Field&& f) {
-    return TransformedField{std::forward<Field>(f), FieldTransformation::flattened};
 }
 
 template<typename HeaderType = std::size_t,
          Concepts::UnstructuredGrid Grid,
          std::ranges::forward_range Cells>
-auto make_connectivity_range_field(const Grid& grid, Cells&& cells) {
+auto make_connectivity_field(const Grid& grid, Cells&& cells) {
     return FlatField{
         std::forward<Cells>(cells)
             | std::views::transform([&] (const auto& cell) {
@@ -112,10 +104,9 @@ auto make_connectivity_range_field(const Grid& grid, Cells&& cells) {
 }
 
 template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
-auto make_connectivity_range_field(const Grid& grid) {
-    return make_connectivity_range_field<HeaderType>(grid, cells(grid));
+auto make_connectivity_field(const Grid& grid) {
+    return make_connectivity_field<HeaderType>(grid, cells(grid));
 }
-
 
 template<typename HeaderType = std::size_t,
          Concepts::UnstructuredGrid Grid,
@@ -135,7 +126,7 @@ auto make_offsets_field(const Grid& grid) {
 }
 
 template<Concepts::UnstructuredGrid Grid>
-auto make_types_field(const Grid& grid) {
+auto make_cell_types_field(const Grid& grid) {
     return RangeField{
         cells(grid)
             | std::views::all

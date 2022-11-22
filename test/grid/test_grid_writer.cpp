@@ -35,9 +35,8 @@ class MyWriter : public GridFormat::GridWriter<Grid> {
 template<typename T = int>
 class MyField : public GridFormat::Field {
  public:
-    MyField(std::vector<int> values, const GridFormat::Precision<T>& prec = {})
-    : GridFormat::Field(prec),
-    _values(std::move(values))
+    MyField(std::vector<int> values, const GridFormat::Precision<T>& = {})
+    : _values(std::move(values))
     {}
 
     int get(std::size_t i) const {
@@ -47,8 +46,12 @@ class MyField : public GridFormat::Field {
     }
 
  private:
-    GridFormat::MDLayout _determine_layout() const override {
+    GridFormat::MDLayout _layout() const override {
         return GridFormat::MDLayout{std::vector{_values.size()}};
+    }
+
+    GridFormat::DynamicPrecision _precision() const override {
+        return {GridFormat::Precision<T>{}};
     }
 
     typename GridFormat::Serialization _serialized() const override {

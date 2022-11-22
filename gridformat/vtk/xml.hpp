@@ -14,13 +14,10 @@
 #include <utility>
 #include <type_traits>
 
-#include <gridformat/common/extended_range.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/field.hpp>
-#include <gridformat/common/ranges.hpp>
-#include <gridformat/common/logging.hpp>
 
-#include <gridformat/encoding/ascii.hpp>
+#include <gridformat/encoding/base64.hpp>
 #include <gridformat/grid/concepts.hpp>
 #include <gridformat/grid/writer.hpp>
 #include <gridformat/grid/grid.hpp>
@@ -115,11 +112,11 @@ using HeaderType = std::conditional_t<
  * \ingroup VTK
  * \brief TODO: Doc me
  */
-template<Concepts::Grid Grid,
+template<Concepts::Grid G,
          typename XMLOpts = XMLOptions<>,
          typename PrecOpts = PrecisionOptions<>>
-class XMLWriterBase : public GridWriter<Grid> {
-    using ParentType = GridWriter<Grid>;
+class XMLWriterBase : public GridWriter<G> {
+    using ParentType = GridWriter<G>;
 
     static_assert(
         Detail::is_valid_data_format<XMLOpts>,
@@ -144,6 +141,9 @@ class XMLWriterBase : public GridWriter<Grid> {
     >;
 
  public:
+    //! Export underlying grid type
+    using Grid = G;
+
     explicit XMLWriterBase(const Grid& grid,
                            std::string extension,
                            XMLOpts xml_opts = {},
@@ -154,33 +154,6 @@ class XMLWriterBase : public GridWriter<Grid> {
         if constexpr (use_compression && use_ascii)
             log_warning("Cannot compress ascii-encoded output, ignoring chosen compression");
     }
-
-    using ParentType::set_point_field;
-    using ParentType::set_cell_field;
-
-    // //! Vectors need to be made 3d for VTK
-    // template<Concepts::VectorPointFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Point<Grid>>>
-    // void set_point_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
-    //     ParentType::set_point_field(name, _make_point_vector_field(std::forward<F>(f), prec));
-    // }
-
-    // //! Tensors need to be made 3d for VTK
-    // template<Concepts::TensorPointFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Point<Grid>>>
-    // void set_point_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
-    //     ParentType::set_point_field(name, _make_point_tensor_field(std::forward<F>(f), prec));
-    // }
-
-    // //! Vectors need to be made 3d for VTK
-    // template<Concepts::VectorCellFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Cell<Grid>>>
-    // void set_cell_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
-    //     ParentType::set_cell_field(name, _make_cell_vector_field(std::forward<F>(f), prec));
-    // }
-
-    // //! Tensors need to be made 3d for VTK
-    // template<Concepts::TensorCellFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Cell<Grid>>>
-    // void set_cell_field(const std::string& name, F&& f, const Precision<T>& prec = {}) {
-    //     ParentType::set_cell_field(name, _make_cell_tensor_field(std::forward<F>(f), prec));
-    // }
 
  protected:
     using CoordinateType = Detail::CoordinateType<PrecOpts, Grid>;
@@ -272,82 +245,6 @@ class XMLWriterBase : public GridWriter<Grid> {
             write_xml_with_version_header(context.xml_representation, s, indentation);
         else
             XML::Detail::write_with_appendix(std::move(context), s, _xml_opts.encoder, indentation);
-    }
-
- private:
-    template<Concepts::VectorPointFunction<Grid> V, Concepts::Scalar T>
-    auto _make_point_vector_field(V&& v, const Precision<T>& prec) {
-        return _make_vector_field(
-            this->_make_entity_function_range(
-                std::move(v), points(this->_get_grid())
-            ),
-            prec
-        );
-    }
-
-    template<Concepts::VectorCellFunction<Grid> V, Concepts::Scalar T>
-    auto _make_cell_vector_field(V&& v, const Precision<T>& prec) {
-        return _make_vector_field(
-            this->_make_entity_function_range(
-                std::move(v), cells(this->_get_grid())
-            ),
-            prec
-        );
-    }
-
-    template<Concepts::Vectors V, Concepts::Scalar T>
-    auto _make_vector_field(V&& v, const Precision<T>& prec) {
-        return this->_make_entity_field(
-            std::forward<V>(v)
-            | std::views::transform([] <std::ranges::range R> (R&& r) {
-                return make_extended<vtk_space_dim>(std::forward<R>(r));
-            }),
-            prec
-        );
-    }
-
-    template<Concepts::TensorPointFunction<Grid> T, Concepts::Scalar _T>
-    auto _make_point_tensor_field(T&& t, const Precision<_T>& prec) {
-        return _make_tensor_field(
-            this->_make_entity_function_range(
-                std::move(t), points(this->_get_grid())
-            ),
-            prec
-        );
-    }
-
-    template<Concepts::TensorCellFunction<Grid> T, Concepts::Scalar _T>
-    auto _make_cell_tensor_field(T&& t, const Precision<_T>& prec) {
-        return _make_tensor_field(
-            this->_make_entity_function_range(
-            std::move(t), cells(this->_get_grid())
-            ),
-            prec
-        );
-    }
-
-    template<Concepts::Tensors T, Concepts::Scalar _T>
-    auto _make_tensor_field(T&& t, const Precision<_T>& prec) {
-        return this->_make_entity_field(
-            std::forward<T>(t)
-            | std::views::transform([] <std::ranges::range Tensor> (Tensor outer) {
-                using Vector = std::ranges::range_value_t<Tensor>;
-                using Scalar = std::ranges::range_value_t<Vector>;
-                static_assert(
-                    Concepts::StaticallySizedRange<Vector>,
-                    "Tensor expansion expects statically sized tensor rows"
-                );
-
-                Vector last_row;
-                std::ranges::fill(last_row, Scalar{0.0});
-                auto extended_tensor = make_extended<vtk_space_dim>(std::move(outer), std::move(last_row));
-                return std::ranges::owning_view{std::move(extended_tensor)}
-                    | std::views::transform([] <typename V> (V&& vector) {
-                        return make_extended<vtk_space_dim>(std::forward<V>(vector), Scalar{0.0});
-                });
-            }),
-            prec
-        );
     }
 };
 

@@ -4,14 +4,15 @@
 #include <algorithm>
 
 #include <gridformat/grid.hpp>
+#include <gridformat/encoding.hpp>
+#include <gridformat/compression.hpp>
+
 #include <gridformat/vtk/pvd_writer.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
 #include "../grid/unstructured_grid.hpp"
 
-int main() {
-    const auto grid = GridFormat::Test::make_unstructured_2d();
-    GridFormat::PVDWriter pvd_writer{GridFormat::VTUWriter{grid}, "pvd_time_series"};
-
+template<typename Grid, typename Writer>
+void test(const Grid& grid, Writer& pvd_writer) {
     std::vector<double> point_data(GridFormat::number_of_points(grid));
     std::ranges::copy_if(
         std::views::iota(std::size_t{0}, GridFormat::number_of_points(grid)),
@@ -41,6 +42,25 @@ int main() {
         sim_time += timestep_size;
         pvd_writer.write(sim_time);
     }
+}
 
+template<typename Grid>
+void test_from_instance(const Grid& grid) {
+    GridFormat::PVDWriter pvd_writer{GridFormat::VTUWriter{grid}, "pvd_time_series"};
+    test(grid, pvd_writer);
+}
+
+template<typename Grid>
+void test_from_abstract_base_ptr(const Grid& grid) {
+    using BaseWriter = GridFormat::TimeSeriesGridWriter<Grid>;
+    auto writer = GridFormat::PVDWriter{GridFormat::VTUWriter{grid}, "pvd_time_series_from_base_writer"};
+    std::unique_ptr<BaseWriter> pvd_writer = std::make_unique<decltype(writer)>(std::move(writer));
+    test(grid, *pvd_writer);
+}
+
+int main() {
+    const auto grid = GridFormat::Test::make_unstructured_2d();
+    test_from_instance(grid);
+    test_from_abstract_base_ptr(grid);
     return 0;
 }

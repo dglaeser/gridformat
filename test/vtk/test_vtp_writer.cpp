@@ -1,3 +1,5 @@
+#include <gridformat/encoding.hpp>
+#include <gridformat/compression.hpp>
 #include <gridformat/vtk/vtp_writer.hpp>
 
 #include "../grid/unstructured_grid.hpp"

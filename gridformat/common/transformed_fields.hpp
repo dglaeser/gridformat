@@ -240,12 +240,6 @@ class TransformedField;
 namespace Detail {
 
     template<typename T>
-    struct IsTransformed : public std::false_type {};
-
-    template<typename... Args>
-    struct IsTransformed<TransformedField<Args...>> : public std::true_type {};
-
-    template<typename T>
     class TransformedFieldStorage;
 
     template<typename F> requires(std::is_lvalue_reference_v<F>)
@@ -257,8 +251,7 @@ namespace Detail {
         const F& _field;
     };
 
-    template<typename F>
-    requires(!std::is_lvalue_reference_v<F> and IsTransformed<std::decay_t<F>>::value)
+    template<typename F> requires(!std::is_lvalue_reference_v<F>)
     class TransformedFieldStorage<F> {
     public:
         explicit TransformedFieldStorage(F&& field) : _field{std::move(field)} {}
@@ -283,7 +276,7 @@ class TransformedField : public Field {
     TransformedField(_F&& field, _T&& trafo)
     : _storage{std::forward<_F>(field)}
     , _transformation{std::forward<_T>(trafo)}
-    , _transformed{trafo(_storage.get())}
+    , _transformed{_transformation(_storage.get())}
     {}
 
     TransformedField(const TransformedField& other)

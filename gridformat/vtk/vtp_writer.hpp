@@ -16,6 +16,7 @@
 #include <gridformat/common/filtered_range.hpp>
 
 #include <gridformat/grid/grid.hpp>
+#include <gridformat/vtk/field_cache.hpp>
 #include <gridformat/vtk/common.hpp>
 #include <gridformat/vtk/xml.hpp>
 
@@ -76,11 +77,15 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
         this->_set_attribute(context, "Piece", "NumberOfStrips", "0");
         this->_set_attribute(context, "Piece", "NumberOfPolys", num_polys);
 
-        std::ranges::for_each(this->_point_field_names(), [&] (const std::string& n) {
-            this->_set_data_array(context, "Piece.PointData", n, this->_get_point_field(n));
+        VTK::FieldCache point_fields;
+        VTK::FieldCache cell_fields;
+        std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
+            const auto& field = point_fields.insert(this->_get_point_field(name));
+            this->_set_data_array(context, "Piece.PointData", name, field);
         });
-        std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& n) {
-            this->_set_data_array(context, "Piece.CellData", n, this->_get_cell_field(n));
+        std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
+            const auto& field = cell_fields.insert(this->_get_cell_field(name));
+            this->_set_data_array(context, "Piece.CellData", name, field);
         });
 
         const auto coords_field = VTK::make_coordinates_field<CoordinateType>(this->_get_grid());
