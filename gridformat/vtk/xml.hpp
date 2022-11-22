@@ -15,6 +15,7 @@
 #include <type_traits>
 
 #include <gridformat/common/precision.hpp>
+#include <gridformat/common/logging.hpp>
 #include <gridformat/common/field.hpp>
 
 #include <gridformat/encoding/base64.hpp>
