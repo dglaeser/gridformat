@@ -12,6 +12,7 @@
 #include <ostream>
 
 #include <gridformat/common/field.hpp>
+#include <gridformat/common/flat_field.hpp>
 #include <gridformat/common/transformed_fields.hpp>
 
 #include <gridformat/grid/grid.hpp>
@@ -88,9 +89,9 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
         this->_set_attribute(context, "Piece", "NumberOfPoints", num_points);
         this->_set_attribute(context, "Piece", "NumberOfCells", num_cells);
 
-
-        const auto coords_field = VTK::make_coordinates_field<CoordinateType>(this->_get_grid());
-        const auto connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid());
+        const auto coords_range_field = VTK::make_coordinates_range_field<CoordinateType>(this->_get_grid());
+        const auto coords_field = make_3d(coords_range_field);
+        const auto connectivity_field = VTK::make_connectivity_range_field<HeaderType>(this->_get_grid());
         const auto offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid());
         const auto types_field = VTK::make_types_field(this->_get_grid());
         this->_set_data_array(context, "Piece.Points", "Coordinates", coords_field);

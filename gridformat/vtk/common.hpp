@@ -16,6 +16,7 @@
 #include <gridformat/common/accumulated_range.hpp>
 #include <gridformat/common/range_field.hpp>
 #include <gridformat/common/ranges.hpp>
+#include <gridformat/common/transformed_fields.hpp>
 
 #include <gridformat/encoding/ascii.hpp>
 #include <gridformat/encoding/base64.hpp>
@@ -75,51 +76,44 @@ inline constexpr std::uint8_t cell_type_number(CellType t) {
 }
 
 template<typename ctype, typename Grid> requires(GridDetail::exposes_point_range<Grid>)
-auto make_coordinates_field(const Grid& grid) {
+auto make_coordinates_range_field(const Grid& grid) {
     return RangeField{
         points(grid)
-            | std::views::all
             | std::views::transform([&] (const auto& point) {
-                return make_extended<3>(coordinates(grid, point));
+                return coordinates(grid, point);
             }),
         Precision<ctype>{}
     };
 }
 
+template<typename Field> requires(std::is_lvalue_reference_v<Field>)
+auto make_3d(Field&& f) {
+    return TransformedField{std::forward<Field>(f), FieldTransformation::extended(3)};
+}
+
+template<typename Field>
+auto make_flat(Field&& f) {
+    return TransformedField{std::forward<Field>(f), FieldTransformation::flattened};
+}
+
 template<typename HeaderType = std::size_t,
          Concepts::UnstructuredGrid Grid,
          std::ranges::forward_range Cells>
-auto make_connectivity_field(const Grid& grid, Cells&& cells) {
-    // TODO: improve this by turning this into a view somehow!
-    static constexpr std::size_t max_num_cell_corners = 8;
-    std::vector<HeaderType> connectivity;
-    connectivity.reserve(Ranges::size(cells)*max_num_cell_corners);
-    for (const auto& c : cells)
-        for (const auto& p : corners(grid, c))
-            connectivity.push_back(id(grid, p));
-    connectivity.shrink_to_fit();
-    return RangeField{std::move(connectivity)};
-    // Problem: with join_view we end up with input_iterator but
-    //          we currently require forward_iterator. With c++23
-    //          std::views::cache_latest this could be fixed and
-    //          we may avoid having to create the connectiviy vector.
-    // return RangeField{
-    //     cells(grid)
-    //         | std::views::all
-    //         | std::views::transform([&] (const auto& cell) {
-    //             return corners(grid, cell)
-    //                 | std::views::all
-    //                 | std::views::transform([&] (const auto& point) {
-    //                     return id(grid, point);
-    //                 })
-    //         })
-    //         | std::views::join
-    // };
+auto make_connectivity_range_field(const Grid& grid, Cells&& cells) {
+    return FlatField{
+        std::forward<Cells>(cells)
+            | std::views::transform([&] (const auto& cell) {
+                return corners(grid, cell)
+                    | std::views::transform([&] (const auto& point) {
+                        return id(grid, point);
+                    });
+            })
+    };
 }
 
 template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
-auto make_connectivity_field(const Grid& grid) {
-    return make_connectivity_field<HeaderType>(grid, cells(grid));
+auto make_connectivity_range_field(const Grid& grid) {
+    return make_connectivity_range_field<HeaderType>(grid, cells(grid));
 }
 
 

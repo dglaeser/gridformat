@@ -278,14 +278,29 @@ class TransformedField : public Field {
  public:
     using Transformation = T;
 
-    template<typename _F> requires(std::same_as<std::decay_t<_F>, std::decay_t<F>>)
-    TransformedField(_F&& field, T&& trafo)
+    template<typename _F, std::convertible_to<T> _T>
+    requires(std::same_as<std::decay_t<_F>, std::decay_t<F>>)
+    TransformedField(_F&& field, _T&& trafo)
     : _storage{std::forward<_F>(field)}
+    , _transformation{std::forward<_T>(trafo)}
     , _transformed{trafo(_storage.get())}
+    {}
+
+    TransformedField(const TransformedField& other)
+    : _storage{other._storage}
+    , _transformation{other._transformation}
+    , _transformed{_transformation(_storage.get())}
+    {}
+
+    TransformedField(TransformedField&& other)
+    : _storage{std::move(other._storage)}
+    , _transformation{std::move(other._transformation)}
+    , _transformed{_transformation(_storage.get())}
     {}
 
  private:
     Detail::TransformedFieldStorage<F> _storage;
+    Transformation _transformation;
     Transformed _transformed;
 
     MDLayout _layout() const override {
@@ -302,9 +317,9 @@ class TransformedField : public Field {
 };
 
 template<typename F, typename T> requires(std::is_lvalue_reference_v<F>)
-TransformedField(F&&, T&&) -> TransformedField<std::remove_reference_t<F>&, T>;
+TransformedField(F&&, T&&) -> TransformedField<std::remove_reference_t<F>&, std::decay_t<T>>;
 template<typename F, typename T> requires(!std::is_lvalue_reference_v<F>)
-TransformedField(F&&, T&&) -> TransformedField<std::decay_t<F>, T>;
+TransformedField(F&&, T&&) -> TransformedField<std::decay_t<F>, std::decay_t<T>>;
 
 }  // namespace GridFormat
 
