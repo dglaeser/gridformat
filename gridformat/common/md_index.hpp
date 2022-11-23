@@ -24,28 +24,32 @@
 
 namespace GridFormat {
 
-/*!
- * \ingroup Common
- * \brief Represents a multi-dimensional index.
- */
+//! \addtogroup Common
+//! \{
+
+//! Represents a multi-dimensional index.
 class MDIndex {
  public:
     MDIndex() = default;
 
+    //! Construct from a range of indices
     template<std::ranges::forward_range R>
     explicit MDIndex(R&& indices) {
         _indices.reserve(Ranges::size(indices));
         std::ranges::copy(indices, std::back_inserter(_indices));
     }
 
+    //! Move-construct from a vector of indices
     explicit MDIndex(std::vector<std::size_t>&& indices)
     : _indices{std::move(indices)}
     {}
 
+    //! Zero-initialize a md-index with a given size
     explicit MDIndex(std::integral auto size) {
         _indices.resize(size, std::size_t{0});
     }
 
+    //! Zero-initialize a md-index with a given layout
     explicit MDIndex(const MDLayout& layout)
     : MDIndex(layout.dimension())
     {}
@@ -82,8 +86,11 @@ class MDIndex {
     std::vector<std::size_t> _indices;
 };
 
-// std::reverse_iterator does not work on stashing iterators,
-// which is why we explicitly expose the reversed range here...
+/*!
+ * \brief A range over all md-indices in a multi-dimensional layout in reversed order.
+ * \note std::reverse_iterator does not work on stashing iterators,
+ *       which is why we explicitly expose the reversed range here manually.
+ */
 class MDIndexRangeReversed {
     class Iterator : public ForwardIteratorFacade<Iterator, MDIndex, const MDIndex&> {
      public:
@@ -154,6 +161,7 @@ class MDIndexRangeReversed {
     MDLayout _layout;
 };
 
+//! A range over all md-indices in a multi-dimensional layout
 class MDIndexRange {
     class Iterator : public ForwardIteratorFacade<Iterator, MDIndex, const MDIndex&> {
      public:
@@ -220,14 +228,17 @@ class MDIndexRange {
     MDLayout _layout;
 };
 
+//! Returns the range over all indices in the given layout
 inline auto indices(MDLayout layout) {
     return MDIndexRange{std::move(layout)};
 }
 
+//! Returns the reverse of the given range
 inline auto reversed(const MDIndexRange& range) {
     return range.reversed();
 }
 
+//! Returns the reversed range over the indices in the layout
 inline auto reversed_indices(MDLayout layout) {
     return reversed(indices(std::move(layout)));
 }
@@ -253,6 +264,7 @@ std::size_t flat_index_from_sub_sizes(const MDIndex& index, R&& sub_sizes) {
 }  // namespace Detail
 #endif  // DOXYGEN
 
+//! Compute the flat index from a multidimensional index and layout
 inline std::size_t flat_index(const MDIndex& index, const MDLayout& layout) {
     assert(index.size() == layout.dimension());
     auto sub_sizes = std::views::iota(std::size_t{0}, index.size())
@@ -263,6 +275,8 @@ inline std::size_t flat_index(const MDIndex& index, const MDLayout& layout) {
     });
     return Detail::flat_index_from_sub_sizes(index, sub_sizes);
 }
+
+//! \} group Common
 
 }  // namespace GridFormat
 
