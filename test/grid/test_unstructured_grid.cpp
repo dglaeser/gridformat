@@ -52,7 +52,18 @@ void check_grid(const Grid& grid) {
 
 int main() {
     using GridFormat::Testing::operator""_test;
-    "unstructured_grid_1d"_test = [] () { check_grid(GridFormat::Test::make_unstructured_1d());  };
-    "unstructured_grid_2d"_test = [] () { check_grid(GridFormat::Test::make_unstructured_2d());  };
+    "unstructured_grid_0d_in_1d"_test = [] () { check_grid(GridFormat::Test::make_unstructured_0d<1>());  };
+    "unstructured_grid_0d_in_2d"_test = [] () { check_grid(GridFormat::Test::make_unstructured_0d<2>());  };
+    "unstructured_grid_0d_in_3d"_test = [] () { check_grid(GridFormat::Test::make_unstructured_0d<3>());  };
+
+    "unstructured_grid_1d_in_1d"_test = [] () { check_grid(GridFormat::Test::make_unstructured_1d<1>());  };
+    "unstructured_grid_1d_in_2d"_test = [] () { check_grid(GridFormat::Test::make_unstructured_1d<2>());  };
+    "unstructured_grid_1d_in_3d"_test = [] () { check_grid(GridFormat::Test::make_unstructured_1d<3>());  };
+
+    "unstructured_grid_2d_in_2d"_test = [] () { check_grid(GridFormat::Test::make_unstructured_2d<2>());  };
+    "unstructured_grid_2d_in_3d"_test = [] () { check_grid(GridFormat::Test::make_unstructured_2d<3>());  };
+
+    "unstructured_grid_3d"_test = [] () { check_grid(GridFormat::Test::make_unstructured_2d<3>());  };
+
     return 0;
 }

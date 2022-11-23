@@ -3,6 +3,7 @@
 #ifndef GRIDFORMAT_TEST_GRID_UNSTRUCTURED_GRID_HPP_
 #define GRIDFORMAT_TEST_GRID_UNSTRUCTURED_GRID_HPP_
 
+#include <array>
 #include <cstddef>
 #include <vector>
 #include <utility>
@@ -19,6 +20,12 @@ template<int dim>
 struct Point {
     std::array<double, dim> coordinates;
     std::size_t id;
+
+    static Point make_from_value(double v, std::size_t id) {
+        std::array<double, dim> coords;
+        std::ranges::fill(coords, v);
+        return Point{std::move(coords), id};
+    }
 
     auto begin() const { return coordinates.begin(); }
     auto end() const { return coordinates.end(); }
@@ -63,12 +70,13 @@ class UnstructuredGrid {
 };
 
 
+template<int space_dim = 1>
 auto make_unstructured_0d() {
-    return UnstructuredGrid<1>{
+    return UnstructuredGrid<space_dim>{
         {
-            {{0.0}, 0},
-            {{1.0}, 1},
-            {{3.0}, 2}
+            Point<space_dim>::make_from_value(0.0, 0),
+            Point<space_dim>::make_from_value(1.0, 1),
+            Point<space_dim>::make_from_value(3.0, 2)
         },
         {
             {{0}, CellType::vertex, 0},
@@ -78,13 +86,13 @@ auto make_unstructured_0d() {
     };
 }
 
-
+template<int space_dim = 1>
 auto make_unstructured_1d() {
-    return UnstructuredGrid<1>{
+    return UnstructuredGrid<space_dim>{
         {
-            {{0.0}, 0},
-            {{1.0}, 1},
-            {{3.0}, 2}
+            Point<space_dim>::make_from_value(0.0, 0),
+            Point<space_dim>::make_from_value(1.0, 1),
+            Point<space_dim>::make_from_value(3.0, 2)
         },
         {
             {{0, 1}, CellType::segment, 0},
@@ -93,18 +101,54 @@ auto make_unstructured_1d() {
     };
 }
 
+template<int space_dim = 2>
 auto make_unstructured_2d() {
-    return UnstructuredGrid<2>{
+    static_assert(space_dim == 2 || space_dim == 3);
+    const auto _make_point = [] (const std::array<double, 2>& vals, std::size_t id) {
+        if constexpr (space_dim == 2)
+            return Point<space_dim>{{vals[0], vals[1]}, id};
+        else
+            return Point<space_dim>{{vals[0], vals[1], 0.0}, id};
+    };
+
+    return UnstructuredGrid<space_dim>{
         {
-            {{0.0, 0.0}, 0},
-            {{1.0, 0.0}, 1},
-            {{1.0, 1.0}, 2},
-            {{0.0, 1.0}, 3},
-            {{2.0, 1.0}, 4}
+            _make_point({0.0, 0.0}, 0),
+            _make_point({1.0, 0.0}, 1),
+            _make_point({1.0, 1.0}, 2),
+            _make_point({0.0, 1.0}, 3),
+            _make_point({2.0, 1.0}, 4),
+            _make_point({2.0, 0.0}, 5),
+            _make_point({2.5, 0.25}, 6),
+            _make_point({2.75, 0.5}, 7),
+            _make_point({2.5, 0.75}, 8)
         },
         {
             {{0, 1, 2, 3}, CellType::quadrilateral, 0},
-            {{1, 2, 4}, CellType::triangle, 1}
+            {{1, 2, 4}, CellType::triangle, 1},
+            {{4, 5, 6, 7, 8}, CellType::polygon, 2}
+        }
+    };
+}
+
+auto make_unstructured_3d() {
+    return UnstructuredGrid<3>{
+        {
+            {{0.0, 0.0, 0.0}, 0},
+            {{1.0, 0.0, 0.0}, 1},
+            {{1.0, 1.0, 0.0}, 2},
+            {{0.0, 1.0, 0.0}, 3},
+            {{0.0, 0.0, 1.0}, 4},
+            {{1.0, 0.0, 1.0}, 5},
+            {{1.0, 1.0, 1.0}, 6},
+            {{0.0, 1.0, 1.0}, 7},
+            {{2.0, 1.0, 1.0}, 8},
+            {{1.0, 2.0, 1.0}, 9},
+            {{2.0, 2.0, 2.0}, 10}
+        },
+        {
+            {{0, 1, 2, 3, 4, 5, 6, 7}, CellType::hexahedron, 0},
+            {{6, 8, 9, 10}, CellType::tetrahedron, 1}
         }
     };
 }

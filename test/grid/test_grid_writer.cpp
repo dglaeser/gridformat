@@ -28,7 +28,7 @@ class MyWriter : public GridFormat::GridWriter<Grid> {
 
  private:
     void _write(std::ostream&) const override {
-        throw GridFormat::NotImplemented("_write()");
+        throw GridFormat::InvalidState("This test should not call _write()");
     }
 };
 
@@ -39,15 +39,11 @@ class MyField : public GridFormat::Field {
     : _values(std::move(values))
     {}
 
-    int get(std::size_t i) const {
-        if (i >= _values.size())
-            throw GridFormat::SizeError("Given index exceeds field size");
-        return _values[i];
-    }
-
  private:
+    std::vector<int> _values;
+
     GridFormat::MDLayout _layout() const override {
-        return GridFormat::MDLayout{std::vector{_values.size()}};
+        return GridFormat::MDLayout{{_values.size()}};
     }
 
     GridFormat::DynamicPrecision _precision() const override {
@@ -56,13 +52,11 @@ class MyField : public GridFormat::Field {
 
     typename GridFormat::Serialization _serialized() const override {
         typename GridFormat::Serialization result(_values.size()*sizeof(T));
-        T* data = reinterpret_cast<T*>(result.as_span().data());
+        auto out_data = result.template as_span_of<T>();
         for (std::size_t i = 0; i < _values.size(); ++i)
-            data[i] = static_cast<T>(_values[i]);
+            out_data[i] = static_cast<T>(_values[i]);
         return result;
     }
-
-    std::vector<int> _values;
 };
 
 template<typename T>
@@ -84,6 +78,28 @@ void check_serialization(const GridFormat::Field& field, const std::vector<T>& r
         expect(eq(values[i], reference[i]));
 }
 
+template<typename T = int>
+auto make_values(const std::size_t size) {
+    std::vector<T> values;
+    std::ranges::for_each(
+        std::views::iota(std::size_t{0}, size),
+        [&] (const std::integral auto i) {
+            values.push_back(static_cast<T>(42 + i));
+        }
+    );
+    return values;
+}
+
+template<typename T = int, typename Grid>
+auto make_point_values(const Grid& grid) {
+    return make_values<T>(GridFormat::number_of_points(grid));
+}
+
+template<typename T = int, typename Grid>
+auto make_cell_values(const Grid& grid) {
+    return make_values<T>(GridFormat::number_of_cells(grid));
+}
+
 int main() {
     using GridFormat::Testing::operator""_test;
 
@@ -91,7 +107,7 @@ int main() {
 
     "grid_writer_point_field"_test = [&] () {
         MyWriter writer{grid};
-        std::vector<int> field_values{42, 43, 44, 45, 46};
+        const auto field_values = make_point_values(grid);
         writer.set_point_field("test", [&] (const auto& point) {
             return field_values[point.id];
         });
@@ -100,19 +116,19 @@ int main() {
 
     "grid_writer_point_field_custom_precision"_test = [&] () {
         MyWriter writer{grid};
-        std::vector<int> field_values{42, 43, 44, 45, 46};
+        const auto field_values = make_point_values(grid);
         writer.set_point_field("test", [&] (const auto& point) {
             return field_values[point.id];
         }, GridFormat::Precision<double>{});
         check_serialization(
             writer.get_point_field("test"),
-            std::vector<double>{42, 43, 44, 45, 46}
+            make_point_values<double>(grid)
         );
     };
 
     "grid_writer_cell_field"_test = [&] () {
         MyWriter writer{grid};
-        std::vector<int> field_values{42, 43};
+        const auto field_values = make_cell_values(grid);
         writer.set_cell_field("test", [&] (const auto& cell) {
             return field_values[cell.id];
         });
@@ -121,51 +137,52 @@ int main() {
 
     "grid_writer_cell_field_custom_precision"_test = [&] () {
         MyWriter writer{grid};
-        std::vector<int> field_values{42, 43};
+        const auto field_values = make_cell_values(grid);
         writer.set_cell_field("test", [&] (const auto& cell) {
             return field_values[cell.id];
         }, GridFormat::Precision<double>{});
         check_serialization(
             writer.get_cell_field("test"),
-            std::vector<double>{42, 43}
+            make_cell_values<double>(grid)
         );
     };
 
     "grid_writer_values_by_reference"_test = [&] () {
         MyWriter writer{grid};
-        std::vector<int> field_values{42, 43, 44, 45, 46};
+        auto point_values = make_point_values(grid);
+        auto cell_values = make_cell_values(grid);
         writer.set_point_field("test", [&] (const auto& point) {
-            return field_values[point.id];
+            return point_values[point.id];
         });
         writer.set_cell_field("test", [&] (const auto& cell) {
-            return field_values[cell.id];
+            return cell_values[cell.id];
         });
-        field_values[1] = 99;
+        point_values[1] = 99;
         check_serialization(
             writer.get_point_field("test"),
-            std::vector<int>{42, 99, 44, 45, 46}
+            point_values
         );
         check_serialization(
             writer.get_cell_field("test"),
-            std::vector<int>{42, 99}
+            cell_values
         );
     };
 
     "writer_set_custom_point_field"_test = [&] () {
         MyWriter writer{grid};
-        writer.set_point_field("test", MyField{std::vector<int>{42, 43, 44, 45, 46}});
+        writer.set_point_field("test", MyField{make_point_values(grid)});
         check_serialization(
             writer.get_point_field("test"),
-            std::vector<int>{42, 43, 44, 45, 46}
+            make_point_values(grid)
         );
     };
 
     "writer_set_custom_cell_field"_test = [&] () {
         MyWriter writer{grid};
-        writer.set_cell_field("test", MyField{std::vector<int>{42, 43}});
+        writer.set_cell_field("test", MyField{make_cell_values(grid)});
         check_serialization(
             writer.get_cell_field("test"),
-            std::vector<int>{42, 43}
+            make_cell_values(grid)
         );
     };
 
@@ -174,13 +191,13 @@ int main() {
         writer.set_point_field(
             "test",
             MyField{
-                std::vector<int>{42, 43, 44, 45, 46},
+                make_point_values(grid),
                 GridFormat::Precision<double>{}
             }
         );
         check_serialization(
             writer.get_point_field("test"),
-            std::vector<double>{42, 43, 44, 45, 46}
+            make_point_values<double>(grid)
         );
     };
 
@@ -189,13 +206,13 @@ int main() {
         writer.set_cell_field(
             "test",
             MyField{
-                std::vector<int>{42, 43},
+                make_cell_values(grid),
                 GridFormat::Precision<double>{}
             }
         );
         check_serialization(
             writer.get_cell_field("test"),
-            std::vector<double>{42, 43}
+            make_cell_values<double>(grid)
         );
     };
 
