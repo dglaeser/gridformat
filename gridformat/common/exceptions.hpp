@@ -9,9 +9,7 @@
 #define GRIDFORMAT_COMMON_EXCEPTIONS_HPP_
 
 #include <source_location>
-#include <concepts>
 #include <exception>
-#include <utility>
 #include <string_view>
 #include <string>
 
