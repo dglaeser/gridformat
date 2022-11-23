@@ -155,8 +155,8 @@ struct CellType<Test::UnstructuredGrid<space_dim>,
 };
 
 template<int space_dim>
-struct CellCornerPoints<Test::UnstructuredGrid<space_dim>,
-                        typename Test::UnstructuredGrid<space_dim>::Cell> {
+struct CellPoints<Test::UnstructuredGrid<space_dim>,
+                  typename Test::UnstructuredGrid<space_dim>::Cell> {
     static auto get(const Test::UnstructuredGrid<space_dim>& grid,
                     const typename Test::UnstructuredGrid<space_dim>::Cell& cell) {
         return std::views::transform(cell.corners, [&] (std::integral auto idx) {

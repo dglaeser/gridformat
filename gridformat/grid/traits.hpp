@@ -21,9 +21,9 @@ struct Points;
 template<typename Grid>
 struct Cells;
 
-//! Get the corner points of a cell via a static function `get(const Grid&, const Cell&)`
+//! Get the points of a cell via a static function `get(const Grid&, const Cell&)`
 template<typename Grid, typename Cell>
-struct CellCornerPoints;
+struct CellPoints;
 
 //! Get the type of a cell via a static function `get(const Grid&, const Cell&)`
 template<typename Grid, typename Cell>

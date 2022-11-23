@@ -56,9 +56,9 @@ inline constexpr bool exposes_cell_type
 };
 
 template<typename T>
-inline constexpr bool exposes_cell_corners
-    = is_complete<Traits::CellCornerPoints<T, Cell<T>>> && requires(const T& grid) {
-    { Traits::CellCornerPoints<T, Cell<T>>::get(grid, std::declval<const Cell<T>&>()) } -> Concepts::RangeOf<Point<T>>;
+inline constexpr bool exposes_cell_points
+    = is_complete<Traits::CellPoints<T, Cell<T>>> && requires(const T& grid) {
+    { Traits::CellPoints<T, Cell<T>>::get(grid, std::declval<const Cell<T>&>()) } -> Concepts::RangeOf<Point<T>>;
 };
 
 template<typename F, typename Entity>

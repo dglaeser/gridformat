@@ -26,7 +26,7 @@ concept UnstructuredGrid =
     GridDetail::exposes_point_coordinates<T> and
     GridDetail::exposes_point_id<T> and
     GridDetail::exposes_cell_type<T> and
-    GridDetail::exposes_cell_corners<T>;
+    GridDetail::exposes_cell_points<T>;
 
 template<typename T>
 concept Grid = UnstructuredGrid<T>;

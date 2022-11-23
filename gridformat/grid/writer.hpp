@@ -127,6 +127,7 @@ class GridWriterBase {
     FieldStorage _cell_fields;
 };
 
+//! Abstract base class for writers of grid files
 template<typename Grid>
 class GridWriter : public GridWriterBase<Grid> {
  public:
@@ -152,6 +153,7 @@ class GridWriter : public GridWriterBase<Grid> {
     virtual void _write(std::ostream&) const = 0;
 };
 
+//! Abstract base class for writers of time series
 template<typename Grid>
 class TimeSeriesGridWriter : public GridWriterBase<Grid> {
  public:
