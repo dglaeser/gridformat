@@ -24,7 +24,7 @@ namespace GridFormat {
 
 /*!
  * \ingroup Common
- * \brief Represents the layout (dimension, extents) of a multi-dimensional range.
+ * \brief Represents the layout (dimension, extents) of a multi-dimensional range
  */
 class MDLayout {
  public:
@@ -77,6 +77,7 @@ class MDLayout {
     std::vector<std::size_t> _extents;
 };
 
+
 #ifndef DOXYGEN
 namespace Detail {
 
@@ -113,7 +114,10 @@ constexpr void set_sub_extents_from_instance(R&& r, std::array<std::size_t, size
 }  // namespace Detail
 #endif  // DOXYGEN
 
-//! Get the multi-dimensional layout for the given range
+/*!
+ * \ingroup Common
+ * \brief Get the multi-dimensional layout for the given range
+ */
 template<std::ranges::range R>
 MDLayout get_md_layout(R&& r) {
     std::array<std::size_t, mdrange_dimension<R>> extents;
@@ -121,7 +125,10 @@ MDLayout get_md_layout(R&& r) {
     return MDLayout{extents};
 }
 
-//! overload for scalars
+/*!
+ * \ingroup Common
+ * \brief Overload for scalars
+ */
 template<Concepts::Scalar T>
 MDLayout get_md_layout(const T&) {
     return MDLayout{std::array<std::size_t, 1>{1}};
