@@ -91,7 +91,7 @@ int main() {
     write(
         GridFormat::VTK::XMLOptions{
             .encoder = GridFormat::Encoding::base64,
-            .compression = GridFormat::Compression::lzma,
+            .compressor = GridFormat::Compression::lzma,
             .data_format = GridFormat::VTK::DataFormat::inlined
         },
         GridFormat::VTK::PrecisionOptions{.header_precision = GridFormat::uint32},
@@ -100,7 +100,7 @@ int main() {
     write(
         GridFormat::VTK::XMLOptions{
             .encoder = GridFormat::Encoding::base64,
-            .compression = GridFormat::Compression::lzma,
+            .compressor = GridFormat::Compression::lzma,
             .data_format = GridFormat::VTK::DataFormat::inlined
         },
         GridFormat::VTK::PrecisionOptions{},

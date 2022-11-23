@@ -29,20 +29,30 @@
 #include <gridformat/vtk/data_array.hpp>
 #include <gridformat/vtk/appendix.hpp>
 
+#if GRIDFORMAT_HAVE_LZMA
+#include <gridformat/compression/lzma.hpp>
+namespace GridFormat::VTK::Defaults { using Compressor = Compression::LZMA; }
+#else
+#include <gridformat/common/type_traits.hpp>
+namespace GridFormat::VTK::Defaults { using Compressor = None; }
+#endif
+
 namespace GridFormat::VTK {
 
 //! \addtogroup VTK
 //! \{
 
-template<typename Encoding = GridFormat::Encoding::Base64,
-         typename Compression = None,
+//! Options for VTK-XML files
+template<typename Encoder = GridFormat::Encoding::Base64,
+         typename Compressor = Automatic,
          typename DataFormat = Automatic>
 struct XMLOptions {
-    Encoding encoder = Encoding{};
-    Compression compression = Compression{};
+    Encoder encoder = Encoder{};
+    Compressor compressor = Compressor{};
     DataFormat data_format = DataFormat{};
 };
 
+//! Options for setting the header and coordinate type used
 template<typename CoordPrecision = Automatic,
          typename HeaderPrecision = Precision<std::size_t>>
 struct PrecisionOptions {
@@ -50,61 +60,72 @@ struct PrecisionOptions {
     HeaderPrecision header_precision = {};
 };
 
+
 #ifndef DOXYGEN
 namespace Detail {
 
-template<typename Opts> struct Encoding;
-template<typename Opts> struct Compression;
-template<typename Opts> struct DataFormat;
-template<typename Opts> struct CoordinatePrecision;
-template<typename Opts> struct HeaderPrecision;
+    template<typename Opts> struct Encoding;
+    template<typename Opts> struct Compression;
+    template<typename Opts> struct DataFormat;
+    template<typename Opts> struct CoordinatePrecision;
+    template<typename Opts> struct HeaderPrecision;
 
-template<typename E, typename C, typename F>
-struct Encoding<XMLOptions<E, C, F>> : public std::type_identity<E> {};
-template<typename E, typename C, typename F>
-struct Compression<XMLOptions<E, C, F>> : public std::type_identity<C> {};
+    template<typename E, typename C, typename F>
+    struct Encoding<XMLOptions<E, C, F>> : public std::type_identity<E> {};
 
-template<typename E, typename C, typename F>
-struct DataFormat<XMLOptions<E, C, F>> : public std::type_identity<F> {};
-template<typename E, typename C>
-struct DataFormat<XMLOptions<E, C, Automatic>>
-: public std::type_identity<
-    std::conditional_t<
-        is_any_of<E, GridFormat::Encoding::Ascii, GridFormat::Encoding::AsciiWithOptions>,
-        VTK::DataFormat::Inlined,
-        VTK::DataFormat::Appended
-    >
-> {};
+    template<typename E, typename C, typename F>
+    struct Compression<XMLOptions<E, C, F>> : public std::type_identity<C> {};
+    template<typename E, typename F>
+    struct Compression<XMLOptions<E, Automatic, F>>
+    : public std::type_identity<
+        std::conditional_t<
+            is_any_of<E, GridFormat::Encoding::Ascii, GridFormat::Encoding::AsciiWithOptions>,
+            None,
+            VTK::Defaults::Compressor
+        >
+    > {};
 
-template<typename T> struct PrecisionType;
-template<typename T> struct PrecisionType<Precision<T>> : public std::type_identity<T> {};
-template<> struct PrecisionType<Automatic> : public std::type_identity<Automatic> {};
+    template<typename E, typename C, typename F>
+    struct DataFormat<XMLOptions<E, C, F>> : public std::type_identity<F> {};
+    template<typename E, typename C>
+    struct DataFormat<XMLOptions<E, C, Automatic>>
+    : public std::type_identity<
+        std::conditional_t<
+            is_any_of<E, GridFormat::Encoding::Ascii, GridFormat::Encoding::AsciiWithOptions>,
+            VTK::DataFormat::Inlined,
+            VTK::DataFormat::Appended
+        >
+    > {};
 
-template<typename C, typename H>
-struct CoordinatePrecision<PrecisionOptions<C, H>> : public PrecisionType<C> {};
-template<typename C, typename H>
-struct HeaderPrecision<PrecisionOptions<C, H>> : public PrecisionType<H> {};
+    template<typename T> struct PrecisionType;
+    template<typename T> struct PrecisionType<Precision<T>> : public std::type_identity<T> {};
+    template<> struct PrecisionType<Automatic> : public std::type_identity<Automatic> {};
 
-template<typename XMLOpts>
-inline constexpr bool is_valid_data_format
-    = !(std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::Ascii> &&
-        std::is_same_v<typename DataFormat<XMLOpts>::type, VTK::DataFormat::Appended>)
-    && !(std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::RawBinary> &&
-        std::is_same_v<typename DataFormat<XMLOpts>::type, VTK::DataFormat::Inlined>);
+    template<typename C, typename H>
+    struct CoordinatePrecision<PrecisionOptions<C, H>> : public PrecisionType<C> {};
+    template<typename C, typename H>
+    struct HeaderPrecision<PrecisionOptions<C, H>> : public PrecisionType<H> {};
 
-template<typename Opts, typename Grid>
-using CoordinateType = std::conditional_t<
-    std::is_same_v<typename CoordinatePrecision<Opts>::type, Automatic>,
-    CoordinateType<Grid>,
-    typename CoordinatePrecision<Opts>::type
->;
+    template<typename XMLOpts>
+    inline constexpr bool is_valid_data_format
+        = !(std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::Ascii> &&
+            std::is_same_v<typename DataFormat<XMLOpts>::type, VTK::DataFormat::Appended>)
+        && !(std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::RawBinary> &&
+            std::is_same_v<typename DataFormat<XMLOpts>::type, VTK::DataFormat::Inlined>);
 
-template<typename Opts>
-using HeaderType = std::conditional_t<
-    std::is_same_v<typename HeaderPrecision<Opts>::type, Automatic>,
-    std::size_t,
-    typename HeaderPrecision<Opts>::type
->;
+    template<typename Opts, typename Grid>
+    using CoordinateType = std::conditional_t<
+        std::is_same_v<typename CoordinatePrecision<Opts>::type, Automatic>,
+        CoordinateType<Grid>,
+        typename CoordinatePrecision<Opts>::type
+    >;
+
+    template<typename Opts>
+    using HeaderType = std::conditional_t<
+        std::is_same_v<typename HeaderPrecision<Opts>::type, Automatic>,
+        std::size_t,
+        typename HeaderPrecision<Opts>::type
+    >;
 
 }  // namespace Detail
 #endif  // DOXYGEN
@@ -124,7 +145,6 @@ class XMLWriterBase : public GridWriter<G> {
         "Incompatible choice of encoding (ascii/base64/binary) and data format (inlined/appended)"
     );
 
-    static constexpr std::size_t vtk_space_dim = 3;
     static constexpr bool use_ascii = is_any_of<
         typename Detail::Encoding<XMLOpts>::type,
         Encoding::Ascii,
@@ -153,6 +173,9 @@ class XMLWriterBase : public GridWriter<G> {
     }
 
  protected:
+    XMLOpts _xml_opts;
+    PrecOpts _prec_opts;
+
     using CoordinateType = Detail::CoordinateType<PrecOpts, Grid>;
     using HeaderType = Detail::HeaderType<PrecOpts>;
     static_assert(
@@ -160,14 +183,18 @@ class XMLWriterBase : public GridWriter<G> {
         "VTK supports only UInt32 and UInt64 as header types"
     );
 
-    XMLOpts _xml_opts;
-    PrecOpts _prec_opts;
-
     auto _data_format() const {
         if constexpr (std::is_same_v<decltype(_xml_opts.data_format), Automatic>)
             return typename Detail::DataFormat<XMLOpts>::type{};
         else
             return _xml_opts.data_format;
+    }
+
+    auto _compressor() const {
+        if constexpr (std::is_same_v<decltype(_xml_opts.compressor), Automatic>)
+            return typename Detail::Compression<XMLOpts>::type{};
+        else
+            return _xml_opts.compressor;
     }
 
     struct WriteContext {
@@ -184,7 +211,7 @@ class XMLWriterBase : public GridWriter<G> {
         xml.set_attribute("byte_order", attribute_name(std::endian::native));
         xml.add_child(vtk_grid_type);
         if constexpr (use_compression)
-            xml.set_attribute("compressor", attribute_name(_xml_opts.compression));
+            xml.set_attribute("compressor", attribute_name(_compressor()));
         return {
             .vtk_grid_type = std::move(vtk_grid_type),
             .xml_representation = std::move(xml),
@@ -204,21 +231,18 @@ class XMLWriterBase : public GridWriter<G> {
                          std::string_view xml_group,
                          std::string data_array_name,
                          const Field& field) const {
+        const auto layout = field.layout();
         XMLElement& da = _access_element(context, _get_element_names(xml_group)).add_child("DataArray");
         da.set_attribute("Name", std::move(data_array_name));
         da.set_attribute("type", attribute_name(field.precision()));
         da.set_attribute("format", data_format_name(_xml_opts.encoder, _data_format()));
-
-        const auto layout = field.layout();
         da.set_attribute("NumberOfComponents", (layout.dimension() == 1 ? 1 : layout.number_of_entries(1)));
+
+        auto data_array = DataArray{field, _xml_opts.encoder, _compressor(), Precision<HeaderType>{}};
         if constexpr (write_inline)
-            da.set_content(
-                DataArray{field, _xml_opts.encoder, _xml_opts.compression, Precision<HeaderType>{}}
-            );
+            da.set_content(std::move(data_array));
         else
-            context.appendix.add(
-                DataArray{field, _xml_opts.encoder, _xml_opts.compression, Precision<HeaderType>{}}
-            );
+            context.appendix.add(std::move(data_array));
     }
 
     XMLElement& _access_element(WriteContext& context, const std::vector<std::string>& sub_elem_names) const {
