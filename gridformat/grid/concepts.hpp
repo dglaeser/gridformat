@@ -49,33 +49,6 @@ concept CellFunction = Detail::EntityFunction<T, Cell<Grid>>;
 template<typename T, typename Grid>
 concept EntityFunction = PointFunction<T, Grid> or CellFunction<T, Grid>;
 
-template<typename T, typename Entity>
-concept ScalarFunction = Detail::EntityFunction<T, Entity> and Scalar<GridDetail::EntityFunctionValueType<T, Entity>>;
-
-template<typename T, typename Entity>
-concept VectorFunction = Detail::EntityFunction<T, Entity> and Vector<GridDetail::EntityFunctionValueType<T, Entity>>;
-
-template<typename T, typename Entity>
-concept TensorFunction = Detail::EntityFunction<T, Entity> and Tensor<GridDetail::EntityFunctionValueType<T, Entity>>;
-
-template<typename T, typename Grid>
-concept ScalarPointFunction = PointFunction<T, Grid> and ScalarFunction<T, Point<Grid>>;
-
-template<typename T, typename Grid>
-concept ScalarCellFunction = CellFunction<T, Grid> and ScalarFunction<T, Point<Grid>>;
-
-template<typename T, typename Grid>
-concept VectorPointFunction = PointFunction<T, Grid> and VectorFunction<T, Point<Grid>>;
-
-template<typename T, typename Grid>
-concept VectorCellFunction = CellFunction<T, Grid> and VectorFunction<T, Point<Grid>>;
-
-template<typename T, typename Grid>
-concept TensorPointFunction = PointFunction<T, Grid> and TensorFunction<T, Point<Grid>>;
-
-template<typename T, typename Grid>
-concept TensorCellFunction = CellFunction<T, Grid> and TensorFunction<T, Point<Grid>>;
-
 //! \} group Grid
 
 }  // namespace GridFormat::Concepts
