@@ -11,6 +11,7 @@
 #include <span>
 #include <ranges>
 #include <utility>
+#include <algorithm>
 #include <type_traits>
 
 #include <gridformat/common/md_layout.hpp>
@@ -23,7 +24,11 @@ namespace GridFormat {
 
 /*!
  * \ingroup Common
- * \brief Field implementation around a given range
+ * \brief Field implementation around a given range.
+ *        Exposes the range as an m-dimensional field of values.
+ * \note This requires the sub-ranges of multi-dimensional ranges
+ *       to all have the same extents, as otherwise a `MDLayout`
+ *       cannot be properly defined.
  */
 template<std::ranges::forward_range R, Concepts::Scalar ValueType = MDRangeScalar<R>>
 class RangeField : public Field {
@@ -93,8 +98,10 @@ class RangeField : public Field {
                       Serialization& serialization,
                       std::size_t& offset) const {
         const auto cast_value = static_cast<ValueType>(value);
-        const auto* bytes = reinterpret_cast<const std::byte*>(&cast_value);
-        std::copy_n(bytes, sizeof(ValueType), std::span<std::byte>(serialization).data() + offset);
+        std::ranges::copy(
+            std::as_bytes(std::span{&cast_value, 1}),
+            serialization.as_span().data() + offset
+        );
         offset += sizeof(ValueType);
     }
 
