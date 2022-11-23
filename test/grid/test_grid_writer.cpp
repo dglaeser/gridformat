@@ -78,26 +78,61 @@ void check_serialization(const GridFormat::Field& field, const std::vector<T>& r
         expect(eq(values[i], reference[i]));
 }
 
-template<typename T = int>
-auto make_values(const std::size_t size) {
-    std::vector<T> values;
-    std::ranges::for_each(
-        std::views::iota(std::size_t{0}, size),
-        [&] (const std::integral auto i) {
-            values.push_back(static_cast<T>(42 + i));
-        }
-    );
+template<typename T = int, std::ranges::forward_range Entities>
+auto make_values(const Entities& entities) {
+    std::vector<T> values(std::ranges::distance(entities));
+    std::ranges::for_each(entities, [&] (const auto& e) {
+        values[e.id] = 42 + e.id;
+    });
     return values;
+}
+
+template<std::ranges::forward_range Entities, typename T>
+auto make_sorted_by_entities(const Entities& entities, const std::vector<T>& data) {
+    if (static_cast<std::size_t>(std::ranges::distance(entities)) != data.size())
+        throw GridFormat::SizeError("Entity range - size mismatch");
+    auto cpy = data;
+    std::size_t i = 0;
+    std::ranges::for_each(entities, [&] (const auto& e) {
+        cpy[i++] = data[e.id];
+    });
+    return cpy;
+}
+
+template<typename T = int, std::ranges::forward_range Entities>
+auto make_sorted_by_entities(const Entities& entities) {
+    auto values = make_values<T>(entities);
+    return make_sorted_by_entities(entities, values);
 }
 
 template<typename T = int, typename Grid>
 auto make_point_values(const Grid& grid) {
-    return make_values<T>(GridFormat::number_of_points(grid));
+    return make_values<T>(GridFormat::points(grid));
 }
 
 template<typename T = int, typename Grid>
 auto make_cell_values(const Grid& grid) {
-    return make_values<T>(GridFormat::number_of_cells(grid));
+    return make_values<T>(GridFormat::cells(grid));
+}
+
+template<typename T = int, typename Grid>
+auto make_point_values_sorted_by_grid(const Grid& grid) {
+    return make_sorted_by_entities<T>(GridFormat::points(grid));
+}
+
+template<typename Grid, typename T>
+auto make_point_values_sorted_by_grid(const Grid& grid, const std::vector<T>& data) {
+    return make_sorted_by_entities(GridFormat::points(grid), data);
+}
+
+template<typename T = int, typename Grid>
+auto make_cell_values_sorted_by_grid(const Grid& grid) {
+    return make_sorted_by_entities<T>(GridFormat::cells(grid));
+}
+
+template<typename Grid, typename T>
+auto make_cell_values_sorted_by_grid(const Grid& grid, const std::vector<T>& data) {
+    return make_sorted_by_entities(GridFormat::cells(grid), data);
 }
 
 int main() {
@@ -111,7 +146,10 @@ int main() {
         writer.set_point_field("test", [&] (const auto& point) {
             return field_values[point.id];
         });
-        check_serialization(writer.get_point_field("test"), field_values);
+        check_serialization(
+            writer.get_point_field("test"),
+            make_point_values_sorted_by_grid(grid)
+        );
     };
 
     "grid_writer_point_field_custom_precision"_test = [&] () {
@@ -122,7 +160,7 @@ int main() {
         }, GridFormat::Precision<double>{});
         check_serialization(
             writer.get_point_field("test"),
-            make_point_values<double>(grid)
+            make_point_values_sorted_by_grid<double>(grid)
         );
     };
 
@@ -132,7 +170,10 @@ int main() {
         writer.set_cell_field("test", [&] (const auto& cell) {
             return field_values[cell.id];
         });
-        check_serialization(writer.get_cell_field("test"), field_values);
+        check_serialization(
+            writer.get_cell_field("test"),
+            make_cell_values_sorted_by_grid(grid)
+        );
     };
 
     "grid_writer_cell_field_custom_precision"_test = [&] () {
@@ -143,7 +184,7 @@ int main() {
         }, GridFormat::Precision<double>{});
         check_serialization(
             writer.get_cell_field("test"),
-            make_cell_values<double>(grid)
+            make_cell_values_sorted_by_grid<double>(grid)
         );
     };
 
@@ -160,11 +201,11 @@ int main() {
         point_values[1] = 99;
         check_serialization(
             writer.get_point_field("test"),
-            point_values
+            make_point_values_sorted_by_grid(grid, point_values)
         );
         check_serialization(
             writer.get_cell_field("test"),
-            cell_values
+            make_cell_values_sorted_by_grid(grid, cell_values)
         );
     };
 

@@ -41,9 +41,19 @@ void check_grid(const Grid& grid) {
     for (const auto& c : GridFormat::cells(grid)) {
         expect(grid.cells()[i].cell_type == GridFormat::type(grid, c));
         expect(std::ranges::equal(
-            grid.cells()[i].corners,
+            grid.cells()[i].corners | std::views::transform([&] (const std::integral auto idx) {
+                return grid.points()[idx].id;
+            }),
             GridFormat::corners(grid, c) | std::views::transform([] (const auto& point) {
                 return point.id;
+            })
+        ));
+        expect(std::ranges::equal(
+            grid.cells()[i].corners | std::views::transform([&] (const std::integral auto idx) {
+                return grid.points()[idx].id;
+            }),
+            GridFormat::corners(grid, c) | std::views::transform([&] (const auto& point) {
+                return GridFormat::id(grid, point);
             })
         ));
         i++;

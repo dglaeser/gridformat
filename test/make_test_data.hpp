@@ -17,12 +17,11 @@ T evaluate_function(const Position& pos) {
 
 template<typename T, typename Grid>
 std::vector<T> make_point_data(const Grid& grid) {
-    std::vector<T> result;
-    result.reserve(GridFormat::number_of_points(grid));
+    std::vector<T> result(GridFormat::number_of_points(grid));
     for (const auto& p : GridFormat::points(grid))
-        result.push_back(evaluate_function<T>(
+        result[GridFormat::id(grid, p)] = evaluate_function<T>(
             GridFormat::coordinates(grid, p)
-        ));
+        );
     return result;
 }
 

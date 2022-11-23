@@ -8,6 +8,7 @@
 #include <vector>
 #include <utility>
 #include <ranges>
+#include <random>
 #include <algorithm>
 
 #include <gridformat/grid/traits.hpp>
@@ -58,13 +59,44 @@ class UnstructuredGrid {
     UnstructuredGrid(std::vector<Point>&& points,
                      std::vector<Cell>&& cells)
     : _points(std::move(points))
-    , _cells(std::move(cells))
-    {}
+    , _cells(std::move(cells)) {
+        shuffle();
+    }
 
     const auto& points() const { return _points; }
     const auto& cells() const { return _cells; }
 
+    void shuffle() {
+        std::vector<std::size_t> running_idx;
+        running_idx.reserve(_points.size());
+        for (auto i : std::views::iota(std::size_t{0}, _points.size()))
+            running_idx.push_back(i);
+
+        std::mt19937 g(1234);
+        std::shuffle(running_idx.begin(), running_idx.end(), g);
+        const auto old_to_new_running_idx = _inverse_idx_map(running_idx);
+
+        std::vector<Point> new_points;
+        new_points.reserve(_points.size());
+        for (auto i : std::views::iota(std::size_t{0}, _points.size()))
+            new_points.push_back(_points[running_idx[i]]);
+        _points = std::move(new_points);
+
+        std::ranges::for_each(_cells, [&] (auto& cell) {
+            std::ranges::for_each(cell.corners, [&] (auto& idx) {
+                idx = old_to_new_running_idx[idx];
+            });
+        });
+    }
+
  private:
+    auto _inverse_idx_map(const std::vector<std::size_t>& in) const {
+        std::size_t i = 0;
+        std::vector<std::size_t> result(in.size());
+        for (const std::size_t idx : in)
+            result[idx] = i++;
+        return result;
+    }
     std::vector<Point> _points;
     std::vector<Cell> _cells;
 };
