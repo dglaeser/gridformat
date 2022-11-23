@@ -3,6 +3,7 @@
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/field_storage.hpp>
 #include <gridformat/common/serialization.hpp>
+#include <gridformat/common/md_layout.hpp>
 
 #include "../testing.hpp"
 
@@ -23,8 +24,8 @@ class MyField : public GridFormat::Field {
 
     typename GridFormat::Serialization _serialized() const override {
         typename GridFormat::Serialization result(sizeof(int));
-        int* data = reinterpret_cast<int*>(result.as_span().data());
-        data[0] = _id;
+        auto ints = result.template as_span_of<int>();
+        ints[0] = _id;
         return result;
     }
 };
@@ -34,8 +35,7 @@ int get_id_from_serialization(const GridFormat::Field& field) {
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;
     expect(eq(serialization.size(), std::size_t{sizeof(int)}));
-    const int* data = reinterpret_cast<const int*>(serialization.as_span().data());
-    return data[0];
+    return serialization.template as_span_of<int>()[0];
 }
 
 int main() {
