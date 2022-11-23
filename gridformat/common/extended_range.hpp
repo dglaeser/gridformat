@@ -13,6 +13,7 @@
 #include <utility>
 #include <cmath>
 #include <concepts>
+#include <type_traits>
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>

@@ -11,11 +11,23 @@
 #include <ranges>
 #include <cassert>
 #include <utility>
-#include <cmath>
+#include <concepts>
 
 #include <gridformat/common/iterator_facades.hpp>
 
 namespace GridFormat {
+
+#ifndef DOXYGEN
+namespace FilteredRangeDetail {
+
+template<typename Range, typename Predicate>
+using PredicateResult = std::invoke_result_t<
+    const Predicate&,
+    std::ranges::range_reference_t<Range>
+>;
+
+}  // namespace FilteredRangeDetail
+#endif  // DOXYGEN
 
 /*!
  * \ingroup Common
@@ -28,13 +40,11 @@ namespace GridFormat {
  *       at the cost of finding the beginning of the range every time the filtered
  *       range is traversed.
  */
-template<std::ranges::forward_range R, typename Predicate>
-requires(
-    !std::is_lvalue_reference_v<Predicate> and
-    std::invocable<const Predicate&, std::ranges::range_reference_t<R>> and
-    std::convertible_to<bool, std::invoke_result_t<const Predicate&, std::ranges::range_reference_t<R>>>
-)
+template<std::ranges::forward_range R,
+         std::invocable<std::ranges::range_reference_t<R>> Predicate>
+requires(std::convertible_to<bool, FilteredRangeDetail::PredicateResult<R, Predicate>>)
 class FilteredRange {
+
     template<typename _Range>
     class Iterator
     : public ForwardIteratorFacade<Iterator<_Range>,
@@ -47,7 +57,7 @@ class FilteredRange {
         , _pred(&pred)
         , _it{is_end ? std::ranges::end(*_range) : std::ranges::begin(*_range)}
         , _end_it{std::ranges::end(*_range)} {
-            if (!_is_end() && !(*_pred)(*_it))
+            if (_should_increment())
                 _increment();
         }
 
@@ -61,19 +71,21 @@ class FilteredRange {
 
         void _increment() {
             ++_it;
-            while (!_is_end() && !(*_pred)(*_it))
+            while (_should_increment())
                 ++_it;
         }
 
         bool _is_equal(const Iterator& other) const {
             if (_range != other._range)
                 return false;
+            if (_pred != other._pred)
+                return false;
             return _it == other._it;
         }
 
-        bool _is_end() const {
-            return _it == _end_it;
-        }
+        bool _is_end() const { return _it == _end_it; }
+        bool _current_true() const { return (*_pred)(*_it); }
+        bool _should_increment() const { return !_current_true() && !_is_end(); }
 
         _Range* _range;
         const Predicate* _pred;
@@ -93,22 +105,13 @@ class FilteredRange {
 
  private:
     R _range;
-    Predicate _pred;
+    std::decay_t<Predicate> _pred;
 };
 
-template<std::ranges::range R, typename P> requires(std::is_lvalue_reference_v<R>)
-constexpr auto filtered(R&& range, P&& predicate) {
-    return FilteredRange<std::remove_reference_t<R>&, std::decay_t<P>>{
-        std::forward<R>(range), std::forward<P>(predicate)
-    };
-}
-
 template<std::ranges::range R, typename P> requires(!std::is_lvalue_reference_v<R>)
-constexpr auto filtered(R&& range, P&& predicate) {
-    return FilteredRange<std::decay_t<R>, std::decay_t<P>>{
-        std::forward<R>(range), std::forward<P>(predicate)
-    };
-}
+FilteredRange(R&&, P&&) -> FilteredRange<std::decay_t<R>, std::decay_t<P>>;
+template<std::ranges::range R, typename P> requires(std::is_lvalue_reference_v<R>)
+FilteredRange(R&&, P&&) -> FilteredRange<std::remove_reference_t<R>&, std::decay_t<P>>;
 
 }  // namespace GridFormat
 

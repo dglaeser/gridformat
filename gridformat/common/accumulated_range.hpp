@@ -86,9 +86,9 @@ class AccumulatedRange {
 };
 
 template<std::ranges::range R> requires(!std::is_lvalue_reference_v<R>)
-AccumulatedRange(R&& r) -> AccumulatedRange<std::decay_t<R>>;
+AccumulatedRange(R&&) -> AccumulatedRange<std::decay_t<R>>;
 template<std::ranges::range R> requires(std::is_lvalue_reference_v<R>)
-AccumulatedRange(R&& r) -> AccumulatedRange<std::remove_reference_t<R>&>;
+AccumulatedRange(R&&) -> AccumulatedRange<std::remove_reference_t<R>&>;
 
 }  // namespace GridFormat
 
