@@ -8,12 +8,11 @@
 #ifndef GRIDFORMAT_COMMON_FIELD_HPP_
 #define GRIDFORMAT_COMMON_FIELD_HPP_
 
-#include <utility>
+#include <cstddef>
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
-#include <gridformat/common/exceptions.hpp>
 
 namespace GridFormat {
 
@@ -37,8 +36,6 @@ class Field {
     virtual DynamicPrecision _precision() const = 0;
     virtual Serialization _serialized() const = 0;
 };
-
-
 
 }  // namespace GridFormat
 
