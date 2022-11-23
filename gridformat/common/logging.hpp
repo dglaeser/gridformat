@@ -15,6 +15,9 @@
 
 namespace GridFormat {
 
+//! \addtogroup Common
+//! \{
+
 #ifndef DOXYGEN
 namespace Detail {
 
@@ -55,6 +58,8 @@ std::string as_error(std::string_view msg) {
 void log_warning(std::string_view msg, std::ostream& s = std::cout) {
     s << "[GFMT] " << as_warning("Warning") << ": " << msg << "\n";
 }
+
+//! \} group Common
 
 }  // namespace GridFormat
 
