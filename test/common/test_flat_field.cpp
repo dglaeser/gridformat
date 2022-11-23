@@ -16,14 +16,17 @@ class Tester {
     void test(const GridFormat::Field& field) const {
         const auto serialization = field.serialized();
         field.precision().visit([&] <typename _T> (const GridFormat::Precision<_T>&) {
+            const auto field_vals = serialization.template as_span_of<Expected>();
+
             if (!std::is_same_v<_T, Expected>)
                 throw GridFormat::InvalidState("Unexpected field precision");
             if (serialization.size()/sizeof(Expected) != _reference.size())
                 throw GridFormat::InvalidState("Field size mismatch");
             if (_reference.size() != field.layout().number_of_entries())
                 throw GridFormat::InvalidState("Field size mismatch");
+            if (field_vals.size() != _reference.size())
+                throw GridFormat::InvalidState("Field size mismatch");
 
-            const auto* field_vals = reinterpret_cast<const Expected*>(serialization.as_span().data());
             for (std::size_t i = 0; i < _reference.size(); ++i)
                 GridFormat::Testing::expect(
                     GridFormat::Testing::eq(_reference[i], field_vals[i])

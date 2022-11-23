@@ -23,7 +23,7 @@ namespace GridFormat {
 
 /*!
  * \ingroup Common
- * \brief Field implementation around a given range
+ * \brief Exposes a given range as a flat field of values.
  */
 template<std::ranges::forward_range R, Concepts::Scalar ValueType = MDRangeScalar<R>>
 class FlatField : public Field {
