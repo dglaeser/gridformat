@@ -55,15 +55,10 @@ int main() {
     static_assert(GridFormat::Concepts::RangeOf<std::vector<ConvertibleToDouble>, double>);
 
     static_assert(GridFormat::Concepts::MDRange<std::vector<int>, 1>);
-    static_assert(GridFormat::Concepts::Scalars<std::vector<int>>);
     static_assert(!GridFormat::Concepts::MDRange<std::vector<int>, 2>);
-    static_assert(!GridFormat::Concepts::Vectors<std::vector<int>>);
     static_assert(GridFormat::Concepts::MDRange<std::vector<std::vector<int>>, 2>);
-    static_assert(GridFormat::Concepts::Vectors<std::vector<std::vector<int>>>);
     static_assert(!GridFormat::Concepts::MDRange<std::vector<std::vector<int>>, 3>);
-    static_assert(!GridFormat::Concepts::Tensors<std::vector<std::vector<int>>>);
     static_assert(GridFormat::Concepts::MDRange<std::vector<std::vector<std::vector<int>>>, 3>);
-    static_assert(GridFormat::Concepts::Tensors<std::vector<std::vector<std::vector<int>>>>);
 
     return 0;
 }

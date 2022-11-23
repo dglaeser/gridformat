@@ -73,21 +73,6 @@ concept MDRange = std::ranges::range<T> and mdrange_dimension<T> == dim;
 template<typename T>
 concept Scalar = is_scalar<T>;
 
-template<typename T>
-concept Vector = MDRange<T, 1>;
-
-template<typename T>
-concept Tensor = MDRange<T, 2>;
-
-template<typename T>
-concept Scalars = std::ranges::range<T> and Scalar<std::ranges::range_value_t<T>>;
-
-template<typename T>
-concept Vectors = std::ranges::range<T> and Vector<std::ranges::range_value_t<T>>;
-
-template<typename T>
-concept Tensors = std::ranges::range<T> and Tensor<std::ranges::range_value_t<T>>;
-
 //! \} group Common
 
 }  // namespace GridFormat
