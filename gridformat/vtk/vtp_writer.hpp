@@ -91,18 +91,19 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
         const auto coords_field = VTK::make_coordinates_field<CoordinateType>(this->_get_grid());
         this->_set_data_array(context, "Piece.Points", "Coordinates", coords_field);
 
-        const auto verts_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), verts_range);
+        const auto point_id_map = make_point_id_map(this->grid());
+        const auto verts_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->grid(), verts_range, point_id_map);
         const auto verts_offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid(), verts_range);
         this->_set_data_array(context, "Piece.Verts", "connectivity", verts_connectivity_field);
         this->_set_data_array(context, "Piece.Verts", "offsets", verts_offsets_field);
 
-        const auto lines_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), lines_range);
+        const auto lines_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->grid(), lines_range, point_id_map);
         const auto lines_offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid(), lines_range);
         this->_set_data_array(context, "Piece.Lines", "connectivity", lines_connectivity_field);
         this->_set_data_array(context, "Piece.Lines", "offsets", lines_offsets_field);
 
-        const auto polys_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), polys_range);
-        const auto polys_offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid(), polys_range);
+        const auto polys_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->grid(), polys_range, point_id_map);
+        const auto polys_offsets_field = VTK::make_offsets_field<HeaderType>(this->grid(), polys_range);
         this->_set_data_array(context, "Piece.Polys", "connectivity", polys_connectivity_field);
         this->_set_data_array(context, "Piece.Polys", "offsets", polys_offsets_field);
 

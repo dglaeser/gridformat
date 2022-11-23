@@ -10,6 +10,8 @@
 
 #include <ranges>
 #include <concepts>
+#include <cassert>
+#include <vector>
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/grid/cell_type.hpp>
@@ -60,6 +62,17 @@ std::size_t number_of_cells(const Grid& grid) {
 template<typename Grid>
 std::size_t number_of_points(const Grid& grid) {
     return Ranges::size(points(grid));
+}
+
+template<typename Grid>
+std::vector<std::size_t> make_point_id_map(const Grid& grid) {
+    std::size_t i = 0;
+    std::vector<std::size_t> point_id_to_running_idx(number_of_points(grid));
+    for (const auto& p : points(grid)) {
+        assert(id(grid, p) < point_id_to_running_idx.size());
+        point_id_to_running_idx[id(grid, p)] = i++;
+    }
+    return point_id_to_running_idx;
 }
 
 //! \} group Grid

@@ -57,8 +57,9 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
             this->_set_data_array(context, "Piece.CellData", name, field);
         });
 
+        const auto point_id_map = make_point_id_map(this->grid());
         const auto coords_field = VTK::make_coordinates_field<CoordinateType>(this->_get_grid());
-        const auto connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid());
+        const auto connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), point_id_map);
         const auto offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid());
         const auto types_field = VTK::make_cell_types_field(this->_get_grid());
         this->_set_data_array(context, "Piece.Points", "Coordinates", coords_field);

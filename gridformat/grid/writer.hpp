@@ -75,7 +75,7 @@ class GridWriterBase {
         _cell_fields.clear();
     }
 
-    const Grid& grid() {
+    const Grid& grid() const {
         return _grid;
     }
 

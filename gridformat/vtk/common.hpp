@@ -8,6 +8,8 @@
 #ifndef GRIDFORMAT_VTK_COMMON_HPP_
 #define GRIDFORMAT_VTK_COMMON_HPP_
 
+#include <cassert>
+#include <utility>
 #include <type_traits>
 
 #include <gridformat/common/exceptions.hpp>
@@ -90,22 +92,29 @@ auto make_coordinates_field(const Grid& grid) {
 
 template<typename HeaderType = std::size_t,
          Concepts::UnstructuredGrid Grid,
-         std::ranges::forward_range Cells>
-auto make_connectivity_field(const Grid& grid, Cells&& cells) {
+         std::ranges::forward_range Cells,
+         typename PointMap>
+auto make_connectivity_field(const Grid& grid,
+                             Cells&& cells,
+                             PointMap&& map)
+requires(std::is_lvalue_reference_v<PointMap>)
+{
     return FlatField{
         std::forward<Cells>(cells)
             | std::views::transform([&] (const auto& cell) {
                 return corners(grid, cell)
                     | std::views::transform([&] (const auto& point) {
-                        return id(grid, point);
+                        return map[id(grid, point)];
                     });
             })
     };
 }
 
-template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
-auto make_connectivity_field(const Grid& grid) {
-    return make_connectivity_field<HeaderType>(grid, cells(grid));
+template<typename HeaderType = std::size_t,
+         Concepts::UnstructuredGrid Grid,
+         typename PointMap>
+auto make_connectivity_field(const Grid& grid, PointMap&& map) {
+    return make_connectivity_field<HeaderType>(grid, cells(grid), std::forward<PointMap>(map));
 }
 
 template<typename HeaderType = std::size_t,
