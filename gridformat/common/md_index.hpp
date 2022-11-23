@@ -247,19 +247,19 @@ inline auto reversed_indices(MDLayout layout) {
 #ifndef DOXYGEN
 namespace Detail {
 
-template<std::ranges::range R>
-std::size_t flat_index_from_sub_sizes(const MDIndex& index, R&& sub_sizes) {
-    assert(index.size() == Ranges::size(sub_sizes));
-    auto offsets = std::views::iota(std::size_t{0}, index.size())
-        | std::views::transform([&] (const std::integral auto dim) {
-            return index.get(dim)*sub_sizes[dim];
-    });
-    return std::accumulate(
-        std::ranges::begin(offsets),
-        std::ranges::end(offsets),
-        0
-    );
-}
+    template<std::ranges::range R>
+    std::size_t flat_index_from_sub_sizes(const MDIndex& index, R&& sub_sizes) {
+        assert(index.size() == Ranges::size(sub_sizes));
+        auto offsets = std::views::iota(std::size_t{0}, index.size())
+            | std::views::transform([&] (const std::integral auto dim) {
+                return index.get(dim)*sub_sizes[dim];
+        });
+        return std::accumulate(
+            std::ranges::begin(offsets),
+            std::ranges::end(offsets),
+            0
+        );
+    }
 
 }  // namespace Detail
 #endif  // DOXYGEN

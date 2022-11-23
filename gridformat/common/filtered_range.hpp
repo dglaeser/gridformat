@@ -20,11 +20,11 @@ namespace GridFormat {
 #ifndef DOXYGEN
 namespace FilteredRangeDetail {
 
-template<typename Range, typename Predicate>
-using PredicateResult = std::invoke_result_t<
-    const Predicate&,
-    std::ranges::range_reference_t<Range>
->;
+    template<typename Range, typename Predicate>
+    using PredicateResult = std::invoke_result_t<
+        const Predicate&,
+        std::ranges::range_reference_t<Range>
+    >;
 
 }  // namespace FilteredRangeDetail
 #endif  // DOXYGEN

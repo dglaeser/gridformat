@@ -22,12 +22,12 @@ namespace GridFormat {
 #ifndef DOXYGEN
 namespace Encoding::Detail {
 
-template<typename T>
-struct AsciiPrintType : std::type_identity<T> {};
-template<std::signed_integral T>
-struct AsciiPrintType<T> : std::type_identity<std::intmax_t> {};
-template<std::unsigned_integral T>
-struct AsciiPrintType<T> : std::type_identity<std::uintmax_t> {};
+    template<typename T>
+    struct AsciiPrintType : std::type_identity<T> {};
+    template<std::signed_integral T>
+    struct AsciiPrintType<T> : std::type_identity<std::intmax_t> {};
+    template<std::unsigned_integral T>
+    struct AsciiPrintType<T> : std::type_identity<std::uintmax_t> {};
 
 }  // namespace Encoding::Detail
 #endif  // DOXYGEN

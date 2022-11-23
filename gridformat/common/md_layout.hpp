@@ -81,35 +81,35 @@ class MDLayout {
 #ifndef DOXYGEN
 namespace Detail {
 
-template<std::ranges::range R, std::size_t size>
-constexpr void set_sub_extents(std::array<std::size_t, size>& extents, std::size_t dim) {
-    assert(dim < size);
-    if constexpr (Concepts::StaticallySizedRange<R>)
-        extents[dim] = StaticSize<R>::value;
-    else
-        extents[dim] = 0;
-    if constexpr (has_sub_range<R>)
-        set_sub_extents<std::ranges::range_value_t<R>>(extents, dim + 1);
-}
-
-template<std::ranges::range R, std::size_t size>
-constexpr void set_sub_extents_from_instance(R&& r, std::array<std::size_t, size>& extents, std::size_t dim) {
-    assert(dim < size);
-    if constexpr (Concepts::StaticallySizedRange<R>)
-        extents[dim] = StaticSize<R>::value;
-    else
-        extents[dim] = Ranges::size(r);
-    if constexpr (has_sub_range<R>) {
-        if (extents[dim] == 0)
+    template<std::ranges::range R, std::size_t size>
+    constexpr void set_sub_extents(std::array<std::size_t, size>& extents, std::size_t dim) {
+        assert(dim < size);
+        if constexpr (Concepts::StaticallySizedRange<R>)
+            extents[dim] = StaticSize<R>::value;
+        else
+            extents[dim] = 0;
+        if constexpr (has_sub_range<R>)
             set_sub_extents<std::ranges::range_value_t<R>>(extents, dim + 1);
-        else {
-            set_sub_extents_from_instance(*std::ranges::begin(r), extents, dim + 1);
-            assert(std::ranges::all_of(r, [&] (const std::ranges::range auto& sub_range) {
-                return static_cast<std::size_t>(Ranges::size(sub_range)) == extents[dim + 1];
-            }));
+    }
+
+    template<std::ranges::range R, std::size_t size>
+    constexpr void set_sub_extents_from_instance(R&& r, std::array<std::size_t, size>& extents, std::size_t dim) {
+        assert(dim < size);
+        if constexpr (Concepts::StaticallySizedRange<R>)
+            extents[dim] = StaticSize<R>::value;
+        else
+            extents[dim] = Ranges::size(r);
+        if constexpr (has_sub_range<R>) {
+            if (extents[dim] == 0)
+                set_sub_extents<std::ranges::range_value_t<R>>(extents, dim + 1);
+            else {
+                set_sub_extents_from_instance(*std::ranges::begin(r), extents, dim + 1);
+                assert(std::ranges::all_of(r, [&] (const std::ranges::range auto& sub_range) {
+                    return static_cast<std::size_t>(Ranges::size(sub_range)) == extents[dim + 1];
+                }));
+            }
         }
     }
-}
 
 }  // namespace Detail
 #endif  // DOXYGEN

@@ -34,8 +34,8 @@ concept Grid = UnstructuredGrid<T>;
 #ifndef DOXYGEN
 namespace Detail {
 
-template<typename F, typename E>
-concept EntityFunction = std::invocable<F, const E&>;
+    template<typename F, typename E>
+    concept EntityFunction = std::invocable<F, const E&>;
 
 }  // namespace Detail
 #endif  // DOXYGEN

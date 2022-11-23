@@ -25,19 +25,19 @@ namespace GridFormat::Concepts {
 #ifndef DOXYGEN
 namespace Detail {
 
-template<typename T>
-struct is_std_array : public std::false_type {};
-template<typename T, std::size_t N>
-struct is_std_array<std::array<T, N>> : public std::true_type {};
-template<typename T>
-inline constexpr bool is_std_array_v = is_std_array<T>::value;
+    template<typename T>
+    struct is_std_array : public std::false_type {};
+    template<typename T, std::size_t N>
+    struct is_std_array<std::array<T, N>> : public std::true_type {};
+    template<typename T>
+    inline constexpr bool is_std_array_v = is_std_array<T>::value;
 
-template<typename T>
-struct is_std_span : public std::false_type {};
-template<typename T, std::size_t N>
-struct is_std_span<std::span<T, N>> : public std::true_type {};
-template<typename T>
-inline constexpr bool is_std_span_v = is_std_span<T>::value;
+    template<typename T>
+    struct is_std_span : public std::false_type {};
+    template<typename T, std::size_t N>
+    struct is_std_span<std::span<T, N>> : public std::true_type {};
+    template<typename T>
+    inline constexpr bool is_std_span_v = is_std_span<T>::value;
 
 }  // namespace Detail
 #endif  // DOXYGEN

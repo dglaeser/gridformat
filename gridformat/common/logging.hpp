@@ -21,23 +21,23 @@ namespace GridFormat {
 #ifndef DOXYGEN
 namespace Detail {
 
-struct AnsiiCodes {
-    std::vector<int> codes;
+    struct AnsiiCodes {
+        std::vector<int> codes;
 
-    std::string format(std::string_view msg) const {
-        std::string result;
-        for (auto _code : codes)
-            result += _format_code(_code);
-        result += msg;
-        result += _format_code(0);
-        return result;
-    }
+        std::string format(std::string_view msg) const {
+            std::string result;
+            for (auto _code : codes)
+                result += _format_code(_code);
+            result += msg;
+            result += _format_code(0);
+            return result;
+        }
 
- private:
-    std::string _format_code(int code) const {
-        return std::string{"\033["} + std::to_string(code) + "m";
-    }
-};
+    private:
+        std::string _format_code(int code) const {
+            return std::string{"\033["} + std::to_string(code) + "m";
+        }
+    };
 
 }  // namespace Detail
 #endif  // DOXYGEN

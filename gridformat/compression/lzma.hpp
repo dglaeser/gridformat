@@ -110,11 +110,11 @@ class LZMA {
 #ifndef DOXYGEN_SKIP_DETAILS
 namespace Detail {
 
-struct LZMAAdapter {
-    constexpr auto operator()(LZMAOptions opts = {}) const {
-        return LZMA{std::move(opts)};
-    }
-};
+    struct LZMAAdapter {
+        constexpr auto operator()(LZMAOptions opts = {}) const {
+            return LZMA{std::move(opts)};
+        }
+    };
 
 }  // end namespace Detail
 #endif  // DOXYGEN_SKIP_DETAILS
