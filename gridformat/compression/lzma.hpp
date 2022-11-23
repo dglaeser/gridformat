@@ -47,33 +47,31 @@ class LZMA {
     template<std::integral HeaderType = std::size_t>
     CompressedBlocks<HeaderType> compress(Serialization& in) const {
         static_assert(sizeof(typename Serialization::Byte) == sizeof(LZMAByte));
-
         if (std::numeric_limits<HeaderType>::max() < in.size())
             throw TypeError("Chosen HeaderType is too small for given number of bytes");
         if (std::numeric_limits<HeaderType>::max() < _opts.block_size)
             throw TypeError("Chosen HeaderType is too small for given block size");
 
         Serialization out(lzma_stream_buffer_bound(in.size()));
-        auto blocks = _compress<HeaderType>(in, out);
+        auto blocks = _compress<HeaderType>(
+            in.template as_span_of<const LZMAByte>(),
+            out.template as_span_of<LZMAByte>()
+        );
         in = std::move(out);
         return blocks;
     }
 
  private:
     template<std::integral HeaderType>
-    CompressedBlocks<HeaderType> _compress(std::span<const std::byte> in,
-                                           std::span<std::byte> out) const {
-        const LZMAByte* data_in = reinterpret_cast<const LZMAByte*>(in.data());
-        LZMAByte* data_out = reinterpret_cast<LZMAByte*>(out.data());
-
+    CompressedBlocks<HeaderType> _compress(std::span<const LZMAByte> in,
+                                           std::span<LZMAByte> out) const {
         HeaderType block_size = static_cast<HeaderType>(_opts.block_size);
         HeaderType size_in_bytes = static_cast<HeaderType>(in.size());
         Blocks<HeaderType> blocks{size_in_bytes, block_size};
 
         std::vector<LZMAByte> block_buffer;
-        block_buffer.reserve(lzma_stream_buffer_bound(_opts.block_size));
-
         std::vector<HeaderType> compressed_block_sizes;
+        block_buffer.reserve(lzma_stream_buffer_bound(_opts.block_size));
         compressed_block_sizes.reserve(blocks.number_of_blocks);
 
         HeaderType cur_in = 0;
@@ -86,7 +84,7 @@ class LZMA {
             std::size_t out_pos = 0;
             const auto lzma_ret = lzma_easy_buffer_encode(
                 _opts.compression_level, LZMA_CHECK_CRC32, nullptr,
-                data_in + cur_in, cur_block_size,
+                in.data() + cur_in, cur_block_size,
                 block_buffer.data(), &out_pos, block_buffer.capacity()
             );
             if (lzma_ret != LZMA_OK)
@@ -94,7 +92,7 @@ class LZMA {
 
             std::copy_n(block_buffer.data(),
                         out_pos,
-                        data_out + cur_out);
+                        out.data() + cur_out);
             cur_in += cur_block_size;
             cur_out += out_pos;
             compressed_block_sizes.push_back(static_cast<HeaderType>(out_pos));

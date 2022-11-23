@@ -18,7 +18,7 @@ namespace GridFormat::Concepts {
 //! \{
 
 template<typename T>
-concept CompressionBlocks = requires(const T& t) {
+concept CompressedBlocks = requires(const T& t) {
     { t.block_size } -> std::convertible_to<std::size_t>;
     { t.residual_block_size } -> std::convertible_to<std::size_t>;
     { t.number_of_blocks } -> std::convertible_to<std::size_t>;
@@ -28,7 +28,7 @@ concept CompressionBlocks = requires(const T& t) {
 
 template<typename T>
 concept Compressor = requires(const T& t, Serialization& s) {
-    { t.compress(s) } -> CompressionBlocks;
+    { t.compress(s) } -> CompressedBlocks;
 };
 
 //! \} group Compression
