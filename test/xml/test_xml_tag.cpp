@@ -1,5 +1,3 @@
-// Copyright [2022] <Dennis Gläser>
-
 #include <ranges>
 #include <string>
 #include <algorithm>

@@ -27,10 +27,10 @@ namespace GridFormat {
 #ifndef DOXYGEN_SKIP_DETAILS
 namespace Detail {
 
-template<typename Child>
-auto _child_find_lambda(std::string_view name) {
-    return [name] (const Child& child) { return child.name() == name; };
-}
+    template<typename Child>
+    auto _child_find_lambda(std::string_view name) {
+        return [name] (const Child& child) { return child.name() == name; };
+    }
 
 }  // end namespace Detail
 #endif  // DOXYGEN_SKIP_DETAILS

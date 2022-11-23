@@ -23,15 +23,15 @@ namespace GridFormat {
 #ifndef DOXYGEN
 namespace Detail {
 
-template<typename Attribute>
-auto _attr_find_lambda(std::string_view name) {
-    return [name] (const Attribute& attr) { return attr.first == name; };
-}
+    template<typename Attribute>
+    auto _attr_find_lambda(std::string_view name) {
+        return [name] (const Attribute& attr) { return attr.first == name; };
+    }
 
-template<typename T>
-concept RepresentableAsString = requires(const T& t) {
-    { as_string(t) } -> std::convertible_to<std::string>;
-};
+    template<typename T>
+    concept RepresentableAsString = requires(const T& t) {
+        { as_string(t) } -> std::convertible_to<std::string>;
+    };
 
 }  // end namespace Detail
 #endif  // DOXYGEN
