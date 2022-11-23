@@ -84,7 +84,7 @@ auto make_coordinates_field(const Grid& grid) {
             }),
             Precision<ctype>{}
         },
-        FieldTransformation::extended(3)
+        FieldTransformation::extend_all_to(3)
     };
 }
 

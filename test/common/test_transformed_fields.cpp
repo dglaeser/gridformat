@@ -37,8 +37,8 @@ int main() {
 
     using GridFormat::TransformedField;
     using GridFormat::FieldTransformation::identity;
-    using GridFormat::FieldTransformation::extended_md;
-    using GridFormat::FieldTransformation::extended;
+    using GridFormat::FieldTransformation::extend_to;
+    using GridFormat::FieldTransformation::extend_all_to;
 
     "transformed_field_identity"_test = [] () {
         std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
@@ -60,12 +60,12 @@ int main() {
         expect(eq(transformed_field.precision().size_in_bytes(), sizeof(int)));
     };
 
-    "transformed_field_extended_md"_test = [] () {
+    "transformed_field_extend"_test = [] () {
         GridFormat::RangeField field{
             std::vector<std::vector<int>>{{2, 3}, {4, 5}},
             GridFormat::Precision<double>{}
         };
-        TransformedField extended{field, extended_md(GridFormat::MDLayout{{3}})};
+        TransformedField extended{field, extend_to(GridFormat::MDLayout{{3}})};
         expect(eq(extended.layout().dimension(), 2_ul));
         expect(eq(extended.layout().extent(0), 2_ul));
         expect(eq(extended.layout().extent(1), 3_ul));
@@ -78,12 +78,12 @@ int main() {
         ));
     };
 
-    "transformed_field_extended"_test = [] () {
+    "transformed_field_extend_all"_test = [] () {
         GridFormat::RangeField field{
             std::vector<std::vector<int>>{{2, 3}, {4, 5}},
             GridFormat::Precision<double>{}
         };
-        TransformedField field_3d{field, extended(3)};
+        TransformedField field_3d{field, extend_all_to(3)};
         expect(eq(field_3d.layout().dimension(), 2_ul));
         expect(eq(field_3d.layout().extent(0), 2_ul));
         expect(eq(field_3d.precision().is_integral(), false));
@@ -95,14 +95,14 @@ int main() {
         ));
     };
 
-    "transformed_field_extended_md_flattened"_test = [] () {
+    "transformed_field_extend_flatten"_test = [] () {
         GridFormat::RangeField field{
             std::vector<std::vector<int>>{{2, 3}, {4, 5}},
             GridFormat::Precision<double>{}
         };
         TransformedField flattened{
-            TransformedField{field, extended_md(GridFormat::MDLayout{{3}})},
-            GridFormat::FieldTransformation::flattened
+            TransformedField{field, extend_to(GridFormat::MDLayout{{3}})},
+            GridFormat::FieldTransformation::flatten
         };
         expect(eq(flattened.layout().dimension(), 1_ul));
         expect(eq(flattened.layout().extent(0), 6_ul));

@@ -33,7 +33,7 @@ class FieldCache {
         // vector/tensor fields must be made 3d
         if (field.layout().dimension() > 1)
             return *_fields.emplace_back(_make_unique(
-                TransformedField{std::forward<F>(field), FieldTransformation::extended(3)}
+                TransformedField{std::forward<F>(field), FieldTransformation::extend_all_to(3)}
             ));
         // scalar fields are just wrapped in an identity transformation
         else

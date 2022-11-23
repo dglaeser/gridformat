@@ -21,6 +21,10 @@
 
 namespace GridFormat {
 
+/*!
+ * \ingroup Common
+ * \brief Wraps an underlying field by an identity transformation
+ */
 class IdentityField : public Field {
  public:
     explicit IdentityField(const Field& field)
@@ -43,9 +47,13 @@ class IdentityField : public Field {
     }
 };
 
-class FlatMDField : public Field {
+/*!
+ * \ingroup Common
+ * \brief Exposes a flat view on a given field
+ */
+class FlattenedField : public Field {
  public:
-    explicit FlatMDField(const Field& field)
+    explicit FlattenedField(const Field& field)
     : _field(field)
     {}
 
@@ -65,9 +73,15 @@ class FlatMDField : public Field {
     }
 };
 
-class ExtendedMDField : public Field {
+/*!
+ * \ingroup Common
+ * \brief Extends a given field with zeros up to the given extents
+ * \note This takes the extents of the sub-layout as constructor
+ *       argument. The extent of the outermost range stays the same.
+ */
+class ExtendedField : public Field {
  public:
-    explicit ExtendedMDField(const Field& f, MDLayout target_sub_layout)
+    explicit ExtendedField(const Field& f, MDLayout target_sub_layout)
     : _field{f}
     , _target_sub_layout{std::move(target_sub_layout)}
     {}
@@ -76,15 +90,16 @@ class ExtendedMDField : public Field {
     const Field& _field;
     MDLayout _target_sub_layout;
 
-    MDLayout _new_layout() const {
-        return _new_layout(_field.layout());
+    MDLayout _extended_layout() const {
+        return _extended_layout(_field.layout());
     }
 
-    MDLayout _new_layout(const MDLayout& orig_layout) const {
+    MDLayout _extended_layout(const MDLayout& orig_layout) const {
         if (orig_layout.dimension() <= 1)
             throw SizeError("Can only reshape fields with dimension > 1");
         if (orig_layout.dimension() != _target_sub_layout.dimension() + 1)
             throw SizeError("Field sub-dimension does not match given target layout dimension");
+
         std::vector<std::size_t> extents(orig_layout.dimension());
         extents[0] = orig_layout.extent(0);
         for (std::size_t i = 1; i < orig_layout.dimension(); ++i)
@@ -103,7 +118,7 @@ class ExtendedMDField : public Field {
     }
 
     MDLayout _layout() const override {
-        return _new_layout();
+        return _extended_layout();
     }
 
     DynamicPrecision _precision() const override {
@@ -112,7 +127,7 @@ class ExtendedMDField : public Field {
 
     Serialization _serialized() const override {
         const auto orig_layout = _field.layout();
-        const auto new_layout = _new_layout(orig_layout);
+        const auto new_layout = _extended_layout(orig_layout);
 
         const auto orig_sub_sizes = _sub_sizes(orig_layout);
         const auto new_sub_sizes = _sub_sizes(new_layout);
@@ -148,74 +163,76 @@ namespace FieldTransformation {
 #ifndef DOXYGEN
 namespace Detail {
 
-struct IdentityFieldAdapter {
-    auto operator()(const Field& f) const {
-        return IdentityField{f};
-    }
-};
+    struct IdentityFieldAdapter {
+        auto operator()(const Field& f) const {
+            return IdentityField{f};
+        }
+    };
 
-struct FlatMDFieldAdapter {
-    auto operator()(const Field& f) const {
-        return FlatMDField{f};
-    }
-};
+    struct FlattenedFieldAdapter {
+        auto operator()(const Field& f) const {
+            return FlattenedField{f};
+        }
+    };
 
-class ExtendedMDFieldAdapter {
- public:
-    explicit ExtendedMDFieldAdapter(MDLayout sub_layout)
-    : _sub_layout{std::move(sub_layout)}
-    {}
+    class ExtendFieldAdapter {
+    public:
+        explicit ExtendFieldAdapter(MDLayout sub_layout)
+        : _sub_layout{std::move(sub_layout)}
+        {}
 
-    auto operator()(const Field& f) const {
-        return ExtendedMDField{f, _sub_layout};
-    }
+        auto operator()(const Field& f) const {
+            if (f.layout().dimension() <= 1)
+                throw SizeError("Extension only works for fields with dimension > 1");
+            return ExtendedField{f, _sub_layout};
+        }
 
- private:
-    MDLayout _sub_layout;
-};
+    private:
+        MDLayout _sub_layout;
+    };
 
-struct ExtendedMDFieldAdapterClosure {
-    auto operator()(MDLayout sub_layout) const {
-        return ExtendedMDFieldAdapter{std::move(sub_layout)};
-    }
-};
+    struct ExtendFieldAdapterClosure {
+        auto operator()(MDLayout sub_layout) const {
+            return ExtendFieldAdapter{std::move(sub_layout)};
+        }
+    };
 
-class ExtendedFieldAdapter {
- public:
-    explicit ExtendedFieldAdapter(std::size_t space_dimension)
-    : _space_dim{space_dimension}
-    {}
+    class ExtendAllFieldAdapter {
+    public:
+        explicit ExtendAllFieldAdapter(std::size_t space_dimension)
+        : _space_dim{space_dimension}
+        {}
 
-    auto operator()(const Field& f) const {
-        const std::size_t dim = f.layout().dimension();
-        if (dim <= 1)
-            throw SizeError("Extension only works for fields with dimension > 1");
-        return ExtendedMDField{
-            f,
-            MDLayout{
-            std::views::iota(std::size_t{1}, dim)
-                | std::views::transform([&] (const auto&) { return _space_dim; })
-            }
-        };
-    }
+        auto operator()(const Field& f) const {
+            const std::size_t dim = f.layout().dimension();
+            if (dim <= 1)
+                throw SizeError("Extension only works for fields with dimension > 1");
+            return ExtendedField{
+                f,
+                MDLayout{
+                std::views::iota(std::size_t{1}, dim)
+                    | std::views::transform([&] (const auto&) { return _space_dim; })
+                }
+            };
+        }
 
- private:
-    std::size_t _space_dim;
-};
+    private:
+        std::size_t _space_dim;
+    };
 
-struct ExtendedFieldAdapterClosure {
-    auto operator()(std::size_t space_dimension) const {
-        return ExtendedFieldAdapter{space_dimension};
-    }
-};
+    struct ExtendAllFieldAdapterClosure {
+        auto operator()(std::size_t space_dimension) const {
+            return ExtendAllFieldAdapter{space_dimension};
+        }
+    };
 
 }  // namespace Detail
 #endif  // DOXYGEN
 
 inline constexpr Detail::IdentityFieldAdapter identity;
-inline constexpr Detail::FlatMDFieldAdapter flattened;
-inline constexpr Detail::ExtendedMDFieldAdapterClosure extended_md;
-inline constexpr Detail::ExtendedFieldAdapterClosure extended;
+inline constexpr Detail::FlattenedFieldAdapter flatten;
+inline constexpr Detail::ExtendFieldAdapterClosure extend_to;
+inline constexpr Detail::ExtendAllFieldAdapterClosure extend_all_to;
 
 }  // namespace FieldTransformation
 
