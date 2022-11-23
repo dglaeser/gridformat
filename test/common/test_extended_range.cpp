@@ -9,7 +9,7 @@ int main() {
 
     "extended_range"_test = [] () {
         std::vector<int> data{1, 2, 3};
-        auto extended = GridFormat::make_extended<5>(std::views::all(data));
+        GridFormat::ExtendedRange extended{std::views::all(data), 2};
         expect(std::ranges::equal(
             extended,
             std::vector<int>{1, 2, 3, 0, 0}
@@ -18,7 +18,15 @@ int main() {
 
     "extended_range_custom_extension_value"_test = [] () {
         std::vector<int> data{1, 2, 3};
-        auto extended = GridFormat::make_extended<5>(std::views::all(data), 42);
+        GridFormat::ExtendedRange extended{data, 2, 42};
+        expect(std::ranges::equal(
+            extended,
+            std::vector<int>{1, 2, 3, 42, 42}
+        ));
+    };
+
+    "extended_range_owning_custom_extension_value"_test = [] () {
+        GridFormat::ExtendedRange extended{std::vector<int>{1, 2, 3}, 2, 42};
         expect(std::ranges::equal(
             extended,
             std::vector<int>{1, 2, 3, 42, 42}
