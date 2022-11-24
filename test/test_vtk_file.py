@@ -1,5 +1,3 @@
-from vtk import vtkXMLUnstructuredGridReader, vtkXMLPolyDataReader, vtkIdList
-
 from os.path import splitext
 from argparse import ArgumentParser
 from typing import Callable, Tuple
@@ -31,6 +29,12 @@ def check_vtk_file(filename: str,
     rel_tol = 1e-5
     abs_tol = 1e-3
     _, space_dim = get_grid_and_space(filename)
+
+    try:
+        from vtk import vtkXMLUnstructuredGridReader, vtkXMLPolyDataReader, vtkIdList
+    except ImportError:
+        print("VTK not found")
+        exit(255)
 
     ext = splitext(filename)[1]
     if ext == ".vtu":
