@@ -31,7 +31,7 @@ T test_function(const Position& pos) {
     if (pos.size() > 1)
         result *= std::cos(pos[1]);
     if (pos.size() > 2)
-        result *= pos[2] + 1.0
+        result *= pos[2] + 1.0;
     return result;
 }
 
