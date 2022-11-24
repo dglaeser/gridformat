@@ -8,6 +8,7 @@
 #ifndef GRIDFORMAT_COMMON_MD_LAYOUT_HPP_
 #define GRIDFORMAT_COMMON_MD_LAYOUT_HPP_
 
+#include <ostream>
 #include <utility>
 #include <vector>
 #include <cassert>
@@ -71,6 +72,18 @@ class MDLayout {
 
     bool operator==(const MDLayout& other) const {
         return std::ranges::equal(_extents, other._extents);
+    }
+
+    friend std::ostream& operator<<(std::ostream& s, const MDLayout& layout) {
+        s << "(";
+        if (layout._extents.size() > 0) {
+            s << layout._extents[0];
+            std::ranges::for_each(layout._extents | std::views::drop(1), [&] (const auto ext) {
+                s << "," << ext;
+            });
+        }
+        s << ")";
+        return s;
     }
 
  private:
