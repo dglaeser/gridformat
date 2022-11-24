@@ -27,10 +27,12 @@ auto _compute_cell_center(const Grid& g, const Cell& c) {
 
 template<typename T, typename Position>
 T test_function(const Position& pos) {
+    T result = 10.0*std::sin(pos[0]);
     if (pos.size() > 1)
-        return 10.0*std::sin(pos[0])*std::cos(pos[1]);
-    else
-        return 10.0*std::sin(pos[0]);
+        result *= std::cos(pos[1]);
+    if (pos.size() > 2)
+        result *= pos[2] + 1.0
+    return result;
 }
 
 template<typename T, typename Grid>
