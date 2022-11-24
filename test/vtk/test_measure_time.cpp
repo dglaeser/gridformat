@@ -30,7 +30,7 @@ std::vector<T> make_cell_data(const Grid& grid) {
         result.push_back(evaluate_function<T>(
             GridFormat::coordinates(
                 grid,
-                *begin(GridFormat::corners(grid, c))
+                *begin(GridFormat::points(grid, c))
             )
         ));
     return result;

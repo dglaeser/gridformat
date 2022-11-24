@@ -102,7 +102,7 @@ requires(std::is_lvalue_reference_v<PointMap>)
     return FlatField{
         std::forward<Cells>(cells)
             | std::views::transform([&] (const auto& cell) {
-                return corners(grid, cell)
+                return points(grid, cell)
                     | std::views::transform([&] (const auto& point) {
                         return map[id(grid, point)];
                     });
@@ -124,7 +124,7 @@ auto make_offsets_field(const Grid& grid, Cells&& cells) {
     return RangeField{AccumulatedRange{
         std::forward<Cells>(cells)
         | std::views::transform([&] (const Cell<Grid>& cell) {
-            return Ranges::size(corners(grid, cell));
+            return Ranges::size(points(grid, cell));
         })
     }};
 }

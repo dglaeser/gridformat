@@ -50,7 +50,7 @@ CellType type(const Grid& grid, const Cell<Grid>& cell) {
 }
 
 template<typename Grid> requires(GridDetail::exposes_cell_points<Grid>)
-std::ranges::range auto corners(const Grid& grid, const Cell<Grid>& cell) {
+std::ranges::range auto points(const Grid& grid, const Cell<Grid>& cell) {
     return Traits::CellPoints<Grid, Cell<Grid>>::get(grid, cell);
 }
 

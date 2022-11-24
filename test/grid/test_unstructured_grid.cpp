@@ -44,7 +44,7 @@ void check_grid(const Grid& grid) {
             grid.cells()[i].corners | std::views::transform([&] (const std::integral auto idx) {
                 return grid.points()[idx].id;
             }),
-            GridFormat::corners(grid, c) | std::views::transform([] (const auto& point) {
+            GridFormat::points(grid, c) | std::views::transform([] (const auto& point) {
                 return point.id;
             })
         ));
@@ -52,7 +52,7 @@ void check_grid(const Grid& grid) {
             grid.cells()[i].corners | std::views::transform([&] (const std::integral auto idx) {
                 return grid.points()[idx].id;
             }),
-            GridFormat::corners(grid, c) | std::views::transform([&] (const auto& point) {
+            GridFormat::points(grid, c) | std::views::transform([&] (const auto& point) {
                 return GridFormat::id(grid, point);
             })
         ));
