@@ -21,8 +21,10 @@ jobs:
 
     steps:
       - name: install-compiler
-        run: |
-          sudo apt install ${{ matrix.compiler_pkg }}
+        run: sudo apt install ${{ matrix.compiler_pkg }}
+
+      - name: install-vtk
+        run: python3 -m pip install vtk
 
       - name: checkout-repository
         uses: actions/checkout@v2
@@ -36,4 +38,3 @@ jobs:
       - name: test
         run: |
           cd build && make && ctest --output-on-failure
-
