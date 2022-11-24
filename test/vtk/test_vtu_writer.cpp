@@ -50,7 +50,7 @@ void write_from_abstract_base(const XMLOptions& xml_opts,
         = std::make_unique<decltype(writer)>(std::move(writer));
     const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(grid);
     GridFormat::Test::add_test_data(*writer_ptr, test_data, prec);
-    write<dim, space_dim>(writer, filename_prefix + "_from_abstract_base");
+    write<dim, space_dim>(*writer_ptr, filename_prefix);
 }
 
 template<std::size_t dim, std::size_t space_dim>
