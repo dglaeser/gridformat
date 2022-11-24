@@ -17,7 +17,6 @@ if __name__ == "__main__":
     if not exists(vtk_check_script):
         raise RuntimeError("Could not find vtk test script")
 
-    run(["make", args['executable']], check=True)
     run([f"./{args['executable']}"], check=True)
 
     ret_code = 0
