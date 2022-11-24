@@ -53,6 +53,7 @@ struct Cell {
 template<int space_dim>
 class UnstructuredGrid {
  public:
+    static constexpr int space_dimension = space_dim;
     using Point = Test::Point<space_dim>;
     using Cell = Test::Cell;
 

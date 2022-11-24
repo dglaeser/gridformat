@@ -5,13 +5,27 @@
 
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 #include <gridformat/grid.hpp>
 
 namespace GridFormat::Test {
 
+template<typename Grid, typename Cell>
+auto _compute_cell_center(const Grid& g, const Cell& c) {
+    std::array<double, Grid::space_dimension> result;
+    std::ranges::fill(result, 0.0);
+    for (std::size_t i = 0; i < c.corners.size(); ++i)
+        for (std::size_t dir = 0; dir < Grid::space_dimension; ++dir)
+            result[dir] += g.points()[c.corners[i]].coordinates[dir];
+    std::ranges::for_each(result, [&] (auto& value) {
+        value /= static_cast<double>(c.corners.size());
+    });
+    return result;
+}
+
 template<typename T, typename Position>
-T evaluate_function(const Position& pos) {
+T test_function(const Position& pos) {
     return 10.0*std::sin(pos[0])*std::cos(pos[1]);
 }
 
@@ -19,7 +33,7 @@ template<typename T, typename Grid>
 std::vector<T> make_point_data(const Grid& grid) {
     std::vector<T> result(GridFormat::number_of_points(grid));
     for (const auto& p : GridFormat::points(grid))
-        result[GridFormat::id(grid, p)] = evaluate_function<T>(
+        result[GridFormat::id(grid, p)] = test_function<T>(
             GridFormat::coordinates(grid, p)
         );
     return result;
@@ -30,11 +44,8 @@ std::vector<T> make_cell_data(const Grid& grid) {
     std::vector<T> result;
     result.reserve(GridFormat::number_of_cells(grid));
     for (const auto& c : GridFormat::cells(grid))
-        result.push_back(evaluate_function<T>(
-            GridFormat::coordinates(
-                grid,
-                *begin(GridFormat::corners(grid, c))
-            )
+        result.push_back(test_function<T>(
+            _compute_cell_center(grid, c)
         ));
     return result;
 }
