@@ -7,6 +7,7 @@
 #include <cmath>
 #include <algorithm>
 
+#include <gridformat/grid/writer.hpp>
 #include <gridformat/grid.hpp>
 
 namespace GridFormat::Test {
@@ -26,7 +27,10 @@ auto _compute_cell_center(const Grid& g, const Cell& c) {
 
 template<typename T, typename Position>
 T test_function(const Position& pos) {
-    return 10.0*std::sin(pos[0])*std::cos(pos[1]);
+    if (pos.size() > 1)
+        return 10.0*std::sin(pos[0])*std::cos(pos[1]);
+    else
+        return 10.0*std::sin(pos[0]);
 }
 
 template<typename T, typename Grid>
@@ -50,28 +54,74 @@ std::vector<T> make_cell_data(const Grid& grid) {
     return result;
 }
 
-template<typename T>
+template<std::size_t dim, typename T>
 auto make_vector_data(const std::vector<T>& scalars) {
-    using Vector = std::array<T, 2>;
+    using Vector = std::array<T, dim>;
     std::vector<Vector> result(scalars.size());
     std::transform(scalars.begin(), scalars.end(), result.begin(), [] (T value) {
-        return Vector{value, value};
+        Vector v;
+        std::ranges::fill(v, value);
+        return v;
     });
     return result;
 }
 
-template<typename T>
+template<std::size_t dim, typename T>
 auto make_tensor_data(const std::vector<T>& scalars) {
-    using Vector = std::array<T, 2>;
-    using Tensor = std::array<Vector, 2>;
+    using Vector = std::array<T, dim>;
+    using Tensor = std::array<Vector, dim>;
     std::vector<Tensor> result(scalars.size());
     std::transform(scalars.begin(), scalars.end(), result.begin(), [] (T value) {
-        return Tensor{
-            Vector{value, value},
-            Vector{value, value}
-        };
+        Vector v;
+        Tensor t;
+        std::ranges::fill(v, value);
+        std::ranges::fill(t, v);
+        return t;
     });
     return result;
+}
+
+template<typename T, std::size_t dim>
+struct TestData {
+    std::vector<T> point_scalars;
+    std::vector<T> cell_scalars;
+    std::vector<std::array<T, dim>> point_vectors;
+    std::vector<std::array<T, dim>> cell_vectors;
+    std::vector<std::array<std::array<T, dim>, dim>> point_tensors;
+    std::vector<std::array<std::array<T, dim>, dim>> cell_tensors;
+};
+
+template<std::size_t dim, typename T, typename Grid>
+TestData<T, dim> make_test_data(const Grid& grid) {
+    return {
+        .point_scalars = make_point_data<double>(grid),
+        .cell_scalars = make_cell_data<double>(grid),
+        .point_vectors = make_vector_data<dim>(make_point_data<double>(grid)),
+        .cell_vectors = make_vector_data<dim>(make_cell_data<double>(grid)),
+        .point_tensors = make_tensor_data<dim>(make_point_data<double>(grid)),
+        .cell_tensors = make_tensor_data<dim>(make_cell_data<double>(grid))
+    };
+}
+
+template<typename Grid, typename T, std::size_t dim, typename FieldPrec>
+void add_test_data(GridWriterBase<Grid>& writer,
+                   const TestData<T, dim>& data,
+                   const Precision<FieldPrec>& prec) {
+    writer.set_point_field("pscalar", [&] (const auto& p) { return data.point_scalars[p.id]; });
+    writer.set_point_field("pvector", [&] (const auto& p) { return data.point_vectors[p.id]; });
+    writer.set_point_field("ptensor", [&] (const auto& p) { return data.point_tensors[p.id]; });
+
+    writer.set_cell_field("cscalar", [&] (const auto& c) { return data.cell_scalars[c.id]; });
+    writer.set_cell_field("cvector", [&] (const auto& c) { return data.cell_vectors[c.id]; });
+    writer.set_cell_field("ctensor", [&] (const auto& c) { return data.cell_tensors[c.id]; });
+
+    writer.set_point_field("pscalar_custom_prec", [&] (const auto& p) { return data.point_scalars[p.id]; }, prec);
+    writer.set_point_field("pvector_custom_prec", [&] (const auto& p) { return data.point_vectors[p.id]; }, prec);
+    writer.set_point_field("ptensor_custom_prec", [&] (const auto& p) { return data.point_tensors[p.id]; }, prec);
+
+    writer.set_cell_field("cscalar_custom_prec", [&] (const auto& c) { return data.cell_scalars[c.id]; }, prec);
+    writer.set_cell_field("cvector_custom_prec", [&] (const auto& c) { return data.cell_vectors[c.id]; }, prec);
+    writer.set_cell_field("ctensor_custom_prec", [&] (const auto& c) { return data.cell_tensors[c.id]; }, prec);
 }
 
 }  // namespace GridFormat::Test

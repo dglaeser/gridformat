@@ -4,30 +4,15 @@
 #include <algorithm>
 
 #include <gridformat/grid.hpp>
-#include <gridformat/encoding.hpp>
-#include <gridformat/compression.hpp>
-
 #include <gridformat/vtk/pvd_writer.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
 #include "../grid/unstructured_grid.hpp"
+#include "../make_test_data.hpp"
 
 template<typename Grid, typename Writer>
 void test(const Grid& grid, Writer& pvd_writer) {
-    std::vector<double> point_data(GridFormat::number_of_points(grid));
-    std::ranges::copy_if(
-        std::views::iota(std::size_t{0}, GridFormat::number_of_points(grid)),
-        point_data.begin(),
-        [] (const auto&) { return true; },
-        [] (const std::integral auto idx) { return std::cos(static_cast<double>(idx)); }
-    );
-
-    std::vector<double> cell_data(GridFormat::number_of_cells(grid));
-    std::ranges::copy_if(
-        std::views::iota(std::size_t{0}, GridFormat::number_of_cells(grid)),
-        cell_data.begin(),
-        [] (const auto&) { return true; },
-        [] (const std::integral auto idx) { return std::cos(static_cast<double>(idx)); }
-    );
+    auto point_data = GridFormat::Test::make_point_data<double>(grid);
+    auto cell_data = GridFormat::Test::make_cell_data<double>(grid);
 
     pvd_writer.set_point_field("pdata", [&] (const auto& p) { return point_data[p.id]; });
     pvd_writer.set_cell_field("cdata", [&] (const auto& c) { return cell_data[c.id]; });

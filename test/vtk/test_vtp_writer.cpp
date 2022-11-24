@@ -1,77 +1,105 @@
+#include <string>
+
 #include <gridformat/encoding.hpp>
 #include <gridformat/compression.hpp>
+#include <gridformat/common/logging.hpp>
 #include <gridformat/vtk/vtp_writer.hpp>
 
 #include "../grid/unstructured_grid.hpp"
 #include "../make_test_data.hpp"
 
-template<typename XMLOptions,
+template<std::size_t dim, std::size_t space_dim, typename Writer>
+void write(const Writer& writer, const std::string& file_prefix) {
+    std::string filename = file_prefix + "_" +
+                           std::to_string(dim) + "d_in_" +
+                           std::to_string(space_dim) + "d";
+    filename = writer.write(filename);
+    std::cout << "Wrote '" << GridFormat::as_highlight(filename) << "'" << std::endl;
+}
+
+template<std::size_t dim,
+         std::size_t space_dim,
+         typename XMLOptions,
          typename PrecisionOptions,
-         typename FieldPrecision = GridFormat::Precision<double>>
-void write([[maybe_unused]] const XMLOptions& xml_opts,
-           [[maybe_unused]] const PrecisionOptions& prec_opts,
-           [[maybe_unused]] const std::string& filename,
-           [[maybe_unused]] const FieldPrecision& prec = {}) {
-    const auto grid = GridFormat::Test::make_unstructured_2d();
-    auto point_scalars = GridFormat::Test::make_point_data<double>(grid);
-    auto point_vectors = GridFormat::Test::make_vector_data(point_scalars);
-    auto point_tensors = GridFormat::Test::make_tensor_data(point_scalars);
-    auto cell_scalars = GridFormat::Test::make_cell_data<double>(grid);
-    auto cell_vectors = GridFormat::Test::make_vector_data(cell_scalars);
-    auto cell_tensors = GridFormat::Test::make_tensor_data(cell_scalars);
-
+         typename FieldPrec = double>
+void write(const XMLOptions& xml_opts,
+           const PrecisionOptions& prec_opts,
+           const std::string& filename_prefix,
+           const GridFormat::Precision<FieldPrec>& prec = {}) {
+    auto grid = GridFormat::Test::make_unstructured<dim, space_dim>();
     GridFormat::VTPWriter writer{grid, xml_opts, prec_opts};
-    writer.set_point_field("pscalar", [&] (const auto& p) { return point_scalars[p.id]; });
-    writer.set_point_field("pvector", [&] (const auto& p) { return point_vectors[p.id]; });
-    writer.set_point_field("ptensor", [&] (const auto& p) { return point_tensors[p.id]; });
-    writer.set_cell_field("cscalar", [&] (const auto& c) { return cell_scalars[c.id]; });
-    writer.set_cell_field("cvector", [&] (const auto& c) { return cell_vectors[c.id]; });
-    writer.set_cell_field("ctensor", [&] (const auto& c) { return cell_tensors[c.id]; });
+    const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(grid);
+    GridFormat::Test::add_test_data(writer, test_data, prec);
+    write<dim, space_dim>(writer, filename_prefix);
+}
 
-    writer.set_point_field("pscalar_custom_prec", [&] (const auto& p) { return point_scalars[p.id]; }, prec);
-    writer.set_point_field("pvector_custom_prec", [&] (const auto& p) { return point_vectors[p.id]; }, prec);
-    writer.set_point_field("ptensor_custom_prec", [&] (const auto& p) { return point_tensors[p.id]; }, prec);
-    writer.set_cell_field("cscalar_custom_prec", [&] (const auto& c) { return cell_scalars[c.id]; }, prec);
-    writer.set_cell_field("cvector_custom_prec", [&] (const auto& c) { return cell_vectors[c.id]; }, prec);
-    writer.set_cell_field("ctensor_custom_prec", [&] (const auto& c) { return cell_tensors[c.id]; }, prec);
+template<std::size_t dim,
+         std::size_t space_dim,
+         typename XMLOptions,
+         typename PrecisionOptions,
+         typename FieldPrec = double>
+void write_from_abstract_base(const XMLOptions& xml_opts,
+                              const PrecisionOptions& prec_opts,
+                              const std::string& filename_prefix,
+                              const GridFormat::Precision<FieldPrec>& prec = {}) {
+    auto grid = GridFormat::Test::make_unstructured<dim, space_dim>();
+    GridFormat::VTPWriter writer{grid, xml_opts, prec_opts};
+    std::unique_ptr<GridFormat::GridWriter<decltype(grid)>> writer_ptr
+        = std::make_unique<decltype(writer)>(std::move(writer));
+    const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(grid);
+    GridFormat::Test::add_test_data(*writer_ptr, test_data, prec);
+    write<dim, space_dim>(writer, filename_prefix + "_from_abstract_base");
+}
 
-    std::cout << "Wrote " << writer.write(filename) << ".vtu" << std::endl;
+template<std::size_t dim, std::size_t space_dim>
+void write_default() {
+    write<dim, space_dim>(
+        GridFormat::VTK::XMLOptions{},
+        GridFormat::VTK::PrecisionOptions{},
+        "vtp_default"
+    );
 }
 
 int main() {
-    write(GridFormat::VTK::XMLOptions{}, GridFormat::VTK::PrecisionOptions{}, "vtp_default");
-    write(
+    write_default<0, 1>();
+    write_default<0, 2>();
+    write_default<0, 3>();
+    write_default<1, 1>();
+    write_default<1, 2>();
+    write_default<1, 3>();
+    write_default<2, 2>();
+    write_default<2, 3>();
+    write_default<3, 3>();
+    write<2, 2>(
         GridFormat::VTK::XMLOptions{.encoder = GridFormat::Encoding::ascii},
         GridFormat::VTK::PrecisionOptions{},
         "vtp_ascii"
     );
-    write(
+    write<2, 2>(
         GridFormat::VTK::XMLOptions{
             .encoder = GridFormat::Encoding::base64,
             .data_format = GridFormat::VTK::DataFormat::inlined
         },
-        GridFormat::VTK::PrecisionOptions{},
+        GridFormat::VTK::PrecisionOptions{.header_precision = GridFormat::uint32},
         "vtp_base64_inlined"
     );
-#if GRIDFORMAT_HAVE_LZMA
-    write(
+    write_from_abstract_base<2, 2>(
         GridFormat::VTK::XMLOptions{
             .encoder = GridFormat::Encoding::base64,
-            .compressor = GridFormat::Compression::lzma,
             .data_format = GridFormat::VTK::DataFormat::inlined
         },
-        GridFormat::VTK::PrecisionOptions{},
-        "vtp_base64_inlined_lzma_compression"
+        GridFormat::VTK::PrecisionOptions{.header_precision = GridFormat::uint32},
+        "vtp_base64_inlined_from_base_writer"
     );
-    write(
+#if GRIDFORMAT_HAVE_LZMA
+    write<2, 2>(
         GridFormat::VTK::XMLOptions{
             .encoder = GridFormat::Encoding::base64,
             .compressor = GridFormat::Compression::lzma,
             .data_format = GridFormat::VTK::DataFormat::inlined
         },
-        GridFormat::VTK::PrecisionOptions{},
-        "vtp_base64_inlined_lzma_compression_custom_field_precision",
-        GridFormat::Precision<float>{}
+        GridFormat::VTK::PrecisionOptions{.header_precision = GridFormat::uint32},
+        "vtp_base64_inlined_lzma_compression_custom_header_precision"
     );
 #endif  // GRIDFORMAT_HAVE_LZMA
 

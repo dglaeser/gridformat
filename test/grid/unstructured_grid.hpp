@@ -186,6 +186,16 @@ auto make_unstructured_3d() {
     };
 }
 
+template<std::size_t dim, std::size_t space_dim>
+auto make_unstructured() {
+    static_assert(dim >= 0 && dim <= 3);
+    static_assert(dim <= space_dim);
+    if constexpr (dim == 0) return make_unstructured_0d<space_dim>();
+    if constexpr (dim == 1) return make_unstructured_1d<space_dim>();
+    if constexpr (dim == 2) return make_unstructured_2d<space_dim>();
+    if constexpr (dim == 3) return make_unstructured_3d();
+}
+
 }  // namespace Test
 
 namespace Traits {
