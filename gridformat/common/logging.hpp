@@ -54,6 +54,12 @@ std::string as_error(std::string_view msg) {
     return codes.format(msg);
 }
 
+//! Style the given string as highlighted
+std::string as_highlight(std::string_view msg) {
+    Detail::AnsiiCodes codes{{1}};
+    return codes.format(msg);
+}
+
 //! Log a warning message.
 void log_warning(std::string_view msg, std::ostream& s = std::cout) {
     s << "[GFMT] " << as_warning("Warning") << ": " << msg << "\n";
