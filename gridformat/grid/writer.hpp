@@ -138,8 +138,7 @@ class GridWriter : public GridWriterBase<Grid> {
 
     std::string write(const std::string& filename) const {
         std::string filename_with_ext = filename + _extension;
-        std::ofstream result_file(filename_with_ext, std::ios::out);
-        write(result_file);
+        _write(filename_with_ext);
         return filename_with_ext;
     }
 
@@ -149,6 +148,11 @@ class GridWriter : public GridWriterBase<Grid> {
 
  private:
     std::string _extension;
+
+    virtual void _write(const std::string& filename_with_ext) const {
+        std::ofstream result_file(filename_with_ext, std::ios::out);
+        _write(result_file);
+    }
 
     virtual void _write(std::ostream&) const = 0;
 };
