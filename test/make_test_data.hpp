@@ -94,14 +94,21 @@ struct TestData {
 };
 
 template<std::size_t dim, typename T, typename Grid>
-TestData<T, dim> make_test_data(const Grid& grid) {
+TestData<T, dim> make_test_data(const Grid& grid, double timestep = 1.0) {
+    auto point_data = make_point_data<double>(grid);
+    auto cell_data = make_cell_data<double>(grid);
+
+    // scale with time
+    std::ranges::for_each(point_data, [&] (auto& value) { value *= timestep; });
+    std::ranges::for_each(cell_data, [&] (auto& value) { value *= timestep; });
+
     return {
-        .point_scalars = make_point_data<double>(grid),
-        .cell_scalars = make_cell_data<double>(grid),
-        .point_vectors = make_vector_data<dim>(make_point_data<double>(grid)),
-        .cell_vectors = make_vector_data<dim>(make_cell_data<double>(grid)),
-        .point_tensors = make_tensor_data<dim>(make_point_data<double>(grid)),
-        .cell_tensors = make_tensor_data<dim>(make_cell_data<double>(grid))
+        .point_scalars = point_data,
+        .cell_scalars = cell_data,
+        .point_vectors = make_vector_data<dim>(point_data),
+        .cell_vectors = make_vector_data<dim>(cell_data),
+        .point_tensors = make_tensor_data<dim>(point_data),
+        .cell_tensors = make_tensor_data<dim>(cell_data)
     };
 }
 
