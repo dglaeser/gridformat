@@ -19,3 +19,8 @@ if (LZMA_FOUND)
     set(GRIDFORMAT_HAVE_LZMA true)
 endif ()
 
+
+find_package(MPI COMPONENTS CXX)
+if (MPI_FOUND)
+    set(GRIDFORMAT_HAVE_MPI true)
+endif ()
