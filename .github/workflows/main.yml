@@ -23,6 +23,9 @@ jobs:
       - name: install-compiler
         run: sudo apt install ${{ matrix.compiler_pkg }}
 
+      - name: install-mpi
+         run: sudo apt install mpi-default-bin mpi-default-dev
+
       - name: install-vtk
         run: python3 -m pip install vtk
 
