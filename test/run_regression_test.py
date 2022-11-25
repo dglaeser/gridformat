@@ -7,7 +7,7 @@ from sys import exit
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("-e", "--executable", required=True)
+    parser.add_argument("-c", "--command", required=True)
     parser.add_argument("-r", "--regex", required=True)
     args = vars(parser.parse_args())
 
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     if not exists(vtk_check_script):
         raise RuntimeError("Could not find vtk test script")
 
-    run([f"./{args['executable']}"], check=True)
+    run(args["command"].split(" "), check=True)
 
     ret_code = 0
     for _file in filter(lambda _f: isfile(_f), listdir(".")):
