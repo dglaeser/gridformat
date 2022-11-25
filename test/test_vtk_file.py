@@ -108,6 +108,15 @@ def _read_pvd_pieces(filename: str) -> List[_TimeStep]:
     ]
 
 
+def _read_pvtu_pieces(filename: str) -> List[str]:
+    tree = ElementTree.parse(filename)
+    root = tree.getroot()
+    return [
+        piece.attrib["Source"]
+        for piece in root.find("PUnstructuredGrid").findall("Piece")
+    ]
+
+
 def _test_vtk(filename: str, reference_function: Callable[[list], float]):
     try:
         from vtk import vtkXMLUnstructuredGridReader, vtkXMLPolyDataReader
@@ -133,6 +142,10 @@ def test(filename: str) -> None:
         for timestep in _read_pvd_pieces(filename):
             print(f"Comparing timestep '{timestep.time}' in file {timestep.filename}")
             _test_vtk(timestep.filename, _TestFunction(float(timestep.time)))
+    elif ext == ".pvtu":
+        for piece in _read_pvtu_pieces(filename):
+            print(f"Comparing piece '{piece}'")
+            _test_vtk(piece, _TestFunction())
     else:
         print(f"No reader for files with extension {ext}")
         exit(255)
