@@ -1,1 +1,46 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
 
+name: test-suite
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        compiler_pkg: [g++-12]
+        include:
+           - c_compiler: gcc-12
+             compiler_pkg: g++-12
+           - cxx_compiler: g++-12
+             compiler_pkg: g++-12
+
+    steps:
+      - name: install-dependencies
+        run: sudo apt install ${{ matrix.compiler_pkg }} mpi-default-bin mpi-default-dev
+
+      - name: install-pip-packages
+        run: python3 -m pip install vtk reuse
+
+      - name: checkout-repository
+        uses: actions/checkout@v2
+
+      - name: check-reuse-compliance
+        run: reuse lint
+
+      - name: configure
+        run: |
+          CXX_COMPILER="${{ matrix.cxx_compiler }}"
+          C_COMPILER="${{ matrix.c_compiler }}"
+          mkdir build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/$C_COMPILER -DCMAKE_CXX_COMPILER=/usr/bin/$CXX_COMPILER ../ && cd ..
+
+      - name: test
+        run: |
+          cd build && make && ctest --output-on-failure
