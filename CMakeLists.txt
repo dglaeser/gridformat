@@ -17,6 +17,46 @@ target_include_directories(${PROJECT_NAME}
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
 include(cmake/link_external_libs.cmake)
 
+set(CMAKE_INSTALL_CMAKE_DATA_DIR "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake")
+install(
+    DIRECTORY ${PROJECT_NAME}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+install(
+    DIRECTORY "${PROJECT_SOURCE_DIR}/cmake/modules"
+    DESTINATION ${CMAKE_INSTALL_CMAKE_DATA_DIR}
+)
+install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}_Targets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(
+    EXPORT ${PROJECT_NAME}_Targets
+    FILE ${PROJECT_NAME}Targets.cmake
+    NAMESPACE GridFormat::
+    DESTINATION ${CMAKE_INSTALL_CMAKE_DATA_DIR}
+)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}-config.cmake.in"
+    "${PROJECT_BINARY_DIR}/cmake/pkg/${PROJECT_NAME}Config.cmake"
+    PATH_VARS
+        CMAKE_INSTALL_INCLUDEDIR
+        CMAKE_INSTALL_CMAKE_DATA_DIR
+    INSTALL_DESTINATION
+        ${CMAKE_INSTALL_CMAKE_DATA_DIR}
+)
+install(
+    FILES
+        "${PROJECT_BINARY_DIR}/cmake/pkg/${PROJECT_NAME}Config.cmake"
+    DESTINATION
+        ${CMAKE_INSTALL_CMAKE_DATA_DIR}
+)
+
 enable_testing()
 add_library(${GFMT_NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 add_subdirectory(test)
