@@ -44,8 +44,8 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
 
     void _write(std::ostream& s) const override {
         auto context = this->_get_write_context("UnstructuredGrid");
-        this->_set_attribute(context, "Piece", "NumberOfPoints", number_of_points(this->_get_grid()));
-        this->_set_attribute(context, "Piece", "NumberOfCells", number_of_cells(this->_get_grid()));
+        this->_set_attribute(context, "Piece", "NumberOfPoints", number_of_points(this->grid()));
+        this->_set_attribute(context, "Piece", "NumberOfCells", number_of_cells(this->grid()));
 
         FieldStorage vtk_point_fields;
         FieldStorage vtk_cell_fields;
@@ -59,10 +59,10 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
         });
 
         const auto point_id_map = make_point_id_map(this->grid());
-        const auto coords_field = VTK::make_coordinates_field<CoordinateType>(this->_get_grid());
-        const auto connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), point_id_map);
-        const auto offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid());
-        const auto types_field = VTK::make_cell_types_field(this->_get_grid());
+        const auto coords_field = VTK::make_coordinates_field<CoordinateType>(this->grid());
+        const auto connectivity_field = VTK::make_connectivity_field<HeaderType>(this->grid(), point_id_map);
+        const auto offsets_field = VTK::make_offsets_field<HeaderType>(this->grid());
+        const auto types_field = VTK::make_cell_types_field(this->grid());
         this->_set_data_array(context, "Piece.Points", "Coordinates", *coords_field);
         this->_set_data_array(context, "Piece.Cells", "connectivity", *connectivity_field);
         this->_set_data_array(context, "Piece.Cells", "offsets", *offsets_field);

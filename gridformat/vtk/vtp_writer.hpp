@@ -57,13 +57,13 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
 
     void _write(std::ostream& s) const override {
         auto verts_range = _get_cell_range(
-            CellTypesPredicate<1>{this->_get_grid(), {CellType::vertex}}
+            CellTypesPredicate<1>{this->grid(), {CellType::vertex}}
         );
         auto lines_range = _get_cell_range(
-            CellTypesPredicate<1>{this->_get_grid(), {CellType::segment}}
+            CellTypesPredicate<1>{this->grid(), {CellType::segment}}
         );
         auto polys_range = _get_cell_range(
-            CellTypesPredicate<3>{this->_get_grid(), {CellType::quadrilateral, CellType::polygon, CellType::triangle}}
+            CellTypesPredicate<3>{this->grid(), {CellType::quadrilateral, CellType::polygon, CellType::triangle}}
         );
 
         const auto num_verts = Ranges::size(verts_range);
@@ -71,7 +71,7 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
         const auto num_polys = Ranges::size(polys_range);
 
         auto context = this->_get_write_context("PolyData");
-        this->_set_attribute(context, "Piece", "NumberOfPoints", number_of_points(this->_get_grid()));
+        this->_set_attribute(context, "Piece", "NumberOfPoints", number_of_points(this->grid()));
         this->_set_attribute(context, "Piece", "NumberOfVerts", num_verts);
         this->_set_attribute(context, "Piece", "NumberOfLines", num_lines);
         this->_set_attribute(context, "Piece", "NumberOfStrips", "0");
@@ -88,17 +88,17 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
             this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
         });
 
-        const auto coords_field = VTK::make_coordinates_field<CoordinateType>(this->_get_grid());
+        const auto coords_field = VTK::make_coordinates_field<CoordinateType>(this->grid());
         this->_set_data_array(context, "Piece.Points", "Coordinates", *coords_field);
 
         const auto point_id_map = make_point_id_map(this->grid());
         const auto verts_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->grid(), verts_range, point_id_map);
-        const auto verts_offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid(), verts_range);
+        const auto verts_offsets_field = VTK::make_offsets_field<HeaderType>(this->grid(), verts_range);
         this->_set_data_array(context, "Piece.Verts", "connectivity", *verts_connectivity_field);
         this->_set_data_array(context, "Piece.Verts", "offsets", *verts_offsets_field);
 
         const auto lines_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->grid(), lines_range, point_id_map);
-        const auto lines_offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid(), lines_range);
+        const auto lines_offsets_field = VTK::make_offsets_field<HeaderType>(this->grid(), lines_range);
         this->_set_data_array(context, "Piece.Lines", "connectivity", *lines_connectivity_field);
         this->_set_data_array(context, "Piece.Lines", "offsets", *lines_offsets_field);
 
@@ -112,7 +112,7 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
 
     template<typename Predicate>
     std::ranges::forward_range auto _get_cell_range(Predicate&& pred) const {
-        return FilteredRange{cells(this->_get_grid()), std::forward<Predicate>(pred)};
+        return FilteredRange{cells(this->grid()), std::forward<Predicate>(pred)};
     }
 };
 

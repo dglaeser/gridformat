@@ -135,10 +135,6 @@ class GridWriterBase {
         return _cell_fields.get_shared(name);
     }
 
-    const Grid& _get_grid() const {
-        return _grid;
-    }
-
  private:
     const Grid& _grid;
     FieldStorage _point_fields;
