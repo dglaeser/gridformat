@@ -22,6 +22,25 @@ class _TestFunction:
         return result*self._scaling
 
 
+class VTKErrorObserver:
+   def __init__(self):
+       self.__ErrorOccurred = False
+       self.__ErrorMessage = None
+       self.CallDataType = 'string0'
+
+   def __call__(self, obj, event, message):
+       self.__ErrorOccurred = True
+       self.__ErrorMessage = message
+
+   def ErrorOccurred(self):
+       occ = self.__ErrorOccurred
+       self.__ErrorOccurred = False
+       return occ
+
+   def ErrorMessage(self):
+       return self.__ErrorMessage
+
+
 @dataclass
 class _TimeStep:
     filename: str
@@ -59,7 +78,6 @@ def _check_vtk_file(vtk_reader,
     rel_tol = 1e-5
     abs_tol = 1e-3
 
-    vtk_reader.Update()
     output = vtk_reader.GetOutput()
     points = output.GetPoints()
 
@@ -127,12 +145,19 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
         print("VTK not found")
         exit(255)
 
+    e = VTKErrorObserver()
     ext = splitext(filename)[1]
     if ext == ".vtu":
         reader = vtkXMLUnstructuredGridReader()
+        reader.AddObserver("ErrorEvent", e)
     elif ext == ".vtp":
         reader = vtkXMLPolyDataReader()
+        reader.AddObserver("ErrorEvent", e)
     reader.SetFileName(filename)
+    reader.Update()
+    if e.ErrorOccurred():
+        raise IOError(f"Error reading VTK file '{filename}': {e.ErrorMessage()}")
+
     _, space_dim = _get_grid_and_space_dimension(filename)
     _check_vtk_file(reader, space_dim, reference_function)
 

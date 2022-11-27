@@ -49,25 +49,35 @@ class GridWriterBase {
     {}
 
     template<Concepts::PointFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Point<Grid>>>
-    requires(!std::is_lvalue_reference_v<F>)
     void set_point_field(const std::string& name, F&& point_function, const Precision<T>& prec = {}) {
+        static_assert(!std::is_lvalue_reference_v<F>, "Cannot take functions by reference, please move");
         set_point_field(name, _make_entity_field(std::move(point_function), points(_grid), prec));
     }
 
-    template<std::derived_from<Field> F> requires(!std::is_lvalue_reference_v<F>)
+    template<std::derived_from<Field> F>
     void set_point_field(const std::string& name, F&& field) {
-        _point_fields.set(name, std::forward<F>(field));
+        static_assert(!std::is_lvalue_reference_v<F>, "Cannot take fields by reference, please move or use shared_ptr");
+        set_point_field(name, std::make_shared<const F>(std::forward<F>(field)));
+    }
+
+    void set_point_field(const std::string& name, std::shared_ptr<const Field> field_ptr) {
+        _point_fields.set(name, field_ptr);
     }
 
     template<Concepts::CellFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Cell<Grid>>>
-    requires(!std::is_lvalue_reference_v<F>)
     void set_cell_field(const std::string& name, F&& cell_function, const Precision<T>& prec = {}) {
+        static_assert(!std::is_lvalue_reference_v<F>, "Cannot take functions by reference, please move");
         set_cell_field(name, _make_entity_field(std::move(cell_function), cells(_grid), prec));
     }
 
-    template<std::derived_from<Field> F> requires(!std::is_lvalue_reference_v<F>)
+    template<std::derived_from<Field> F>
     void set_cell_field(const std::string& name, F&& field) {
-        _cell_fields.set(name, std::forward<F>(field));
+        static_assert(!std::is_lvalue_reference_v<F>, "Cannot take fields by reference, please move or use shared_ptr");
+        set_cell_field(name, std::make_shared<const F>(std::forward<F>(field)));
+    }
+
+    void set_cell_field(const std::string& name, std::shared_ptr<const Field> field_ptr) {
+        _cell_fields.set(name, field_ptr);
     }
 
     void clear() {
@@ -113,8 +123,16 @@ class GridWriterBase {
         return _point_fields.get(name);
     }
 
+    std::shared_ptr<const Field> _get_shared_point_field(const std::string& name) const {
+        return _point_fields.get_shared(name);
+    }
+
     const Field& _get_cell_field(const std::string& name) const {
         return _cell_fields.get(name);
+    }
+
+    std::shared_ptr<const Field> _get_shared_cell_field(const std::string& name) const {
+        return _cell_fields.get_shared(name);
     }
 
     const Grid& _get_grid() const {

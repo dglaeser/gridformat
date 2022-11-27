@@ -8,7 +8,6 @@
 #ifndef GRIDFORMAT_COMMON_FIELD_STORAGE_HPP_
 #define GRIDFORMAT_COMMON_FIELD_STORAGE_HPP_
 
-#include <memory>
 #include <string>
 #include <ranges>
 #include <utility>
@@ -29,11 +28,19 @@ class FieldStorage {
 
     template<std::derived_from<Field> F> requires(!std::is_lvalue_reference_v<F>)
     void set(const std::string& name, F&& field) {
-        _fields.insert_or_assign(name, std::make_unique<F>(std::move(field)));
+        _fields.insert_or_assign(name, make_shared(std::move(field)));
+    }
+
+    void set(const std::string& name, FieldPtr field_ptr) {
+        _fields.insert_or_assign(name, field_ptr);
     }
 
     const Field& get(const std::string& name) const {
         return *(_fields.at(name));
+    }
+
+    std::shared_ptr<const Field> get_shared(const std::string& name) const {
+        return _fields.at(name);
     }
 
     std::ranges::range auto field_names() const {
@@ -45,7 +52,7 @@ class FieldStorage {
     }
 
  private:
-    std::unordered_map<std::string, std::unique_ptr<Field>> _fields;
+    std::unordered_map<std::string, FieldPtr> _fields;
 };
 
 }  // namespace GridFormat

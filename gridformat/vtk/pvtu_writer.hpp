@@ -13,7 +13,6 @@
 #include <fstream>
 
 #include <gridformat/common/field.hpp>
-#include <gridformat/common/transformed_fields.hpp>
 #include <gridformat/common/exceptions.hpp>
 
 #include <gridformat/parallel/communication.hpp>
@@ -62,12 +61,10 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
     void _write_piece(const std::string& par_filename) const {
         VTUWriter writer{this->grid(), this->_xml_opts, this->_prec_opts};
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            const auto& field = this->_get_point_field(name);
-            writer.set_point_field(name, TransformedField{field, FieldTransformation::identity});
+            writer.set_point_field(name, VTK::make_vtk_field(this->_get_shared_point_field(name)));
         });
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            const auto& field = this->_get_cell_field(name);
-            writer.set_cell_field(name, TransformedField{field, FieldTransformation::identity});
+            writer.set_cell_field(name, this->_get_shared_cell_field(name));
         });
         writer.write(_piece_filename(par_filename));
     }

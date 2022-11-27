@@ -15,7 +15,6 @@
 #include <string>
 #include <ranges>
 
-#include <gridformat/common/transformed_fields.hpp>
 #include <gridformat/xml/element.hpp>
 #include <gridformat/grid/writer.hpp>
 #include <gridformat/grid.hpp>
@@ -80,15 +79,11 @@ class PVDWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
 
     void _add_fields_to_writer() {
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            _vtk_writer.set_point_field(name, _wrapped_field(this->_get_point_field(name)));
+            _vtk_writer.set_point_field(name, this->_get_shared_point_field(name));
         });
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            _vtk_writer.set_cell_field(name, _wrapped_field(this->_get_cell_field(name)));
+            _vtk_writer.set_cell_field(name, this->_get_shared_cell_field(name));
         });
-    }
-
-    auto _wrapped_field(const Field& f) const {
-        return TransformedField{f, FieldTransformation::identity};
     }
 
     VTKWriter _vtk_writer;

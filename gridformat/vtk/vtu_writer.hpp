@@ -13,8 +13,9 @@
 #include <string>
 
 #include <gridformat/common/field.hpp>
+#include <gridformat/common/field_storage.hpp>
+
 #include <gridformat/grid/grid.hpp>
-#include <gridformat/vtk/field_cache.hpp>
 #include <gridformat/vtk/common.hpp>
 #include <gridformat/vtk/xml.hpp>
 
@@ -46,15 +47,15 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
         this->_set_attribute(context, "Piece", "NumberOfPoints", number_of_points(this->_get_grid()));
         this->_set_attribute(context, "Piece", "NumberOfCells", number_of_cells(this->_get_grid()));
 
-        VTK::FieldCache point_fields;
-        VTK::FieldCache cell_fields;
+        FieldStorage vtk_point_fields;
+        FieldStorage vtk_cell_fields;
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            const Field& field = point_fields.insert(this->_get_point_field(name));
-            this->_set_data_array(context, "Piece.PointData", name, field);
+            vtk_point_fields.set(name, VTK::make_vtk_field(this->_get_shared_point_field(name)));
+            this->_set_data_array(context, "Piece.PointData", name, vtk_point_fields.get(name));
         });
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            const Field& field = point_fields.insert(this->_get_cell_field(name));
-            this->_set_data_array(context, "Piece.CellData", name, field);
+            vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_shared_cell_field(name)));
+            this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
         });
 
         const auto point_id_map = make_point_id_map(this->grid());
@@ -62,10 +63,10 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
         const auto connectivity_field = VTK::make_connectivity_field<HeaderType>(this->_get_grid(), point_id_map);
         const auto offsets_field = VTK::make_offsets_field<HeaderType>(this->_get_grid());
         const auto types_field = VTK::make_cell_types_field(this->_get_grid());
-        this->_set_data_array(context, "Piece.Points", "Coordinates", coords_field);
-        this->_set_data_array(context, "Piece.Cells", "connectivity", connectivity_field);
-        this->_set_data_array(context, "Piece.Cells", "offsets", offsets_field);
-        this->_set_data_array(context, "Piece.Cells", "types", types_field);
+        this->_set_data_array(context, "Piece.Points", "Coordinates", *coords_field);
+        this->_set_data_array(context, "Piece.Cells", "connectivity", *connectivity_field);
+        this->_set_data_array(context, "Piece.Cells", "offsets", *offsets_field);
+        this->_set_data_array(context, "Piece.Cells", "types", *types_field);
         this->_write_xml(std::move(context), s);
     }
 };

@@ -8,7 +8,11 @@
 #ifndef GRIDFORMAT_COMMON_FIELD_HPP_
 #define GRIDFORMAT_COMMON_FIELD_HPP_
 
+#include <memory>
 #include <cstddef>
+#include <concepts>
+#include <type_traits>
+#include <utility>
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
@@ -36,6 +40,15 @@ class Field {
     virtual DynamicPrecision _precision() const = 0;
     virtual Serialization _serialized() const = 0;
 };
+
+using FieldPtr = std::shared_ptr<const Field>;
+
+template<typename F> requires(
+    std::derived_from<std::decay_t<F>, Field> and
+    !std::is_lvalue_reference_v<F>)
+FieldPtr make_shared(F&& f) {
+    return std::make_shared<F>(std::forward<F>(f));
+}
 
 }  // namespace GridFormat
 

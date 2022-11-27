@@ -5,7 +5,7 @@
 #include <memory>
 
 #include <gridformat/common/range_field.hpp>
-#include <gridformat/common/transformed_fields.hpp>
+#include <gridformat/common/field_transformations.hpp>
 
 #include "../testing.hpp"
 
@@ -44,18 +44,16 @@ int main() {
     using GridFormat::FieldTransformation::extend_all_to;
 
     "transformed_field_identity"_test = [] () {
-        std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
-        TransformedField transformed_field{*field, identity};
-        expect(eq(transformed_field.layout().dimension(), 1_ul));
-        expect(eq(transformed_field.layout().extent(0), 4_ul));
-        expect(eq(transformed_field.precision().is_integral(), true));
-        expect(eq(transformed_field.precision().is_signed(), true));
-        expect(eq(transformed_field.precision().size_in_bytes(), sizeof(int)));
+        GridFormat::TransformedField transformed{GridFormat::make_shared(MyField{}), identity};
+        expect(eq(transformed.layout().dimension(), 1_ul));
+        expect(eq(transformed.layout().extent(0), 4_ul));
+        expect(eq(transformed.precision().is_integral(), true));
+        expect(eq(transformed.precision().is_signed(), true));
+        expect(eq(transformed.precision().size_in_bytes(), sizeof(int)));
     };
 
     "transformed_field_identity_identity"_test = [] () {
-        std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
-        TransformedField transformed_field{TransformedField{*field, identity}, identity};
+        TransformedField transformed_field{identity(GridFormat::make_shared(MyField{})), identity};
         expect(eq(transformed_field.layout().dimension(), 1_ul));
         expect(eq(transformed_field.layout().extent(0), 4_ul));
         expect(eq(transformed_field.precision().is_integral(), true));
@@ -64,11 +62,13 @@ int main() {
     };
 
     "transformed_field_extend"_test = [] () {
-        GridFormat::RangeField field{
-            std::vector<std::vector<int>>{{2, 3}, {4, 5}},
-            GridFormat::Precision<double>{}
-        };
-        TransformedField extended{field, extend_to(GridFormat::MDLayout{{3}})};
+        auto field_ptr = GridFormat::make_shared(
+            GridFormat::RangeField{
+                std::vector<std::vector<int>>{{2, 3}, {4, 5}},
+                GridFormat::Precision<double>{}
+            }
+        );
+        TransformedField extended{field_ptr, extend_to(GridFormat::MDLayout{{3}})};
         expect(eq(extended.layout().dimension(), 2_ul));
         expect(eq(extended.layout().extent(0), 2_ul));
         expect(eq(extended.layout().extent(1), 3_ul));
@@ -82,11 +82,13 @@ int main() {
     };
 
     "transformed_field_extend_all"_test = [] () {
-        GridFormat::RangeField field{
-            std::vector<std::vector<int>>{{2, 3}, {4, 5}},
-            GridFormat::Precision<double>{}
-        };
-        TransformedField field_3d{field, extend_all_to(3)};
+        auto field_ptr = GridFormat::make_shared(
+            GridFormat::RangeField{
+                std::vector<std::vector<int>>{{2, 3}, {4, 5}},
+                GridFormat::Precision<double>{}
+            }
+        );
+        TransformedField field_3d{field_ptr, extend_all_to(3)};
         expect(eq(field_3d.layout().dimension(), 2_ul));
         expect(eq(field_3d.layout().extent(0), 2_ul));
         expect(eq(field_3d.precision().is_integral(), false));
@@ -99,12 +101,14 @@ int main() {
     };
 
     "transformed_field_extend_flatten"_test = [] () {
-        GridFormat::RangeField field{
-            std::vector<std::vector<int>>{{2, 3}, {4, 5}},
-            GridFormat::Precision<double>{}
-        };
+        auto field_ptr = GridFormat::make_shared(
+            GridFormat::RangeField{
+                std::vector<std::vector<int>>{{2, 3}, {4, 5}},
+                GridFormat::Precision<double>{}
+            }
+        );
         TransformedField flattened{
-            TransformedField{field, extend_to(GridFormat::MDLayout{{3}})},
+            extend_to(GridFormat::MDLayout{{3}})(field_ptr),
             GridFormat::FieldTransformation::flatten
         };
         expect(eq(flattened.layout().dimension(), 1_ul));

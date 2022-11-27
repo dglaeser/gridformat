@@ -5,8 +5,8 @@
  * \ingroup Common
  * \brief Transformed field implementations
  */
-#ifndef GRIDFORMAT_COMMON_TRANSFORMED_FIELDS_HPP_
-#define GRIDFORMAT_COMMON_TRANSFORMED_FIELDS_HPP_
+#ifndef GRIDFORMAT_COMMON_FIELD_TRANSFORMATIONS_HPP_
+#define GRIDFORMAT_COMMON_FIELD_TRANSFORMATIONS_HPP_
 
 #include <utility>
 #include <concepts>
@@ -27,23 +27,23 @@ namespace GridFormat {
  */
 class IdentityField : public Field {
  public:
-    explicit IdentityField(const Field& field)
+    explicit IdentityField(FieldPtr field)
     : _field(field)
     {}
 
  private:
-    const Field& _field;
+    FieldPtr _field;
 
     MDLayout _layout() const override {
-        return _field.layout();
+        return _field->layout();
     }
 
     DynamicPrecision _precision() const override {
-        return _field.precision();
+        return _field->precision();
     }
 
     Serialization _serialized() const override {
-        return _field.serialized();
+        return _field->serialized();
     }
 };
 
@@ -53,23 +53,23 @@ class IdentityField : public Field {
  */
 class FlattenedField : public Field {
  public:
-    explicit FlattenedField(const Field& field)
-    : _field(field)
+    explicit FlattenedField(FieldPtr ptr)
+    : _field{ptr}
     {}
 
  private:
-    const Field& _field;
+    FieldPtr _field;
 
     MDLayout _layout() const override {
-        return MDLayout{{_field.layout().number_of_entries()}};
+        return MDLayout{{_field->layout().number_of_entries()}};
     }
 
     DynamicPrecision _precision() const override {
-        return _field.precision();
+        return _field->precision();
     }
 
     Serialization _serialized() const override {
-        return _field.serialized();
+        return _field->serialized();
     }
 };
 
@@ -81,17 +81,17 @@ class FlattenedField : public Field {
  */
 class ExtendedField : public Field {
  public:
-    explicit ExtendedField(const Field& f, MDLayout target_sub_layout)
+    explicit ExtendedField(FieldPtr f, MDLayout target_sub_layout)
     : _field{f}
     , _target_sub_layout{std::move(target_sub_layout)}
     {}
 
  private:
-    const Field& _field;
+    FieldPtr _field;
     MDLayout _target_sub_layout;
 
     MDLayout _extended_layout() const {
-        return _extended_layout(_field.layout());
+        return _extended_layout(_field->layout());
     }
 
     MDLayout _extended_layout(const MDLayout& orig_layout) const {
@@ -122,18 +122,18 @@ class ExtendedField : public Field {
     }
 
     DynamicPrecision _precision() const override {
-        return _field.precision();
+        return _field->precision();
     }
 
     Serialization _serialized() const override {
-        const auto orig_layout = _field.layout();
+        const auto orig_layout = _field->layout();
         const auto new_layout = _extended_layout(orig_layout);
 
         const auto orig_sub_sizes = _sub_sizes(orig_layout);
         const auto new_sub_sizes = _sub_sizes(new_layout);
 
-        auto serialization = _field.serialized();
-        _field.precision().visit([&] <typename T> (const Precision<T>&) {
+        auto serialization = _field->serialized();
+        _field->precision().visit([&] <typename T> (const Precision<T>&) {
             serialization.resize(new_layout.number_of_entries()*sizeof(T), typename Serialization::Byte{0});
             const auto data = serialization.template as_span_of<T>();
             for (const auto& index : reversed_indices(orig_layout)) {
@@ -164,14 +164,14 @@ namespace FieldTransformation {
 namespace Detail {
 
     struct IdentityFieldAdapter {
-        auto operator()(const Field& f) const {
-            return IdentityField{f};
+        auto operator()(FieldPtr f) const {
+            return make_shared(IdentityField{f});
         }
     };
 
     struct FlattenedFieldAdapter {
-        auto operator()(const Field& f) const {
-            return FlattenedField{f};
+        auto operator()(FieldPtr f) const {
+            return make_shared(FlattenedField{f});
         }
     };
 
@@ -181,10 +181,10 @@ namespace Detail {
         : _sub_layout{std::move(sub_layout)}
         {}
 
-        auto operator()(const Field& f) const {
-            if (f.layout().dimension() <= 1)
+        auto operator()(FieldPtr f) const {
+            if (f->layout().dimension() <= 1)
                 throw SizeError("Extension only works for fields with dimension > 1");
-            return ExtendedField{f, _sub_layout};
+            return make_shared(ExtendedField{f, _sub_layout});
         }
 
     private:
@@ -203,17 +203,17 @@ namespace Detail {
         : _space_dim{space_dimension}
         {}
 
-        auto operator()(const Field& f) const {
-            const std::size_t dim = f.layout().dimension();
+        auto operator()(FieldPtr f) const {
+            const std::size_t dim = f->layout().dimension();
             if (dim <= 1)
                 throw SizeError("Extension only works for fields with dimension > 1");
-            return ExtendedField{
+            return make_shared(ExtendedField{
                 f,
                 MDLayout{
                 std::views::iota(std::size_t{1}, dim)
                     | std::views::transform([&] (const auto&) { return _space_dim; })
                 }
-            };
+            });
         }
 
     private:
@@ -241,96 +241,36 @@ namespace Concepts {
 
 template<typename T>
 concept FieldTransformation
-    = std::invocable<T, const Field&> and requires(const T& t, const Field& f) {
-    { t(f) } -> std::derived_from<Field>;
+    = std::invocable<T, FieldPtr> and requires(const T& t, FieldPtr f) {
+    { t(f) } -> std::convertible_to<FieldPtr>;
 };
 
 }  // namespace Concepts
 
 
-template<typename F, Concepts::FieldTransformation T>
-requires(std::derived_from<std::decay_t<F>, Field>)
-class TransformedField;
-
-
-#ifndef DOXYGEN
-namespace Detail {
-
-    template<typename T>
-    class TransformedFieldStorage;
-
-    template<typename F> requires(std::is_lvalue_reference_v<F>)
-    class TransformedFieldStorage<F> {
-    public:
-        explicit TransformedFieldStorage(const F& field) : _field{field} {}
-        const F& get() const { return _field; }
-    private:
-        const F& _field;
-    };
-
-    template<typename F> requires(!std::is_lvalue_reference_v<F>)
-    class TransformedFieldStorage<F> {
-    public:
-        explicit TransformedFieldStorage(F&& field) : _field{std::move(field)} {}
-        const F& get() const { return _field; }
-    private:
-        F _field;
-    };
-
-}  // namespace Detail
-#endif  // DOXYGEN
-
-template<typename F, Concepts::FieldTransformation T>
-requires(std::derived_from<std::decay_t<F>, Field>)
 class TransformedField : public Field {
-    using Transformed = std::invoke_result_t<T, const Field&>;
-
  public:
-    using Transformation = T;
-
-    template<typename _F, std::convertible_to<T> _T>
-    requires(std::same_as<std::decay_t<_F>, std::decay_t<F>>)
-    TransformedField(_F&& field, _T&& trafo)
-    : _storage{std::forward<_F>(field)}
-    , _transformation{std::forward<_T>(trafo)}
-    , _transformed{_transformation(_storage.get())}
-    {}
-
-    TransformedField(const TransformedField& other)
-    : _storage{other._storage}
-    , _transformation{other._transformation}
-    , _transformed{_transformation(_storage.get())}
-    {}
-
-    TransformedField(TransformedField&& other)
-    : _storage{std::move(other._storage)}
-    , _transformation{std::move(other._transformation)}
-    , _transformed{_transformation(_storage.get())}
+    template<Concepts::FieldTransformation T>
+    TransformedField(FieldPtr field, T&& trafo)
+    : _transformed{trafo(field)}
     {}
 
  private:
-    Detail::TransformedFieldStorage<F> _storage;
-    Transformation _transformation;
-    Transformed _transformed;
+    FieldPtr _transformed;
 
     MDLayout _layout() const override {
-        return _transformed.layout();
+        return _transformed->layout();
     }
 
     DynamicPrecision _precision() const override {
-        return _transformed.precision();
+        return _transformed->precision();
     }
 
     Serialization _serialized() const override {
-        return _transformed.serialized();
+        return _transformed->serialized();
     }
 };
 
-template<typename F, typename T> requires(std::is_lvalue_reference_v<F>)
-TransformedField(F&&, T&&) -> TransformedField<std::remove_reference_t<F>&, std::decay_t<T>>;
-template<typename F, typename T> requires(!std::is_lvalue_reference_v<F>)
-TransformedField(F&&, T&&) -> TransformedField<std::decay_t<F>, std::decay_t<T>>;
-
 }  // namespace GridFormat
 
-#endif  // GRIDFORMAT_COMMON_TRANSFORMED_FIELDS_HPP_
+#endif  // GRIDFORMAT_COMMON_FIELD_TRANSFORMATIONS_HPP_
