@@ -18,6 +18,7 @@ function(gridformat_add_test NAME SOURCE)
     add_test(NAME ${NAME} COMMAND ./${NAME})
     add_dependencies(build_tests ${NAME})
     set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE ${GRIDFORMAT_SKIPPED_TEST_RETURN_CODE})
+    set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL 1)
 endfunction()
 
 function(gridformat_add_test_if CONDITION NAME SOURCE)
@@ -35,6 +36,7 @@ function(gridformat_add_test_if CONDITION NAME SOURCE)
         )
         gridformat_add_test(${NAME} ${DUMMY_MAIN})
         set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE ${GRIDFORMAT_SKIPPED_TEST_RETURN_CODE})
+        set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL 1)
     endif ()
 endfunction()
 
@@ -53,6 +55,7 @@ function(gridformat_add_regression_test NAME SOURCE REGEX)
             COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c "./${NAME}" -r ${REGEX}
         )
         set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE ${GRIDFORMAT_SKIPPED_TEST_RETURN_CODE})
+        set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL 1)
     endif ()
 endfunction()
 
@@ -71,6 +74,7 @@ function(gridformat_add_parallel_regression_test NAME SOURCE NPROC REGEX)
             COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c "${MPIEXEC} -n ${NPROC} --oversubscribe ${NAME}" -r ${REGEX}
         )
         set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE ${GRIDFORMAT_SKIPPED_TEST_RETURN_CODE})
+        set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL 1)
     endif ()
 endfunction()
 
