@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 find_path(LZ4_INCLUDE_DIR
     NAMES lz4.h
     DOC "lz4 include directory")

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 name: test-suite
 
 on:
@@ -20,17 +23,18 @@ jobs:
              compiler_pkg: g++-12
 
     steps:
-      - name: install-compiler
-        run: sudo apt install ${{ matrix.compiler_pkg }}
+      - name: install-dependencies
+        run: sudo apt install ${{ matrix.compiler_pkg }} mpi-default-bin mpi-default-dev
 
-      - name: install-mpi
-        run: sudo apt install mpi-default-bin mpi-default-dev
-
-      - name: install-vtk
-        run: python3 -m pip install vtk
+      - name: install-pip-packages
+        run: python3 -m pip install vtk reuse
 
       - name: checkout-repository
         uses: actions/checkout@v2
+
+
+      - name: check-reuse-compliance
+        run: reuse lint
 
       - name: configure
         run: |

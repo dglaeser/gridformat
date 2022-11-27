@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 gridformat_add_test(test_type_traits test_type_traits.cpp)
 gridformat_add_test(test_concepts test_concepts.cpp)
 gridformat_add_test(test_accumulated_range test_accumulated_range.cpp)

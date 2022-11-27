@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 from os.path import splitext
 from argparse import ArgumentParser
 from dataclasses import dataclass
