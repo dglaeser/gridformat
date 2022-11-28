@@ -22,8 +22,9 @@ if (LZMA_FOUND)
     set(GRIDFORMAT_HAVE_LZMA true)
 endif ()
 
-
 find_package(MPI COMPONENTS CXX)
 if (MPI_FOUND)
+    target_link_libraries(${PROJECT_NAME} INTERFACE MPI::MPI_CXX)
+    target_compile_definitions(${PROJECT_NAME} INTERFACE GRIDFORMAT_HAVE_MPI)
     set(GRIDFORMAT_HAVE_MPI true)
 endif ()
