@@ -9,6 +9,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ut)
 
+# make sure ut headers are not installed alongside ours
+if(IS_DIRECTORY "${ut_SOURCE_DIR}")
+    set_property(DIRECTORY ${ut_SOURCE_DIR} PROPERTY EXCLUDE_FROM_ALL YES)
+endif()
+
 add_custom_target(build_tests)
 set(GRIDFORMAT_SKIPPED_TEST_RETURN_CODE 255)
 function(gridformat_add_test NAME SOURCE)
