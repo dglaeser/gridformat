@@ -9,15 +9,23 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ut)
 
+# make sure ut headers are not installed alongside ours
+if (IS_DIRECTORY "${ut_SOURCE_DIR}")
+    set_property(DIRECTORY ${ut_SOURCE_DIR} PROPERTY EXCLUDE_FROM_ALL YES)
+endif ()
+
 add_custom_target(build_tests)
-set(GRIDFORMAT_SKIPPED_TEST_RETURN_CODE 255)
-function(gridformat_add_test NAME SOURCE)
+function(gridformat_add_test_exe NAME SOURCE CMD)
     add_executable(${NAME} ${SOURCE})
-    target_link_libraries(${NAME} PRIVATE ${GFMT_NAMESPACE}::${PROJECT_NAME} Boost::ut)
-    target_compile_options(${NAME} PRIVATE -fconcepts-diagnostics-depth=10)
-    add_test(NAME ${NAME} COMMAND ./${NAME})
+    target_link_libraries(${NAME} PRIVATE GridFormat::gridformat Boost::ut)
+    add_test(NAME ${NAME} COMMAND ${CMD})
     add_dependencies(build_tests ${NAME})
-    set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE ${GRIDFORMAT_SKIPPED_TEST_RETURN_CODE})
+    set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE 255)
+    set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL 1)
+endfunction()
+
+function(gridformat_add_test NAME SOURCE)
+    gridformat_add_test_exe(${NAME} ${SOURCE} "./${NAME}")
 endfunction()
 
 function(gridformat_add_test_if CONDITION NAME SOURCE)
@@ -30,11 +38,10 @@ function(gridformat_add_test_if CONDITION NAME SOURCE)
             "int main()\n"
             "{\n"
             "    std::cout << \"Test is skipped due to unmet condition '${CONDITION}'\" << std::endl;\n"
-            "    return ${GRIDFORMAT_SKIPPED_TEST_RETURN_CODE};\n"
+            "    return 255;\n"
             "}"
         )
-        gridformat_add_test(${NAME} ${DUMMY_MAIN})
-        set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE ${GRIDFORMAT_SKIPPED_TEST_RETURN_CODE})
+        gridformat_add_test_exe(${NAME} ${DUMMY_MAIN} "./${NAME}")
     endif ()
 endfunction()
 
@@ -44,33 +51,25 @@ function(gridformat_add_regression_test NAME SOURCE REGEX)
         message(STATUS "Skipping regression testing for '${NAME}' because Python was not found")
         gridformat_add_test(${NAME} ${SOURCE})
     else ()
-        add_executable(${NAME} ${SOURCE})
-        target_link_libraries(${NAME} PRIVATE ${GFMT_NAMESPACE}::${PROJECT_NAME} Boost::ut)
-        target_compile_options(${NAME} PRIVATE -fconcepts-diagnostics-depth=10)
-        add_dependencies(build_tests ${NAME})
-        add_test(
-            NAME ${NAME}
-            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c "./${NAME}" -r ${REGEX}
+        gridformat_add_test(
+            ${NAME}
+            ${SOURCE}
+            "${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c \"./${NAME}\" -r ${REGEX}"
         )
-        set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE ${GRIDFORMAT_SKIPPED_TEST_RETURN_CODE})
     endif ()
 endfunction()
 
+find_package(MPI COMPONENTS CXX)
 function(gridformat_add_parallel_regression_test NAME SOURCE NPROC REGEX)
     if (NOT ${MPI_FOUND})
         message(STATUS "Skipping parallel test '${NAME}' because MPI was not found")
         gridformat_add_test_if(MPI_FOUND ${NAME} ${SOURCE})
     else ()
-        add_executable(${NAME} ${SOURCE})
-        target_link_libraries(${NAME} PRIVATE ${GFMT_NAMESPACE}::${PROJECT_NAME} Boost::ut MPI::MPI_CXX)
-        target_compile_options(${NAME} PRIVATE -fconcepts-diagnostics-depth=10)
-        target_compile_definitions(${NAME} PRIVATE GRIDFORMAT_HAVE_MPI=1)
-        add_dependencies(build_tests ${NAME})
-        add_test(
-            NAME ${NAME}
-            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c "${MPIEXEC} -n ${NPROC} --oversubscribe ${NAME}" -r ${REGEX}
+        gridformat_add_test(
+            ${NAME}
+            ${SOURCE}
+            "${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c \"${MPIEXEC} -n ${NPROC} --oversubscribe ${NAME}\" -r ${REGEX}"
         )
-        set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE ${GRIDFORMAT_SKIPPED_TEST_RETURN_CODE})
     endif ()
 endfunction()
 
