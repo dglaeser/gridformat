@@ -46,9 +46,6 @@ concept PointFunction = Detail::EntityFunction<T, Point<Grid>>;
 template<typename T, typename Grid>
 concept CellFunction = Detail::EntityFunction<T, Cell<Grid>>;
 
-template<typename T, typename Grid>
-concept EntityFunction = PointFunction<T, Grid> or CellFunction<T, Grid>;
-
 //! \} group Grid
 
 }  // namespace GridFormat::Concepts

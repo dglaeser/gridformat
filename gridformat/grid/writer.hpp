@@ -90,10 +90,10 @@ class GridWriterBase {
     }
 
  protected:
-    template<Concepts::EntityFunction<Grid> F,
+    template<typename EntityFunction,
              std::ranges::range EntityRange,
              Concepts::Scalar T>
-    auto _make_entity_field(F&& f, EntityRange&& entities, const Precision<T>& prec) const {
+    auto _make_entity_field(EntityFunction&& f, EntityRange&& entities, const Precision<T>& prec) const {
         return _make_entity_field(_make_entity_function_range(std::move(f), std::move(entities)), prec);
     }
 
@@ -102,8 +102,8 @@ class GridWriterBase {
         return RangeField{std::move(r), prec};
     }
 
-    template<Concepts::EntityFunction<Grid> F, std::ranges::range EntityRange>
-    auto _make_entity_function_range(F&& f, EntityRange&& entities) const {
+    template<typename EntityFunction, std::ranges::range EntityRange>
+    auto _make_entity_function_range(EntityFunction&& f, EntityRange&& entities) const {
         using Entity = std::ranges::range_value_t<EntityRange>;
         return std::move(entities)
             | std::views::transform([f = std::move(f)] (const Entity& e) {
