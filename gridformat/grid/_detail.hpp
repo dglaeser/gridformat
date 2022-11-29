@@ -43,6 +43,11 @@ namespace GridFormat::GridDetail {
         { Traits::PointCoordinates<T, Point<T>>::get(grid, std::declval<const Point<T>&>()) } -> std::ranges::range;
     };
 
+    template<typename T> requires(exposes_point_coordinates<T>)
+    using PointCoordinates = std::decay_t<decltype(
+        Traits::PointCoordinates<T, Point<T>>::get(std::declval<const T&>(), std::declval<const Point<T>&>())
+    )>;
+
     template<typename T>
     inline constexpr bool exposes_point_id
         = is_complete<Traits::PointId<T, Point<T>>> && requires(const T& grid) {
