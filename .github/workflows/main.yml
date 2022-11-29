@@ -39,15 +39,25 @@ jobs:
         run: |
           CXX_COMPILER="${{ matrix.cxx_compiler }}"
           C_COMPILER="${{ matrix.c_compiler }}"
-          mkdir build && cd build && cmake -DCMAKE_C_COMPILER=/usr/bin/$C_COMPILER -DCMAKE_CXX_COMPILER=/usr/bin/$CXX_COMPILER ../ && cd ..
+          cmake -DCMAKE_C_COMPILER=/usr/bin/$C_COMPILER \
+                -DCMAKE_CXX_COMPILER=/usr/bin/$CXX_COMPILER \
+                -DGRIDFORMAT_BUILD_TESTS=ON \
+                -B build
+
+      - name: build
+        run: pushd build && make build_tests && popd
 
       - name: test
         run: |
-          cd build && make build_tests && ctest --output-on-failure
+          pushd build && ctest --output-on-failure && popd
 
-      - name: test-installation
+      - name: install
         run: |
-          pushd build && cmake -DCMAKE_INSTALL_PREFIX=$(pwd)/../install ../ && make install && popd
+          cmake -DCMAKE_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=$(pwd)/install -B build
+          cmake --install build
+
+      - name: test-installed-pkg
+        run: |
           mkdir installation-test && cp -r test installation-test && cd installation-test
           echo "cmake_minimum_required(VERSION 3.18)" > CMakeLists.txt
           echo "project(gridformat_test_suite VERSION 1.0.0)" >> CMakeLists.txt
