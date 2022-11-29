@@ -3,6 +3,12 @@
 
 cmake_minimum_required(VERSION 3.18)
 
+if(NOT DEFINED PROJECT_NAME)
+  set(GRIDFORMAT_SUBPROJECT OFF)
+else()
+  set(GRIDFORMAT_SUBPROJECT ON)
+endif()
+
 project(gridformat VERSION 1.0.0)
 set(GRIDFORMAT_NAMESPACE "gridformat")
 
@@ -14,54 +20,59 @@ target_include_directories(${PROJECT_NAME}
               $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
+# Alias for both test suite and sub-projects (e.g. using cmake's FetchContent)
+add_library(${GRIDFORMAT_NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 include(cmake/link_external_libs.cmake)
 
-set(GRIDFORMAT_INSTALL_CMAKE_DATA_DIR "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake")
-install(
-    DIRECTORY ${PROJECT_NAME}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-install(
-    DIRECTORY "${PROJECT_SOURCE_DIR}/cmake/modules"
-    DESTINATION ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
-)
-install(
-    TARGETS ${PROJECT_NAME}
-    EXPORT ${PROJECT_NAME}_Targets
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-install(
-    EXPORT ${PROJECT_NAME}_Targets
-    FILE ${PROJECT_NAME}Targets.cmake
-    NAMESPACE ${GRIDFORMAT_NAMESPACE}::
-    DESTINATION ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
-)
+if (NOT GRIDFORMAT_SUBPROJECT)
 
-include(CMakePackageConfigHelpers)
-configure_package_config_file(
-    "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}-config.cmake.in"
-    "${PROJECT_BINARY_DIR}/cmake/pkg/${PROJECT_NAME}Config.cmake"
-    PATH_VARS
-        CMAKE_INSTALL_INCLUDEDIR
-        GRIDFORMAT_NAMESPACE
-        GRIDFORMAT_INSTALL_CMAKE_DATA_DIR
-    INSTALL_DESTINATION
-        ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
-)
-install(
-    FILES
+    set(GRIDFORMAT_INSTALL_CMAKE_DATA_DIR "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake")
+    install(
+        DIRECTORY ${PROJECT_NAME}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+    install(
+        DIRECTORY "${PROJECT_SOURCE_DIR}/cmake/modules"
+        DESTINATION ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
+    )
+    install(
+        TARGETS ${PROJECT_NAME}
+        EXPORT ${PROJECT_NAME}_Targets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+    install(
+        EXPORT ${PROJECT_NAME}_Targets
+        FILE ${PROJECT_NAME}Targets.cmake
+        NAMESPACE ${GRIDFORMAT_NAMESPACE}::
+        DESTINATION ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
+    )
+
+    include(CMakePackageConfigHelpers)
+    configure_package_config_file(
+        "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}-config.cmake.in"
         "${PROJECT_BINARY_DIR}/cmake/pkg/${PROJECT_NAME}Config.cmake"
-    DESTINATION
-        ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
-)
+        PATH_VARS
+            CMAKE_INSTALL_INCLUDEDIR
+            GRIDFORMAT_NAMESPACE
+            GRIDFORMAT_INSTALL_CMAKE_DATA_DIR
+        INSTALL_DESTINATION
+            ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
+    )
+    install(
+        FILES
+            "${PROJECT_BINARY_DIR}/cmake/pkg/${PROJECT_NAME}Config.cmake"
+        DESTINATION
+            ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
+    )
+endif ()
 
 option(GRIDFORMAT_BUILD_TESTS "whether or not examples should be built" OFF)
 if (GRIDFORMAT_BUILD_TESTS)
     message(STATUS "Including test suite")
     enable_testing()
-    add_library(${GRIDFORMAT_NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
     add_subdirectory(test)
 endif ()
