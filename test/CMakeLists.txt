@@ -15,17 +15,21 @@ if (IS_DIRECTORY "${ut_SOURCE_DIR}")
 endif ()
 
 add_custom_target(build_tests)
-function(gridformat_add_test_exe NAME SOURCE CMD)
+function(gridformat_add_test_exe NAME SOURCE)
     add_executable(${NAME} ${SOURCE})
     target_link_libraries(${NAME} PRIVATE GridFormat::gridformat Boost::ut)
-    add_test(NAME ${NAME} COMMAND ${CMD})
+endfunction()
+
+function(gridformat_set_test_props NAME)
     add_dependencies(build_tests ${NAME})
     set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE 255)
     set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL 1)
 endfunction()
 
 function(gridformat_add_test NAME SOURCE)
-    gridformat_add_test_exe(${NAME} ${SOURCE} "./${NAME}")
+    gridformat_add_test_exe(${NAME} ${SOURCE})
+    add_test(NAME ${NAME} COMMAND "./${NAME}")
+    gridformat_set_test_props(${NAME})
 endfunction()
 
 function(gridformat_add_test_if CONDITION NAME SOURCE)
@@ -41,7 +45,7 @@ function(gridformat_add_test_if CONDITION NAME SOURCE)
             "    return 255;\n"
             "}"
         )
-        gridformat_add_test_exe(${NAME} ${DUMMY_MAIN} "./${NAME}")
+        gridformat_add_test(${NAME} ${DUMMY_MAIN})
     endif ()
 endfunction()
 
@@ -51,11 +55,12 @@ function(gridformat_add_regression_test NAME SOURCE REGEX)
         message(STATUS "Skipping regression testing for '${NAME}' because Python was not found")
         gridformat_add_test(${NAME} ${SOURCE})
     else ()
-        gridformat_add_test(
-            ${NAME}
-            ${SOURCE}
-            "${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c \"./${NAME}\" -r ${REGEX}"
+        gridformat_add_test_exe(${NAME} ${SOURCE})
+        add_test(
+            NAME ${NAME}
+            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py  -c "./${NAME}" -r ${REGEX}
         )
+        gridformat_set_test_props(${NAME})
     endif ()
 endfunction()
 
@@ -65,11 +70,12 @@ function(gridformat_add_parallel_regression_test NAME SOURCE NPROC REGEX)
         message(STATUS "Skipping parallel test '${NAME}' because MPI was not found")
         gridformat_add_test_if(MPI_FOUND ${NAME} ${SOURCE})
     else ()
-        gridformat_add_test(
-            ${NAME}
-            ${SOURCE}
-            "${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c \"${MPIEXEC} -n ${NPROC} --oversubscribe ${NAME}\" -r ${REGEX}"
+        gridformat_add_test_exe(${NAME} ${SOURCE})
+        add_test(
+            NAME ${NAME}
+            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c "${MPIEXEC} -n ${NPROC} --oversubscribe ${NAME}" -r ${REGEX}
         )
+        gridformat_set_test_props(${NAME})
     endif ()
 endfunction()
 
