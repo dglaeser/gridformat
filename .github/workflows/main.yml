@@ -60,16 +60,16 @@ jobs:
         run: |
           mkdir installation-test && cp -r test installation-test
           pushd installation-test
-          echo "cmake_minimum_required(VERSION 3.18)" > CMakeLists.txt
-          echo "project(gridformat_test_suite VERSION 1.0.0)" >> CMakeLists.txt
-          echo "enable_testing()" >> CMakeLists.txt
-          echo "find_package(gridformat REQUIRED)" >> CMakeLists.txt
-          echo "add_subdirectory(test)" >> CMakeLists.txt
-          cmake -Dgridformat_ROOT=$(pwd)/../install \
-                -DCMAKE_C_COMPILER=/usr/bin/${{ matrix.c_compiler }} \
-                -DCMAKE_CXX_COMPILER=/usr/bin/${{ matrix.cxx_compiler }} \
-                -B build
-          pushd build && make build_tests && ctest --output-on-failure && popd
+            echo "cmake_minimum_required(VERSION 3.18)" > CMakeLists.txt
+            echo "project(gridformat_test_suite VERSION 1.0.0)" >> CMakeLists.txt
+            echo "enable_testing()" >> CMakeLists.txt
+            echo "find_package(gridformat REQUIRED)" >> CMakeLists.txt
+            echo "add_subdirectory(test)" >> CMakeLists.txt
+            cmake -Dgridformat_ROOT=$(pwd)/../install \
+                  -DCMAKE_C_COMPILER=/usr/bin/${{ matrix.c_compiler }} \
+                  -DCMAKE_CXX_COMPILER=/usr/bin/${{ matrix.cxx_compiler }} \
+                  -B build
+            pushd build && make build_tests && ctest --output-on-failure && popd
           popd
 
       - name: test-examples
@@ -79,8 +79,8 @@ jobs:
             GFMT_TREE=$GITHUB_SHA
           fi
           pushd examples
-          cmake -DCMAKE_C_COMPILER=/usr/bin/${{ matrix.c_compiler }} \
-                -DCMAKE_CXX_COMPILER=/usr/bin/${{ matrix.cxx_compiler }} \
-                -DGRIDFORMAT_FETCH_TREE=$GFMT_TREE \
-                -B build
+            cmake -DCMAKE_C_COMPILER=/usr/bin/${{ matrix.c_compiler }} \
+                  -DCMAKE_CXX_COMPILER=/usr/bin/${{ matrix.cxx_compiler }} \
+                  -DGRIDFORMAT_FETCH_TREE=$GFMT_TREE \
+                  -B build
           pushd build && make && ctest --output-on-failure
