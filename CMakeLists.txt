@@ -57,6 +57,10 @@ install(
         ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
 )
 
-enable_testing()
-add_library(${GFMT_NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-add_subdirectory(test)
+option(GRIDFORMAT_BUILD_TESTS "whether or not examples should be built" OFF)
+if (GRIDFORMAT_BUILD_TESTS)
+    message(STATUS "Including test suite")
+    enable_testing()
+    add_library(${GFMT_NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+    add_subdirectory(test)
+endif ()
