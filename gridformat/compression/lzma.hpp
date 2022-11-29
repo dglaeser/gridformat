@@ -58,6 +58,7 @@ class LZMA {
             out.template as_span_of<LZMAByte>()
         );
         in = std::move(out);
+        in.resize(blocks.compressed_size());
         return blocks;
     }
 
@@ -90,6 +91,7 @@ class LZMA {
             if (lzma_ret != LZMA_OK)
                 throw InvalidState(as_error("(LZMACompressor) Error upon compression"));
 
+            assert(cur_out + out_pos < out.size());
             std::copy_n(block_buffer.data(),
                         out_pos,
                         out.data() + cur_out);
