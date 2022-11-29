@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup VTK
+ * \ingroup API
  * \brief TODO: Doc me
  */
 #ifndef GRIDFORMAT_GRID_HPP_
