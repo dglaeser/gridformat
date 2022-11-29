@@ -12,7 +12,7 @@
 
 // forward declarations
 namespace GridFormat { class DynamicPrecision; }
-namespace GridFormat::Compression { struct LZMA; }
+namespace GridFormat::Compression { struct LZMA; struct ZLIB; }
 namespace GridFormat::Encoding { struct Ascii; class AsciiWithOptions; struct Base64; struct RawBinary; }
 // end forward declarations
 
@@ -36,6 +36,7 @@ std::string attribute_name(const Encoding::Base64&) { return "base64"; }
 std::string attribute_name(const Encoding::RawBinary&) { return "raw"; }
 
 std::string attribute_name(const Compression::LZMA&) { return "vtkLZMADataCompressor"; };
+std::string attribute_name(const Compression::ZLIB&) { return "vtkZLibDataCompressor"; };
 
 template<typename Encoding>
 std::string data_format_name(const Encoding&, const DataFormat::Appended&) { return "appended"; }

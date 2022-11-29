@@ -10,5 +10,6 @@
 #define GRIDFORMAT_COMPRESSION_HPP_
 
 #include <gridformat/compression/lzma.hpp>
+#include <gridformat/compression/zlib.hpp>
 
 #endif  // GRIDFORMAT_COMPRESSION_HPP_
