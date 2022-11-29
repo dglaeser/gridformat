@@ -8,6 +8,9 @@
 #ifndef GRIDFORMAT_GRID_CELL_TYPE_HPP_
 #define GRIDFORMAT_GRID_CELL_TYPE_HPP_
 
+#include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/logging.hpp>
+
 namespace GridFormat {
 
 /*!
@@ -23,6 +26,22 @@ enum class CellType {
     tetrahedron,
     hexahedron
 };
+
+
+//! Return the dimension of a grid cell type
+inline int dimension(CellType ct) {
+    switch (ct) {
+        case CellType::vertex: return 0;
+        case CellType::segment: return 1;
+        case CellType::triangle: return 2;
+        case CellType::quadrilateral: return 2;
+        case CellType::polygon: return 2;
+        case CellType::tetrahedron: return 3;
+        case CellType::hexahedron: return 3;
+    }
+
+    throw InvalidState(as_error("Unsupported cell type"));
+}
 
 }  // namespace GridFormat
 
