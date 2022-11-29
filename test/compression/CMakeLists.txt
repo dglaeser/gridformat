@@ -2,3 +2,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 gridformat_add_test_if(GRIDFORMAT_HAVE_LZMA test_lzma_compression test_lzma_compression.cpp)
+gridformat_add_test_if(GRIDFORMAT_HAVE_ZLIB test_zlib_compression test_zlib_compression.cpp)

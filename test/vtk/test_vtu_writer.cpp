@@ -6,9 +6,9 @@
 #include <string>
 
 #include <gridformat/common/logging.hpp>
-#include <gridformat/compression/lzma.hpp>
 #include <gridformat/encoding/base64.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
+#include <gridformat/compression.hpp>
 
 #include "../grid/unstructured_grid.hpp"
 #include "../make_test_data.hpp"
@@ -127,5 +127,16 @@ int main() {
     );
 #endif  // GRIDFORMAT_HAVE_LZMA
 
+#if GRIDFORMAT_HAVE_ZLIB
+    write<2, 2>(
+        GridFormat::VTK::XMLOptions{
+            .encoder = GridFormat::Encoding::base64,
+            .compressor = GridFormat::Compression::zlib,
+            .data_format = GridFormat::VTK::DataFormat::inlined
+        },
+        GridFormat::VTK::PrecisionOptions{.header_precision = GridFormat::uint32},
+        "vtu_base64_inlined_zlib_compression_custom_header_precision"
+    );
+#endif  // GRIDFORMAT_HAVE_ZLIB
     return 0;
 }
