@@ -17,7 +17,7 @@ endif ()
 add_custom_target(build_tests)
 function(gridformat_add_test_exe NAME SOURCE)
     add_executable(${NAME} ${SOURCE})
-    target_link_libraries(${NAME} PRIVATE GridFormat::gridformat Boost::ut)
+    target_link_libraries(${NAME} PRIVATE gridformat::gridformat Boost::ut)
 endfunction()
 
 function(gridformat_set_test_props NAME)

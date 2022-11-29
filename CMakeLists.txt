@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.18)
 
 project(gridformat VERSION 1.0.0)
-set(GFMT_NAMESPACE "GridFormat")
+set(GRIDFORMAT_NAMESPACE "gridformat")
 
 include(GNUInstallDirs)
 add_library(${PROJECT_NAME} INTERFACE)
@@ -36,7 +36,7 @@ install(
 install(
     EXPORT ${PROJECT_NAME}_Targets
     FILE ${PROJECT_NAME}Targets.cmake
-    NAMESPACE GridFormat::
+    NAMESPACE ${GRIDFORMAT_NAMESPACE}::
     DESTINATION ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
 )
 
@@ -46,6 +46,7 @@ configure_package_config_file(
     "${PROJECT_BINARY_DIR}/cmake/pkg/${PROJECT_NAME}Config.cmake"
     PATH_VARS
         CMAKE_INSTALL_INCLUDEDIR
+        GRIDFORMAT_NAMESPACE
         GRIDFORMAT_INSTALL_CMAKE_DATA_DIR
     INSTALL_DESTINATION
         ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
@@ -61,6 +62,6 @@ option(GRIDFORMAT_BUILD_TESTS "whether or not examples should be built" OFF)
 if (GRIDFORMAT_BUILD_TESTS)
     message(STATUS "Including test suite")
     enable_testing()
-    add_library(${GFMT_NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+    add_library(${GRIDFORMAT_NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
     add_subdirectory(test)
 endif ()
