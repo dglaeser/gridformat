@@ -20,6 +20,9 @@ target_include_directories(${PROJECT_NAME}
               $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
+# Alias for both test suite and sub-projects (e.g. using cmake's FetchContent)
+add_library(${GRIDFORMAT_NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 include(cmake/link_external_libs.cmake)
 
@@ -71,6 +74,5 @@ option(GRIDFORMAT_BUILD_TESTS "whether or not examples should be built" OFF)
 if (GRIDFORMAT_BUILD_TESTS)
     message(STATUS "Including test suite")
     enable_testing()
-    add_library(${GRIDFORMAT_NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
     add_subdirectory(test)
 endif ()
