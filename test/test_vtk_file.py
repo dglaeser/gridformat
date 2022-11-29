@@ -153,6 +153,8 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
     elif ext == ".vtp":
         reader = vtkXMLPolyDataReader()
         reader.AddObserver("ErrorEvent", e)
+    else:
+        raise NotImplementedError("Unsupported vtk extension")
     reader.SetFileName(filename)
     reader.Update()
     if e.ErrorOccurred():
@@ -165,11 +167,17 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
 def test(filename: str) -> None:
     ext = splitext(filename)[1]
     if ext in [".vtu", ".vtp"]:
+        print(f"Comparing file '{filename}'")
         _test_vtk(filename, _TestFunction())
     elif ext == ".pvd":
         for timestep in _read_pvd_pieces(filename):
             print(f"Comparing timestep '{timestep.time}' in file {timestep.filename}")
-            _test_vtk(timestep.filename, _TestFunction(float(timestep.time)))
+            if splitext(timestep.filename)[1].startswith(".p"):
+                for piece in _read_pvtu_pieces(timestep.filename):
+                    print(f" -- Comparing piece '{piece}'")
+                    _test_vtk(piece, _TestFunction(float(timestep.time)))
+            else:
+                _test_vtk(timestep.filename, _TestFunction(float(timestep.time)))
     elif ext == ".pvtu":
         for piece in _read_pvtu_pieces(filename):
             print(f"Comparing piece '{piece}'")

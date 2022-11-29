@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup Common
- * \ingroup Compression
+ * \ingroup API
  * \brief Includes all available compressors.
  */
 #ifndef GRIDFORMAT_COMPRESSION_HPP_
