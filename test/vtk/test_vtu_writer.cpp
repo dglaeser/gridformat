@@ -138,5 +138,17 @@ int main() {
         "vtu_base64_inlined_zlib_compression_custom_header_precision"
     );
 #endif  // GRIDFORMAT_HAVE_ZLIB
+
+#if GRIDFORMAT_HAVE_LZ4
+    write<2, 2>(
+        GridFormat::VTK::XMLOptions{
+            .encoder = GridFormat::Encoding::base64,
+            .compressor = GridFormat::Compression::lz4,
+            .data_format = GridFormat::VTK::DataFormat::inlined
+        },
+        GridFormat::VTK::PrecisionOptions{.header_precision = GridFormat::uint32},
+        "vtu_base64_inlined_lz4_compression_custom_header_precision"
+    );
+#endif  // GRIDFORMAT_HAVE_LZ4
     return 0;
 }
