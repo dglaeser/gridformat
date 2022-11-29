@@ -11,5 +11,6 @@
 
 #include <gridformat/compression/lzma.hpp>
 #include <gridformat/compression/zlib.hpp>
+#include <gridformat/compression/lz4.hpp>
 
 #endif  // GRIDFORMAT_COMPRESSION_HPP_
