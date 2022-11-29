@@ -17,14 +17,13 @@ target_include_directories(gridformat
 list(APPEND CMAKE_MODULE_PATH "${gridformat_SOURCE_DIR}/cmake/modules")
 include(cmake/link_external_libs.cmake)
 
-set(GRIDFORMAT_INSTALL_CMAKE_DATA_DIR "${CMAKE_INSTALL_DATAROOTDIR}/gridformat/cmake")
 install(
     DIRECTORY gridformat
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 install(
-    DIRECTORY "${gridformat_SOURCE_DIR}/cmake/modules"
-    DESTINATION ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
+    DIRECTORY ${gridformat_SOURCE_DIR}/cmake/modules
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gridformat
 )
 install(
     TARGETS gridformat
@@ -37,7 +36,7 @@ install(
     EXPORT gridformat_Targets
     FILE gridformatTargets.cmake
     NAMESPACE GridFormat::
-    DESTINATION ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gridformat
 )
 
 include(CMakePackageConfigHelpers)
@@ -46,15 +45,15 @@ configure_package_config_file(
     "${PROJECT_BINARY_DIR}/cmake/pkg/gridformatConfig.cmake"
     PATH_VARS
         CMAKE_INSTALL_INCLUDEDIR
-        GRIDFORMAT_INSTALL_CMAKE_DATA_DIR
+        CMAKE_INSTALL_LIBDIR
     INSTALL_DESTINATION
-        ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
+        ${CMAKE_INSTALL_LIBDIR}/cmake/gridformat
 )
 install(
     FILES
         "${PROJECT_BINARY_DIR}/cmake/pkg/gridformatConfig.cmake"
     DESTINATION
-        ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
+        ${CMAKE_INSTALL_LIBDIR}/cmake/gridformat
 )
 
 option(GRIDFORMAT_BUILD_TESTS "whether or not examples should be built" OFF)

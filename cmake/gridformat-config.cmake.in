@@ -8,8 +8,8 @@ check_required_components(gridformat)
 
 set(gridformat_LIBRARY GridFormat::gridformat)
 set_and_check(gridformat_INCLUDE_DIRS "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
-set_and_check(gridformat_MODULE_DIR "@PACKAGE_GRIDFORMAT_INSTALL_CMAKE_DATA_DIR@/modules")
-list(APPEND CMAKE_MODULE_PATH "@PACKAGE_GRIDFORMAT_INSTALL_CMAKE_DATA_DIR@/modules")
+set_and_check(gridformat_MODULE_DIR "@PACKAGE_CMAKE_INSTALL_LIBDIR@/cmake/gridformat/modules")
+list(APPEND CMAKE_MODULE_PATH gridformat_MODULE_DIR)
 
 include(CMakeFindDependencyMacro)
 if (@ZLIB_FOUND@)
