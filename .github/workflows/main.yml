@@ -23,11 +23,23 @@ jobs:
              compiler_pkg: g++-12
 
     steps:
-      - name: install-dependencies
+      - name: install-compiler
         run: sudo apt install ${{ matrix.compiler_pkg }} mpi-default-bin mpi-default-dev
 
       - name: install-pip-packages
         run: python3 -m pip install vtk reuse
+
+      - name: install-adapted-grid-packages
+        run: |
+          mkdir dune_libs && pushd dune_libs
+              echo "CMAKE_FLAGS=\"-DCMAKE_BUILD_TYPE=Release -DDUNE_ENABLE_PYTHONBINDINGS=0\"" >> dune.opts
+              git clone --depth=1 https://gitlab.dune-project.org/core/dune-common.git
+              git clone --depth=1 https://gitlab.dune-project.org/core/dune-geometry.git
+              git clone --depth=1 https://gitlab.dune-project.org/core/dune-grid.git
+              ./dune-common/bin/dunecontrol --opts=dune.opts all
+              sudo ./dune-common/bin/dunecontrol --opts=dune.opts make install
+          popd && rm -rf dune_libs
+          sudo ldconfig
 
       - name: checkout-repository
         uses: actions/checkout@v2
