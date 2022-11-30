@@ -12,18 +12,18 @@ if (dune-grid_FOUND AND dune-common_FOUND AND dune-geometry_FOUND)
     set(DUNE_FOUND true)
 endif ()
 
+gridformat_add_regression_test_if(DUNE_FOUND
+    test_dune_unstructured
+    test_dune_unstructured.cpp
+    "dune_vtu*"
+)
+gridformat_add_parallel_regression_test_if(DUNE_FOUND
+    test_dune_unstructured_parallel
+    test_dune_unstructured_parallel.cpp
+    4
+    "dune_pvtu*pvtu"
+)
 if (${DUNE_FOUND})
-    gridformat_add_regression_test_if(DUNE_FOUND
-        test_dune_unstructured
-        test_dune_unstructured.cpp
-        "dune_vtu*"
-    )
-    gridformat_add_parallel_regression_test_if(DUNE_FOUND
-        test_dune_unstructured_parallel
-        test_dune_unstructured_parallel.cpp
-        4
-        "dune_pvtu*pvtu"
-    )
     target_link_libraries(test_dune_unstructured PRIVATE dunecommon dunegeometry dunegrid)
     target_link_libraries(test_dune_unstructured_parallel PRIVATE dunecommon dunegeometry dunegrid)
 
