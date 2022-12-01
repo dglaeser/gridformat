@@ -21,6 +21,10 @@ struct Size;
 template<typename Communicator>
 struct Rank;
 
+//! Metafunction to obtain a barrier for all processes to reach before continuation `int get(const Communicator&)`
+template<typename Communicator>
+struct Barrier;
+
 //! \} group Parallel
 
 }  // namespace GridFormat::ParallelTraits
@@ -46,6 +50,13 @@ struct Rank<MPI_Comm> {
         int r;
         MPI_Comm_rank(comm, &r);
         return r;
+    }
+};
+
+template<>
+struct Barrier<MPI_Comm> {
+    static int get(MPI_Comm comm) {
+        return MPI_Barrier(comm);
     }
 };
 
