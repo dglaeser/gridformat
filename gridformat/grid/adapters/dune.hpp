@@ -83,8 +83,8 @@ struct Cells<Dune::GridView<Traits>> {
     static decltype(auto) get(const Dune::GridView<Traits>& grid_view) {
         // assumes dune/grid/gridenums.hh header to have been included
         return std::ranges::subrange(
-            grid_view.template begin<0, Dune::InteriorBorder_Partition>(),
-            grid_view.template end<0, Dune::InteriorBorder_Partition>()
+            grid_view.template begin<0, Dune::Interior_Partition>(),
+            grid_view.template end<0, Dune::Interior_Partition>()
         );
     }
 };
