@@ -56,8 +56,8 @@ class Writer {
         _writer->set_cell_field(std::forward<Args>(args)...);
     }
 
-    void write(const std::string& filename) {
-        _writer->write(filename);
+    std::string write(const std::string& filename) {
+        return _writer->write(filename);
     }
 
  private:
@@ -83,8 +83,8 @@ class TimeSeriesWriter {
         _writer->set_cell_field(std::forward<Args>(args)...);
     }
 
-    void write(double t) {
-        _writer->write(t);
+    std::string write(double t) {
+        return _writer->write(t);
     }
 
  private:
