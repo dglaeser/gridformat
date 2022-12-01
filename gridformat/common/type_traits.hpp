@@ -133,25 +133,8 @@ inline constexpr bool is_incomplete = decltype(Detail::isIncomplete(std::declval
 template<typename T>
 inline constexpr bool is_complete = !is_incomplete<T>;
 
-
-#ifndef DOXYGEN
-namespace Detail {
-
-    template<typename T, typename Type, typename... Types>
-    struct IsAnyOf {
-        static constexpr bool value = std::is_same_v<T, Type> || IsAnyOf<T, Types...>::value;
-    };
-
-    template<typename T, typename Type>
-    struct IsAnyOf<T, Type> {
-        static constexpr bool value = std::is_same_v<T, Type>;
-    };
-
-}  // end namespace Detail
-#endif  // DOXYGEN
-
 template<typename T, typename... Types>
-inline constexpr bool is_any_of = Detail::IsAnyOf<T, Types...>::value;
+inline constexpr bool is_any_of = (... or std::same_as<T, Types>);
 
 
 #ifndef DOXYGEN
@@ -160,7 +143,7 @@ namespace Detail {
     template<typename T, typename... Types>
     struct UniqueVariant {
         using type = std::conditional_t<
-            IsAnyOf<T, Types...>::value,
+            is_any_of<T, Types...>,
             typename UniqueVariant<Types...>::type,
             typename UniqueVariant<std::tuple<T>, Types...>::type
         >;
@@ -175,7 +158,7 @@ namespace Detail {
     template<typename... Uniques, typename T, typename... Types>
     struct UniqueVariant<std::tuple<Uniques...>, T, Types...> {
         using type = std::conditional_t<
-            IsAnyOf<T, Uniques...>::value,
+            is_any_of<T, Uniques...>,
             typename UniqueVariant<std::tuple<Uniques...>, Types...>::type,
             typename UniqueVariant<std::tuple<Uniques..., T>, Types...>::type
         >;
