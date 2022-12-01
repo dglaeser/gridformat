@@ -11,6 +11,7 @@
 #include <cassert>
 #include <algorithm>
 
+#include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/output_stream.hpp>
 
 namespace GridFormat {
@@ -68,8 +69,9 @@ class Base64Stream : public OutputStreamWrapperBase<OStream> {
         for (const auto i : std::views::iota(std::size_t{0}, num_full_buffers))
             _flush_full_buffer(data, i*buffer_size);
 
-        const auto residual_bytes = data.size() - num_full_buffers*buffer_size;
-        _flush_buffer(data, num_full_buffers*buffer_size, residual_bytes);
+        const auto written_bytes = num_full_buffers*buffer_size;
+        if (data.size() > written_bytes)
+            _flush_buffer(data, written_bytes, data.size() - written_bytes);
     }
 
     template<std::size_t size>
@@ -89,9 +91,14 @@ class Base64Stream : public OutputStreamWrapperBase<OStream> {
     void _flush_buffer(std::span<const std::byte, size> data, std::size_t offset, std::size_t num_bytes) {
         if (num_bytes == 0)
             return;
+        if (num_bytes > buffer_size)
+            throw InvalidState("Residual bytes larger than buffer size");
 
-        assert(data.size() >= offset + num_bytes);
-        const Byte* chars = _buffer_view(data, offset);
+        std::array<std::byte, buffer_size> buffer;
+        std::ranges::copy_n(data.data() + offset, num_bytes, buffer.begin());
+        std::ranges::fill(buffer.data() + num_bytes, buffer.end(), std::byte{0});
+
+        const Byte* chars = _buffer_view(std::as_bytes(std::span{buffer}), 0);
         const Byte out[4] = {
             num_bytes > 0 ? _encodeSextet0(chars) : '=',
             num_bytes > 0 ? _encodeSextet1(chars) : '=',
