@@ -11,6 +11,7 @@
 #include <ostream>
 #include <string>
 #include <fstream>
+#include <cmath>
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/exceptions.hpp>
@@ -93,10 +94,12 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
         const auto _add_pdata_array = [&] (XMLElement& section,
                                             const std::string& name,
                                             const Field& field) {
+            static constexpr std::size_t vtk_space_dim = 3;
             XMLElement& arr = section.add_child("PDataArray");
             arr.set_attribute("Name", name);
             arr.set_attribute("type", VTK::attribute_name(field.precision()));
             arr.set_attribute("format", VTK::data_format_name(this->_xml_opts.encoder, this->_data_format()));
+            arr.set_attribute("NumberOfComponents", std::pow(vtk_space_dim, field.layout().dimension() - 1));
         };
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             _add_pdata_array(ppoint_data, name, this->_get_point_field(name));
