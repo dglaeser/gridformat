@@ -17,6 +17,7 @@
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/ranges.hpp>
 #include <gridformat/common/field.hpp>
 
 namespace GridFormat {
@@ -36,11 +37,23 @@ class FlatField : public Field {
     {}
 
  private:
+    template<std::ranges::forward_range _R, typename Action> requires(!has_sub_range<_R>)
+    void _visit_leaf_ranges(_R&& range, const Action& action) const {
+        action(range);
+    }
+
+    template<std::ranges::forward_range _R, typename Action> requires(has_sub_range<_R>)
+    void _visit_leaf_ranges(_R&& range, const Action& action) const {
+        std::ranges::for_each(range, [&] (const std::ranges::range auto& subrange) {
+            this->_visit_leaf_ranges(subrange, action);
+        });
+    }
+
     template<std::ranges::forward_range _R, std::invocable<RangeScalar> Action>
-    void _visit(_R&& range, const Action& action) const {
+    void _visit_scalars(_R&& range, const Action& action) const {
         if constexpr (has_sub_range<_R>)
             std::ranges::for_each(range, [&] (const std::ranges::range auto& subrange) {
-                this->_visit(subrange, action);
+                this->_visit_scalars(subrange, action);
             });
         else
             std::ranges::for_each(range, action);
@@ -48,7 +61,9 @@ class FlatField : public Field {
 
     std::size_t _number_of_entries() const {
         std::size_t count = 0;
-        _visit(_range, [&] (const RangeScalar&) { count++; });
+        _visit_leaf_ranges(_range, [&] (const std::ranges::range auto& r) {
+            count += Ranges::size(r);
+        });
         return count;
     }
 
@@ -72,7 +87,7 @@ class FlatField : public Field {
         Serialization serialization(_size_in_bytes());
         auto data = serialization.template as_span_of<ValueType>();
         std::size_t offset = 0;
-        _visit(_range, [&] (const RangeScalar& value) {
+        _visit_scalars(_range, [&] (const RangeScalar& value) {
             data[offset++] = static_cast<ValueType>(value);
         });
         return serialization;
