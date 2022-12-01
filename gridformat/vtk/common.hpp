@@ -114,7 +114,7 @@ requires(std::is_lvalue_reference_v<PointMap>)
             | std::views::transform([&] (const auto& cell) {
                 return points(grid, cell)
                     | std::views::transform([&] (const auto& point) {
-                        return map[id(grid, point)];
+                        return map.at(id(grid, point));
                     });
             })
     });
