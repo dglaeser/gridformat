@@ -28,6 +28,12 @@ inline int rank(const C& comm) {
     return ParallelTraits::Rank<C>::get(comm);
 }
 
+//! Return a barrier
+template<Concepts::Communicator C>
+inline int barrier(const C& comm) {
+    return ParallelTraits::Barrier<C>::get(comm);
+}
+
 //! \} group GrParallelid
 
 }  // namespace GridFormat::Parallel

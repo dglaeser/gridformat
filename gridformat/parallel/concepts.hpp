@@ -22,9 +22,11 @@ template<typename T>
 concept Communicator
     = is_complete<ParallelTraits::Size<T>>
     and is_complete<ParallelTraits::Rank<T>>
+    and is_complete<ParallelTraits::Barrier<T>>
     and requires(const T& t) {
         { ParallelTraits::Size<T>::get(t) } -> std::convertible_to<int>;
         { ParallelTraits::Rank<T>::get(t) } -> std::convertible_to<int>;
+        { ParallelTraits::Barrier<T>::get(t) } -> std::convertible_to<int>;
     };
 
 //! \} group Concepts
