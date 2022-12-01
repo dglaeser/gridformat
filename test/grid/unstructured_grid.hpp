@@ -202,32 +202,32 @@ namespace Traits {
 
 template<int space_dim>
 struct Points<Test::UnstructuredGrid<space_dim>> {
-    static decltype(auto) get(const Test::UnstructuredGrid<space_dim>& grid) {
-        return grid.points();
+    static std::ranges::range auto get(const Test::UnstructuredGrid<space_dim>& grid) {
+        return grid.points() | std::views::all;
     }
 };
 
 template<int space_dim>
 struct Cells<Test::UnstructuredGrid<space_dim>> {
-    static decltype(auto) get(const Test::UnstructuredGrid<space_dim>& grid) {
-        return grid.cells();
+    static std::ranges::range auto get(const Test::UnstructuredGrid<space_dim>& grid) {
+        return grid.cells() | std::views::all;
     }
 };
 
 template<int space_dim>
 struct PointCoordinates<Test::UnstructuredGrid<space_dim>,
                         typename Test::UnstructuredGrid<space_dim>::Point> {
-    static decltype(auto) get([[maybe_unused]] const Test::UnstructuredGrid<space_dim>& grid,
+    static std::ranges::range auto get([[maybe_unused]] const Test::UnstructuredGrid<space_dim>& grid,
                               const typename Test::UnstructuredGrid<space_dim>::Point& p) {
-        return p.coordinates;
+        return p.coordinates | std::views::all;
     }
 };
 
 template<int space_dim>
 struct PointId<Test::UnstructuredGrid<space_dim>,
                typename Test::UnstructuredGrid<space_dim>::Point> {
-    static decltype(auto) get([[maybe_unused]] const Test::UnstructuredGrid<space_dim>& grid,
-                              const typename Test::UnstructuredGrid<space_dim>::Point& p) {
+    static auto get([[maybe_unused]] const Test::UnstructuredGrid<space_dim>& grid,
+                    const typename Test::UnstructuredGrid<space_dim>::Point& p) {
         return p.id;
     }
 };
