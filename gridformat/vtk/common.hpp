@@ -109,14 +109,16 @@ auto make_connectivity_field(const Grid& grid,
                              PointMap&& map)
 requires(std::is_lvalue_reference_v<PointMap>)
 {
-    return make_vtk_field(FlatField{
-        std::forward<Cells>(cells)
-            | std::views::transform([&] (const auto& cell) {
-                return points(grid, cell)
-                    | std::views::transform([&] (const auto& point) {
-                        return map.at(id(grid, point));
-                    });
-            })
+    return make_vtk_field(
+        FlatField{
+            std::forward<Cells>(cells)
+                | std::views::transform([&] (const auto& cell) {
+                    return points(grid, cell)
+                        | std::views::transform([&] (const auto& point) {
+                            return map.at(id(grid, point));
+                        });
+        }),
+        Precision<HeaderType>{}
     });
 }
 
@@ -131,17 +133,20 @@ template<typename HeaderType = std::size_t,
          Concepts::UnstructuredGrid Grid,
          std::ranges::range Cells>
 auto make_offsets_field(const Grid& grid, Cells&& cells) {
-    return make_vtk_field(RangeField{AccumulatedRange{
-        std::forward<Cells>(cells)
-        | std::views::transform([&] (const Cell<Grid>& cell) {
-            return Ranges::size(points(grid, cell));
-        })
-    }});
+    return make_vtk_field(RangeField{
+        AccumulatedRange{
+            std::forward<Cells>(cells)
+            | std::views::transform([&] (const Cell<Grid>& cell) {
+                return Ranges::size(points(grid, cell));
+            })
+        },
+        Precision<HeaderType>{}
+    });
 }
 
 template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
 auto make_offsets_field(const Grid& grid) {
-    return make_offsets_field(grid, cells(grid));
+    return make_offsets_field<HeaderType>(grid, cells(grid));
 }
 
 template<Concepts::UnstructuredGrid Grid>
