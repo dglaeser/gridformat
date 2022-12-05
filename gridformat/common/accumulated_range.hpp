@@ -81,6 +81,10 @@ class AccumulatedRange {
     auto begin() const { return Iterator{_range}; }
     auto end() const { return Iterator{_range, true}; }
 
+    std::size_t size() const requires(std::ranges::sized_range<R>) {
+        return std::ranges::size(_range);
+    }
+
  private:
     R _range;
 };
