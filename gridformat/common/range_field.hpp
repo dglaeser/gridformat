@@ -83,11 +83,11 @@ class RangeField : public Field {
 
     void _fill(Serialization& serialization) const requires(!is_contiguous_result_range) {
         std::size_t offset = 0;
-        _fill_buffer(_range, serialization, offset);
+        _fill_buffer(_range, serialization.as_span().data(), offset);
     }
 
     void _fill_buffer(const std::ranges::range auto& r,
-                      Serialization& serialization,
+                      std::byte* serialization,
                       std::size_t& offset) const {
         std::ranges::for_each(r, [&] (const auto& entry) {
             _fill_buffer(entry, serialization, offset);
@@ -95,12 +95,13 @@ class RangeField : public Field {
     }
 
     void _fill_buffer(const Concepts::Scalar auto& value,
-                      Serialization& serialization,
+                      std::byte* serialization,
                       std::size_t& offset) const {
         const auto cast_value = static_cast<ValueType>(value);
-        std::ranges::copy(
-            std::as_bytes(std::span{&cast_value, 1}),
-            serialization.as_span().data() + offset
+        std::copy_n(
+            reinterpret_cast<const std::byte*>(&cast_value),
+            sizeof(ValueType),
+            serialization + offset
         );
         offset += sizeof(ValueType);
     }
