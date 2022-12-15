@@ -119,19 +119,23 @@ auto make_unstructured_0d() {
     };
 }
 
+
+// in 1d, use larger grids (easy to define/create) such that
+// we run in situations where we need to compress more than
+// one block when writing into compressed result files
 template<int space_dim = 1>
-auto make_unstructured_1d() {
-    return UnstructuredGrid<space_dim>{
-        {
-            Point<space_dim>::make_from_value(0.0, 0),
-            Point<space_dim>::make_from_value(1.0, 1),
-            Point<space_dim>::make_from_value(3.0, 2)
-        },
-        {
-            {{0, 1}, CellType::segment, 0},
-            {{1, 2}, CellType::segment, 1}
-        }
-    };
+auto make_unstructured_1d(std::size_t num_cells = 500) {
+    std::vector<Point<space_dim>> points;
+    points.reserve(num_cells + 1);
+    for (std::size_t i = 0; i < num_cells + 1; ++i)
+        points.emplace_back(Point<space_dim>::make_from_value(static_cast<double>(i), i));
+
+    std::vector<Cell> cells;
+    cells.reserve(num_cells);
+    for (std::size_t i = 0; i < num_cells; ++i)
+        cells.emplace_back(Cell{{i, i+1}, CellType::segment, i});
+
+    return UnstructuredGrid<space_dim>{std::move(points), std::move(cells)};
 }
 
 template<int space_dim = 2>
