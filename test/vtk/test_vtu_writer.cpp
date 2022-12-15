@@ -76,7 +76,9 @@ std::string encoder_name(const GridFormat::Encoding::RawBinary&) { return "raw";
 template<typename DataFormat, typename Encoder = GridFormat::Encoding::Base64>
 void write_with(const DataFormat& format, const Encoder& enc = GridFormat::Encoding::base64) {
     const auto _filename = [&] (const std::string& postfix) {
-        return "vtu_" + encoder_name(enc) + "_" + data_format_name(format) + "_" + postfix;
+        return "vtu_" + encoder_name(enc) + "_" + data_format_name(format) + (
+            postfix != "" ? "_" + postfix : ""
+        );
     };
 
     write<2, 2>(
