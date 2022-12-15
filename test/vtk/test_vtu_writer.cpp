@@ -60,9 +60,13 @@ void write_from_abstract_base(const XMLOptions& xml_opts,
 template<std::size_t dim, std::size_t space_dim>
 void write_default() {
     write<dim, space_dim>(
-        GridFormat::VTK::XMLOptions{},
+        GridFormat::VTK::XMLOptions{
+            .encoder = GridFormat::Encoding::base64,
+            .compressor = GridFormat::none,
+            .data_format = GridFormat::VTK::DataFormat::appended
+        },
         GridFormat::VTK::PrecisionOptions{},
-        "vtu_default"
+        std::string{"vtu_base64_appended"}
     );
 }
 
@@ -76,7 +80,9 @@ std::string encoder_name(const GridFormat::Encoding::RawBinary&) { return "raw";
 template<typename DataFormat, typename Encoder = GridFormat::Encoding::Base64>
 void write_with(const DataFormat& format, const Encoder& enc = GridFormat::Encoding::base64) {
     const auto _filename = [&] (const std::string& postfix) {
-        return "vtu_" + encoder_name(enc) + "_" + data_format_name(format) + "_" + postfix;
+        return "vtu_" + encoder_name(enc) + "_" + data_format_name(format) + (
+            postfix != "" ? "_" + postfix : ""
+        );
     };
 
     write<2, 2>(
@@ -108,6 +114,15 @@ void write_with(const DataFormat& format, const Encoder& enc = GridFormat::Encod
         _filename("from_base_writer")
     );
 #if GRIDFORMAT_HAVE_LZMA
+    write<1, 3>(
+        GridFormat::VTK::XMLOptions{
+            .encoder = enc,
+            .compressor = GridFormat::Compression::lzma,
+            .data_format = format
+        },
+        GridFormat::VTK::PrecisionOptions{.header_precision = GridFormat::uint32},
+        _filename("lzma_compression_custom_header_precision")
+    );
     write<2, 2>(
         GridFormat::VTK::XMLOptions{
             .encoder = enc,
@@ -130,6 +145,15 @@ void write_with(const DataFormat& format, const Encoder& enc = GridFormat::Encod
 #endif  // GRIDFORMAT_HAVE_LZMA
 
 #if GRIDFORMAT_HAVE_ZLIB
+    write<1, 3>(
+        GridFormat::VTK::XMLOptions{
+            .encoder = enc,
+            .compressor = GridFormat::Compression::zlib,
+            .data_format = format
+        },
+        GridFormat::VTK::PrecisionOptions{.header_precision = GridFormat::uint32},
+        _filename("zlib_compression_custom_header_precision")
+    );
     write<2, 2>(
         GridFormat::VTK::XMLOptions{
             .encoder = enc,
@@ -142,6 +166,15 @@ void write_with(const DataFormat& format, const Encoder& enc = GridFormat::Encod
 #endif  // GRIDFORMAT_HAVE_ZLIB
 
 #if GRIDFORMAT_HAVE_LZ4
+    write<1, 3>(
+        GridFormat::VTK::XMLOptions{
+            .encoder = enc,
+            .compressor = GridFormat::Compression::lz4,
+            .data_format = format
+        },
+        GridFormat::VTK::PrecisionOptions{.header_precision = GridFormat::uint32},
+        _filename("lz4_compression_custom_header_precision")
+    );
     write<2, 2>(
         GridFormat::VTK::XMLOptions{
             .encoder = enc,
