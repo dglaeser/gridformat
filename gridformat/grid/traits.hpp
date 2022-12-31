@@ -21,6 +21,14 @@ struct Points;
 template<typename Grid>
 struct Cells;
 
+//! Exposes the number of points in a grid via a static function `get(const Grid&)`
+template<typename Grid>
+struct NumberOfPoints;
+
+//! Exposes the number of cells in a grid via a static function `get(const Grid&)`
+template<typename Grid>
+struct NumberOfCells;
+
 //! Get the points of a cell via a static function `get(const Grid&, const Cell&)`
 template<typename Grid, typename Cell>
 struct CellPoints;

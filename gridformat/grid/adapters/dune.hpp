@@ -90,6 +90,21 @@ struct Cells<Dune::GridView<Traits>> {
 };
 
 template<typename Traits>
+struct NumberOfPoints<Dune::GridView<Traits>> {
+    static auto get(const Dune::GridView<Traits>& grid_view) {
+        static constexpr int point_codim = Dune::GridView<Traits>::dimension;
+        return grid_view.size(point_codim);
+    }
+};
+
+template<typename Traits>
+struct NumberOfCells<Dune::GridView<Traits>> {
+    static auto get(const Dune::GridView<Traits>& grid_view) {
+        return grid_view.size(0);
+    }
+};
+
+template<typename Traits>
 struct CellPoints<Dune::GridView<Traits>, DuneDetail::Element<Dune::GridView<Traits>>> {
     static decltype(auto) get(const Dune::GridView<Traits>&,
                               const DuneDetail::Element<Dune::GridView<Traits>>& element) {

@@ -69,6 +69,18 @@ namespace GridFormat::GridDetail {
         { Traits::CellPoints<T, Cell<T>>::get(grid, std::declval<const Cell<T>&>()) } -> Concepts::RangeOf<Point<T>>;
     };
 
+    template<typename T>
+    inline constexpr bool exposes_number_of_points
+        = is_complete<Traits::NumberOfPoints<T>> && requires(const T& grid) {
+            { Traits::NumberOfPoints<T>::get(grid) } -> std::convertible_to<std::size_t>;
+        };
+
+    template<typename T>
+    inline constexpr bool exposes_number_of_cells
+        = is_complete<Traits::NumberOfCells<T>> && requires(const T& grid) {
+            { Traits::NumberOfCells<T>::get(grid) } -> std::convertible_to<std::size_t>;
+        };
+
     template<typename F, typename Entity>
     using EntityFunctionValueType = std::decay_t<std::invoke_result_t<F, const std::decay_t<Entity>&>>;
 

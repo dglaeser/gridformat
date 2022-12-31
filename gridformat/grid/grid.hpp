@@ -56,11 +56,15 @@ std::ranges::range auto points(const Grid& grid, const Cell<Grid>& cell) {
 
 template<typename Grid>
 std::size_t number_of_cells(const Grid& grid) {
+    if constexpr (GridDetail::exposes_number_of_cells<Grid>)
+        return Traits::NumberOfCells<Grid>::get(grid);
     return Ranges::size(cells(grid));
 }
 
 template<typename Grid>
 std::size_t number_of_points(const Grid& grid) {
+    if constexpr (GridDetail::exposes_number_of_points<Grid>)
+        return Traits::NumberOfPoints<Grid>::get(grid);
     return Ranges::size(points(grid));
 }
 
