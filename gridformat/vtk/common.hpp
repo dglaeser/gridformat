@@ -21,6 +21,7 @@
 #include <gridformat/common/flat_field.hpp>
 #include <gridformat/common/field.hpp>
 
+#include <gridformat/grid/entity_fields.hpp>
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/concepts.hpp>
 #include <gridformat/grid/_detail.hpp>
@@ -92,10 +93,9 @@ FieldPtr make_vtk_field(F&& field) {
 
 template<typename ctype, typename Grid> requires(GridDetail::exposes_point_range<Grid>)
 auto make_coordinates_field(const Grid& grid) {
-    return make_vtk_field(RangeField{
-        points(grid) | std::views::transform([&] (const auto& point) {
-            return coordinates(grid, point);
-        }),
+    return make_vtk_field(PointField{
+        grid,
+        [&] (const auto& point) { return coordinates(grid, point); },
         Precision<ctype>{}
     });
 }
@@ -151,12 +151,11 @@ auto make_offsets_field(const Grid& grid) {
 
 template<Concepts::UnstructuredGrid Grid>
 auto make_cell_types_field(const Grid& grid) {
-    return make_vtk_field(RangeField{
-        cells(grid)
-            | std::views::all
-            | std::views::transform([&] (const auto& cell) {
-                return VTK::cell_type_number(type(grid, cell));
-            })
+    return make_vtk_field(CellField{
+        grid,
+        [&] (const auto& cell) {
+            return VTK::cell_type_number(type(grid, cell));
+        }
     });
 }
 
