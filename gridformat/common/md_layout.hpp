@@ -29,6 +29,8 @@ namespace GridFormat {
  */
 class MDLayout {
  public:
+    MDLayout() = default;
+
     template<std::ranges::forward_range R>
     explicit MDLayout(R&& extents) {
         _extents.reserve(Ranges::size(extents));
@@ -68,6 +70,10 @@ class MDLayout {
             _extents.begin() + codim,
             _extents.end()
         }};
+    }
+
+    bool is_scalar() const {
+        return _extents.size() == 0;
     }
 
     bool operator==(const MDLayout& other) const {
@@ -144,7 +150,7 @@ MDLayout get_md_layout(R&& r) {
  */
 template<Concepts::Scalar T>
 MDLayout get_md_layout(const T&) {
-    return MDLayout{std::array<std::size_t, 1>{1}};
+    return MDLayout{};
 }
 
 }  // namespace GridFormat
