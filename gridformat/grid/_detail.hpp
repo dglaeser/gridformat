@@ -26,7 +26,10 @@ namespace GridFormat::GridDetail {
     };
 
     template<typename Grid, EntityRange<Grid> Range>
-    using Entity = std::decay_t<decltype(*std::ranges::begin(Range::get(std::declval<const Grid&>())))>;
+    using EntityReference = decltype(*std::ranges::begin(Range::get(std::declval<const Grid&>())));
+
+    template<typename Grid, EntityRange<Grid> Range>
+    using Entity = std::decay_t<EntityReference<Grid, Range>>;
 
     template<typename T>
     inline constexpr bool exposes_point_range = is_complete<Traits::Points<T>> && EntityRange<Traits::Points<T>, T>;
@@ -37,8 +40,14 @@ namespace GridFormat::GridDetail {
     template<typename Grid> requires(exposes_point_range<Grid>)
     using Point = Entity<Grid, Traits::Points<Grid>>;
 
+    template<typename Grid> requires(exposes_point_range<Grid>)
+    using PointReference = EntityReference<Grid, Traits::Points<Grid>>;
+
     template<typename Grid> requires(exposes_cell_range<Grid>)
     using Cell = Entity<Grid, Traits::Cells<Grid>>;
+
+    template<typename Grid> requires(exposes_cell_range<Grid>)
+    using CellReference = EntityReference<Grid, Traits::Cells<Grid>>;
 
     template<typename T>
     inline constexpr bool exposes_point_coordinates
