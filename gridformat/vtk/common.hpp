@@ -11,14 +11,12 @@
 #include <cassert>
 #include <utility>
 #include <type_traits>
+#include <algorithm>
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/ranges.hpp>
-#include <gridformat/common/accumulated_range.hpp>
 #include <gridformat/common/field_transformations.hpp>
-#include <gridformat/common/range_field.hpp>
-#include <gridformat/common/flat_field.hpp>
 #include <gridformat/common/field.hpp>
 
 #include <gridformat/grid/entity_fields.hpp>
@@ -109,17 +107,44 @@ auto make_connectivity_field(const Grid& grid,
                              PointMap&& map)
 requires(std::is_lvalue_reference_v<PointMap>)
 {
-    return make_vtk_field(
-        FlatField{
-            std::forward<Cells>(cells)
-                | std::views::transform([&] (const auto& cell) {
-                    return points(grid, cell)
-                        | std::views::transform([&] (const auto& point) {
-                            return map.at(id(grid, point));
-                        });
-        }),
-        Precision<HeaderType>{}
-    });
+    class ConnectivityField : public Field {
+     public:
+        explicit ConnectivityField(const Grid& g,
+                                   Cells&& cells,
+                                   PointMap&& map)
+        : _grid(g)
+        , _cells{std::forward<Cells>(cells)}
+        , _point_map{std::forward<PointMap>(map)} {
+            _num_values = 0;
+            std::ranges::for_each(_cells, [&] (const auto& cell) {
+                _num_values += number_of_points(_grid, cell);
+            });
+        }
+
+     private:
+        MDLayout _layout() const override { return MDLayout{{_num_values}}; }
+        DynamicPrecision _precision() const override { return Precision<HeaderType>{}; }
+        Serialization _serialized() const override {
+            Serialization serialization(sizeof(HeaderType)*_num_values);
+            HeaderType* data = serialization.as_span_of<HeaderType>().data();
+
+            std::size_t i = 0;
+            std::ranges::for_each(_cells, [&] (const auto& cell) {
+                std::ranges::for_each(points(_grid, cell), [&] (const auto& point) {
+                    data[i] = _point_map.at(id(_grid, point));
+                    i++;
+                });
+            });
+            return serialization;
+        }
+
+        const Grid& _grid;
+        std::conditional_t<std::is_lvalue_reference_v<Cells>, Cells&, std::decay_t<Cells>> _cells;
+        std::conditional_t<std::is_lvalue_reference_v<PointMap>, PointMap&, std::decay_t<PointMap>> _point_map;
+        HeaderType _num_values;
+    } _field{grid, std::forward<Cells>(cells), std::forward<PointMap>(map)};
+
+    return make_vtk_field(std::move(_field));
 }
 
 template<typename HeaderType = std::size_t,
@@ -133,15 +158,37 @@ template<typename HeaderType = std::size_t,
          Concepts::UnstructuredGrid Grid,
          std::ranges::range Cells>
 auto make_offsets_field(const Grid& grid, Cells&& cells) {
-    return make_vtk_field(RangeField{
-        AccumulatedRange{
-            std::forward<Cells>(cells)
-            | std::views::transform([&] (const Cell<Grid>& cell) {
-                return Ranges::size(points(grid, cell));
-            })
-        },
-        Precision<HeaderType>{}
-    });
+    class OffsetField : public Field {
+     public:
+        explicit OffsetField(const Grid& g, Cells&& cells)
+        : _grid(g)
+        , _cells{std::forward<Cells>(cells)}
+        , _num_cells{static_cast<HeaderType>(Ranges::size(_cells))}
+        {}
+
+     private:
+        MDLayout _layout() const override { return MDLayout{{_num_cells}}; }
+        DynamicPrecision _precision() const override { return Precision<HeaderType>{}; }
+        Serialization _serialized() const override {
+            Serialization serialization(sizeof(HeaderType)*_num_cells);
+            HeaderType* data = serialization.as_span_of<HeaderType>().data();
+
+            std::size_t i = 0;
+            HeaderType offset = 0;
+            std::ranges::for_each(_cells, [&] (const auto& cell) {
+                offset += number_of_points(_grid, cell);
+                data[i] = offset;
+                i++;
+            });
+            return serialization;
+        }
+
+        const Grid& _grid;
+        std::conditional_t<std::is_lvalue_reference_v<Cells>, Cells&, std::decay_t<Cells>> _cells;
+        HeaderType _num_cells;
+    } _field{grid, std::forward<Cells>(cells)};
+
+    return make_vtk_field(std::move(_field));
 }
 
 template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
