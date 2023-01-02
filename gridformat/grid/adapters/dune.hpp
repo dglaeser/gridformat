@@ -117,12 +117,7 @@ struct CellPoints<Dune::GridView<Traits>, DuneDetail::Element<Dune::GridView<Tra
     static decltype(auto) get(const Dune::GridView<Traits>&,
                               const DuneDetail::Element<Dune::GridView<Traits>>& element) {
         static constexpr int dim = Dune::GridView<Traits>::dimension;
-        return std::views::transform(
-            std::views::iota(unsigned{0}, element.subEntities(dim)),
-            [elem=element] (int i) {
-                return elem.template subEntity<dim>(DuneDetail::map_corner_index(elem.type(), i));
-            }
-        );
+        return subEntities(element, Dune::Codim<dim>{});
     }
 };
 
