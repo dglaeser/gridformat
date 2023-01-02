@@ -19,9 +19,7 @@
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/concepts.hpp>
-
 #include <gridformat/common/field_storage.hpp>
-#include <gridformat/common/range_field.hpp>
 
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/grid/entity_fields.hpp>
