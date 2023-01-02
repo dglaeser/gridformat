@@ -129,19 +129,24 @@ class ExtendedField : public Field {
         const auto orig_layout = _field->layout();
         const auto new_layout = _extended_layout(orig_layout);
 
-        const auto orig_sub_sizes = _sub_sizes(orig_layout);
-        const auto new_sub_sizes = _sub_sizes(new_layout);
-
         auto serialization = _field->serialized();
+        if (orig_layout == new_layout)
+            return serialization;
+
+        MDIndexMapWalk index_walk{orig_layout, new_layout};
+        index_walk.set_direction(MDIndexMapWalk::backward);
+
         _field->precision().visit([&] <typename T> (const Precision<T>&) {
             serialization.resize(new_layout.number_of_entries()*sizeof(T), typename Serialization::Byte{0});
             const auto data = serialization.template as_span_of<T>();
-            for (const auto& index : reversed_indices(orig_layout)) {
-                const auto orig_flat_index = Detail::flat_index_from_sub_sizes(index, orig_sub_sizes);
-                const auto new_flat_index = Detail::flat_index_from_sub_sizes(index, new_sub_sizes);
-                assert(orig_flat_index < data.size());
-                assert(new_flat_index < data.size());
-                std::swap(data[orig_flat_index], data[new_flat_index]);
+            while (!index_walk.is_finished()) {
+                assert(index_walk.source_index_flat() < data.size());
+                assert(index_walk.target_index_flat() < data.size());
+                std::swap(
+                    data[index_walk.source_index_flat()],
+                    data[index_walk.target_index_flat()]
+                );
+                index_walk.next();
             }
         });
         return serialization;

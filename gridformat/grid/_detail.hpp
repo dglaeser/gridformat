@@ -26,7 +26,10 @@ namespace GridFormat::GridDetail {
     };
 
     template<typename Grid, EntityRange<Grid> Range>
-    using Entity = std::decay_t<decltype(*std::ranges::begin(Range::get(std::declval<const Grid&>())))>;
+    using EntityReference = decltype(*std::ranges::begin(Range::get(std::declval<const Grid&>())));
+
+    template<typename Grid, EntityRange<Grid> Range>
+    using Entity = std::decay_t<EntityReference<Grid, Range>>;
 
     template<typename T>
     inline constexpr bool exposes_point_range = is_complete<Traits::Points<T>> && EntityRange<Traits::Points<T>, T>;
@@ -37,8 +40,14 @@ namespace GridFormat::GridDetail {
     template<typename Grid> requires(exposes_point_range<Grid>)
     using Point = Entity<Grid, Traits::Points<Grid>>;
 
+    template<typename Grid> requires(exposes_point_range<Grid>)
+    using PointReference = EntityReference<Grid, Traits::Points<Grid>>;
+
     template<typename Grid> requires(exposes_cell_range<Grid>)
     using Cell = Entity<Grid, Traits::Cells<Grid>>;
+
+    template<typename Grid> requires(exposes_cell_range<Grid>)
+    using CellReference = EntityReference<Grid, Traits::Cells<Grid>>;
 
     template<typename T>
     inline constexpr bool exposes_point_coordinates
@@ -68,6 +77,24 @@ namespace GridFormat::GridDetail {
         = is_complete<Traits::CellPoints<T, Cell<T>>> && requires(const T& grid) {
         { Traits::CellPoints<T, Cell<T>>::get(grid, std::declval<const Cell<T>&>()) } -> Concepts::RangeOf<Point<T>>;
     };
+
+    template<typename T>
+    inline constexpr bool exposes_number_of_points
+        = is_complete<Traits::NumberOfPoints<T>> && requires(const T& grid) {
+            { Traits::NumberOfPoints<T>::get(grid) } -> std::convertible_to<std::size_t>;
+        };
+
+    template<typename T>
+    inline constexpr bool exposes_number_of_cells
+        = is_complete<Traits::NumberOfCells<T>> && requires(const T& grid) {
+            { Traits::NumberOfCells<T>::get(grid) } -> std::convertible_to<std::size_t>;
+        };
+
+    template<typename T>
+    inline constexpr bool exposes_number_of_cell_corners
+        = is_complete<Traits::NumberOfCellCorners<T>> && requires(const T& grid, const Cell<T>& cell) {
+            { Traits::NumberOfCellCorners<T>::get(grid, cell) } -> std::convertible_to<std::size_t>;
+        };
 
     template<typename F, typename Entity>
     using EntityFunctionValueType = std::decay_t<std::invoke_result_t<F, const std::decay_t<Entity>&>>;

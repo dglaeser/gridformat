@@ -23,7 +23,7 @@ int main() {
     "md_layout_scalar"_test = [] () {
         const auto layout = GridFormat::get_md_layout(double{});
         expect(eq(layout.number_of_entries(), std::size_t{1}));
-        expect(eq(layout.dimension(), std::size_t{1}));
+        expect(eq(layout.dimension(), std::size_t{0}));
     };
 
     "md_layout_vector"_test = [] () {
