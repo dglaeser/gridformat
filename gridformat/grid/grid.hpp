@@ -69,6 +69,13 @@ std::size_t number_of_points(const Grid& grid) {
 }
 
 template<typename Grid>
+std::size_t number_of_points(const Grid& grid, const Cell<Grid>& cell) {
+    if constexpr (GridDetail::exposes_number_of_cell_corners<Grid>)
+        return Traits::NumberOfCellCorners<Grid>::get(grid, cell);
+    return Ranges::size(points(grid, cell));
+}
+
+template<typename Grid>
 std::unordered_map<std::size_t, std::size_t> make_point_id_map(const Grid& grid) {
     std::size_t i = 0;
     std::unordered_map<std::size_t, std::size_t> point_id_to_running_idx;

@@ -90,6 +90,12 @@ namespace GridFormat::GridDetail {
             { Traits::NumberOfCells<T>::get(grid) } -> std::convertible_to<std::size_t>;
         };
 
+    template<typename T>
+    inline constexpr bool exposes_number_of_cell_corners
+        = is_complete<Traits::NumberOfCellCorners<T>> && requires(const T& grid, const Cell<T>& cell) {
+            { Traits::NumberOfCellCorners<T>::get(grid, cell) } -> std::convertible_to<std::size_t>;
+        };
+
     template<typename F, typename Entity>
     using EntityFunctionValueType = std::decay_t<std::invoke_result_t<F, const std::decay_t<Entity>&>>;
 
