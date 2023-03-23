@@ -43,10 +43,6 @@ int main() {
     static_assert(GridFormat::Concepts::Streamable<Streamable, std::ostream>);
     static_assert(!GridFormat::Concepts::Streamable<NonStreamable, std::ostream>);
 
-    static_assert(GridFormat::Concepts::FormattedOutputStream<std::ostream, double>);
-    static_assert(GridFormat::Concepts::FormattedOutputStream<std::ostream, Streamable>);
-    static_assert(!GridFormat::Concepts::FormattedOutputStream<std::ostream, NonStreamable>);
-
     static_assert(!GridFormat::Concepts::OutputStream<std::ostream, int>);
     static_assert(GridFormat::Concepts::OutputStream<MyStream, double>);
     static_assert(GridFormat::Concepts::OutputStream<MyStream, int>);

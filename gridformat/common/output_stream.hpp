@@ -72,8 +72,7 @@ class OutputStreamWrapperBase {
     {}
 
  protected:
-    template<typename T>
-    requires(Concepts::FormattedOutputStream<OStream, T>)
+    template<Concepts::Streamable<OStream> T>
     void _write_formatted(const T& t) {
         _stream << t;
     }

@@ -36,9 +36,6 @@ concept Streamable = requires(const T& t, Stream& s) {
 };
 
 template<typename T, typename Data>
-concept FormattedOutputStream = Streamable<Data, T>;
-
-template<typename T, typename Data>
 concept OutputStream = requires(T& t, std::span<std::add_const_t<Data>>& data) {
     { t.write(data) };
 };
