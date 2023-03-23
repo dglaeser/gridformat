@@ -112,7 +112,7 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
 
     template<typename Predicate>
     std::ranges::forward_range auto _get_cell_range(Predicate&& pred) const {
-        return FilteredRange{cells(this->grid()), std::forward<Predicate>(pred)};
+        return Ranges::filter_by(std::forward<Predicate>(pred), cells(this->grid()));
     }
 };
 
