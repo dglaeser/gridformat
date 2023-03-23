@@ -23,11 +23,7 @@ namespace GridFormat {
  * \brief Represents a precision known at compile-time
  */
 template<Concepts::Scalar T>
-struct Precision {
-    static constexpr bool is_integral = std::is_integral_v<T>;
-    static constexpr bool is_signed = std::is_signed_v<T>;
-    static constexpr std::size_t number_of_bytes = sizeof(T);
-};
+struct Precision {};
 
 inline constexpr Precision<float> float32;
 inline constexpr Precision<double> float64;
