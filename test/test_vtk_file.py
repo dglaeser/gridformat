@@ -179,6 +179,7 @@ def test(filename: str) -> None:
             else:
                 _test_vtk(timestep.filename, _TestFunction(float(timestep.time)))
     elif ext == ".pvtu":
+        print(f"Comparing pvtu file {filename}")
         for piece in _read_pvtu_pieces(filename):
             print(f"Comparing piece '{piece}'")
             _test_vtk(piece, _TestFunction())
