@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <array>
 #include <vector>
 #include <memory>
 #include <ranges>
@@ -135,7 +136,7 @@ int main() {
     "transformed_field_extend"_test = [] () {
         auto field_ptr = GridFormat::make_shared(
             RangeField{
-                std::vector<std::vector<int>>{{2, 3}, {4, 5}},
+                std::vector<std::array<int, 2>>{{2, 3}, {4, 5}},
                 GridFormat::Precision<double>{}
             }
         );
@@ -155,7 +156,7 @@ int main() {
     "transformed_field_extend_all"_test = [] () {
         auto field_ptr = GridFormat::make_shared(
             RangeField{
-                std::vector<std::vector<int>>{{2, 3}, {4, 5}},
+                std::vector<std::array<int, 2>>{{2, 3}, {4, 5}},
                 GridFormat::Precision<double>{}
             }
         );
@@ -174,7 +175,7 @@ int main() {
     "transformed_field_extend_flatten"_test = [] () {
         auto field_ptr = GridFormat::make_shared(
             RangeField{
-                std::vector<std::vector<int>>{{2, 3}, {4, 5}},
+                std::vector<std::array<int, 2>>{{2, 3}, {4, 5}},
                 GridFormat::Precision<double>{}
             }
         );
