@@ -55,11 +55,6 @@ int main() {
     static_assert(GridFormat::mdrange_dimension<std::vector<std::vector<int>>> == 2);
     static_assert(GridFormat::mdrange_dimension<std::vector<std::vector<std::vector<int>>>> == 3);
 
-    static_assert(GridFormat::mdrange_models<std::vector<int>, IsForwardRange>);
-    static_assert(GridFormat::mdrange_models<std::vector<int>, IsRandomAccessRange>);
-    static_assert(GridFormat::mdrange_models<std::list<int>, IsForwardRange>);
-    static_assert(!GridFormat::mdrange_models<std::list<int>, IsRandomAccessRange>);
-
     static_assert(GridFormat::is_incomplete<Incomplete<double>>);
     static_assert(!GridFormat::is_complete<Incomplete<double>>);
     static_assert(!GridFormat::is_incomplete<Incomplete<Foo>>);

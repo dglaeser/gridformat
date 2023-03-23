@@ -95,31 +95,6 @@ inline constexpr std::size_t mdrange_dimension = Detail::MDRangeDimension<R>::va
 #ifndef DOXYGEN
 namespace Detail {
 
-    template<typename T, template<typename> typename Model>
-    struct MDRangeModels : public std::false_type {};
-
-    template<std::ranges::range R, template<typename> typename Model>
-    struct MDRangeModels<R, Model> {
-        static constexpr bool value
-            = Model<R>::value
-            && MDRangeModels<std::ranges::range_value_t<R>, Model>::value;
-    };
-
-    template<std::ranges::range R, template<typename> typename Model> requires(mdrange_dimension<R> == 1)
-    struct MDRangeModels<R, Model> {
-        static constexpr bool value = Model<R>::value;
-    };
-
-}  // namespace Detail
-#endif  // DOXYGEN
-
-template<std::ranges::range R, template<typename> typename Model>
-inline constexpr bool mdrange_models = Detail::MDRangeModels<R, Model>::value;
-
-
-#ifndef DOXYGEN
-namespace Detail {
-
     template<typename T, std::size_t s = sizeof(T)>
     std::false_type isIncomplete(T*);
     std::true_type isIncomplete(...);
