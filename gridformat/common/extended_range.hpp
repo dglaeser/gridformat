@@ -24,16 +24,13 @@ namespace GridFormat {
 
 /*!
  * \ingroup Common
- * \brief Extends a given range up to the given target
- *        dimension by apppending the given value.
+ * \brief Extends a given range by the specified number of elements and the given value.
  */
 template<std::ranges::forward_range R>
 class ExtendedRange {
     using ValueType = std::ranges::range_value_t<R>;
 
     class Iterator : public ForwardIteratorFacade<Iterator, ValueType, ValueType> {
-        using ConstRange = std::add_const_t<std::decay_t<R>>;
-
      public:
         Iterator() = default;
         explicit Iterator(const ExtendedRange& ext, bool is_end = false)
@@ -92,6 +89,16 @@ class ExtendedRange {
     auto begin() const { return Iterator{*this,}; }
     auto end() const { return Iterator{*this, true}; }
 
+    ExtendedRange& with_value(ValueType v) & {
+        _value = v;
+        return *this;
+    }
+
+    ExtendedRange&& with_value(ValueType v) && {
+        _value = v;
+        return std::move(*this);
+    }
+
  private:
     R _range;
     ValueType _value;
@@ -103,6 +110,14 @@ ExtendedRange(R&&, std::size_t, std::ranges::range_value_t<R> = {}) -> ExtendedR
 template<std::ranges::range R> requires(std::is_lvalue_reference_v<R>)
 ExtendedRange(R&&, std::size_t, std::ranges::range_value_t<R> = {}) -> ExtendedRange<std::remove_reference_t<R>&>;
 
+namespace Ranges {
+
+template<std::ranges::range R, >
+auto extend_by(std::size_t n, R&& range) {
+    return ExtendedRange{std::forward<R>(range), n};
+}
+
+}  // namespace Ranges
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_COMMON_EXTENDED_RANGE_HPP_
