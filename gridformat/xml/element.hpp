@@ -48,7 +48,7 @@ class XMLElement : public XMLTag {
         virtual std::any get_as_any() const = 0;
     };
 
-    template<Concepts::Streamable<std::ostream> C>
+    template<Concepts::StreamableWith<std::ostream> C>
     struct ContentImpl : public Content {
         explicit ContentImpl(C&& c)
         : _c(std::forward<C>(c))
@@ -133,7 +133,7 @@ class XMLElement : public XMLTag {
         return _children.size();
     }
 
-    template<Concepts::Streamable<std::ostream> C>
+    template<Concepts::StreamableWith<std::ostream> C>
     void set_content(C&& content) {
         _content = std::make_unique<ContentImpl<C>>(std::forward<C>(content));
     }

@@ -31,14 +31,17 @@ template<typename T1, typename T2>
 concept Interoperable = std::is_convertible_v<T1, T2> || std::is_convertible_v<T2, T1>;
 
 template<typename T, typename Stream>
-concept Streamable = requires(const T& t, Stream& s) {
+concept StreamableWith = requires(const T& t, Stream& s) {
     { s << t } -> std::same_as<Stream&>;
 };
 
 template<typename T, typename Data>
-concept OutputStream = requires(T& t, std::span<std::add_const_t<Data>>& data) {
+concept WriterFor = requires(T& t, Data data) {
     { t.write(data) };
 };
+
+template<typename T, typename Writer>
+concept WritableWith = WriterFor<Writer, T>;
 
 template<typename T, typename ValueType>
 concept RangeOf = std::ranges::range<T> and std::convertible_to<std::ranges::range_value_t<T>, ValueType>;

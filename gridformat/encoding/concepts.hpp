@@ -9,6 +9,7 @@
 #define GRIDFORMAT_ENCODING_CONCEPTS_HPP_
 
 #include <cstddef>
+#include <span>
 
 #include <gridformat/common/concepts.hpp>
 
@@ -17,10 +18,11 @@ namespace GridFormat::Concepts {
 //! \addtogroup Encoding
 //! \{
 
-//! Encoders allow wrapping of output streams
+//! Encoders allow wrapping of an output stream, yielding
+//! a stream that allows writing spans of data to it
 template<typename T, typename S>
 concept Encoder = requires(const T& encoder, S& stream) {
-    { encoder(stream) } -> OutputStream<const std::byte>;
+    { encoder(stream) } -> WriterFor<std::span<const std::byte>>;
 };
 
 //! \} group Encoding
