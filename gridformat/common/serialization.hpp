@@ -10,8 +10,9 @@
 
 #include <vector>
 #include <cstddef>
-#include <cassert>
 #include <span>
+
+#include <gridformat/common/exceptions.hpp>
 
 namespace GridFormat {
 
@@ -36,13 +37,13 @@ class Serialization {
 
     template<typename T>
     std::span<T> as_span_of() {
-        assert(_data.size()%sizeof(T) == 0);
+        _check_valid_cast<T>();
         return std::span{reinterpret_cast<T*>(_data.data()), _data.size()/sizeof(T)};
     }
 
     template<typename T>
     std::span<std::add_const_t<T>> as_span_of() const {
-        assert(_data.size()%sizeof(T) == 0);
+        _check_valid_cast<T>();
         return std::span{reinterpret_cast<std::add_const_t<T>*>(_data.data()), _data.size()/sizeof(T)};
     }
 
@@ -50,6 +51,12 @@ class Serialization {
     operator std::span<std::byte>() { return {_data}; }
 
  private:
+    template<typename T>
+    void _check_valid_cast() const {
+        if (_data.size()%sizeof(T) != 0)
+            throw TypeError("Cannot cast to span of given type, size mismatch");
+    }
+
     std::vector<std::byte> _data;
 };
 
