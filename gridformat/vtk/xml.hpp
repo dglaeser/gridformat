@@ -113,11 +113,19 @@ namespace Detail {
     struct HeaderPrecision<PrecisionOptions<C, H>> : public PrecisionType<H> {};
 
     template<typename XMLOpts>
-    inline constexpr bool is_valid_data_format
-        = !(std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::Ascii> &&
-            std::is_same_v<typename DataFormat<XMLOpts>::type, VTK::DataFormat::Appended>)
-        && !(std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::RawBinary> &&
-            std::is_same_v<typename DataFormat<XMLOpts>::type, VTK::DataFormat::Inlined>);
+    inline constexpr bool check_valid_data_format() {
+        static_assert(
+            std::is_same_v<typename DataFormat<XMLOpts>::type, VTK::DataFormat::Inlined> ||
+            !std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::Ascii>,
+            "Ascii encoding can only be used with inline data formatting, please choose VTK::DataFormat::Inlined"
+        );
+        static_assert(
+            std::is_same_v<typename DataFormat<XMLOpts>::type, VTK::DataFormat::Appended> ||
+            !std::is_same_v<typename Encoding<XMLOpts>::type, GridFormat::Encoding::RawBinary>,
+            "Raw binary encoding can only be used with appended data format, please choose VTK::DataFormat::Appended"
+        );
+        return true;
+    }
 
     template<typename Opts, typename Grid>
     using CoordinateType = std::conditional_t<
@@ -146,10 +154,7 @@ template<Concepts::Grid G,
 class XMLWriterBase : public GridWriter<G> {
     using ParentType = GridWriter<G>;
 
-    static_assert(
-        Detail::is_valid_data_format<XMLOpts>,
-        "Incompatible choice of encoding (ascii/base64/binary) and data format (inlined/appended)"
-    );
+    static_assert(Detail::check_valid_data_format<XMLOpts>());
 
     static constexpr bool use_ascii = is_any_of<
         typename Detail::Encoding<XMLOpts>::type,
