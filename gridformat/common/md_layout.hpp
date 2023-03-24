@@ -113,15 +113,45 @@ namespace Detail {
 
 /*!
  * \ingroup Common
+ * \brief Get the layout of a range (or a scalar) whose size is known at compile-time
+ */
+template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
+constexpr MDLayout get_md_layout() {
+    if constexpr (Concepts::Scalar<T>)
+        return MDLayout{};
+    else {
+        std::array<std::size_t, mdrange_dimension<T>> extents;
+        extents[0] = StaticSize<T>::value;
+        if constexpr (mdrange_dimension<T> > 1)
+            Detail::set_sub_extents<std::ranges::range_value_t<T>>(extents.begin() + 1);
+        return MDLayout{extents};
+    }
+}
+
+/*!
+ * \ingroup Common
+ * \brief Get the layout for a range consisting of n instances of the range (or scalar)
+ *        given as template argument, whose size is known at compile-time.
+ */
+template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
+constexpr MDLayout get_md_layout(std::size_t n) {
+    if constexpr (Concepts::Scalar<T>)
+        return MDLayout{{n}};
+    else {
+        std::array<std::size_t, mdrange_dimension<T> + 1> extents;
+        extents[0] = n;
+        Detail::set_sub_extents<T>(extents.begin() + 1);
+        return MDLayout{extents};
+    }
+}
+
+/*!
+ * \ingroup Common
  * \brief Get the multi-dimensional layout for the given range
  */
 template<std::ranges::range R>
-MDLayout get_md_layout(R&& r) {
-    std::array<std::size_t, mdrange_dimension<R>> extents;
-    extents[0] = Ranges::size(r);
-    if constexpr (mdrange_dimension<R> > 1)
-        Detail::set_sub_extents<std::ranges::range_value_t<R>>(extents.begin() + 1);
-    return MDLayout{extents};
+constexpr MDLayout get_md_layout(R&& r) {
+    return get_md_layout<std::ranges::range_value_t<R>>(Ranges::size(r));
 }
 
 /*!
@@ -129,7 +159,7 @@ MDLayout get_md_layout(R&& r) {
  * \brief Overload for scalars
  */
 template<Concepts::Scalar T>
-MDLayout get_md_layout(const T&) {
+constexpr MDLayout get_md_layout(const T&) {
     return MDLayout{};
 }
 

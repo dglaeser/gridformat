@@ -18,6 +18,7 @@
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
+#include <gridformat/common/ranges.hpp>
 #include <gridformat/common/field.hpp>
 
 #include <gridformat/grid/_detail.hpp>
@@ -63,6 +64,8 @@ template<Concepts::Grid Grid,
          Concepts::PointFunction<Grid> FieldFunction,
          Concepts::Scalar ValueType = GridDetail::PointFunctionScalarType<Grid, FieldFunction>>
 class PointField : public Field {
+    using FieldType = GridDetail::PointFunctionValueType<Grid, FieldFunction>;
+
  public:
     explicit PointField(const Grid& grid,
                         FieldFunction&& field_function,
@@ -81,16 +84,7 @@ class PointField : public Field {
     }
 
     MDLayout _layout() const override {
-        const auto& first_point = *std::ranges::begin(points(_grid));
-        const auto sub_layout = get_md_layout(_field_function(first_point));
-        if (sub_layout.is_scalar())
-            return MDLayout{{number_of_points(_grid)}};
-
-        std::vector<std::size_t> extents(sub_layout.dimension() + 1);
-        extents[0] = number_of_points(_grid);
-        for (std::size_t i = 0; i < sub_layout.dimension(); ++i)
-            extents[i+1] = sub_layout.extent(i);
-        return MDLayout{extents};
+        return get_md_layout<FieldType>(number_of_points(_grid));
     }
 
     DynamicPrecision _precision() const override {
@@ -124,6 +118,8 @@ template<typename Grid,
          Concepts::CellFunction<Grid> FieldFunction,
          Concepts::Scalar ValueType = GridDetail::CellFunctionScalarType<Grid, FieldFunction>>
 class CellField : public Field {
+    using FieldType = GridDetail::CellFunctionValueType<Grid, FieldFunction>;
+
  public:
     explicit CellField(const Grid& grid,
                        FieldFunction&& field_function,
@@ -142,16 +138,7 @@ class CellField : public Field {
     }
 
     MDLayout _layout() const override {
-        const auto& first_cell = *std::ranges::begin(cells(_grid));
-        const auto sub_layout = get_md_layout(_field_function(first_cell));
-        if (sub_layout.is_scalar())
-            return MDLayout{{number_of_cells(_grid)}};
-
-        std::vector<std::size_t> extents(sub_layout.dimension() + 1);
-        extents[0] = number_of_cells(_grid);
-        for (std::size_t i = 0; i < sub_layout.dimension(); ++i)
-            extents[i+1] = sub_layout.extent(i);
-        return MDLayout{extents};
+        return get_md_layout<FieldType>(number_of_cells(_grid));
     }
 
     DynamicPrecision _precision() const override {

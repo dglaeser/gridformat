@@ -221,9 +221,9 @@ struct Cells<Test::UnstructuredGrid<space_dim>> {
 template<int space_dim>
 struct PointCoordinates<Test::UnstructuredGrid<space_dim>,
                         typename Test::UnstructuredGrid<space_dim>::Point> {
-    static std::ranges::range auto get([[maybe_unused]] const Test::UnstructuredGrid<space_dim>& grid,
-                              const typename Test::UnstructuredGrid<space_dim>::Point& p) {
-        return p.coordinates | std::views::all;
+    static const auto& get([[maybe_unused]] const Test::UnstructuredGrid<space_dim>& grid,
+                           const typename Test::UnstructuredGrid<space_dim>::Point& p) {
+        return p.coordinates;
     }
 };
 
