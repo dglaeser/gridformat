@@ -95,7 +95,7 @@ struct Ascii {
         return AsciiOutputStream{s};
     }
 
-    auto with(AsciiFormatOptions opts) const {
+    static auto with(AsciiFormatOptions opts) {
         return AsciiWithOptions{std::move(opts)};
     }
 };

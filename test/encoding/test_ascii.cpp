@@ -25,7 +25,7 @@ int main() {
     "ascii_encoded_formatted_stream"_test = [] () {
         std::ostringstream s;
         std::vector<int> v{1, 2, 3, 42};
-        auto ascii_stream = GridFormat::Encoding::ascii.with({.delimiter = ","})(s);
+        auto ascii_stream = GridFormat::Encoding::Ascii::with({.delimiter = ","})(s);
         ascii_stream.write(std::span{v});
         expect(eq(s.str(), std::string{"1,2,3,42,"}));
     };
