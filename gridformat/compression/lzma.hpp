@@ -62,6 +62,10 @@ class LZMA {
         return blocks;
     }
 
+    static LZMA with(Options opts) {
+        return LZMA{std::move(opts)};
+    }
+
  private:
     template<std::integral HeaderType>
     CompressedBlocks<HeaderType> _compress(std::span<const LZMAByte> in,
@@ -109,20 +113,7 @@ class LZMA {
     Options _opts;
 };
 
-#ifndef DOXYGEN_SKIP_DETAILS
-namespace Detail {
-
-    struct LZMAAdapter {
-        constexpr auto operator()(LZMAOptions opts = {}) const {
-            return LZMA{std::move(opts)};
-        }
-    };
-
-}  // end namespace Detail
-#endif  // DOXYGEN_SKIP_DETAILS
-
-inline constexpr Detail::LZMAAdapter lzma_with;
-inline constexpr LZMA lzma = lzma_with();
+inline constexpr LZMA lzma;
 
 //! @} group Compression
 

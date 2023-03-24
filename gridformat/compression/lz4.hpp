@@ -62,6 +62,10 @@ class LZ4 {
         return blocks;
     }
 
+    static LZ4 with(Options opts) {
+        return LZ4{std::move(opts)};
+    }
+
  private:
     template<std::integral HeaderType>
     CompressedBlocks<HeaderType> _compress(std::span<const LZ4Byte> in,
@@ -110,20 +114,7 @@ class LZ4 {
     Options _opts;
 };
 
-#ifndef DOXYGEN_SKIP_DETAILS
-namespace Detail {
-
-    struct LZ4Adapter {
-        constexpr auto operator()(LZ4Options opts = {}) const {
-            return LZ4{std::move(opts)};
-        }
-    };
-
-}  // end namespace Detail
-#endif  // DOXYGEN_SKIP_DETAILS
-
-inline constexpr Detail::LZ4Adapter lz4_with;
-inline constexpr LZ4 lz4 = lz4_with();
+inline constexpr LZ4 lz4;
 
 //! @} group Compression
 
