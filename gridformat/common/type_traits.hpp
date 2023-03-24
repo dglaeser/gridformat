@@ -152,7 +152,7 @@ namespace Detail {
     template<typename T>
     struct FieldScalar;
 
-    template<typename T> requires(std::integral<T> or std::floating_point<T>)
+    template<typename T> requires(is_scalar<T>)
     struct FieldScalar<T> : public std::type_identity<T> {};
 
     template<std::ranges::range R> requires(is_scalar<MDRangeScalar<R>>)

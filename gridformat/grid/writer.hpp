@@ -35,7 +35,7 @@ using EntityFunctionValueType = GridDetail::EntityFunctionValueType<F, E>;
 template<typename F, typename E>
 using EntityFunctionScalar = FieldScalar<EntityFunctionValueType<F, E>>;
 
-//! Base class for grid data writers
+//! Base class for grid data writers, exposing the interfaces to add fields
 template<typename Grid>
 class GridWriterBase {
  public:

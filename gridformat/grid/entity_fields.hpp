@@ -17,6 +17,7 @@
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
+#include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/serialization.hpp>
 #include <gridformat/common/field.hpp>
 
@@ -26,7 +27,7 @@
 namespace GridFormat {
 
 #ifndef DOXYGEN
-namespace Detail {
+namespace EntityFieldsDetail {
 
 template<typename T, typename Grid>
 concept PointFunction = std::invocable<T, GridDetail::PointReference<Grid>>;
@@ -41,24 +42,10 @@ template<typename Grid, CellFunction<Grid> T>
 using CellFunctionValueType = std::decay_t<std::invoke_result_t<T, GridDetail::CellReference<Grid>>>;
 
 template<typename Grid, PointFunction<Grid> T>
-struct PointFunctionScalar;
-template<typename Grid, PointFunction<Grid> T> requires(is_scalar<PointFunctionValueType<Grid, T>>)
-struct PointFunctionScalar<Grid, T> : public std::type_identity<PointFunctionValueType<Grid, T>> {};
-template<typename Grid, PointFunction<Grid> T> requires(!is_scalar<PointFunctionValueType<Grid, T>>)
-struct PointFunctionScalar<Grid, T> : public std::type_identity<MDRangeScalar<PointFunctionValueType<Grid, T>>> {};
+using PointFunctionScalarType = FieldScalar<PointFunctionValueType<Grid, T>>;
 
 template<typename Grid, CellFunction<Grid> T>
-struct CellFunctionScalar;
-template<typename Grid, CellFunction<Grid> T> requires(is_scalar<CellFunctionValueType<Grid, T>>)
-struct CellFunctionScalar<Grid, T> : public std::type_identity<CellFunctionValueType<Grid, T>> {};
-template<typename Grid, CellFunction<Grid> T> requires(!is_scalar<CellFunctionValueType<Grid, T>>)
-struct CellFunctionScalar<Grid, T> : public std::type_identity<MDRangeScalar<CellFunctionValueType<Grid, T>>> {};
-
-template<typename Grid, PointFunction<Grid> T>
-using PointFunctionScalarType = typename PointFunctionScalar<Grid, T>::type;
-
-template<typename Grid, CellFunction<Grid> T>
-using CellFunctionScalarType = typename CellFunctionScalar<Grid, T>::type;
+using CellFunctionScalarType = FieldScalar<CellFunctionValueType<Grid, T>>;
 
 template<Concepts::Scalar ValueType>
 void fill_buffer(const Concepts::Scalar auto& value,
@@ -82,7 +69,7 @@ void fill_buffer(const std::ranges::range auto& r,
     });
 }
 
-}  // namespace Detail
+}  // namespace EntityFieldsDetail
 #endif  // DOXYGEN
 
 
@@ -91,8 +78,8 @@ void fill_buffer(const std::ranges::range auto& r,
  * \brief Field implementation for data on grid points.
  */
 template<Concepts::Grid Grid,
-         Detail::PointFunction<Grid> FieldFunction,
-         Concepts::Scalar ValueType = Detail::PointFunctionScalarType<Grid, FieldFunction>>
+         EntityFieldsDetail::PointFunction<Grid> FieldFunction,
+         Concepts::Scalar ValueType = EntityFieldsDetail::PointFunctionScalarType<Grid, FieldFunction>>
 class PointField : public Field {
  public:
     explicit PointField(const Grid& grid,
@@ -139,7 +126,7 @@ class PointField : public Field {
         std::size_t offset = 0;
         std::byte* buffer = serialization.as_span().data();
         std::ranges::for_each(points(_grid), [&] (const auto& p) {
-            Detail::fill_buffer<ValueType>(_field_function(p), buffer, offset);
+            EntityFieldsDetail::fill_buffer<ValueType>(_field_function(p), buffer, offset);
         });
     }
 
@@ -152,8 +139,8 @@ class PointField : public Field {
  * \brief Field implementation for data on grid cells.
  */
 template<typename Grid,
-         Detail::CellFunction<Grid> FieldFunction,
-         Concepts::Scalar ValueType = Detail::CellFunctionScalarType<Grid, FieldFunction>>
+         EntityFieldsDetail::CellFunction<Grid> FieldFunction,
+         Concepts::Scalar ValueType = EntityFieldsDetail::CellFunctionScalarType<Grid, FieldFunction>>
 class CellField : public Field {
  public:
     explicit CellField(const Grid& grid,
@@ -200,7 +187,7 @@ class CellField : public Field {
         std::size_t offset = 0;
         std::byte* buffer = serialization.as_span().data();
         std::ranges::for_each(cells(_grid), [&] (const auto& c) {
-            Detail::fill_buffer<ValueType>(_field_function(c), buffer, offset);
+            EntityFieldsDetail::fill_buffer<ValueType>(_field_function(c), buffer, offset);
         });
     }
 
