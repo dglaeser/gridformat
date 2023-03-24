@@ -21,10 +21,10 @@ namespace GridFormat {
  * \ingroup Common
  * \brief Class to store field instances by name.
  */
-template<typename _F = Field>
 class FieldStorage {
  public:
-    using Field = _F;
+    using Field = GridFormat::Field;
+    using FieldPtr = GridFormat::FieldPtr;
 
     template<std::derived_from<Field> F> requires(!std::is_lvalue_reference_v<F>)
     void set(const std::string& name, F&& field) {

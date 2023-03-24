@@ -38,8 +38,6 @@ using EntityFunctionScalar = FieldScalar<EntityFunctionValueType<F, E>>;
 //! Base class for grid data writers
 template<typename Grid>
 class GridWriterBase {
-    using FieldStorage = GridFormat::FieldStorage<>;
-
  public:
     using Field = typename FieldStorage::Field;
 
