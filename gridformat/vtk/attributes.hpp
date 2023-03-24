@@ -13,7 +13,7 @@
 // forward declarations
 namespace GridFormat { class DynamicPrecision; }
 namespace GridFormat::Compression { class LZMA; class ZLIB; class LZ4; }
-namespace GridFormat::Encoding { struct Ascii; class AsciiWithOptions; struct Base64; struct RawBinary; }
+namespace GridFormat::Encoding { struct Ascii; struct Base64; struct RawBinary; }
 // end forward declarations
 
 namespace GridFormat::VTK {
@@ -31,7 +31,6 @@ std::string attribute_name(std::endian e) {
 }
 
 std::string attribute_name(const Encoding::Ascii&) { return "ascii"; }
-std::string attribute_name(const Encoding::AsciiWithOptions&) { return "ascii"; }
 std::string attribute_name(const Encoding::Base64&) { return "base64"; }
 std::string attribute_name(const Encoding::RawBinary&) { return "raw"; }
 
@@ -42,7 +41,6 @@ std::string attribute_name(const Compression::LZ4&) { return "vtkLZ4DataCompress
 template<typename Encoding>
 std::string data_format_name(const Encoding&, const DataFormat::Appended&) { return "appended"; }
 std::string data_format_name(const Encoding::Ascii&, const DataFormat::Inlined&) { return "ascii"; }
-std::string data_format_name(const Encoding::AsciiWithOptions&, const DataFormat::Inlined&) { return "ascii"; }
 std::string data_format_name(const Encoding::Base64&, const DataFormat::Inlined&) { return "binary"; }
 
 //! \} group VTK

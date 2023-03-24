@@ -26,7 +26,7 @@
 #include <gridformat/grid/grid.hpp>
 
 // forward declarations
-namespace GridFormat::Encoding { struct Ascii; class AsciiWithOptions; struct Base64; struct RawBinary; }
+namespace GridFormat::Encoding { struct Ascii; struct Base64; struct RawBinary; }
 // end forward declarations
 
 namespace GridFormat::VTK {
@@ -48,7 +48,6 @@ namespace Traits {
 
 template<typename T> struct ProducesValidXML;
 template<> struct ProducesValidXML<Encoding::Ascii> : public std::true_type {};
-template<> struct ProducesValidXML<Encoding::AsciiWithOptions> : public std::true_type {};
 template<> struct ProducesValidXML<Encoding::Base64> : public std::true_type {};
 template<> struct ProducesValidXML<Encoding::RawBinary> : public std::false_type {};
 
