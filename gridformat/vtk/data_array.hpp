@@ -41,8 +41,17 @@ class DataArray {
               [[maybe_unused]] const Precision<HeaderType>& = {})
     : _field(field)
     , _encoder{std::move(encoder)}
-    , _compressor{std::move(compressor)}
-    {}
+    , _compressor{std::move(compressor)} {
+        // if no ascii formatting was specified by the user, set our defaults
+        if constexpr (std::is_same_v<Encoder, GridFormat::Encoding::Ascii>) {
+            if (_encoder.options() == GridFormat::AsciiFormatOptions{})
+                _encoder = _encoder.with({
+                    .delimiter = " ",
+                    .line_prefix = std::string(10, ' '),
+                    .entries_per_line = 15
+                });
+        }
+    }
 
     friend std::ostream& operator<<(std::ostream& s, const DataArray& da) {
         da.stream(s);
@@ -51,12 +60,6 @@ class DataArray {
 
     void stream(std::ostream& s) const {
         if constexpr (std::is_same_v<Encoder, GridFormat::Encoding::Ascii>)
-            _export_ascii(s, Encoding::ascii.with({
-                .delimiter = " ",
-                .line_prefix = std::string(10, ' '),
-                .entries_per_line = 15
-            }));
-        else if constexpr (std::is_same_v<Encoder, GridFormat::Encoding::AsciiWithOptions>)
             _export_ascii(s, _encoder);
         else if constexpr (do_compression)
             _export_compressed_binary(s);

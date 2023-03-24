@@ -36,6 +36,12 @@ struct AsciiFormatOptions {
     std::string delimiter = "";
     std::string line_prefix = "";
     std::size_t entries_per_line = std::numeric_limits<std::size_t>::max();
+
+    bool operator==(const AsciiFormatOptions& other) {
+        return delimiter == other.delimiter
+            && line_prefix == other.line_prefix
+            && entries_per_line == other.entries_per_line;
+    }
 };
 
 template<typename OStream>
@@ -74,10 +80,10 @@ class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
 
 namespace Encoding {
 
-class AsciiWithOptions {
- public:
-    explicit AsciiWithOptions(AsciiFormatOptions opts)
-    : _opts(std::move(opts))
+struct Ascii {
+    constexpr Ascii() = default;
+    constexpr explicit Ascii(AsciiFormatOptions opts)
+    : _opts{std::move(opts)}
     {}
 
     template<typename S>
@@ -85,19 +91,16 @@ class AsciiWithOptions {
         return AsciiOutputStream{s, _opts};
     }
 
- public:
-    AsciiFormatOptions _opts;
-};
-
-struct Ascii {
-    template<typename S>
-    constexpr auto operator()(S& s) const noexcept {
-        return AsciiOutputStream{s};
-    }
-
     static auto with(AsciiFormatOptions opts) {
-        return AsciiWithOptions{std::move(opts)};
+        return Ascii{std::move(opts)};
     }
+
+    const AsciiFormatOptions& options() const {
+        return _opts;
+    }
+
+ private:
+    AsciiFormatOptions _opts = {};
 };
 
 inline constexpr Ascii ascii;
