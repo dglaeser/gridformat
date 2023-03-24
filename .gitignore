@@ -10,7 +10,8 @@
 !*.py
 
 # build system clutter
-build-*
+build*
+install*
 Testing
 !bin/testing
 
