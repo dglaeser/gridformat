@@ -29,14 +29,14 @@
 #include <gridformat/vtk/data_array.hpp>
 #include <gridformat/vtk/appendix.hpp>
 
-#if GRIDFORMAT_HAVE_LZMA
+#if GRIDFORMAT_HAVE_LZ4
+#include <gridformat/compression/lz4.hpp>
+namespace GridFormat::VTK::Defaults { using Compressor = Compression::LZ4; }
+#elif GRIDFORMAT_HAVE_LZMA
 #include <gridformat/compression/lzma.hpp>
 namespace GridFormat::VTK::Defaults { using Compressor = Compression::LZMA; }
-#elif GRIDFORMAT_HAVE_LZ4
-#include <gridformat/compression/lzma.hpp>
-namespace GridFormat::VTK::Defaults { using Compressor = Compression::LZ4; }
 #elif GRIDFORMAT_HAVE_ZLIB
-#include <gridformat/compression/lzma.hpp>
+#include <gridformat/compression/zlib.hpp>
 namespace GridFormat::VTK::Defaults { using Compressor = Compression::ZLIB; }
 #else
 #include <gridformat/common/type_traits.hpp>
