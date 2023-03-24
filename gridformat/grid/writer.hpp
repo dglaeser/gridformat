@@ -22,18 +22,13 @@
 #include <gridformat/common/field_storage.hpp>
 
 #include <gridformat/grid/grid.hpp>
+#include <gridformat/grid/_detail.hpp>
 #include <gridformat/grid/entity_fields.hpp>
 
 namespace GridFormat {
 
 //! \addtogroup Grid
 //! \{
-
-template<typename F, typename E> requires(Concepts::Detail::EntityFunction<F, E>)
-using EntityFunctionValueType = GridDetail::EntityFunctionValueType<F, E>;
-
-template<typename F, typename E>
-using EntityFunctionScalar = FieldScalar<EntityFunctionValueType<F, E>>;
 
 //! Base class for grid data writers, exposing the interfaces to add fields
 template<typename Grid>
@@ -45,7 +40,7 @@ class GridWriterBase {
     : _grid(grid)
     {}
 
-    template<Concepts::PointFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Point<Grid>>>
+    template<Concepts::PointFunction<Grid> F, Concepts::Scalar T = GridDetail::PointFunctionScalarType<Grid, F>>
     void set_point_field(const std::string& name, F&& point_function, const Precision<T>& prec = {}) {
         static_assert(!std::is_lvalue_reference_v<F>, "Cannot take functions by reference, please move");
         set_point_field(name, _make_point_field(std::move(point_function), prec));
@@ -61,7 +56,7 @@ class GridWriterBase {
         _point_fields.set(name, field_ptr);
     }
 
-    template<Concepts::CellFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Cell<Grid>>>
+    template<Concepts::CellFunction<Grid> F, Concepts::Scalar T = GridDetail::CellFunctionScalarType<Grid, F>>
     void set_cell_field(const std::string& name, F&& cell_function, const Precision<T>& prec = {}) {
         static_assert(!std::is_lvalue_reference_v<F>, "Cannot take functions by reference, please move");
         set_cell_field(name, _make_cell_field(std::move(cell_function), prec));

@@ -96,8 +96,17 @@ namespace GridFormat::GridDetail {
             { Traits::NumberOfCellCorners<T>::get(grid, cell) } -> std::convertible_to<std::size_t>;
         };
 
-    template<typename F, typename Entity>
-    using EntityFunctionValueType = std::decay_t<std::invoke_result_t<F, const std::decay_t<Entity>&>>;
+    template<typename Grid, std::invocable<PointReference<Grid>> T>
+    using PointFunctionValueType = std::decay_t<std::invoke_result_t<T, PointReference<Grid>>>;
+
+    template<typename Grid, std::invocable<CellReference<Grid>> T>
+    using CellFunctionValueType = std::decay_t<std::invoke_result_t<T, CellReference<Grid>>>;
+
+    template<typename Grid, std::invocable<PointReference<Grid>> T>
+    using PointFunctionScalarType = FieldScalar<PointFunctionValueType<Grid, T>>;
+
+    template<typename Grid, std::invocable<CellReference<Grid>> T>
+    using CellFunctionScalarType = FieldScalar<CellFunctionValueType<Grid, T>>;
 
 }  // namespace GridFormat::GridDetail
 #endif // DOXYGEN

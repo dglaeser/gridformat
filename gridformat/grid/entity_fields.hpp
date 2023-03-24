@@ -17,35 +17,17 @@
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
-#include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/serialization.hpp>
 #include <gridformat/common/field.hpp>
 
 #include <gridformat/grid/_detail.hpp>
+#include <gridformat/grid/concepts.hpp>
 #include <gridformat/grid/grid.hpp>
 
 namespace GridFormat {
 
 #ifndef DOXYGEN
 namespace EntityFieldsDetail {
-
-template<typename T, typename Grid>
-concept PointFunction = std::invocable<T, GridDetail::PointReference<Grid>>;
-
-template<typename T, typename Grid>
-concept CellFunction = std::invocable<T, GridDetail::CellReference<Grid>>;
-
-template<typename Grid, PointFunction<Grid> T>
-using PointFunctionValueType = std::decay_t<std::invoke_result_t<T, GridDetail::PointReference<Grid>>>;
-
-template<typename Grid, CellFunction<Grid> T>
-using CellFunctionValueType = std::decay_t<std::invoke_result_t<T, GridDetail::CellReference<Grid>>>;
-
-template<typename Grid, PointFunction<Grid> T>
-using PointFunctionScalarType = FieldScalar<PointFunctionValueType<Grid, T>>;
-
-template<typename Grid, CellFunction<Grid> T>
-using CellFunctionScalarType = FieldScalar<CellFunctionValueType<Grid, T>>;
 
 template<Concepts::Scalar ValueType>
 void fill_buffer(const Concepts::Scalar auto& value,
@@ -78,8 +60,8 @@ void fill_buffer(const std::ranges::range auto& r,
  * \brief Field implementation for data on grid points.
  */
 template<Concepts::Grid Grid,
-         EntityFieldsDetail::PointFunction<Grid> FieldFunction,
-         Concepts::Scalar ValueType = EntityFieldsDetail::PointFunctionScalarType<Grid, FieldFunction>>
+         Concepts::PointFunction<Grid> FieldFunction,
+         Concepts::Scalar ValueType = GridDetail::PointFunctionScalarType<Grid, FieldFunction>>
 class PointField : public Field {
  public:
     explicit PointField(const Grid& grid,
@@ -139,8 +121,8 @@ class PointField : public Field {
  * \brief Field implementation for data on grid cells.
  */
 template<typename Grid,
-         EntityFieldsDetail::CellFunction<Grid> FieldFunction,
-         Concepts::Scalar ValueType = EntityFieldsDetail::CellFunctionScalarType<Grid, FieldFunction>>
+         Concepts::CellFunction<Grid> FieldFunction,
+         Concepts::Scalar ValueType = GridDetail::CellFunctionScalarType<Grid, FieldFunction>>
 class CellField : public Field {
  public:
     explicit CellField(const Grid& grid,
