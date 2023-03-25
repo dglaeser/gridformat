@@ -25,18 +25,28 @@ namespace GridFormat {
 template<Concepts::Scalar T>
 struct Precision {};
 
-inline constexpr Precision<float> float32;
-inline constexpr Precision<double> float64;
+using Float32 = Precision<float>;
+using Float64 = Precision<double>;
+inline constexpr Float32 float32;
+inline constexpr Float64 float64;
 
-inline constexpr Precision<std::int_least8_t> int8;
-inline constexpr Precision<std::int_least16_t> int16;
-inline constexpr Precision<std::int_least32_t> int32;
-inline constexpr Precision<std::int_least64_t> int64;
+using Int8 = Precision<std::int_least8_t>;
+using Int16 = Precision<std::int_least16_t>;
+using Int32 = Precision<std::int_least32_t>;
+using Int64 = Precision<std::int_least64_t>;
+inline constexpr Int8 int8;
+inline constexpr Int16 int16;
+inline constexpr Int32 int32;
+inline constexpr Int64 int64;
 
-inline constexpr Precision<std::uint_least8_t> uint8;
-inline constexpr Precision<std::uint_least16_t> uint16;
-inline constexpr Precision<std::uint_least32_t> uint32;
-inline constexpr Precision<std::uint_least64_t> uint64;
+using UInt8 = Precision<std::uint_least8_t>;
+using UInt16 = Precision<std::uint_least16_t>;
+using UInt32 = Precision<std::uint_least32_t>;
+using UInt64 = Precision<std::uint_least64_t>;
+inline constexpr UInt8 uint8;
+inline constexpr UInt16 uint16;
+inline constexpr UInt32 uint32;
+inline constexpr UInt64 uint64;
 
 inline constexpr Precision<std::size_t> default_integral;
 inline constexpr Precision<double> default_floating_point;
