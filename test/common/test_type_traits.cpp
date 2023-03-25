@@ -74,5 +74,10 @@ int main() {
     static_assert(std::same_as<int, GridFormat::FieldScalar<std::vector<std::vector<int>>>>);
     static_assert(std::same_as<int, GridFormat::FieldScalar<int>>);
 
+    static_assert(std::same_as<
+        GridFormat::ExtendedVariant<std::variant<int, double>, char, std::string, char>,
+        std::variant<int, double, char, std::string>
+    >);
+
     return 0;
 }

@@ -150,6 +150,29 @@ using UniqueVariant = typename Detail::UniqueVariant<T, Types...>::type;
 namespace Detail {
 
     template<typename T>
+    struct VariantOrClosure;
+    template<typename T, typename... Ts>
+    struct VariantOrClosure<std::variant<T, Ts...>> {
+        template<typename... _Ts>
+        using Variant = GridFormat::UniqueVariant<T, Ts..., _Ts...>;
+    };
+
+    template<typename T, typename... Types>
+    struct VariantOr {
+        using type = typename VariantOrClosure<T>::template Variant<Types...>;
+    };
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
+template<typename T, typename... Types>
+using ExtendedVariant = typename Detail::VariantOr<T, Types...>::type;
+
+
+#ifndef DOXYGEN
+namespace Detail {
+
+    template<typename T>
     struct FieldScalar;
 
     template<typename T> requires(is_scalar<T>)
