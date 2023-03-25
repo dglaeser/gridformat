@@ -48,9 +48,6 @@ inline constexpr UInt16 uint16;
 inline constexpr UInt32 uint32;
 inline constexpr UInt64 uint64;
 
-inline constexpr Precision<std::size_t> default_integral;
-inline constexpr Precision<double> default_floating_point;
-
 /*!
  * \ingroup Common
  * \brief Represents a dynamic precision.
