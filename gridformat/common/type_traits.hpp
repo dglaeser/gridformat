@@ -176,6 +176,72 @@ using ExtendedVariant = typename Detail::VariantOr<T, Types...>::type;
 #ifndef DOXYGEN
 namespace Detail {
 
+template<typename T>
+struct MergedVariant;
+template<typename... Ts>
+struct MergedVariant<std::variant<Ts...>> {
+    template<typename T>
+    struct Closure;
+    template<typename... _Ts>
+    struct Closure<std::variant<_Ts...>> {
+        using type = GridFormat::ExtendedVariant<std::variant<Ts...>, _Ts...>;
+    };
+
+    template<typename V2>
+    using Variant = typename Closure<V2>::type;
+};
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
+template<typename V1, typename V2>
+using MergedVariant = typename Detail::MergedVariant<V1>::template Variant<V2>;
+
+
+#ifndef DOXYGEN
+namespace Detail {
+    template<typename Remove, typename Variant>
+    struct VariantWithoutSingleType;
+    template<typename Remove, typename T, typename... Ts>
+    struct VariantWithoutSingleType<Remove, std::variant<T, Ts...>> {
+        using type = std::conditional_t<
+            std::is_same_v<Remove, T>,
+            std::conditional_t<
+                sizeof...(Ts) == 0,
+                std::variant<>,
+                std::variant<Ts...>
+            >,
+            GridFormat::MergedVariant<
+                std::variant<T>,
+                typename VariantWithoutSingleType<Remove, std::variant<Ts...>>::type
+            >
+        >;
+    };
+    template<typename Remove>
+    struct VariantWithoutSingleType<Remove, std::variant<>> : public std::type_identity<std::variant<>> {};
+
+    template<typename Variant, typename... Remove>
+    struct VariantWithout;
+    template<typename... Ts>
+    struct VariantWithout<std::variant<Ts...>> : public std::type_identity<std::variant<Ts...>> {};
+    template<typename... Ts, typename R, typename... Remove>
+    struct VariantWithout<std::variant<Ts...>, R, Remove...> {
+        using type = typename VariantWithout<
+            typename VariantWithoutSingleType<R, std::variant<Ts...>>::type,
+            Remove...
+        >::type;
+    };
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
+template<typename T, typename... Remove>
+using ReducedVariant = typename Detail::VariantWithout<T, Remove...>::type;
+
+
+#ifndef DOXYGEN
+namespace Detail {
+
     template<typename T>
     struct FieldScalar;
 

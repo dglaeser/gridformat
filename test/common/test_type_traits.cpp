@@ -78,6 +78,14 @@ int main() {
         GridFormat::ExtendedVariant<std::variant<int, double>, char, std::string, char>,
         std::variant<int, double, char, std::string>
     >);
+    static_assert(std::same_as<
+        GridFormat::MergedVariant<std::variant<int, double>, std::variant<char, unsigned>>,
+        std::variant<int, double, char, unsigned>
+    >);
+    static_assert(std::same_as<
+        GridFormat::ReducedVariant<std::variant<int, double, char>, double, char>,
+        std::variant<int>
+    >);
 
     return 0;
 }
