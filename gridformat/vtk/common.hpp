@@ -16,6 +16,7 @@
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/ranges.hpp>
+#include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/field_transformations.hpp>
 #include <gridformat/common/field.hpp>
 
@@ -29,12 +30,12 @@
 namespace GridFormat::Encoding { struct Ascii; struct Base64; struct RawBinary; }
 // end forward declarations
 
-namespace GridFormat::VTK {
+namespace GridFormat {
 
 //! \addtogroup VTK
 //! \{
 
-namespace DataFormat {
+namespace VTK::DataFormat {
 
 struct Inlined {};
 struct Appended {};
@@ -42,7 +43,15 @@ struct Appended {};
 inline constexpr Inlined inlined;
 inline constexpr Appended appended;
 
-}  // namespace DataFormat
+}  // namespace VTK::DataFormat
+
+using VTKDataFormat = std::variant<
+    VTK::DataFormat::Inlined,
+    VTK::DataFormat::Appended
+>;
+
+
+namespace VTK {
 
 namespace Traits {
 
@@ -206,7 +215,8 @@ auto make_cell_types_field(const Grid& grid) {
 }
 
 //! \} group VTK
+}  // namespace VTK
+}  // namespace GridFormat
 
-}  // namespace GridFormat::VTK
 
 #endif  // GRIDFORMAT_VTK_COMMON_HPP_
