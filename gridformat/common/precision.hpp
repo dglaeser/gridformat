@@ -75,7 +75,7 @@ class DynamicPrecision {
 
     template<typename Visitor>
     decltype(auto) visit(Visitor&& visitor) const {
-        std::visit(std::forward<Visitor>(visitor), _precision);
+        return std::visit(std::forward<Visitor>(visitor), _precision);
     }
 
  private:
