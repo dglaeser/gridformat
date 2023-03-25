@@ -26,11 +26,9 @@ namespace GridFormat {
  * \ingroup VTK
  * \brief Writer for .vtu file format
  */
-template<Concepts::UnstructuredGrid Grid,
-         typename XMLOpts = VTK::XMLOptions<>,
-         typename PrecOpts = VTK::PrecisionOptions<>>
-class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
-    using ParentType = VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts>;
+template<Concepts::UnstructuredGrid Grid>
+class VTPWriter : public VTK::XMLWriterBase<Grid> {
+    using ParentType = VTK::XMLWriterBase<Grid>;
 
     template<std::size_t size>
     struct CellTypesPredicate {
@@ -46,15 +44,12 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
 
  public:
     explicit VTPWriter(const Grid& grid,
-                       XMLOpts xml_opts = {},
-                       PrecOpts prec_opts = {})
+                       VTK::XMLOptions xml_opts = {},
+                       VTK::PrecisionOptions prec_opts = {})
     : ParentType(grid, ".vtp", std::move(xml_opts), std::move(prec_opts))
     {}
 
  private:
-    using typename ParentType::CoordinateType;
-    using typename ParentType::HeaderType;
-
     void _write(std::ostream& s) const override {
         auto verts_range = _get_cell_range(
             CellTypesPredicate<1>{this->grid(), {CellType::vertex}}
@@ -88,22 +83,24 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
             this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
         });
 
-        const auto coords_field = VTK::make_coordinates_field<CoordinateType>(this->grid());
+        const FieldPtr coords_field = this->_coord_precision.visit([&] <typename T> (const Precision<T>&) {
+            return VTK::make_coordinates_field<T>(this->grid());
+        });
         this->_set_data_array(context, "Piece.Points", "Coordinates", *coords_field);
 
         const auto point_id_map = make_point_id_map(this->grid());
-        const auto verts_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->grid(), verts_range, point_id_map);
-        const auto verts_offsets_field = VTK::make_offsets_field<HeaderType>(this->grid(), verts_range);
+        const auto verts_connectivity_field = _make_connectivity_field(verts_range, point_id_map);
+        const auto verts_offsets_field = _make_offsets_field(verts_range);
         this->_set_data_array(context, "Piece.Verts", "connectivity", *verts_connectivity_field);
         this->_set_data_array(context, "Piece.Verts", "offsets", *verts_offsets_field);
 
-        const auto lines_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->grid(), lines_range, point_id_map);
-        const auto lines_offsets_field = VTK::make_offsets_field<HeaderType>(this->grid(), lines_range);
+        const auto lines_connectivity_field = _make_connectivity_field(lines_range, point_id_map);
+        const auto lines_offsets_field = _make_offsets_field(lines_range);
         this->_set_data_array(context, "Piece.Lines", "connectivity", *lines_connectivity_field);
         this->_set_data_array(context, "Piece.Lines", "offsets", *lines_offsets_field);
 
-        const auto polys_connectivity_field = VTK::make_connectivity_field<HeaderType>(this->grid(), polys_range, point_id_map);
-        const auto polys_offsets_field = VTK::make_offsets_field<HeaderType>(this->grid(), polys_range);
+        const auto polys_connectivity_field = _make_connectivity_field(polys_range, point_id_map);
+        const auto polys_offsets_field = _make_offsets_field(polys_range);
         this->_set_data_array(context, "Piece.Polys", "connectivity", *polys_connectivity_field);
         this->_set_data_array(context, "Piece.Polys", "offsets", *polys_offsets_field);
 
@@ -113,6 +110,20 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
     template<typename Predicate>
     std::ranges::forward_range auto _get_cell_range(Predicate&& pred) const {
         return Ranges::filter_by(std::forward<Predicate>(pred), cells(this->grid()));
+    }
+
+    template<typename CellsRange, typename PointMap>
+    FieldPtr _make_connectivity_field(CellsRange&& cells, const PointMap& point_id_map) const {
+        return std::visit([&] <typename T> (const Precision<T>&) {
+            return VTK::make_connectivity_field<T>(this->grid(), cells, point_id_map);
+        }, this->_header_precision);
+    }
+
+    template<typename CellsRange>
+    FieldPtr _make_offsets_field(CellsRange&& cells) const {
+        return std::visit([&] <typename T> (const Precision<T>&) {
+            return VTK::make_offsets_field<T>(this->grid(), cells);
+        }, this->_header_precision);
     }
 };
 
