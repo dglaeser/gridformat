@@ -58,21 +58,24 @@ template<typename Grid>
 std::size_t number_of_cells(const Grid& grid) {
     if constexpr (GridDetail::exposes_number_of_cells<Grid>)
         return Traits::NumberOfCells<Grid>::get(grid);
-    return Ranges::size(cells(grid));
+    else
+        return Ranges::size(cells(grid));
 }
 
 template<typename Grid>
 std::size_t number_of_points(const Grid& grid) {
     if constexpr (GridDetail::exposes_number_of_points<Grid>)
         return Traits::NumberOfPoints<Grid>::get(grid);
-    return Ranges::size(points(grid));
+    else
+        return Ranges::size(points(grid));
 }
 
 template<typename Grid>
 std::size_t number_of_points(const Grid& grid, const Cell<Grid>& cell) {
     if constexpr (GridDetail::exposes_number_of_cell_corners<Grid>)
         return Traits::NumberOfCellCorners<Grid>::get(grid, cell);
-    return Ranges::size(points(grid, cell));
+    else
+        return Ranges::size(points(grid, cell));
 }
 
 template<typename Grid>
