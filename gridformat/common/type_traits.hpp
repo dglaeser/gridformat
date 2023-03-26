@@ -190,6 +190,24 @@ template<typename T>
 using FieldScalar = typename Detail::FieldScalar<T>::type;
 
 
+#ifndef DOXYGEN
+namespace Detail {
+
+template<typename T>
+concept HasStaticSizeFunction = requires {
+    { T::size() } -> std::convertible_to<std::size_t>;
+    { std::integral_constant<std::size_t, T::size()>{} };
+};
+
+template<typename T>
+concept HasStaticSizeMember = requires {
+    { T::size } -> std::convertible_to<std::size_t>;
+    { std::integral_constant<std::size_t, T::size>{} };
+};
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
 template<typename T>
 struct StaticSize;
 template<typename T, std::size_t s>
@@ -203,6 +221,14 @@ struct StaticSize<std::span<T, s>> {
 template<typename T, std::size_t s>
 struct StaticSize<T[s]> {
     static constexpr std::size_t value = s;
+};
+template<Detail::HasStaticSizeMember T>
+struct StaticSize<T> {
+    static constexpr std::size_t value = T::size;
+};
+template<Detail::HasStaticSizeFunction T>
+struct StaticSize<T> {
+    static constexpr std::size_t value = T::size();
 };
 
 //! \} group Common
