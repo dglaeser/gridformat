@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup VTK
- * \brief Funcionality for writing VTK XML-type file formats
+ * \brief Base class for VTK XML-type file format writers.
  */
 #ifndef GRIDFORMAT_VTK_XML_HPP_
 #define GRIDFORMAT_VTK_XML_HPP_
@@ -25,6 +25,13 @@
 #include <gridformat/common/field.hpp>
 
 #include <gridformat/encoding/base64.hpp>
+#include <gridformat/encoding/ascii.hpp>
+#include <gridformat/encoding/raw.hpp>
+
+#include <gridformat/compression/lz4.hpp>
+#include <gridformat/compression/lzma.hpp>
+#include <gridformat/compression/zlib.hpp>
+
 #include <gridformat/grid/concepts.hpp>
 #include <gridformat/grid/writer.hpp>
 #include <gridformat/grid/grid.hpp>
@@ -35,37 +42,35 @@
 #include <gridformat/vtk/data_array.hpp>
 #include <gridformat/vtk/appendix.hpp>
 
-#include <gridformat/encoding.hpp>
-#include <gridformat/compression.hpp>
-
-
-#if GRIDFORMAT_HAVE_LZ4
-#include <gridformat/compression/lz4.hpp>
-namespace GridFormat::VTK::Defaults { using Compressor = Compression::LZ4; }
-#elif GRIDFORMAT_HAVE_LZMA
-#include <gridformat/compression/lzma.hpp>
-namespace GridFormat::VTK::Defaults { using Compressor = Compression::LZMA; }
-#elif GRIDFORMAT_HAVE_ZLIB
-#include <gridformat/compression/zlib.hpp>
-namespace GridFormat::VTK::Defaults { using Compressor = Compression::ZLIB; }
-#else
-#include <gridformat/common/type_traits.hpp>
-namespace GridFormat::VTK::Defaults { using Compressor = None; }
-#endif
-
-
 namespace GridFormat::VTK {
 
 //! \addtogroup VTK
 //! \{
 
+#ifndef DOXYGEN
+namespace XMLDetail {
+    using LZMACompressor = std::conditional_t<Compression::Detail::_have_lzma, Compression::LZMA, None>;
+    using ZLIBCompressor = std::conditional_t<Compression::Detail::_have_zlib, Compression::ZLIB, None>;
+    using LZ4Compressor = std::conditional_t<Compression::Detail::_have_lz4, Compression::LZ4, None>;
+    using Compressor = UniqueVariant<LZ4Compressor, ZLIBCompressor, LZMACompressor>;
+}  // namespace XMLDetail
+#endif  // DOXYGEN
+
+namespace XML {
+
 using HeaderPrecision = std::variant<UInt32, UInt64>;
+using Compressor = ExtendedVariant<XMLDetail::Compressor, None>;
+using Encoder = std::variant<Encoding::Ascii, Encoding::Base64, Encoding::RawBinary>;
+using DataFormat = std::variant<VTK::DataFormat::Inlined, VTK::DataFormat::Appended>;
+using DefaultCompressor = std::variant_alternative_t<0, XMLDetail::Compressor>;
+
+}  // namespace XML
 
 //! Options for VTK-XML files
 struct XMLOptions {
-    using EncoderOption = ExtendedVariant<GridFormat::Encoder, Automatic>;
-    using CompressorOption = ExtendedVariant<GridFormat::Compressor, Automatic, None>;
-    using DataFormatOption = ExtendedVariant<VTKDataFormat, Automatic>;
+    using EncoderOption = ExtendedVariant<XML::Encoder, Automatic>;
+    using CompressorOption = ExtendedVariant<XML::Compressor, Automatic>;
+    using DataFormatOption = ExtendedVariant<XML::DataFormat, Automatic>;
     EncoderOption encoder = automatic;
     CompressorOption compressor = automatic;
     DataFormatOption data_format = automatic;
@@ -73,12 +78,12 @@ struct XMLOptions {
 
 //! Options for setting the header and coordinate type
 struct PrecisionOptions {
-    using CoordinatePrecision = std::variant<DynamicPrecision, Automatic>;
-    CoordinatePrecision coordinate_precision = automatic;
-    HeaderPrecision header_precision = _from_size_t();
+    using CoordinatePrecisionOption = std::variant<DynamicPrecision, Automatic>;
+    CoordinatePrecisionOption coordinate_precision = automatic;
+    XML::HeaderPrecision header_precision = _from_size_t();
 
  private:
-    static HeaderPrecision _from_size_t() {
+    static XML::HeaderPrecision _from_size_t() {
         if constexpr(sizeof(std::size_t) == 8) return uint64;
         else return uint32;
     }
@@ -88,53 +93,51 @@ struct PrecisionOptions {
 #ifndef DOXYGEN
 namespace XMLDetail {
 
-struct XMLSettings {
-    using Compressor = ExtendedVariant<GridFormat::Compressor, None>;
-    Encoder encoder;
-    Compressor compressor;
-    VTKDataFormat data_format;
+    struct XMLSettings {
+        XML::Encoder encoder;
+        XML::Compressor compressor;
+        XML::DataFormat data_format;
 
-    static XMLSettings from(const XMLOptions& opts) {
-        const auto _enc = _make_encoder(opts.encoder);
-        const auto _format = _make_data_format(_enc, opts.data_format);
-        const auto _comp = _make_compressor(_enc, opts.compressor);
-        return {
-            .encoder = _enc,
-            .compressor = _comp,
-            .data_format = _format
-        };
-    }
-
- private:
-    template<typename E>
-    static Encoder _make_encoder(const E& enc) {
-        if (Variant::is<Automatic>(enc))
-            return Encoding::base64;
-        return Variant::without<Automatic>(enc);
-    }
-
-    template<typename E, typename F>
-    static VTKDataFormat _make_data_format(const E& enc, const F& data_format) {
-        if (Variant::is<Automatic>(data_format))
-            return Variant::is<Encoding::Ascii>(enc)
-                ? VTKDataFormat{VTK::DataFormat::inlined}
-                : VTKDataFormat{VTK::DataFormat::appended};
-        return Variant::without<Automatic>(data_format);
-    }
-
-    template<typename E, typename C>
-    static Compressor _make_compressor(const E& enc, const C& compressor) {
-        if (Variant::is<Automatic>(compressor))
-            return Variant::is<Encoding::Ascii>(enc)
-                ? Compressor{none}
-                : Compressor{Defaults::Compressor{}};
-        if (Variant::is<Encoding::Ascii>(enc) && !Variant::is<None>(compressor)) {
-            log_warning("Ascii output cannot be compressed. Ignoring chosen compressor...");
-            return none;
+        static XMLSettings from(const XMLOptions& opts) {
+            const auto _enc = _make_encoder(opts.encoder);
+            const auto _format = _make_data_format(_enc, opts.data_format);
+            const auto _comp = _make_compressor(_enc, opts.compressor);
+            return {
+                .encoder = _enc,
+                .compressor = _comp,
+                .data_format = _format
+            };
         }
-        return Variant::without<Automatic>(compressor);
-    }
-};
+
+    private:
+        static XML::Encoder _make_encoder(const typename XMLOptions::EncoderOption& enc) {
+            if (Variant::is<Automatic>(enc))
+                return Encoding::base64;
+            return Variant::without<Automatic>(enc);
+        }
+
+        static XML::DataFormat _make_data_format(const typename XML::Encoder& enc,
+                                                 const typename XMLOptions::DataFormatOption& data_format) {
+            if (Variant::is<Automatic>(data_format))
+                return Variant::is<Encoding::Ascii>(enc)
+                    ? XML::DataFormat{VTK::DataFormat::inlined}
+                    : XML::DataFormat{VTK::DataFormat::appended};
+            return Variant::without<Automatic>(data_format);
+        }
+
+        static XML::Compressor _make_compressor(const typename XML::Encoder& enc,
+                                                const typename XMLOptions::CompressorOption& compressor) {
+            if (Variant::is<Automatic>(compressor))
+                return Variant::is<Encoding::Ascii>(enc)
+                    ? XML::Compressor{none}
+                    : XML::Compressor{XML::DefaultCompressor{}};
+            if (Variant::is<Encoding::Ascii>(enc) && !Variant::is<None>(compressor)) {
+                log_warning("Ascii output cannot be compressed. Ignoring chosen compressor...");
+                return none;
+            }
+            return Variant::without<Automatic>(compressor);
+        }
+    };
 
 }  // namespace XMLDetail
 #endif  // DOXYGEN
@@ -149,7 +152,6 @@ class XMLWriterBase
 : public GridWriter<G>
 , public Detail::CRTPBase<Impl> {
     using ParentType = GridWriter<G>;
-    using CompressorOption = ExtendedVariant<Compressor, None>;
 
  public:
     //! Export underlying grid type
@@ -168,15 +170,15 @@ class XMLWriterBase
         }, prec_opts.coordinate_precision);
     }
 
-    Impl with_data_format(const VTKDataFormat& format) const {
+    Impl with_data_format(const XML::DataFormat& format) const {
         return this->_impl().with(_xml_opts_with(format), _precision_opts());
     };
 
-    Impl with_compression(const CompressorOption& compressor) const {
+    Impl with_compression(const XML::Compressor& compressor) const {
         return this->_impl().with(_xml_opts_with({}, compressor), _precision_opts());
     };
 
-    Impl with_encoding(const Encoder& encoder) const {
+    Impl with_encoding(const XML::Encoder& encoder) const {
         return this->_impl().with(_xml_opts_with({}, {}, encoder), _precision_opts());
     };
 
@@ -184,14 +186,14 @@ class XMLWriterBase
         return this->_impl().with(_xml_opts(), _prec_opts_with(prec));
     }
 
-    Impl with_header_precision(const HeaderPrecision& prec) const {
+    Impl with_header_precision(const XML::HeaderPrecision& prec) const {
         return this->_impl().with(_xml_opts(), _prec_opts_with({}, prec));
     }
 
  private:
-    XMLOptions _xml_opts_with(const std::optional<VTKDataFormat>& format = {},
-                              const std::optional<CompressorOption>& compressor = {},
-                              const std::optional<Encoder>& encoder = {}) const {
+    XMLOptions _xml_opts_with(const std::optional<XML::DataFormat>& format = {},
+                              const std::optional<XML::Compressor>& compressor = {},
+                              const std::optional<XML::Encoder>& encoder = {}) const {
         auto opts = _xml_opts();
         if (format) Variant::unwrap_to(opts.data_format, *format);
         if (compressor) Variant::unwrap_to(opts.compressor, *compressor);
@@ -200,7 +202,7 @@ class XMLWriterBase
     }
 
     PrecisionOptions _prec_opts_with(const std::optional<DynamicPrecision>& coord_prec = {},
-                                     const std::optional<HeaderPrecision>& header_prec = {}) const {
+                                     const std::optional<XML::HeaderPrecision>& header_prec = {}) const {
         auto opts = _precision_opts();
         if (coord_prec) opts.coordinate_precision = *coord_prec;
         if (header_prec) opts.header_precision = *header_prec;
@@ -209,7 +211,7 @@ class XMLWriterBase
 
  protected:
     XMLDetail::XMLSettings _xml_settings;
-    HeaderPrecision _header_precision;
+    XML::HeaderPrecision _header_precision;
     DynamicPrecision _coord_precision;
 
     XMLOptions _xml_opts() const {

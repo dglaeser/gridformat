@@ -115,10 +115,25 @@ class LZ4 {
 };
 
 inline constexpr LZ4 lz4;
+namespace Detail { inline constexpr bool _have_lz4 = true; }
 
 //! @} group Compression
 
 }  // end namespace GridFormat::Compression
+
+#else  // GRIDFORMAT_HAVE_LZ4
+
+namespace GridFormat::Compression {
+
+namespace Detail { inline constexpr bool _have_lz4 = false; }
+
+class LZ4 {
+ public:
+    template<bool b = false, typename... Args>
+    explicit LZ4(Args&&...) { static_assert(b, "LZ4 compressor requires the LZ4 library."); }
+};
+
+}  // namespace GridFormat::Compression
 
 #endif  // GRIDFORMAT_HAVE_LZ4
 #endif  // GRIDFORMAT_COMPRESSION_LZ4_HPP_

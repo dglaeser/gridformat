@@ -112,10 +112,23 @@ class ZLIB {
 };
 
 inline constexpr ZLIB zlib;
+namespace Detail { inline constexpr bool _have_zlib = true; }
 
 //! @} group Compression
 
 }  // end namespace GridFormat::Compression
+
+#else  // GRIDFORMAT_HAVE_ZLIB
+
+namespace GridFormat::Compression {
+namespace Detail { inline constexpr bool _have_zlib = false; }
+class ZLIB {
+ public:
+    template<bool b = false, typename... Args>
+    explicit ZLIB(Args&&...) { static_assert(b, "ZLIB compressor requires the ZLIB library."); }
+};
+
+}  // namespace GridFormat::Compression
 
 #endif  // GRIDFORMAT_HAVE_ZLIB
 #endif  // GRIDFORMAT_COMPRESSION_ZLIB_HPP_

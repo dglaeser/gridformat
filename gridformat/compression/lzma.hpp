@@ -114,10 +114,24 @@ class LZMA {
 };
 
 inline constexpr LZMA lzma;
+namespace Detail { inline constexpr bool _have_lzma = true; }
 
 //! @} group Compression
 
 }  // end namespace GridFormat::Compression
+
+#else  // GRIDFORMAT_HAVE_LZMA
+
+namespace GridFormat::Compression {
+
+namespace Detail { inline constexpr bool _have_lzma = false; }
+class LZMA {
+ public:
+    template<bool b = false, typename... Args>
+    explicit LZMA(Args&&...) { static_assert(b, "LZMA compressor requires the LZMA library."); }
+};
+
+}  // namespace GridFormat::Compression
 
 #endif  // GRIDFORMAT_HAVE_LZMA
 #endif  // GRIDFORMAT_COMPRESSION_LZMA_HPP_

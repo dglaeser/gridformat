@@ -42,8 +42,8 @@ void write(const XMLOptions& xml_opts,
         .with_compression(Variant::replace<Automatic>(xml_opts.compressor, none))
         .with_data_format(Variant::replace<Automatic>(
             xml_opts.data_format,
-            Variant::is<Encoding::Ascii>(xml_opts.encoder) ? VTKDataFormat{VTK::DataFormat::inlined}
-                                                           : VTKDataFormat{VTK::DataFormat::appended}
+            Variant::is<Encoding::Ascii>(xml_opts.encoder) ? VTK::XML::DataFormat{VTK::DataFormat::inlined}
+                                                           : VTK::XML::DataFormat{VTK::DataFormat::appended}
         ))
         .with_header_precision(prec_opts.header_precision)
         .with_coordinate_precision(Variant::unwrap(Variant::replace<Automatic>(

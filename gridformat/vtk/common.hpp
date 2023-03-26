@@ -30,12 +30,12 @@
 namespace GridFormat::Encoding { struct Ascii; struct Base64; struct RawBinary; }
 // end forward declarations
 
-namespace GridFormat {
+namespace GridFormat::VTK {
 
 //! \addtogroup VTK
 //! \{
 
-namespace VTK::DataFormat {
+namespace DataFormat {
 
 struct Inlined {};
 struct Appended {};
@@ -43,15 +43,7 @@ struct Appended {};
 inline constexpr Inlined inlined;
 inline constexpr Appended appended;
 
-}  // namespace VTK::DataFormat
-
-using VTKDataFormat = std::variant<
-    VTK::DataFormat::Inlined,
-    VTK::DataFormat::Appended
->;
-
-
-namespace VTK {
+}  // namespace DataFormat
 
 namespace Traits {
 
@@ -215,8 +207,7 @@ auto make_cell_types_field(const Grid& grid) {
 }
 
 //! \} group VTK
-}  // namespace VTK
-}  // namespace GridFormat
+}  // namespace GridFormat::VTK
 
 
 #endif  // GRIDFORMAT_VTK_COMMON_HPP_
