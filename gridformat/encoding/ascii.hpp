@@ -11,6 +11,7 @@
 #include <cmath>
 #include <limits>
 #include <algorithm>
+#include <optional>
 
 #include <gridformat/common/output_stream.hpp>
 
@@ -88,19 +89,21 @@ struct Ascii {
 
     template<typename S>
     constexpr auto operator()(S& s) const noexcept {
-        return AsciiOutputStream{s, _opts};
+        return AsciiOutputStream{s, options()};
     }
 
-    static auto with(AsciiFormatOptions opts) {
+    static constexpr auto with(AsciiFormatOptions opts) {
         return Ascii{std::move(opts)};
     }
 
-    const AsciiFormatOptions& options() const {
-        return _opts;
+    constexpr AsciiFormatOptions options() const {
+        return _opts.value_or(AsciiFormatOptions{});
     }
 
  private:
-    AsciiFormatOptions _opts = {};
+    // we use optional here in order to be able to define
+    // an inline constexpr instance of this class below
+    std::optional<AsciiFormatOptions> _opts = {};
 };
 
 inline constexpr Ascii ascii;
