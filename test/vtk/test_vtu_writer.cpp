@@ -6,6 +6,7 @@
 #include <string>
 
 #include <gridformat/common/logging.hpp>
+#include <gridformat/common/variant.hpp>
 #include <gridformat/encoding/base64.hpp>
 #include <gridformat/encoding/raw.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
@@ -37,6 +38,22 @@ void write(const XMLOptions& xml_opts,
     const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(grid);
     GridFormat::Test::add_test_data(writer, test_data, prec);
     write<dim, space_dim>(writer, filename_prefix);
+
+    // using the with-syntax
+    using namespace GridFormat;
+    auto writer2 = writer
+        .with_encoding(Variant::replace<Automatic>(xml_opts.encoder, Encoding::base64))
+        .with_compression(Variant::replace<Automatic>(xml_opts.compressor, none))
+        .with_data_format(Variant::replace<Automatic>(
+            xml_opts.data_format,
+            Variant::is<Encoding::Ascii>(xml_opts.encoder) ? VTKDataFormat{VTK::DataFormat::inlined}
+                                                           : VTKDataFormat{VTK::DataFormat::appended}
+        ))
+        .with_header_precision(prec_opts.header_precision)
+        .with_coordinate_precision(Variant::unwrap(Variant::replace<Automatic>(
+            prec_opts.coordinate_precision, DynamicPrecision{float64}
+        )));
+    write<dim, space_dim>(writer2, filename_prefix + "_chained");
 }
 
 template<std::size_t dim,

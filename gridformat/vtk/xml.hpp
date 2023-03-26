@@ -13,10 +13,13 @@
 #include <ranges>
 #include <utility>
 #include <type_traits>
+#include <optional>
 
+#include <gridformat/common/detail/crtp.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/callable_overload_set.hpp>
 #include <gridformat/common/type_traits.hpp>
+#include <gridformat/common/variant.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/logging.hpp>
 #include <gridformat/common/field.hpp>
@@ -56,6 +59,8 @@ namespace GridFormat::VTK {
 //! \addtogroup VTK
 //! \{
 
+using HeaderPrecision = std::variant<UInt32, UInt64>;
+
 //! Options for VTK-XML files
 struct XMLOptions {
     using EncoderOption = ExtendedVariant<GridFormat::Encoder, Automatic>;
@@ -69,7 +74,6 @@ struct XMLOptions {
 //! Options for setting the header and coordinate type
 struct PrecisionOptions {
     using CoordinatePrecision = std::variant<DynamicPrecision, Automatic>;
-    using HeaderPrecision = std::variant<UInt32, UInt64>;
     CoordinatePrecision coordinate_precision = automatic;
     HeaderPrecision header_precision = _from_size_t();
 
@@ -104,47 +108,32 @@ struct XMLSettings {
  private:
     template<typename E>
     static Encoder _make_encoder(const E& enc) {
-        if (_is_automatic(enc))
+        if (Variant::is<Automatic>(enc))
             return Encoding::base64;
-        return _make_from<Encoder>(enc);
+        return Variant::without<Automatic>(enc);
     }
 
     template<typename E, typename F>
     static VTKDataFormat _make_data_format(const E& enc, const F& data_format) {
-        if (_is_automatic(data_format))
-            return _is_ascii(enc) ? VTKDataFormat{VTK::DataFormat::inlined}
-                                  : VTKDataFormat{VTK::DataFormat::appended};
-        return _make_from<VTKDataFormat>(data_format);
+        if (Variant::is<Automatic>(data_format))
+            return Variant::is<Encoding::Ascii>(enc)
+                ? VTKDataFormat{VTK::DataFormat::inlined}
+                : VTKDataFormat{VTK::DataFormat::appended};
+        return Variant::without<Automatic>(data_format);
     }
 
     template<typename E, typename C>
     static Compressor _make_compressor(const E& enc, const C& compressor) {
-        if (_is_automatic(compressor))
-            return _is_ascii(enc) ? Compressor{none}
-                                  : Compressor{Defaults::Compressor{}};
-        if (_is_ascii(enc) && !_is_none(compressor)) {
+        if (Variant::is<Automatic>(compressor))
+            return Variant::is<Encoding::Ascii>(enc)
+                ? Compressor{none}
+                : Compressor{Defaults::Compressor{}};
+        if (Variant::is<Encoding::Ascii>(enc) && !Variant::is<None>(compressor)) {
             log_warning("Ascii output cannot be compressed. Ignoring chosen compressor...");
             return none;
         }
-        return _make_from<Compressor>(compressor);
+        return Variant::without<Automatic>(compressor);
     }
-
-    template<typename ResultVariant, typename InputVariant>
-    static ResultVariant _make_from(const InputVariant& v) {
-        ResultVariant result;
-        std::visit(Overload{
-            [&] (const Automatic&) {},
-            [&] (const auto& value) { result = value; }
-        }, v);
-        return result;
-    }
-
-    static bool _is_automatic(const auto& v) { return std::holds_alternative<Automatic>(v); }
-    static bool _is_none(const auto& v) { return std::holds_alternative<None>(v); }
-    static bool _is_raw(const auto& e) { return std::holds_alternative<Encoding::RawBinary>(e); }
-    static bool _is_ascii(const auto& e) { return std::holds_alternative<Encoding::Ascii>(e); }
-    static bool _is_inlined(const auto& f) { return std::holds_alternative<VTK::DataFormat::Inlined>(f); }
-    static bool _is_appended(const auto& f) { return std::holds_alternative<VTK::DataFormat::Appended>(f); }
 };
 
 }  // namespace XMLDetail
@@ -155,10 +144,12 @@ struct XMLSettings {
  * \ingroup VTK
  * \brief TODO: Doc me
  */
-template<Concepts::Grid G>
-class XMLWriterBase : public GridWriter<G> {
+template<Concepts::Grid G, typename Impl>
+class XMLWriterBase
+: public GridWriter<G>
+, public Detail::CRTPBase<Impl> {
     using ParentType = GridWriter<G>;
-    using HeaderPrecision = typename PrecisionOptions::HeaderPrecision;
+    using CompressorOption = ExtendedVariant<Compressor, None>;
 
  public:
     //! Export underlying grid type
@@ -175,6 +166,45 @@ class XMLWriterBase : public GridWriter<G> {
             [&] (const Automatic&) { _coord_precision = Precision<CoordinateType<Grid>>{}; },
             [&] (const auto& prec) { _coord_precision = prec; }
         }, prec_opts.coordinate_precision);
+    }
+
+    Impl with_data_format(const VTKDataFormat& format) const {
+        return this->_impl().with(_xml_opts_with(format), _precision_opts());
+    };
+
+    Impl with_compression(const CompressorOption& compressor) const {
+        return this->_impl().with(_xml_opts_with({}, compressor), _precision_opts());
+    };
+
+    Impl with_encoding(const Encoder& encoder) const {
+        return this->_impl().with(_xml_opts_with({}, {}, encoder), _precision_opts());
+    };
+
+    Impl with_coordinate_precision(const DynamicPrecision& prec) const {
+        return this->_impl().with(_xml_opts(), _prec_opts_with(prec));
+    }
+
+    Impl with_header_precision(const HeaderPrecision& prec) const {
+        return this->_impl().with(_xml_opts(), _prec_opts_with({}, prec));
+    }
+
+ private:
+    XMLOptions _xml_opts_with(const std::optional<VTKDataFormat>& format = {},
+                              const std::optional<CompressorOption>& compressor = {},
+                              const std::optional<Encoder>& encoder = {}) const {
+        auto opts = _xml_opts();
+        if (format) Variant::unwrap_to(opts.data_format, *format);
+        if (compressor) Variant::unwrap_to(opts.compressor, *compressor);
+        if (encoder) Variant::unwrap_to(opts.encoder, *encoder);
+        return opts;
+    }
+
+    PrecisionOptions _prec_opts_with(const std::optional<DynamicPrecision>& coord_prec = {},
+                                     const std::optional<HeaderPrecision>& header_prec = {}) const {
+        auto opts = _precision_opts();
+        if (coord_prec) opts.coordinate_precision = *coord_prec;
+        if (header_prec) opts.header_precision = *header_prec;
+        return opts;
     }
 
  protected:

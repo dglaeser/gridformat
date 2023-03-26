@@ -29,8 +29,8 @@ namespace GridFormat {
  */
 template<Concepts::UnstructuredGrid Grid,
          Concepts::Communicator Communicator>
-class PVTUWriter : public VTK::XMLWriterBase<Grid> {
-    using ParentType = VTK::XMLWriterBase<Grid>;
+class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator>> {
+    using ParentType = VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator>>;
 
  public:
     explicit PVTUWriter(const Grid& grid,
@@ -40,6 +40,10 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid> {
     : ParentType(grid, ".pvtu", xml_opts, std::move(prec_opts))
     , _comm(comm)
     {}
+
+    PVTUWriter with(VTK::XMLOptions xml_opts, VTK::PrecisionOptions prec_opts) const {
+        return PVTUWriter{this->grid(), _comm, std::move(xml_opts), std::move(prec_opts)};
+    }
 
  private:
     Communicator _comm;

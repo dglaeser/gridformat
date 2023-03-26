@@ -27,8 +27,8 @@ namespace GridFormat {
  * \brief Writer for .vtu file format
  */
 template<Concepts::UnstructuredGrid Grid>
-class VTPWriter : public VTK::XMLWriterBase<Grid> {
-    using ParentType = VTK::XMLWriterBase<Grid>;
+class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
+    using ParentType = VTK::XMLWriterBase<Grid, VTPWriter<Grid>>;
 
     template<std::size_t size>
     struct CellTypesPredicate {
@@ -48,6 +48,10 @@ class VTPWriter : public VTK::XMLWriterBase<Grid> {
                        VTK::PrecisionOptions prec_opts = {})
     : ParentType(grid, ".vtp", std::move(xml_opts), std::move(prec_opts))
     {}
+
+    VTPWriter with(VTK::XMLOptions xml_opts, VTK::PrecisionOptions prec_opts) const {
+        return VTPWriter{this->grid(), std::move(xml_opts), std::move(prec_opts)};
+    }
 
  private:
     void _write(std::ostream& s) const override {
