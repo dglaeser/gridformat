@@ -89,7 +89,7 @@ FieldPtr make_vtk_field(F&& field) {
     return make_vtk_field(make_shared(std::forward<F>(field)));
 }
 
-template<typename ctype, typename Grid> requires(GridDetail::exposes_point_range<Grid>)
+template<typename ctype, GridDetail::ExposesPointRange Grid>
 auto make_coordinates_field(const Grid& grid) {
     return make_vtk_field(PointField{
         grid,

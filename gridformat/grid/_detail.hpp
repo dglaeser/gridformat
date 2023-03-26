@@ -32,67 +32,60 @@ namespace GridFormat::GridDetail {
     using Entity = std::decay_t<EntityReference<Grid, Range>>;
 
     template<typename T>
-    inline constexpr bool exposes_point_range = is_complete<Traits::Points<T>> && EntityRange<Traits::Points<T>, T>;
+    concept ExposesPointRange = is_complete<Traits::Points<T>> && EntityRange<Traits::Points<T>, T>;
 
     template<typename T>
-    inline constexpr bool exposes_cell_range = is_complete<Traits::Cells<T>> && EntityRange<Traits::Cells<T>, T>;
+    concept ExposesCellRange = is_complete<Traits::Cells<T>> && EntityRange<Traits::Cells<T>, T>;
 
-    template<typename Grid> requires(exposes_point_range<Grid>)
+    template<ExposesPointRange Grid>
     using Point = Entity<Grid, Traits::Points<Grid>>;
 
-    template<typename Grid> requires(exposes_point_range<Grid>)
+    template<ExposesPointRange Grid>
     using PointReference = EntityReference<Grid, Traits::Points<Grid>>;
 
-    template<typename Grid> requires(exposes_cell_range<Grid>)
+    template<ExposesCellRange Grid>
     using Cell = Entity<Grid, Traits::Cells<Grid>>;
 
-    template<typename Grid> requires(exposes_cell_range<Grid>)
+    template<ExposesCellRange Grid>
     using CellReference = EntityReference<Grid, Traits::Cells<Grid>>;
 
     template<typename T>
-    inline constexpr bool exposes_point_coordinates
-        = is_complete<Traits::PointCoordinates<T, Point<T>>> && requires(const T& grid) {
+    concept ExposesPointCoordinates = is_complete<Traits::PointCoordinates<T, Point<T>>> && requires(const T& grid) {
         { Traits::PointCoordinates<T, Point<T>>::get(grid, std::declval<const Point<T>&>()) } -> std::ranges::range;
     };
 
-    template<typename T> requires(exposes_point_coordinates<T>)
+    template<ExposesPointCoordinates T>
     using PointCoordinates = std::decay_t<decltype(
         Traits::PointCoordinates<T, Point<T>>::get(std::declval<const T&>(), std::declval<const Point<T>&>())
     )>;
 
     template<typename T>
-    inline constexpr bool exposes_point_id
-        = is_complete<Traits::PointId<T, Point<T>>> && requires(const T& grid) {
+    concept ExposesPointId = is_complete<Traits::PointId<T, Point<T>>> && requires(const T& grid) {
         { Traits::PointId<T, Point<T>>::get(grid, std::declval<const Point<T>&>()) } -> std::integral;
     };
 
     template<typename T>
-    inline constexpr bool exposes_cell_type
-        = is_complete<Traits::CellType<T, Cell<T>>> && requires(const T& grid) {
+    concept ExposesCellType = is_complete<Traits::CellType<T, Cell<T>>> && requires(const T& grid) {
         { Traits::CellType<T, Cell<T>>::get(grid, std::declval<const Cell<T>&>()) } -> std::convertible_to<GridFormat::CellType>;
     };
 
     template<typename T>
-    inline constexpr bool exposes_cell_points
-        = is_complete<Traits::CellPoints<T, Cell<T>>> && requires(const T& grid) {
+    concept ExposesCellPoints = is_complete<Traits::CellPoints<T, Cell<T>>> && requires(const T& grid) {
         { Traits::CellPoints<T, Cell<T>>::get(grid, std::declval<const Cell<T>&>()) } -> Concepts::RangeOf<Point<T>>;
     };
 
     template<typename T>
-    inline constexpr bool exposes_number_of_points
-        = is_complete<Traits::NumberOfPoints<T>> && requires(const T& grid) {
+    concept ExposesNumberOfPoints = is_complete<Traits::NumberOfPoints<T>> && requires(const T& grid) {
             { Traits::NumberOfPoints<T>::get(grid) } -> std::convertible_to<std::size_t>;
         };
 
     template<typename T>
-    inline constexpr bool exposes_number_of_cells
-        = is_complete<Traits::NumberOfCells<T>> && requires(const T& grid) {
+    concept ExposesNumberOfCells = is_complete<Traits::NumberOfCells<T>> && requires(const T& grid) {
             { Traits::NumberOfCells<T>::get(grid) } -> std::convertible_to<std::size_t>;
         };
 
     template<typename T>
-    inline constexpr bool exposes_number_of_cell_corners
-        = is_complete<Traits::NumberOfCellCorners<T>> && requires(const T& grid, const Cell<T>& cell) {
+    concept ExposesNumberOfCellCorners = is_complete<Traits::NumberOfCellCorners<T>> && requires(const T& grid, const Cell<T>& cell) {
             { Traits::NumberOfCellCorners<T>::get(grid, cell) } -> std::convertible_to<std::size_t>;
         };
 
