@@ -29,7 +29,7 @@ class OutputStream {
     : _stream{s}
     {}
 
-    template<Concepts::Streamable<std::ostream> T>
+    template<Concepts::StreamableWith<std::ostream> T>
     requires(not Concepts::Scalar<T>)
     OutputStream& operator<<(const T& t) {
         _stream << t;
@@ -72,15 +72,13 @@ class OutputStreamWrapperBase {
     {}
 
  protected:
-    template<typename T>
-    requires(Concepts::FormattedOutputStream<OStream, T>)
+    template<Concepts::StreamableWith<OStream> T>
     void _write_formatted(const T& t) {
         _stream << t;
     }
 
-    template<typename T, std::size_t size>
-    requires(Concepts::OutputStream<OStream, T>)
-    void _write_raw(std::span<const T, size> data) {
+    template<Concepts::WritableWith<OStream> T, std::size_t size>
+    void _write_raw(const T& data) {
         _stream.write(data);
     }
 

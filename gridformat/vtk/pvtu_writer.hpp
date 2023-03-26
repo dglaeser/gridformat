@@ -28,20 +28,21 @@ namespace GridFormat {
  * \brief Writer for parallel .pvtu files
  */
 template<Concepts::UnstructuredGrid Grid,
-         Concepts::Communicator Communicator,
-         typename XMLOpts = VTK::XMLOptions<>,
-         typename PrecOpts = VTK::PrecisionOptions<>>
-class PVTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
-    using ParentType = VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts>;
+         Concepts::Communicator Communicator>
+class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator>> {
+    using ParentType = VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator>>;
 
  public:
     explicit PVTUWriter(const Grid& grid,
                         Communicator comm,
-                        XMLOpts xml_opts = {},
-                        PrecOpts prec_opts = {})
-    : ParentType(grid, ".pvtu", std::move(xml_opts), std::move(prec_opts))
+                        VTK::XMLOptions xml_opts = {})
+    : ParentType(grid, ".pvtu", xml_opts)
     , _comm(comm)
     {}
+
+    PVTUWriter with(VTK::XMLOptions xml_opts) const {
+        return PVTUWriter{this->grid(), _comm, std::move(xml_opts)};
+    }
 
  private:
     Communicator _comm;
@@ -62,7 +63,7 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
     }
 
     void _write_piece(const std::string& par_filename) const {
-        VTUWriter writer{this->grid(), this->_xml_opts, this->_prec_opts};
+        VTUWriter writer{this->grid(), this->_xml_opts()};
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             writer.set_point_field(name, VTK::make_vtk_field(this->_get_shared_point_field(name)));
         });
@@ -98,7 +99,11 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
             XMLElement& arr = section.add_child("PDataArray");
             arr.set_attribute("Name", name);
             arr.set_attribute("type", VTK::attribute_name(field.precision()));
-            arr.set_attribute("format", VTK::data_format_name(this->_xml_opts.encoder, this->_data_format()));
+            std::visit([&] (const auto& data_format) {
+                std::visit([&] (const auto& encoder) {
+                    arr.set_attribute("format", VTK::data_format_name(encoder, data_format));
+                }, this->_xml_settings.encoder);
+            }, this->_xml_settings.data_format);
             arr.set_attribute("NumberOfComponents", std::pow(vtk_space_dim, field.layout().dimension() - 1));
         };
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
@@ -110,7 +115,9 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
 
         XMLElement& point_array = grid.add_child("PPoints").add_child("PDataArray");
         point_array.set_attribute("NumberOfComponents", "3");
-        point_array.set_attribute("type", VTK::attribute_name(_coord_precision()));
+        this->_xml_settings.coordinate_precision.visit([&] <typename T> (const Precision<T>& prec) {
+            point_array.set_attribute("type", VTK::attribute_name(prec));
+        });
 
         for (int rank : std::views::iota(0, Parallel::size(_comm)))
             grid.add_child("Piece").set_attribute(
@@ -118,10 +125,6 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, XMLOpts, PrecOpts> {
             );
 
         write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
-    }
-
-    constexpr auto _coord_precision() const {
-        return Precision<typename ParentType::CoordinateType>{};
     }
 };
 

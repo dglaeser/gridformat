@@ -10,6 +10,10 @@
 
 #include <ranges>
 #include <iterator>
+#include <type_traits>
+
+#include <gridformat/common/concepts.hpp>
+#include <gridformat/common/type_traits.hpp>
 
 namespace GridFormat::Ranges {
 
@@ -17,7 +21,7 @@ namespace GridFormat::Ranges {
  * \ingroup Common
  * \brief Return the size of a range
  */
-template<std::ranges::sized_range R>
+template<std::ranges::sized_range R> requires(!Concepts::StaticallySizedRange<R>)
 constexpr auto size(R&& r) {
     return std::ranges::size(r);
 }
@@ -28,9 +32,20 @@ constexpr auto size(R&& r) {
  * \note This has complexitx O(N), but we also
  *       want to support user-given non-sized ranges.
  */
-template<std::ranges::range R>
+template<std::ranges::range R> requires(
+    !std::ranges::sized_range<R> and
+    !Concepts::StaticallySizedRange<R>)
 constexpr auto size(R&& r) {
     return std::ranges::distance(r);
+}
+
+/*!
+ * \ingroup Common
+ * \brief Return the size of a range with size known at compile time.
+ */
+template<Concepts::StaticallySizedRange R>
+constexpr auto size(R&&) {
+    return StaticSize<std::decay_t<R>>::value;
 }
 
 }  // namespace GridFormat::Ranges

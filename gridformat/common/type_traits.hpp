@@ -22,9 +22,13 @@ namespace GridFormat {
 
 struct Automatic {};
 inline constexpr Automatic automatic;
+template<typename T>
+inline constexpr bool is_automatic = std::is_same_v<T, Automatic>;
 
 struct None {};
 inline constexpr None none;
+template<typename T>
+inline constexpr bool is_none = std::is_same_v<T, None>;
 
 template<typename T>
 struct IsScalar : public std::false_type {};
@@ -95,31 +99,6 @@ inline constexpr std::size_t mdrange_dimension = Detail::MDRangeDimension<R>::va
 #ifndef DOXYGEN
 namespace Detail {
 
-    template<typename T, template<typename> typename Model>
-    struct MDRangeModels : public std::false_type {};
-
-    template<std::ranges::range R, template<typename> typename Model>
-    struct MDRangeModels<R, Model> {
-        static constexpr bool value
-            = Model<R>::value
-            && MDRangeModels<std::ranges::range_value_t<R>, Model>::value;
-    };
-
-    template<std::ranges::range R, template<typename> typename Model> requires(mdrange_dimension<R> == 1)
-    struct MDRangeModels<R, Model> {
-        static constexpr bool value = Model<R>::value;
-    };
-
-}  // namespace Detail
-#endif  // DOXYGEN
-
-template<std::ranges::range R, template<typename> typename Model>
-inline constexpr bool mdrange_models = Detail::MDRangeModels<R, Model>::value;
-
-
-#ifndef DOXYGEN
-namespace Detail {
-
     template<typename T, std::size_t s = sizeof(T)>
     std::false_type isIncomplete(T*);
     std::true_type isIncomplete(...);
@@ -175,9 +154,98 @@ using UniqueVariant = typename Detail::UniqueVariant<T, Types...>::type;
 namespace Detail {
 
     template<typename T>
+    struct VariantOrClosure;
+    template<typename T, typename... Ts>
+    struct VariantOrClosure<std::variant<T, Ts...>> {
+        template<typename... _Ts>
+        using Variant = GridFormat::UniqueVariant<T, Ts..., _Ts...>;
+    };
+
+    template<typename T, typename... Types>
+    struct VariantOr {
+        using type = typename VariantOrClosure<T>::template Variant<Types...>;
+    };
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
+template<typename T, typename... Types>
+using ExtendedVariant = typename Detail::VariantOr<T, Types...>::type;
+
+
+#ifndef DOXYGEN
+namespace Detail {
+
+template<typename T>
+struct MergedVariant;
+template<typename... Ts>
+struct MergedVariant<std::variant<Ts...>> {
+    template<typename T>
+    struct Closure;
+    template<typename... _Ts>
+    struct Closure<std::variant<_Ts...>> {
+        using type = GridFormat::ExtendedVariant<std::variant<Ts...>, _Ts...>;
+    };
+
+    template<typename V2>
+    using Variant = typename Closure<V2>::type;
+};
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
+template<typename V1, typename V2>
+using MergedVariant = typename Detail::MergedVariant<V1>::template Variant<V2>;
+
+
+#ifndef DOXYGEN
+namespace Detail {
+    template<typename Remove, typename Variant>
+    struct VariantWithoutSingleType;
+    template<typename Remove, typename T, typename... Ts>
+    struct VariantWithoutSingleType<Remove, std::variant<T, Ts...>> {
+        using type = std::conditional_t<
+            std::is_same_v<Remove, T>,
+            std::conditional_t<
+                sizeof...(Ts) == 0,
+                std::variant<>,
+                std::variant<Ts...>
+            >,
+            GridFormat::MergedVariant<
+                std::variant<T>,
+                typename VariantWithoutSingleType<Remove, std::variant<Ts...>>::type
+            >
+        >;
+    };
+    template<typename Remove>
+    struct VariantWithoutSingleType<Remove, std::variant<>> : public std::type_identity<std::variant<>> {};
+
+    template<typename Variant, typename... Remove>
+    struct VariantWithout;
+    template<typename... Ts>
+    struct VariantWithout<std::variant<Ts...>> : public std::type_identity<std::variant<Ts...>> {};
+    template<typename... Ts, typename R, typename... Remove>
+    struct VariantWithout<std::variant<Ts...>, R, Remove...> {
+        using type = typename VariantWithout<
+            typename VariantWithoutSingleType<R, std::variant<Ts...>>::type,
+            Remove...
+        >::type;
+    };
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
+template<typename T, typename... Remove>
+using ReducedVariant = typename Detail::VariantWithout<T, Remove...>::type;
+
+
+#ifndef DOXYGEN
+namespace Detail {
+
+    template<typename T>
     struct FieldScalar;
 
-    template<typename T> requires(std::integral<T> or std::floating_point<T>)
+    template<typename T> requires(is_scalar<T>)
     struct FieldScalar<T> : public std::type_identity<T> {};
 
     template<std::ranges::range R> requires(is_scalar<MDRangeScalar<R>>)
@@ -189,6 +257,24 @@ namespace Detail {
 template<typename T>
 using FieldScalar = typename Detail::FieldScalar<T>::type;
 
+
+#ifndef DOXYGEN
+namespace Detail {
+
+template<typename T>
+concept HasStaticSizeFunction = requires {
+    { T::size() } -> std::convertible_to<std::size_t>;
+    { std::integral_constant<std::size_t, T::size()>{} };
+};
+
+template<typename T>
+concept HasStaticSizeMember = requires {
+    { T::size } -> std::convertible_to<std::size_t>;
+    { std::integral_constant<std::size_t, T::size>{} };
+};
+
+}  // namespace Detail
+#endif  // DOXYGEN
 
 template<typename T>
 struct StaticSize;
@@ -203,6 +289,14 @@ struct StaticSize<std::span<T, s>> {
 template<typename T, std::size_t s>
 struct StaticSize<T[s]> {
     static constexpr std::size_t value = s;
+};
+template<Detail::HasStaticSizeMember T>
+struct StaticSize<T> {
+    static constexpr std::size_t value = T::size;
+};
+template<Detail::HasStaticSizeFunction T>
+struct StaticSize<T> {
+    static constexpr std::size_t value = T::size();
 };
 
 //! \} group Common

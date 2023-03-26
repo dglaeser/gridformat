@@ -9,7 +9,7 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron:  '30 22 * * 0'
+    - cron: '30 22 * * 0'
   workflow_dispatch:
 
 jobs:
@@ -31,35 +31,21 @@ jobs:
       - name: install-pip-packages
         run: python3 -m pip install vtk reuse
 
-      - name: install-adapted-grid-packages
-        run: |
-          mkdir dune_libs && pushd dune_libs
-              echo "CMAKE_FLAGS=\"-DCMAKE_BUILD_TYPE=Release -DDUNE_ENABLE_PYTHONBINDINGS=0\"" >> dune.opts
-              git clone --depth=1 https://gitlab.dune-project.org/core/dune-common.git
-              git clone --depth=1 https://gitlab.dune-project.org/core/dune-geometry.git
-              git clone --depth=1 https://gitlab.dune-project.org/core/dune-grid.git
-              ./dune-common/bin/dunecontrol --opts=dune.opts all
-              sudo ./dune-common/bin/dunecontrol --opts=dune.opts make install
-          popd && rm -rf dune_libs
-          sudo ldconfig
-
       - name: checkout-repository
         uses: actions/checkout@v2
 
       - name: check-reuse-compliance
         run: reuse lint
 
-      - name: configure
-        run: |
-          CXX_COMPILER="${{ matrix.cxx_compiler }}"
-          C_COMPILER="${{ matrix.c_compiler }}"
-          cmake -DCMAKE_C_COMPILER=/usr/bin/$C_COMPILER \
-                -DCMAKE_CXX_COMPILER=/usr/bin/$CXX_COMPILER \
-                -DGRIDFORMAT_BUILD_TESTS=ON \
-                -B build
+      - name: install-adapted-packages
+        uses: ./.github/actions/install-adapted-packages
 
-      - name: build
-        run: pushd build && make build_tests && popd
+      - name: build-tests
+        uses: ./.github/actions/build-tests
+        with:
+          c_compiler: /usr/bin/${{matrix.c_compiler}}
+          cxx_compiler: /usr/bin/${{matrix.cxx_compiler}}
+          build_dir: build
 
       - name: test
         run: |
@@ -98,3 +84,13 @@ jobs:
                   -DGRIDFORMAT_FETCH_TREE=$GFMT_TREE \
                   -B build
           pushd build && make && ctest --output-on-failure
+
+      - name: remove-optional-dependencies
+        run: sudo apt remove liblz4-dev liblzma-dev
+
+      - name: build-with-minimal-setup
+        uses: ./.github/actions/build-tests
+        with:
+          c_compiler: /usr/bin/${{matrix.c_compiler}}
+          cxx_compiler: /usr/bin/${{matrix.cxx_compiler}}
+          build_dir: build

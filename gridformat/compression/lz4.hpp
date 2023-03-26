@@ -62,6 +62,10 @@ class LZ4 {
         return blocks;
     }
 
+    static LZ4 with(Options opts) {
+        return LZ4{std::move(opts)};
+    }
+
  private:
     template<std::integral HeaderType>
     CompressedBlocks<HeaderType> _compress(std::span<const LZ4Byte> in,
@@ -110,24 +114,26 @@ class LZ4 {
     Options _opts;
 };
 
-#ifndef DOXYGEN_SKIP_DETAILS
-namespace Detail {
-
-    struct LZ4Adapter {
-        constexpr auto operator()(LZ4Options opts = {}) const {
-            return LZ4{std::move(opts)};
-        }
-    };
-
-}  // end namespace Detail
-#endif  // DOXYGEN_SKIP_DETAILS
-
-inline constexpr Detail::LZ4Adapter lz4_with;
-inline constexpr LZ4 lz4 = lz4_with();
+inline constexpr LZ4 lz4;
+namespace Detail { inline constexpr bool _have_lz4 = true; }
 
 //! @} group Compression
 
 }  // end namespace GridFormat::Compression
+
+#else  // GRIDFORMAT_HAVE_LZ4
+
+namespace GridFormat::Compression {
+
+namespace Detail { inline constexpr bool _have_lz4 = false; }
+
+class LZ4 {
+ public:
+    template<bool b = false, typename... Args>
+    explicit LZ4(Args&&...) { static_assert(b, "LZ4 compressor requires the LZ4 library."); }
+};
+
+}  // namespace GridFormat::Compression
 
 #endif  // GRIDFORMAT_HAVE_LZ4
 #endif  // GRIDFORMAT_COMPRESSION_LZ4_HPP_

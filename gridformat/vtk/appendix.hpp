@@ -62,7 +62,7 @@ class Appendix {
         virtual void stream(std::ostream& s) const = 0;
     };
 
-    template<Concepts::Streamable<std::ostream> DataArray>
+    template<Concepts::StreamableWith<std::ostream> DataArray>
     class DataArrayImpl : public DataArrayModel {
      public:
         explicit DataArrayImpl(DataArray&& arr)

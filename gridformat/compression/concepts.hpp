@@ -9,26 +9,33 @@
 #define GRIDFORMAT_COMPRESSION_CONCEPTS_HPP_
 
 #include <ranges>
+#include <type_traits>
 
 #include <gridformat/common/serialization.hpp>
+#include <gridformat/compression/common.hpp>
 
 namespace GridFormat::Concepts {
 
 //! \addtogroup Compression
 //! \{
 
-template<typename T>
-concept CompressedBlocks = requires(const T& t) {
-    { t.block_size } -> std::convertible_to<std::size_t>;
-    { t.residual_block_size } -> std::convertible_to<std::size_t>;
-    { t.number_of_blocks } -> std::convertible_to<std::size_t>;
-    { t.compressed_block_sizes } -> std::ranges::range;
-    { *std::ranges::begin(t.compressed_block_sizes) } -> std::convertible_to<std::size_t>;
-};
+#ifndef DOXYGEN
+namespace CompressionDetail {
+
+    template<typename T>
+    struct IsCompressedBlocks : public std::false_type {};
+    template<typename Header>
+    struct IsCompressedBlocks<Compression::CompressedBlocks<Header>> : public std::true_type {};
+
+    template<typename T>
+    concept ValidCompressionResult = IsCompressedBlocks<T>::value;
+
+}  // namespace CompressionDetail
+#endif  // DOXYGEN
 
 template<typename T>
 concept Compressor = requires(const T& t, Serialization& s) {
-    { t.compress(s) } -> CompressedBlocks;
+    { t.compress(s) } -> CompressionDetail::ValidCompressionResult;
 };
 
 //! \} group Compression

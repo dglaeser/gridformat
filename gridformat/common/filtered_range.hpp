@@ -113,6 +113,14 @@ FilteredRange(R&&, P&&) -> FilteredRange<std::decay_t<R>, std::decay_t<P>>;
 template<std::ranges::range R, typename P> requires(std::is_lvalue_reference_v<R>)
 FilteredRange(R&&, P&&) -> FilteredRange<std::remove_reference_t<R>&, std::decay_t<P>>;
 
+namespace Ranges {
+
+template<typename P, std::ranges::range R>
+auto filter_by(P&& predicate, R&& range) {
+    return FilteredRange{std::forward<R>(range), std::forward<P>(predicate)};
+}
+
+}  // namespace Ranges
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_COMMON_FILTERED_RANGE_HPP_

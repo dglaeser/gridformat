@@ -18,13 +18,13 @@ namespace GridFormat {
 //! \addtogroup Grid
 //! \{
 
-template<typename Grid> requires(GridDetail::exposes_point_range<Grid>)
+template<GridDetail::ExposesPointRange Grid>
 using Point = GridDetail::Point<Grid>;
 
-template<typename Grid> requires(GridDetail::exposes_cell_range<Grid>)
+template<GridDetail::ExposesCellRange Grid>
 using Cell = GridDetail::Cell<Grid>;
 
-template<typename T> requires(GridDetail::exposes_point_coordinates<T>)
+template<GridDetail::ExposesPointCoordinates T>
 using CoordinateType = std::ranges::range_value_t<GridDetail::PointCoordinates<T>>;
 
 //! \} group Grid

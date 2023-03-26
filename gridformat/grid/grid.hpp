@@ -24,47 +24,67 @@ namespace GridFormat {
 //! \addtogroup Grid
 //! \{
 
-template<typename Grid> requires(GridDetail::exposes_point_range<Grid>)
+template<GridDetail::ExposesPointRange Grid>
 std::ranges::range auto points(const Grid& grid) {
     return Traits::Points<Grid>::get(grid);
 }
 
-template<typename Grid> requires(GridDetail::exposes_cell_range<Grid>)
+template<GridDetail::ExposesCellRange Grid>
 std::ranges::range auto cells(const Grid& grid) {
     return Traits::Cells<Grid>::get(grid);
 }
 
-template<typename Grid> requires(GridDetail::exposes_point_id<Grid>)
+template<GridDetail::ExposesPointId Grid>
 std::integral auto id(const Grid& grid, const Point<Grid>& point) {
     return Traits::PointId<Grid, Point<Grid>>::get(grid, point);
 }
 
-template<typename Grid> requires(GridDetail::exposes_point_coordinates<Grid>)
+template<GridDetail::ExposesPointCoordinates Grid>
 std::ranges::range auto coordinates(const Grid& grid, const Point<Grid>& point) {
     return Traits::PointCoordinates<Grid, Point<Grid>>::get(grid, point);
 }
 
-template<typename Grid> requires(GridDetail::exposes_cell_type<Grid>)
+template<GridDetail::ExposesCellType Grid>
 CellType type(const Grid& grid, const Cell<Grid>& cell) {
     return Traits::CellType<Grid, Cell<Grid>>::get(grid, cell);
 }
 
-template<typename Grid> requires(GridDetail::exposes_cell_points<Grid>)
+template<GridDetail::ExposesCellPoints Grid>
 std::ranges::range auto points(const Grid& grid, const Cell<Grid>& cell) {
     return Traits::CellPoints<Grid, Cell<Grid>>::get(grid, cell);
 }
 
-template<typename Grid>
+template<typename Grid> requires(
+    GridDetail::ExposesNumberOfCells<Grid> or
+    GridDetail::ExposesCellRange<Grid>)
 std::size_t number_of_cells(const Grid& grid) {
-    return Ranges::size(cells(grid));
+    if constexpr (GridDetail::ExposesNumberOfCells<Grid>)
+        return Traits::NumberOfCells<Grid>::get(grid);
+    else
+        return Ranges::size(cells(grid));
 }
 
-template<typename Grid>
+template<typename Grid> requires(
+    GridDetail::ExposesNumberOfPoints<Grid> or
+    GridDetail::ExposesPointRange<Grid>)
 std::size_t number_of_points(const Grid& grid) {
-    return Ranges::size(points(grid));
+    if constexpr (GridDetail::ExposesNumberOfPoints<Grid>)
+        return Traits::NumberOfPoints<Grid>::get(grid);
+    else
+        return Ranges::size(points(grid));
 }
 
-template<typename Grid>
+template<typename Grid> requires(
+    GridDetail::ExposesNumberOfCellCorners<Grid> or
+    GridDetail::ExposesPointRange<Grid>)
+std::size_t number_of_points(const Grid& grid, const Cell<Grid>& cell) {
+    if constexpr (GridDetail::ExposesNumberOfCellCorners<Grid>)
+        return Traits::NumberOfCellCorners<Grid>::get(grid, cell);
+    else
+        return Ranges::size(points(grid, cell));
+}
+
+template<GridDetail::ExposesPointRange Grid> requires(GridDetail::ExposesPointId<Grid>)
 std::unordered_map<std::size_t, std::size_t> make_point_id_map(const Grid& grid) {
     std::size_t i = 0;
     std::unordered_map<std::size_t, std::size_t> point_id_to_running_idx;

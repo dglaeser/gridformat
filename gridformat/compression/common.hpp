@@ -10,9 +10,9 @@
 
 #include <vector>
 #include <utility>
-#include <cassert>
 #include <numeric>
 
+#include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/serialization.hpp>
 
 namespace GridFormat::Compression {
@@ -50,7 +50,8 @@ struct CompressedBlocks {
     , residual_block_size{blocks.residual_block_size}
     , number_of_blocks{blocks.number_of_blocks}
     , compressed_block_sizes{std::move(comp_block_sizes)} {
-        assert(compressed_block_sizes.size() == number_of_blocks);
+        if (compressed_block_sizes.size() != number_of_blocks)
+            throw SizeError("Mismatch between blocks and number of compressed blocks");
     }
 
     std::size_t compressed_size() const {

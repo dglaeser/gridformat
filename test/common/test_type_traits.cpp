@@ -55,11 +55,6 @@ int main() {
     static_assert(GridFormat::mdrange_dimension<std::vector<std::vector<int>>> == 2);
     static_assert(GridFormat::mdrange_dimension<std::vector<std::vector<std::vector<int>>>> == 3);
 
-    static_assert(GridFormat::mdrange_models<std::vector<int>, IsForwardRange>);
-    static_assert(GridFormat::mdrange_models<std::vector<int>, IsRandomAccessRange>);
-    static_assert(GridFormat::mdrange_models<std::list<int>, IsForwardRange>);
-    static_assert(!GridFormat::mdrange_models<std::list<int>, IsRandomAccessRange>);
-
     static_assert(GridFormat::is_incomplete<Incomplete<double>>);
     static_assert(!GridFormat::is_complete<Incomplete<double>>);
     static_assert(!GridFormat::is_incomplete<Incomplete<Foo>>);
@@ -78,6 +73,19 @@ int main() {
     static_assert(std::same_as<int, GridFormat::FieldScalar<std::vector<int>>>);
     static_assert(std::same_as<int, GridFormat::FieldScalar<std::vector<std::vector<int>>>>);
     static_assert(std::same_as<int, GridFormat::FieldScalar<int>>);
+
+    static_assert(std::same_as<
+        GridFormat::ExtendedVariant<std::variant<int, double>, char, std::string, char>,
+        std::variant<int, double, char, std::string>
+    >);
+    static_assert(std::same_as<
+        GridFormat::MergedVariant<std::variant<int, double>, std::variant<char, unsigned>>,
+        std::variant<int, double, char, unsigned>
+    >);
+    static_assert(std::same_as<
+        GridFormat::ReducedVariant<std::variant<int, double, char>, double, char>,
+        std::variant<int>
+    >);
 
     return 0;
 }

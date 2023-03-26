@@ -39,17 +39,17 @@ int main() {
     static_assert(GridFormat::Concepts::Interoperable<int, double>);
     static_assert(GridFormat::Concepts::Interoperable<double, int>);
 
-    static_assert(GridFormat::Concepts::Streamable<double, std::ostream>);
-    static_assert(GridFormat::Concepts::Streamable<Streamable, std::ostream>);
-    static_assert(!GridFormat::Concepts::Streamable<NonStreamable, std::ostream>);
+    static_assert(GridFormat::Concepts::StreamableWith<double, std::ostream>);
+    static_assert(GridFormat::Concepts::StreamableWith<Streamable, std::ostream>);
+    static_assert(!GridFormat::Concepts::StreamableWith<NonStreamable, std::ostream>);
 
-    static_assert(GridFormat::Concepts::FormattedOutputStream<std::ostream, double>);
-    static_assert(GridFormat::Concepts::FormattedOutputStream<std::ostream, Streamable>);
-    static_assert(!GridFormat::Concepts::FormattedOutputStream<std::ostream, NonStreamable>);
+    static_assert(!GridFormat::Concepts::WriterFor<std::ostream, std::span<const int>>);
+    static_assert(GridFormat::Concepts::WriterFor<MyStream, std::span<const double>>);
+    static_assert(GridFormat::Concepts::WriterFor<MyStream, std::span<const int>>);
 
-    static_assert(!GridFormat::Concepts::OutputStream<std::ostream, int>);
-    static_assert(GridFormat::Concepts::OutputStream<MyStream, double>);
-    static_assert(GridFormat::Concepts::OutputStream<MyStream, int>);
+    static_assert(!GridFormat::Concepts::WritableWith<std::span<const int>, std::ostream>);
+    static_assert(GridFormat::Concepts::WritableWith<std::span<const double>, MyStream>);
+    static_assert(GridFormat::Concepts::WritableWith<std::span<const int>, MyStream>);
 
     static_assert(GridFormat::Concepts::RangeOf<std::vector<int>, int>);
     static_assert(GridFormat::Concepts::RangeOf<std::vector<double>, double>);

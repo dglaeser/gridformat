@@ -19,28 +19,20 @@
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/concepts.hpp>
-
 #include <gridformat/common/field_storage.hpp>
-#include <gridformat/common/range_field.hpp>
 
 #include <gridformat/grid/grid.hpp>
+#include <gridformat/grid/_detail.hpp>
+#include <gridformat/grid/entity_fields.hpp>
 
 namespace GridFormat {
 
 //! \addtogroup Grid
 //! \{
 
-template<typename F, typename E> requires(Concepts::Detail::EntityFunction<F, E>)
-using EntityFunctionValueType = GridDetail::EntityFunctionValueType<F, E>;
-
-template<typename F, typename E>
-using EntityFunctionScalar = FieldScalar<EntityFunctionValueType<F, E>>;
-
-//! Base class for grid data writers
+//! Base class for grid data writers, exposing the interfaces to add fields
 template<typename Grid>
 class GridWriterBase {
-    using FieldStorage = GridFormat::FieldStorage<>;
-
  public:
     using Field = typename FieldStorage::Field;
 
@@ -48,10 +40,10 @@ class GridWriterBase {
     : _grid(grid)
     {}
 
-    template<Concepts::PointFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Point<Grid>>>
+    template<Concepts::PointFunction<Grid> F, Concepts::Scalar T = GridDetail::PointFunctionScalarType<Grid, F>>
     void set_point_field(const std::string& name, F&& point_function, const Precision<T>& prec = {}) {
         static_assert(!std::is_lvalue_reference_v<F>, "Cannot take functions by reference, please move");
-        set_point_field(name, _make_entity_field(std::move(point_function), points(_grid), prec));
+        set_point_field(name, _make_point_field(std::move(point_function), prec));
     }
 
     template<std::derived_from<Field> F>
@@ -64,10 +56,10 @@ class GridWriterBase {
         _point_fields.set(name, field_ptr);
     }
 
-    template<Concepts::CellFunction<Grid> F, Concepts::Scalar T = EntityFunctionScalar<F, Cell<Grid>>>
+    template<Concepts::CellFunction<Grid> F, Concepts::Scalar T = GridDetail::CellFunctionScalarType<Grid, F>>
     void set_cell_field(const std::string& name, F&& cell_function, const Precision<T>& prec = {}) {
         static_assert(!std::is_lvalue_reference_v<F>, "Cannot take functions by reference, please move");
-        set_cell_field(name, _make_entity_field(std::move(cell_function), cells(_grid), prec));
+        set_cell_field(name, _make_cell_field(std::move(cell_function), prec));
     }
 
     template<std::derived_from<Field> F>
@@ -90,25 +82,14 @@ class GridWriterBase {
     }
 
  protected:
-    template<typename EntityFunction,
-             std::ranges::range EntityRange,
-             Concepts::Scalar T>
-    auto _make_entity_field(EntityFunction&& f, EntityRange&& entities, const Precision<T>& prec) const {
-        return _make_entity_field(_make_entity_function_range(std::move(f), std::move(entities)), prec);
+    template<typename EntityFunction, Concepts::Scalar T>
+    auto _make_point_field(EntityFunction&& f, const Precision<T>& prec) const {
+        return PointField{_grid, std::move(f), prec};
     }
 
-    template<std::ranges::range R, Concepts::Scalar T>
-    auto _make_entity_field(R&& r, const Precision<T>& prec) const {
-        return RangeField{std::move(r), prec};
-    }
-
-    template<typename EntityFunction, std::ranges::range EntityRange>
-    auto _make_entity_function_range(EntityFunction&& f, EntityRange&& entities) const {
-        using Entity = std::ranges::range_value_t<EntityRange>;
-        return std::move(entities)
-            | std::views::transform([f = std::move(f)] (const Entity& e) {
-                return f(e);
-            });
+    template<typename EntityFunction, Concepts::Scalar T>
+    auto _make_cell_field(EntityFunction&& f, const Precision<T>& prec) const {
+        return CellField{_grid, std::move(f), prec};
     }
 
     std::ranges::range auto _point_field_names() const {

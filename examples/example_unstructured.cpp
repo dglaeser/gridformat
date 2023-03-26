@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <array>
+#include <vector>
 #include <ranges>
 #include <cmath>
 
@@ -91,14 +92,14 @@ namespace GridFormat::Traits {
 
 template<>
 struct Points<MyGrid> {
-    static decltype(auto) get(const MyGrid& grid) {
+    static std::ranges::view auto get(const MyGrid& grid) {
         return grid.points() | std::views::all;
     }
 };
 
 template<>
 struct Cells<MyGrid> {
-    static decltype(auto) get(const MyGrid& grid) {
+    static std::ranges::view auto get(const MyGrid& grid) {
         return grid.cells() | std::views::all;
     }
 };

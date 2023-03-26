@@ -29,6 +29,8 @@ namespace GridFormat {
  */
 class MDLayout {
  public:
+    MDLayout() = default;
+
     template<std::ranges::forward_range R>
     explicit MDLayout(R&& extents) {
         _extents.reserve(Ranges::size(extents));
@@ -70,6 +72,10 @@ class MDLayout {
         }};
     }
 
+    bool is_scalar() const {
+        return _extents.size() == 0;
+    }
+
     bool operator==(const MDLayout& other) const {
         return std::ranges::equal(_extents, other._extents);
     }
@@ -94,34 +100,12 @@ class MDLayout {
 #ifndef DOXYGEN
 namespace Detail {
 
-    template<std::ranges::range R, std::size_t size>
-    constexpr void set_sub_extents(std::array<std::size_t, size>& extents, std::size_t dim) {
-        assert(dim < size);
-        if constexpr (Concepts::StaticallySizedRange<R>)
-            extents[dim] = StaticSize<R>::value;
-        else
-            extents[dim] = 0;
+    template<Concepts::StaticallySizedRange R, typename Iterator>
+    constexpr void set_sub_extents(Iterator it) {
+        *it = StaticSize<R>::value;
+        ++it;
         if constexpr (has_sub_range<R>)
-            set_sub_extents<std::ranges::range_value_t<R>>(extents, dim + 1);
-    }
-
-    template<std::ranges::range R, std::size_t size>
-    constexpr void set_sub_extents_from_instance(R&& r, std::array<std::size_t, size>& extents, std::size_t dim) {
-        assert(dim < size);
-        if constexpr (Concepts::StaticallySizedRange<R>)
-            extents[dim] = StaticSize<R>::value;
-        else
-            extents[dim] = Ranges::size(r);
-        if constexpr (has_sub_range<R>) {
-            if (extents[dim] == 0)
-                set_sub_extents<std::ranges::range_value_t<R>>(extents, dim + 1);
-            else {
-                set_sub_extents_from_instance(*std::ranges::begin(r), extents, dim + 1);
-                assert(std::ranges::all_of(r, [&] (const std::ranges::range auto& sub_range) {
-                    return static_cast<std::size_t>(Ranges::size(sub_range)) == extents[dim + 1];
-                }));
-            }
-        }
+            set_sub_extents<std::ranges::range_value_t<R>>(it);
     }
 
 }  // namespace Detail
@@ -129,13 +113,45 @@ namespace Detail {
 
 /*!
  * \ingroup Common
+ * \brief Get the layout of a range (or a scalar) whose size is known at compile-time
+ */
+template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
+constexpr MDLayout get_md_layout() {
+    if constexpr (Concepts::Scalar<T>)
+        return MDLayout{};
+    else {
+        std::array<std::size_t, mdrange_dimension<T>> extents;
+        extents[0] = StaticSize<T>::value;
+        if constexpr (mdrange_dimension<T> > 1)
+            Detail::set_sub_extents<std::ranges::range_value_t<T>>(extents.begin() + 1);
+        return MDLayout{extents};
+    }
+}
+
+/*!
+ * \ingroup Common
+ * \brief Get the layout for a range consisting of n instances of the range (or scalar)
+ *        given as template argument, whose size is known at compile-time.
+ */
+template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
+constexpr MDLayout get_md_layout(std::size_t n) {
+    if constexpr (Concepts::Scalar<T>)
+        return MDLayout{{n}};
+    else {
+        std::array<std::size_t, mdrange_dimension<T> + 1> extents;
+        extents[0] = n;
+        Detail::set_sub_extents<T>(extents.begin() + 1);
+        return MDLayout{extents};
+    }
+}
+
+/*!
+ * \ingroup Common
  * \brief Get the multi-dimensional layout for the given range
  */
 template<std::ranges::range R>
-MDLayout get_md_layout(R&& r) {
-    std::array<std::size_t, mdrange_dimension<R>> extents;
-    Detail::set_sub_extents_from_instance(r, extents, 0);
-    return MDLayout{extents};
+constexpr MDLayout get_md_layout(R&& r) {
+    return get_md_layout<std::ranges::range_value_t<R>>(Ranges::size(r));
 }
 
 /*!
@@ -143,8 +159,8 @@ MDLayout get_md_layout(R&& r) {
  * \brief Overload for scalars
  */
 template<Concepts::Scalar T>
-MDLayout get_md_layout(const T&) {
-    return MDLayout{std::array<std::size_t, 1>{1}};
+constexpr MDLayout get_md_layout(const T&) {
+    return MDLayout{};
 }
 
 }  // namespace GridFormat

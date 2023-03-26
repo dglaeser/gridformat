@@ -11,6 +11,7 @@
 #include <cmath>
 #include <limits>
 #include <algorithm>
+#include <optional>
 
 #include <gridformat/common/output_stream.hpp>
 
@@ -36,6 +37,12 @@ struct AsciiFormatOptions {
     std::string delimiter = "";
     std::string line_prefix = "";
     std::size_t entries_per_line = std::numeric_limits<std::size_t>::max();
+
+    bool operator==(const AsciiFormatOptions& other) {
+        return delimiter == other.delimiter
+            && line_prefix == other.line_prefix
+            && entries_per_line == other.entries_per_line;
+    }
 };
 
 template<typename OStream>
@@ -74,30 +81,29 @@ class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
 
 namespace Encoding {
 
-class AsciiWithOptions {
- public:
-    explicit AsciiWithOptions(AsciiFormatOptions opts)
-    : _opts(std::move(opts))
+struct Ascii {
+    constexpr Ascii() = default;
+    constexpr explicit Ascii(AsciiFormatOptions opts)
+    : _opts{std::move(opts)}
     {}
 
     template<typename S>
     constexpr auto operator()(S& s) const noexcept {
-        return AsciiOutputStream{s, _opts};
+        return AsciiOutputStream{s, options()};
     }
 
- public:
-    AsciiFormatOptions _opts;
-};
-
-struct Ascii {
-    template<typename S>
-    constexpr auto operator()(S& s) const noexcept {
-        return AsciiOutputStream{s};
+    static constexpr auto with(AsciiFormatOptions opts) {
+        return Ascii{std::move(opts)};
     }
 
-    auto with(AsciiFormatOptions opts) const {
-        return AsciiWithOptions{std::move(opts)};
+    constexpr AsciiFormatOptions options() const {
+        return _opts.value_or(AsciiFormatOptions{});
     }
+
+ private:
+    // we use optional here in order to be able to define
+    // an inline constexpr instance of this class below
+    std::optional<AsciiFormatOptions> _opts = {};
 };
 
 inline constexpr Ascii ascii;

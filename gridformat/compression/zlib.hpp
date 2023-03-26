@@ -62,6 +62,10 @@ class ZLIB {
         return blocks;
     }
 
+    static ZLIB with(Options opts) {
+        return ZLIB{std::move(opts)};
+    }
+
  private:
     template<std::integral HeaderType>
     CompressedBlocks<HeaderType> _compress(std::span<const ZLIBByte> in,
@@ -107,24 +111,24 @@ class ZLIB {
     Options _opts;
 };
 
-#ifndef DOXYGEN_SKIP_DETAILS
-namespace Detail {
-
-    struct ZLIBAdapter {
-        constexpr auto operator()(ZLIBOptions opts = {}) const {
-            return ZLIB{std::move(opts)};
-        }
-    };
-
-}  // end namespace Detail
-#endif  // DOXYGEN_SKIP_DETAILS
-
-inline constexpr Detail::ZLIBAdapter zlib_with;
-inline constexpr ZLIB zlib = zlib_with();
+inline constexpr ZLIB zlib;
+namespace Detail { inline constexpr bool _have_zlib = true; }
 
 //! @} group Compression
 
 }  // end namespace GridFormat::Compression
+
+#else  // GRIDFORMAT_HAVE_ZLIB
+
+namespace GridFormat::Compression {
+namespace Detail { inline constexpr bool _have_zlib = false; }
+class ZLIB {
+ public:
+    template<bool b = false, typename... Args>
+    explicit ZLIB(Args&&...) { static_assert(b, "ZLIB compressor requires the ZLIB library."); }
+};
+
+}  // namespace GridFormat::Compression
 
 #endif  // GRIDFORMAT_HAVE_ZLIB
 #endif  // GRIDFORMAT_COMPRESSION_ZLIB_HPP_
