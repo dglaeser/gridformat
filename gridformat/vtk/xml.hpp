@@ -17,7 +17,6 @@
 
 #include <gridformat/common/detail/crtp.hpp>
 #include <gridformat/common/exceptions.hpp>
-#include <gridformat/common/callable_overload_set.hpp>
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/variant.hpp>
 #include <gridformat/common/precision.hpp>
@@ -71,14 +70,10 @@ struct XMLOptions {
     using EncoderOption = ExtendedVariant<XML::Encoder, Automatic>;
     using CompressorOption = ExtendedVariant<XML::Compressor, Automatic>;
     using DataFormatOption = ExtendedVariant<XML::DataFormat, Automatic>;
+    using CoordinatePrecisionOption = std::variant<DynamicPrecision, Automatic>;
     EncoderOption encoder = automatic;
     CompressorOption compressor = automatic;
     DataFormatOption data_format = automatic;
-};
-
-//! Options for setting the header and coordinate type
-struct PrecisionOptions {
-    using CoordinatePrecisionOption = std::variant<DynamicPrecision, Automatic>;
     CoordinatePrecisionOption coordinate_precision = automatic;
     XML::HeaderPrecision header_precision = _from_size_t();
 
@@ -97,7 +92,10 @@ namespace XMLDetail {
         XML::Encoder encoder;
         XML::Compressor compressor;
         XML::DataFormat data_format;
+        DynamicPrecision coordinate_precision;
+        XML::HeaderPrecision header_precision;
 
+        template<typename GridCoordinateType>
         static XMLSettings from(const XMLOptions& opts) {
             const auto _enc = _make_encoder(opts.encoder);
             const auto _format = _make_data_format(_enc, opts.data_format);
@@ -105,7 +103,12 @@ namespace XMLDetail {
             return {
                 .encoder = _enc,
                 .compressor = _comp,
-                .data_format = _format
+                .data_format = _format,
+                .coordinate_precision =
+                    Variant::is<Automatic>(opts.coordinate_precision) ?
+                        DynamicPrecision{Precision<GridCoordinateType>{}} :
+                        Variant::unwrap(Variant::without<Automatic>(opts.coordinate_precision)),
+                .header_precision = opts.header_precision
             };
         }
 
@@ -152,6 +155,7 @@ class XMLWriterBase
 : public GridWriter<G>
 , public Detail::CRTPBase<Impl> {
     using ParentType = GridWriter<G>;
+    using GridCoordinateType = CoordinateType<G>;
 
  public:
     //! Export underlying grid type
@@ -159,84 +163,60 @@ class XMLWriterBase
 
     explicit XMLWriterBase(const Grid& grid,
                            std::string extension,
-                           XMLOptions xml_opts = {},
-                           PrecisionOptions prec_opts = {})
+                           XMLOptions xml_opts = {})
     : ParentType(grid, std::move(extension))
-    , _xml_settings{XMLDetail::XMLSettings::from(xml_opts)}
-    , _header_precision{prec_opts.header_precision} {
-        std::visit(Overload{
-            [&] (const Automatic&) { _coord_precision = Precision<CoordinateType<Grid>>{}; },
-            [&] (const auto& prec) { _coord_precision = prec; }
-        }, prec_opts.coordinate_precision);
+    , _xml_settings{XMLDetail::XMLSettings::from<GridCoordinateType>(xml_opts)} {
     }
 
     Impl with_data_format(const XML::DataFormat& format) const {
-        return this->_impl().with(_xml_opts_with(format), _precision_opts());
+        auto opts = _xml_opts();
+        Variant::unwrap_to(opts.data_format, format);
+        return this->_impl().with(std::move(opts));
     };
 
     Impl with_compression(const XML::Compressor& compressor) const {
-        return this->_impl().with(_xml_opts_with({}, compressor), _precision_opts());
+        auto opts = _xml_opts();
+        Variant::unwrap_to(opts.compressor, compressor);
+        return this->_impl().with(std::move(opts));
     };
 
     Impl with_encoding(const XML::Encoder& encoder) const {
-        return this->_impl().with(_xml_opts_with({}, {}, encoder), _precision_opts());
+        auto opts = _xml_opts();
+        Variant::unwrap_to(opts.encoder, encoder);
+        return this->_impl().with(std::move(opts));
     };
 
     Impl with_coordinate_precision(const DynamicPrecision& prec) const {
-        return this->_impl().with(_xml_opts(), _prec_opts_with(prec));
+        auto opts = _xml_opts();
+        opts.coordinate_precision = prec;
+        return this->_impl().with(std::move(opts));
     }
 
     Impl with_header_precision(const XML::HeaderPrecision& prec) const {
-        return this->_impl().with(_xml_opts(), _prec_opts_with({}, prec));
-    }
-
- private:
-    XMLOptions _xml_opts_with(const std::optional<XML::DataFormat>& format = {},
-                              const std::optional<XML::Compressor>& compressor = {},
-                              const std::optional<XML::Encoder>& encoder = {}) const {
         auto opts = _xml_opts();
-        if (format) Variant::unwrap_to(opts.data_format, *format);
-        if (compressor) Variant::unwrap_to(opts.compressor, *compressor);
-        if (encoder) Variant::unwrap_to(opts.encoder, *encoder);
-        return opts;
-    }
-
-    PrecisionOptions _prec_opts_with(const std::optional<DynamicPrecision>& coord_prec = {},
-                                     const std::optional<XML::HeaderPrecision>& header_prec = {}) const {
-        auto opts = _precision_opts();
-        if (coord_prec) opts.coordinate_precision = *coord_prec;
-        if (header_prec) opts.header_precision = *header_prec;
-        return opts;
+        opts.header_precision = prec;
+        return this->_impl().with(std::move(opts));
     }
 
  protected:
     XMLDetail::XMLSettings _xml_settings;
-    XML::HeaderPrecision _header_precision;
-    DynamicPrecision _coord_precision;
 
     XMLOptions _xml_opts() const {
         return std::visit([&] (const auto& encoder) {
             return std::visit([&] (const auto& compressor) {
-                return std::visit([&] (const auto data_format) {
-                    return XMLOptions{
-                        .encoder = encoder,
-                        .compressor = compressor,
-                        .data_format = data_format
-                    };
+                return std::visit([&] (const auto& data_format) {
+                    return std::visit([&] (const auto& header_prec) {
+                        return XMLOptions{
+                            .encoder = encoder,
+                            .compressor = compressor,
+                            .data_format = data_format,
+                            .coordinate_precision = _xml_settings.coordinate_precision,
+                            .header_precision = header_prec
+                        };
+                    }, _xml_settings.header_precision);
                 }, _xml_settings.data_format);
             }, _xml_settings.compressor);
         }, _xml_settings.encoder);
-    }
-
-    PrecisionOptions _precision_opts() const {
-        PrecisionOptions result;
-        std::visit([&] (const auto& header_prec) {
-            _coord_precision.visit([&] (const auto& coord_prec) {
-                result.coordinate_precision = coord_prec;
-                result.header_precision = header_prec;
-            });
-        }, _header_precision);
-        return result;
     }
 
     struct WriteContext {
@@ -251,7 +231,7 @@ class XMLWriterBase
         xml.set_attribute("version", "2.0");
         std::visit([&] <typename T> (const Precision<T>& prec) {
             xml.set_attribute("header_type", attribute_name(prec));
-        }, _header_precision);
+        }, _xml_settings.header_precision);
         xml.set_attribute("byte_order", attribute_name(std::endian::native));
         xml.add_child(vtk_grid_type);
         std::visit([&] <typename C> (const C& c) {
@@ -294,7 +274,7 @@ class XMLWriterBase
                             context.appendix.add(std::move(data_array));
                         else
                             throw ValueError("Unsupported data format");
-                    }, _header_precision);
+                    }, _xml_settings.header_precision);
                 }, this->_xml_settings.data_format);
             }, this->_xml_settings.encoder);
         }, this->_xml_settings.compressor);

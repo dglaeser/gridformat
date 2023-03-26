@@ -44,13 +44,12 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
 
  public:
     explicit VTPWriter(const Grid& grid,
-                       VTK::XMLOptions xml_opts = {},
-                       VTK::PrecisionOptions prec_opts = {})
-    : ParentType(grid, ".vtp", std::move(xml_opts), std::move(prec_opts))
+                       VTK::XMLOptions xml_opts = {})
+    : ParentType(grid, ".vtp", std::move(xml_opts))
     {}
 
-    VTPWriter with(VTK::XMLOptions xml_opts, VTK::PrecisionOptions prec_opts) const {
-        return VTPWriter{this->grid(), std::move(xml_opts), std::move(prec_opts)};
+    VTPWriter with(VTK::XMLOptions xml_opts) const {
+        return VTPWriter{this->grid(), std::move(xml_opts)};
     }
 
  private:
@@ -87,9 +86,9 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
             this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
         });
 
-        const FieldPtr coords_field = this->_coord_precision.visit([&] <typename T> (const Precision<T>&) {
-            return VTK::make_coordinates_field<T>(this->grid());
-        });
+        const FieldPtr coords_field = this->_xml_settings.coordinate_precision.visit(
+            [&] <typename T> (const Precision<T>&) { return VTK::make_coordinates_field<T>(this->grid()); }
+        );
         this->_set_data_array(context, "Piece.Points", "Coordinates", *coords_field);
 
         const auto point_id_map = make_point_id_map(this->grid());
@@ -120,14 +119,14 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
     FieldPtr _make_connectivity_field(CellsRange&& cells, const PointMap& point_id_map) const {
         return std::visit([&] <typename T> (const Precision<T>&) {
             return VTK::make_connectivity_field<T>(this->grid(), cells, point_id_map);
-        }, this->_header_precision);
+        }, this->_xml_settings.header_precision);
     }
 
     template<typename CellsRange>
     FieldPtr _make_offsets_field(CellsRange&& cells) const {
         return std::visit([&] <typename T> (const Precision<T>&) {
             return VTK::make_offsets_field<T>(this->grid(), cells);
-        }, this->_header_precision);
+        }, this->_xml_settings.header_precision);
     }
 };
 
