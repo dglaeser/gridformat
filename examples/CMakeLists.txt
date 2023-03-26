@@ -31,6 +31,7 @@ enable_testing()
 function(gridformat_add_example NAME SOURCE)
     add_executable(${NAME} ${SOURCE})
     target_link_libraries(${NAME} PUBLIC gridformat::gridformat)
+    target_compile_options(${NAME} PRIVATE -fconcepts-diagnostics-depth=20)
     add_test(NAME ${NAME} COMMAND ./${NAME})
 endfunction()
 
