@@ -10,6 +10,7 @@
 
 #include <variant>
 #include <utility>
+#include <type_traits>
 
 #include <gridformat/common/callable_overload_set.hpp>
 #include <gridformat/common/exceptions.hpp>
@@ -61,6 +62,16 @@ constexpr auto without(const std::variant<Ts...>& v) {
     ReducedVariant<std::variant<Ts...>, Removes...> result;
     std::visit(Detail::without_overload_set<Removes...>(result), v);
     return result;
+}
+
+template<typename T>
+constexpr T unwrap(const std::variant<T>& v) {
+    return std::visit([] (const T& value) { return value; }, v);
+}
+
+template<typename To, typename... Ts> requires(std::conjunction_v<std::is_assignable<To, const Ts&>...>)
+constexpr void unwrap_to(To& to, const std::variant<Ts...>& v) {
+    std::visit([&] (const auto& value) { to = value; }, v);
 }
 
 //! \} group Common
