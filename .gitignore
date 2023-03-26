@@ -10,10 +10,13 @@
 !*.py
 
 # build system clutter
-build*
-install*
+build/
+install/
 Testing
 !bin/testing
+
+# consider github config
+!.github/*
 
 # hidden files
 .cproject

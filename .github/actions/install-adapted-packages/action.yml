@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: install-adapted-packages
+inputs:
+  dune_version:
+    required: false
+    default: 2.8
+runs:
+  using: composite
+  steps:
+    - name: install-dune-grid
+      run: |
+        mkdir dune_libs && pushd dune_libs
+            echo "CMAKE_FLAGS=\"-DCMAKE_BUILD_TYPE=Release -DDUNE_ENABLE_PYTHONBINDINGS=0\"" > dune.opts
+            git clone --depth=1 --branch=releases/${{inputs.dune_version}} https://gitlab.dune-project.org/core/dune-common.git
+            git clone --depth=1 --branch=releases/${{inputs.dune_version}} https://gitlab.dune-project.org/core/dune-geometry.git
+            git clone --depth=1 --branch=releases/${{inputs.dune_version}} https://gitlab.dune-project.org/core/dune-grid.git
+            ./dune-common/bin/dunecontrol --opts=dune.opts all
+            sudo ./dune-common/bin/dunecontrol --opts=dune.opts make install
+        popd && rm -rf dune_libs
+        sudo ldconfig
+      shell: bash
