@@ -16,12 +16,9 @@
 #include <iterator>
 #include <algorithm>
 #include <numeric>
-#include <functional>
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/md_layout.hpp>
-#include <gridformat/common/exceptions.hpp>
-#include <gridformat/common/iterator_facades.hpp>
 
 namespace GridFormat {
 
@@ -119,149 +116,6 @@ inline std::size_t flat_index(const MDIndex& index, const MDLayout& layout) {
     });
     return Detail::flat_index_from_sub_sizes(index, sub_sizes);
 }
-
-class MDIndexMapWalk {
- public:
-    enum Direction { forward, backward };
-
-    template<std::convertible_to<MDLayout> _L1,
-             std::convertible_to<MDLayout> _L2>
-    MDIndexMapWalk(_L1&& source_layout,
-                   _L2&& target_layout)
-    : _source_layout{std::forward<_L1>(source_layout)}
-    , _target_layout{std::forward<_L2>(target_layout)} {
-        if (_source_layout.dimension() != _target_layout.dimension())
-            throw InvalidState("Source and target layout dimensions mismatch");
-        if (std::ranges::any_of(
-            std::views::iota(std::size_t{0}, _source_layout.dimension()),
-            [&] (const std::size_t i) {
-                return _source_layout.extent(i) > _target_layout.extent(i);
-            }
-        ))
-            throw InvalidState("Only mapping into larger layouts supported");
-
-        _compute_target_offsets();
-        set_direction(Direction::forward);
-    }
-
-    void set_direction(Direction dir) {
-        _direction = dir;
-        if (_direction == forward) {
-            _current = _make_begin_index(_source_layout);
-            _current_flat = 0;
-            _current_target_flat = 0;
-        } else {
-            _current = _make_end_index(_source_layout);
-            _current_flat = flat_index(_current, _source_layout);
-            _current_target_flat = flat_index(_current, _target_layout);
-        }
-    }
-
-    void next() {
-        if (_direction == forward)
-            _increment();
-        else
-            _decrement();
-    }
-
-    bool is_finished() const {
-        return std::ranges::any_of(
-            std::views::iota(std::size_t{0}, _source_layout.dimension()),
-            [&] (const std::size_t i) {
-                return _current.get(i) >= _source_layout.extent(i);
-            }
-        );
-    }
-
-    const MDIndex& current() const {
-        return _current;
-    }
-
-    std::size_t source_index_flat() const {
-        return _current_flat;
-    }
-
-    std::size_t target_index_flat() const {
-        return _current_target_flat;
-    }
-
- private:
-    void _increment() {
-        _increment(_source_layout.dimension() - 1);
-    }
-
-    void _increment(std::size_t i) {
-        _current.set(i, _current.get(i) + 1);
-        if (_current.get(i) >= _source_layout.extent(i) && i > 0) {
-            _current.set(i, 0);
-            _increment(i-1);
-        } else {
-            _current_flat++;
-            _current_target_flat++;
-            _current_target_flat += _target_offsets[i];
-        }
-    }
-
-    void _decrement() {
-        _decrement(_source_layout.dimension() - 1);
-    }
-
-    void _decrement(std::size_t i) {
-        if (_current.get(i) == 0) {
-            _current.set(i, _source_layout.extent(i) - 1);
-            if (i > 0)
-                _decrement(i-1);
-            else {
-                assert(i == 0);
-                _current.set(i, _source_layout.extent(i));
-            }
-        } else {
-            _current.set(i, _current.get(i) - 1);
-            _current_flat--;
-            _current_target_flat--;
-            _current_target_flat -= _target_offsets[i];
-        }
-    }
-
-    MDIndex _make_begin_index(const MDLayout& layout) const {
-        return MDIndex{
-            std::views::iota(std::size_t{0}, layout.dimension())
-            | std::views::transform([&] (const std::size_t&) {
-                return 0;
-            })
-        };
-    }
-
-    MDIndex _make_end_index(const MDLayout& layout) const {
-        return MDIndex{
-            std::views::iota(std::size_t{0}, layout.dimension())
-            | std::views::transform([&] (const std::size_t i) {
-                return layout.extent(i) - 1;
-            })
-        };
-    }
-
-    void _compute_target_offsets() {
-        _target_offsets.reserve(_source_layout.dimension());
-        for (std::size_t i = 1; i < _source_layout.dimension(); ++i)
-            _target_offsets.push_back(
-                _target_layout.number_of_entries(i)
-                - _source_layout.number_of_entries(i)
-            );
-        _target_offsets.push_back(0);
-        for (std::size_t i = 0; i < _target_offsets.size() - 1; ++i)
-            _target_offsets[i] -= (_source_layout.extent(i+1) - 1)*_target_offsets[i+1];
-    }
-
-    MDLayout _source_layout;
-    MDLayout _target_layout;
-    std::vector<std::size_t> _target_offsets;
-
-    Direction _direction;
-    MDIndex _current;
-    std::size_t _current_flat;
-    std::size_t _current_target_flat;
-};
 
 //! \} group Common
 

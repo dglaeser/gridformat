@@ -18,8 +18,157 @@
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/md_index.hpp>
+#include <gridformat/common/iterator_facades.hpp>
 
 namespace GridFormat {
+
+#ifndef DOXYGEN
+namespace FieldTransformationDetail {
+    class MDIndexMapWalk {
+     public:
+        enum Direction { forward, backward };
+
+        template<std::convertible_to<MDLayout> _L1,
+                std::convertible_to<MDLayout> _L2>
+        MDIndexMapWalk(_L1&& source_layout,
+                    _L2&& target_layout)
+        : _source_layout{std::forward<_L1>(source_layout)}
+        , _target_layout{std::forward<_L2>(target_layout)} {
+            if (_source_layout.dimension() != _target_layout.dimension())
+                throw InvalidState("Source and target layout dimensions mismatch");
+            if (std::ranges::any_of(
+                std::views::iota(std::size_t{0}, _source_layout.dimension()),
+                [&] (const std::size_t i) {
+                    return _source_layout.extent(i) > _target_layout.extent(i);
+                }
+            ))
+                throw InvalidState("Only mapping into larger layouts supported");
+
+            _compute_target_offsets();
+            set_direction(Direction::forward);
+        }
+
+        void set_direction(Direction dir) {
+            _direction = dir;
+            if (_direction == forward) {
+                _current = _make_begin_index(_source_layout);
+                _current_flat = 0;
+                _current_target_flat = 0;
+            } else {
+                _current = _make_end_index(_source_layout);
+                _current_flat = flat_index(_current, _source_layout);
+                _current_target_flat = flat_index(_current, _target_layout);
+            }
+        }
+
+        void next() {
+            if (_direction == forward)
+                _increment();
+            else
+                _decrement();
+        }
+
+        bool is_finished() const {
+            return std::ranges::any_of(
+                std::views::iota(std::size_t{0}, _source_layout.dimension()),
+                [&] (const std::size_t i) {
+                    return _current.get(i) >= _source_layout.extent(i);
+                }
+            );
+        }
+
+        const MDIndex& current() const {
+            return _current;
+        }
+
+        std::size_t source_index_flat() const {
+            return _current_flat;
+        }
+
+        std::size_t target_index_flat() const {
+            return _current_target_flat;
+        }
+
+     private:
+        void _increment() {
+            _increment(_source_layout.dimension() - 1);
+        }
+
+        void _increment(std::size_t i) {
+            _current.set(i, _current.get(i) + 1);
+            if (_current.get(i) >= _source_layout.extent(i) && i > 0) {
+                _current.set(i, 0);
+                _increment(i-1);
+            } else {
+                _current_flat++;
+                _current_target_flat++;
+                _current_target_flat += _target_offsets[i];
+            }
+        }
+
+        void _decrement() {
+            _decrement(_source_layout.dimension() - 1);
+        }
+
+        void _decrement(std::size_t i) {
+            if (_current.get(i) == 0) {
+                _current.set(i, _source_layout.extent(i) - 1);
+                if (i > 0)
+                    _decrement(i-1);
+                else {
+                    assert(i == 0);
+                    _current.set(i, _source_layout.extent(i));
+                }
+            } else {
+                _current.set(i, _current.get(i) - 1);
+                _current_flat--;
+                _current_target_flat--;
+                _current_target_flat -= _target_offsets[i];
+            }
+        }
+
+        MDIndex _make_begin_index(const MDLayout& layout) const {
+            return MDIndex{
+                std::views::iota(std::size_t{0}, layout.dimension())
+                | std::views::transform([&] (const std::size_t&) {
+                    return 0;
+                })
+            };
+        }
+
+        MDIndex _make_end_index(const MDLayout& layout) const {
+            return MDIndex{
+                std::views::iota(std::size_t{0}, layout.dimension())
+                | std::views::transform([&] (const std::size_t i) {
+                    return layout.extent(i) - 1;
+                })
+            };
+        }
+
+        void _compute_target_offsets() {
+            _target_offsets.reserve(_source_layout.dimension());
+            for (std::size_t i = 1; i < _source_layout.dimension(); ++i)
+                _target_offsets.push_back(
+                    _target_layout.number_of_entries(i)
+                    - _source_layout.number_of_entries(i)
+                );
+            _target_offsets.push_back(0);
+            for (std::size_t i = 0; i < _target_offsets.size() - 1; ++i)
+                _target_offsets[i] -= (_source_layout.extent(i+1) - 1)*_target_offsets[i+1];
+        }
+
+        MDLayout _source_layout;
+        MDLayout _target_layout;
+        std::vector<std::size_t> _target_offsets;
+
+        Direction _direction;
+        MDIndex _current;
+        std::size_t _current_flat;
+        std::size_t _current_target_flat;
+    };
+}
+#endif  // DOXYGEN
+
 
 /*!
  * \ingroup Common
@@ -76,8 +225,8 @@ class FlattenedField : public Field {
 /*!
  * \ingroup Common
  * \brief Extends a given field with zeros up to the given extents
- * \note This takes the extents of the sub-layout as constructor
- *       argument. The extent of the outermost range stays the same.
+ * \note This takes the extents of the desired sub-layout as constructor
+ *       argument. The extent of the first dimension stays the same.
  */
 class ExtendedField : public Field {
  public:
@@ -100,21 +249,14 @@ class ExtendedField : public Field {
         if (orig_layout.dimension() != _target_sub_layout.dimension() + 1)
             throw SizeError("Field sub-dimension does not match given target layout dimension");
 
-        std::vector<std::size_t> extents(orig_layout.dimension());
-        extents[0] = orig_layout.extent(0);
-        for (std::size_t i = 1; i < orig_layout.dimension(); ++i)
-            extents[i] = _target_sub_layout.extent(i - 1);
+        std::vector<std::size_t> extents(orig_layout.dimension(), orig_layout.extent(0));
+        std::ranges::copy(
+            std::views::iota(std::size_t{0}, _target_sub_layout.dimension())
+                | std::views::transform([&] (auto i) { return _target_sub_layout.extent(i); }),
+            extents.begin() + 1
+        );
         _check_valid_layout(orig_layout, extents);
         return MDLayout{std::move(extents)};
-    }
-
-    std::vector<std::size_t> _sub_sizes(const MDLayout& layout) const {
-        std::vector<std::size_t> result;
-        result.reserve(layout.dimension());
-        for (std::size_t dim = 0; dim < layout.dimension() - 1; ++dim)
-            result.push_back(layout.number_of_entries(dim + 1));
-        result.push_back(1);
-        return result;
     }
 
     MDLayout _layout() const override {
@@ -133,8 +275,9 @@ class ExtendedField : public Field {
         if (orig_layout == new_layout)
             return serialization;
 
-        MDIndexMapWalk index_walk{orig_layout, new_layout};
-        index_walk.set_direction(MDIndexMapWalk::backward);
+        using Walk = FieldTransformationDetail::MDIndexMapWalk;
+        Walk index_walk{orig_layout, new_layout};
+        index_walk.set_direction(Walk::backward);
 
         _field->precision().visit([&] <typename T> (const Precision<T>&) {
             serialization.resize(new_layout.number_of_entries()*sizeof(T), typename Serialization::Byte{0});
@@ -212,13 +355,10 @@ namespace Detail {
             const std::size_t dim = f->layout().dimension();
             if (dim <= 1)
                 throw SizeError("Extension only works for fields with dimension > 1");
-            return make_shared(ExtendedField{
-                f,
-                MDLayout{
+            return make_shared(ExtendedField{f, MDLayout{
                 std::views::iota(std::size_t{1}, dim)
                     | std::views::transform([&] (const auto&) { return _space_dim; })
-                }
-            });
+            }});
         }
 
     private:
