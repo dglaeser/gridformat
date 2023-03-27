@@ -21,6 +21,7 @@ enum class CellType {
     vertex,
     segment,
     triangle,
+    rectangle,
     quadrilateral,
     polygon,
     tetrahedron,
@@ -34,6 +35,7 @@ inline int dimension(CellType ct) {
         case CellType::vertex: return 0;
         case CellType::segment: return 1;
         case CellType::triangle: return 2;
+        case CellType::rectangle: return 2;
         case CellType::quadrilateral: return 2;
         case CellType::polygon: return 2;
         case CellType::tetrahedron: return 3;

@@ -61,7 +61,7 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
             CellTypesPredicate<1>{this->grid(), {CellType::segment}}
         );
         auto polys_range = _get_cell_range(
-            CellTypesPredicate<3>{this->grid(), {CellType::quadrilateral, CellType::polygon, CellType::triangle}}
+            CellTypesPredicate<4>{this->grid(), {CellType::quadrilateral, CellType::rectangle, CellType::polygon, CellType::triangle}}
         );
 
         const auto num_verts = Ranges::size(verts_range);
