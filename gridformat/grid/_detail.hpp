@@ -26,7 +26,7 @@ namespace GridFormat::GridDetail {
     };
 
     template<typename Grid, EntityRange<Grid> Range>
-    using EntityReference = decltype(*std::ranges::begin(Range::get(std::declval<const Grid&>())));
+    using EntityReference = std::ranges::range_reference_t<decltype(Range::get(std::declval<const Grid&>()))>;
 
     template<typename Grid, EntityRange<Grid> Range>
     using Entity = std::decay_t<EntityReference<Grid, Range>>;
