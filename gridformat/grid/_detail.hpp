@@ -18,11 +18,11 @@
 namespace GridFormat::GridDetail {
 
     template<typename T>
-    concept ForwardView = std::ranges::view<T> and std::ranges::forward_range<T>;
+    concept ViewableForwardRange = std::ranges::viewable_range<T> and std::ranges::forward_range<T>;
 
     template<typename T, typename Grid>
     concept EntityRange = requires(const Grid& grid) {
-        { T::get(grid) } -> ForwardView;
+        { T::get(grid) } -> ViewableForwardRange;
     };
 
     template<typename Grid, EntityRange<Grid> Range>
