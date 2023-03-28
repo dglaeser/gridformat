@@ -81,6 +81,20 @@ class GridWriterBase {
         return _grid;
     }
 
+    friend Concepts::RangeOf<std::pair<std::string, FieldPtr>> auto point_fields(const GridWriterBase& writer) {
+        return writer._point_field_names() | std::views::transform([&] (std::string n) {
+            auto field_ptr = writer._get_shared_point_field(n);
+            return std::make_pair(std::move(n), std::move(field_ptr));
+        });
+    }
+
+    friend Concepts::RangeOf<std::pair<std::string, FieldPtr>> auto cell_fields(const GridWriterBase& writer) {
+        return writer._cell_field_names() | std::views::transform([&] (std::string n) {
+            auto field_ptr = writer._get_shared_cell_field(n);
+            return std::make_pair(std::move(n), std::move(field_ptr));
+        });
+    }
+
  protected:
     template<typename EntityFunction, Concepts::Scalar T>
     auto _make_point_field(EntityFunction&& f, const Precision<T>& prec) const {
