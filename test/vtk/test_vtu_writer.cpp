@@ -34,6 +34,10 @@ void write(const GridFormat::VTK::XMLOptions& xml_opts,
     GridFormat::VTUWriter writer{grid, xml_opts};
     const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(grid);
     GridFormat::Test::add_test_data(writer, test_data, prec);
+    writer.set_meta_data("string-literal-metadata", "myliteral");
+    writer.set_meta_data("string-metadata", std::string{"mytext"});
+    writer.set_meta_data("array-metadata", std::vector<int>{1, 2, 3, 4});
+    writer.set_meta_data("TimeValue", 42.0);
     write<dim, space_dim>(writer, filename_prefix);
 
     // using the with-syntax

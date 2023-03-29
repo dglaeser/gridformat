@@ -198,6 +198,16 @@ class XMLWriterBase
         return this->_impl().with(std::move(opts));
     }
 
+    template<typename T>
+    void set_meta_data(const std::string& name, T&& value) {
+        ParentType::set_meta_data(name, std::forward<T>(value));
+    }
+
+    void set_meta_data(const std::string& name, std::string text) {
+        text.push_back('\0');
+        ParentType::set_meta_data(name, std::move(text));
+    }
+
  protected:
     XMLDetail::XMLSettings _xml_settings;
 
@@ -233,16 +243,58 @@ class XMLWriterBase
             xml.set_attribute("header_type", attribute_name(prec));
         }, _xml_settings.header_precision);
         xml.set_attribute("byte_order", attribute_name(std::endian::native));
-        xml.add_child(vtk_grid_type);
         std::visit([&] <typename C> (const C& c) {
             if constexpr (!is_none<C>)
                 xml.set_attribute("compressor", attribute_name(c));
         }, _xml_settings.compressor);
+
+        Appendix appendix;
+        XMLElement& grid_section = xml.add_child(vtk_grid_type);
+        XMLElement& field_data = grid_section.add_child("FieldData");
+        _add_field_data(field_data, appendix);
+
         return {
             .vtk_grid_type = std::move(vtk_grid_type),
             .xml_representation = std::move(xml),
-            .appendix = {}
+            .appendix = std::move(appendix)
         };
+    }
+
+    void _add_field_data(XMLElement& field_data, Appendix& appendix) const {
+        std::visit([&] (const auto& compressor) {
+            std::visit([&] (const auto& encoder) {
+                std::visit([&] (const auto& data_format) {
+                    std::visit([&] <typename H> (const Precision<H>& header_precision) {
+                        std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
+                            const auto& field = this->_get_meta_data_field(name);
+                            const auto layout = field.layout();
+                            auto& arr = field_data.add_child("DataArray");
+                            arr.set_attribute("Name", name);
+                            arr.set_attribute("format", data_format_name(encoder, data_format));
+                            field.precision().visit([&] <typename T> (const Precision<T>& p) {
+                                if constexpr (std::is_same_v<T, char>) {
+                                    arr.set_attribute("type", "String");
+                                    arr.set_attribute("NumberOfTuples", 1);
+                                }
+                                else {
+                                    arr.set_attribute("NumberOfTuples", layout.extent(0));
+                                    arr.set_attribute("type", attribute_name(DynamicPrecision{p}));
+                                    arr.set_attribute(
+                                        "NumberOfComponents",
+                                        layout.dimension() > 1
+                                            ? layout.sub_layout(1).number_of_entries()
+                                            : 1
+                                    );
+                                }
+                                _set_data_array_content(data_format, arr, appendix, DataArray{
+                                    field, encoder, compressor, header_precision
+                                });
+                            });
+                        });
+                    }, this->_xml_settings.header_precision);
+                }, this->_xml_settings.data_format);
+            }, this->_xml_settings.encoder);
+        }, this->_xml_settings.compressor);
     }
 
     template<typename ValueType>
@@ -265,19 +317,30 @@ class XMLWriterBase
         std::visit([&] (const auto& compressor) {
             std::visit([&] (const auto& encoder) {
                 std::visit([&] <typename DataFormat> (const DataFormat& data_format) {
-                    std::visit([&] <typename T> (const Precision<T>&) {
+                    std::visit([&] <typename T> (const Precision<T>& header_precision) {
                         da.set_attribute("format", data_format_name(encoder, data_format));
-                        auto data_array = DataArray{field, encoder, compressor, Precision<T>{}};
-                        if constexpr (std::is_same_v<DataFormat, VTK::DataFormat::Inlined>)
-                            da.set_content(std::move(data_array));
-                        else if constexpr (std::is_same_v<DataFormat, VTK::DataFormat::Appended>)
-                            context.appendix.add(std::move(data_array));
-                        else
-                            throw ValueError("Unsupported data format");
+                        _set_data_array_content(data_format, da, context.appendix, DataArray{
+                            field, encoder, compressor, header_precision
+                        });
                     }, _xml_settings.header_precision);
                 }, this->_xml_settings.data_format);
             }, this->_xml_settings.encoder);
         }, this->_xml_settings.compressor);
+    }
+
+    template<typename DataFormat, typename Appendix, typename Content> requires(!std::is_lvalue_reference_v<Content>)
+    void _set_data_array_content(const DataFormat&,
+                                 XMLElement& e,
+                                 Appendix& app,
+                                 Content&& c) const {
+        static constexpr bool is_inlined = std::is_same_v<DataFormat, VTK::DataFormat::Inlined>;
+        static constexpr bool is_appended = std::is_same_v<DataFormat, VTK::DataFormat::Appended>;
+        static_assert(is_inlined || is_appended, "Unknown data format");
+
+        if constexpr (is_inlined)
+            e.set_content(std::move(c));
+        else
+            app.add(std::move(c));
     }
 
     XMLElement& _access_element(WriteContext& context, const std::vector<std::string>& sub_elem_names) const {
