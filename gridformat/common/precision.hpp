@@ -80,6 +80,13 @@ class DynamicPrecision {
         }, _precision);
     }
 
+    template<typename T>
+    bool is() const {
+        return std::visit([] <typename _T> (const Precision<_T>&) {
+            return std::is_same_v<_T, T>;
+        }, _precision);
+    }
+
     template<typename Visitor>
     decltype(auto) visit(Visitor&& visitor) const {
         return std::visit(std::forward<Visitor>(visitor), _precision);
