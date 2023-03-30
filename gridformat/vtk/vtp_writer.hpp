@@ -86,9 +86,9 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
             this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
         });
 
-        const FieldPtr coords_field = this->_xml_settings.coordinate_precision.visit(
-            [&] <typename T> (const Precision<T>&) { return VTK::make_coordinates_field<T>(this->grid()); }
-        );
+        const FieldPtr coords_field = std::visit([&] <typename T> (const Precision<T>&) {
+            return VTK::make_coordinates_field<T>(this->grid());
+        }, this->_xml_settings.coordinate_precision);
         this->_set_data_array(context, "Piece.Points", "Coordinates", *coords_field);
 
         const auto point_id_map = make_point_id_map(this->grid());

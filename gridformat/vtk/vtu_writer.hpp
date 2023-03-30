@@ -57,9 +57,9 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, VTUWriter<Grid>> {
         });
 
         const auto point_id_map = make_point_id_map(this->grid());
-        const FieldPtr coords_field = this->_xml_settings.coordinate_precision.visit(
-            [&] <typename T> (const Precision<T>&) { return VTK::make_coordinates_field<T>(this->grid()); }
-        );
+        const FieldPtr coords_field = std::visit([&] <typename T> (const Precision<T>&) {
+            return VTK::make_coordinates_field<T>(this->grid());
+        }, this->_xml_settings.coordinate_precision);
         const FieldPtr connectivity_field = std::visit([&] <typename T> (const Precision<T>&) {
             return VTK::make_connectivity_field<T>(this->grid(), point_id_map);
         }, this->_xml_settings.header_precision);

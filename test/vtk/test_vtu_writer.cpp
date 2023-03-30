@@ -51,9 +51,9 @@ void write(const GridFormat::VTK::XMLOptions& xml_opts,
                                                            : VTK::XML::DataFormat{VTK::DataFormat::appended}
         ))
         .with_header_precision(xml_opts.header_precision)
-        .with_coordinate_precision(Variant::unwrap(Variant::replace<Automatic>(
-            xml_opts.coordinate_precision, DynamicPrecision{float64}
-        )));
+        .with_coordinate_precision(Variant::replace<Automatic>(
+            xml_opts.coordinate_precision, float64
+        ));
     write<dim, space_dim>(writer2, filename_prefix + "_chained");
 }
 

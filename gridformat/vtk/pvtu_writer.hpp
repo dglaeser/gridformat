@@ -115,9 +115,9 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
 
         XMLElement& point_array = grid.add_child("PPoints").add_child("PDataArray");
         point_array.set_attribute("NumberOfComponents", "3");
-        this->_xml_settings.coordinate_precision.visit([&] <typename T> (const Precision<T>& prec) {
+        std::visit([&] <typename T> (const Precision<T>& prec) {
             point_array.set_attribute("type", VTK::attribute_name(prec));
-        });
+        }, this->_xml_settings.coordinate_precision);
 
         for (int rank : std::views::iota(0, Parallel::size(_comm)))
             grid.add_child("Piece").set_attribute(
