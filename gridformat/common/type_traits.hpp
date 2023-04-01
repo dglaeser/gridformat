@@ -44,6 +44,29 @@ inline constexpr bool is_scalar = IsScalar<T>::value;
 #ifndef DOXYGEN
 namespace Detail {
 
+template<std::integral auto v1>
+inline constexpr bool all_equal() {
+    return true;
+}
+
+template<std::integral auto v1, std::integral auto v2, std::integral auto... vals>
+inline constexpr bool all_equal() {
+    if constexpr (v1 == v2)
+        return all_equal<v2, vals...>();
+    else
+        return false;
+}
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
+template<std::integral auto v1, std::integral auto... vals>
+inline constexpr bool all_equal = Detail::all_equal<v1, vals...>();
+
+
+#ifndef DOXYGEN
+namespace Detail {
+
     template<std::ranges::range R>
     inline constexpr bool has_sub_range = std::ranges::range<std::ranges::range_value_t<R>>;
 

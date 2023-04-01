@@ -38,6 +38,11 @@ template<int dim> struct StaticFunctionVector { static constexpr int size() { re
 
 int main() {
 
+    static_assert(GridFormat::all_equal<int{1}, std::size_t{1}, char{1}>);
+    static_assert(GridFormat::all_equal<1, 1>);
+    static_assert(GridFormat::all_equal<1>);
+    static_assert(!GridFormat::all_equal<1, 1, 2>);
+
     static_assert(GridFormat::is_scalar<int>);
     static_assert(GridFormat::is_scalar<unsigned>);
     static_assert(GridFormat::is_scalar<std::size_t>);
