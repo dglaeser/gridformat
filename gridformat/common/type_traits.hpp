@@ -299,6 +299,9 @@ struct StaticSize<T> {
     static constexpr std::size_t value = T::size();
 };
 
+template<typename T>
+inline constexpr std::size_t static_size = StaticSize<T>::value;
+
 //! \} group Common
 
 }  // end namespace GridFormat

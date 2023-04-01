@@ -32,6 +32,10 @@ struct IsRandomAccessRange {
     static constexpr bool value = std::ranges::random_access_range<T>;
 };
 
+template<int dim> struct StaticEnumVector { enum { size = dim }; };
+template<int dim> struct StaticIntVector { static constexpr int size = dim; };
+template<int dim> struct StaticFunctionVector { static constexpr int size() { return dim; } };
+
 int main() {
 
     static_assert(GridFormat::is_scalar<int>);
@@ -54,6 +58,13 @@ int main() {
     static_assert(GridFormat::mdrange_dimension<std::array<int, 2>> == 1);
     static_assert(GridFormat::mdrange_dimension<std::vector<std::vector<int>>> == 2);
     static_assert(GridFormat::mdrange_dimension<std::vector<std::vector<std::vector<int>>>> == 3);
+
+    static_assert(GridFormat::static_size<std::array<double, 2>> == 2);
+    static_assert(GridFormat::static_size<std::array<double, 3>> == 3);
+    static_assert(GridFormat::static_size<std::array<std::vector<int>, 3>> == 3);
+    static_assert(GridFormat::static_size<StaticEnumVector<2>> == 2);
+    static_assert(GridFormat::static_size<StaticIntVector<2>> == 2);
+    static_assert(GridFormat::static_size<StaticFunctionVector<2>> == 2);
 
     static_assert(GridFormat::is_incomplete<Incomplete<double>>);
     static_assert(!GridFormat::is_complete<Incomplete<double>>);
