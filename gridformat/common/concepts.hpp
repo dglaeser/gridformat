@@ -49,6 +49,9 @@ concept RangeOf = std::ranges::range<T> and std::convertible_to<std::ranges::ran
 template<typename T, std::size_t dim>
 concept MDRange = std::ranges::range<T> and mdrange_dimension<T> == dim;
 
+template<typename T, std::size_t dim>
+concept StaticallySizedMDRange = StaticallySizedRange<T> and MDRange<T, dim>;
+
 template<typename T>
 concept Scalar = is_scalar<T>;
 
