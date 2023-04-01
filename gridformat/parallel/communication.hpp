@@ -34,6 +34,24 @@ inline int barrier(const C& comm) {
     return ParallelTraits::Barrier<C>::get(comm);
 }
 
+//! Return the maximum of the given values over all processes
+template<Concepts::MaxCommunicator C, typename T>
+inline auto max(const C& comm, const T& values) {
+    return ParallelTraits::Max<C>::get(comm, values);
+}
+
+//! Return the minimum of the given values over all processes
+template<Concepts::MinCommunicator C, typename T>
+inline auto min(const C& comm, const T& values) {
+    return ParallelTraits::Min<C>::get(comm, values);
+}
+
+//! Return the sum of the given values over all processes
+template<Concepts::SumCommunicator C, typename T>
+inline auto sum(const C& comm, const T& values) {
+    return ParallelTraits::Sum<C>::get(comm, values);
+}
+
 //! \} group GrParallelid
 
 }  // namespace GridFormat::Parallel
