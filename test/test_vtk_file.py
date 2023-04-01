@@ -73,21 +73,20 @@ def _get_grid_and_space_dimension(filename: str) -> Tuple[int, int]:
 
 
 def _check_vtk_file(vtk_reader,
+                    points,
                     space_dim,
                     reference_function: Callable[[list], float]) -> None:
     rel_tol = 1e-5
     abs_tol = 1e-3
 
     output = vtk_reader.GetOutput()
-    points = output.GetPoints()
-
     def _compute_cell_center(cell_id: int, ) -> tuple:
         from vtk import vtkIdList
         ids = vtkIdList()
         output.GetCellPoints(cell_id, ids)
         result = (0., 0., 0.)
         for i in range(ids.GetNumberOfIds()):
-            result = _add_points(result, points.GetPoint(ids.GetId(i)))
+            result = _add_points(result, points[ids.GetId(i)])
         return _scale_point(result, 1.0/float(ids.GetNumberOfIds()))
 
     def _compare_data_array(arr, position_call_back):
@@ -107,7 +106,7 @@ def _check_vtk_file(vtk_reader,
         arr = point_data.GetArray(i)
         print(f"Comparing point array '{name}'")
         for i in range(arr.GetNumberOfTuples()):
-            _compare_data_array(arr, lambda i: points.GetPoint(i))
+            _compare_data_array(arr, lambda i: points[i])
 
     cell_data = output.GetCellData()
     for i in range(cell_data.GetNumberOfArrays()):
@@ -140,33 +139,53 @@ def _read_pvtu_pieces(filename: str) -> List[str]:
 
 def _test_vtk(filename: str, reference_function: Callable[[list], float]):
     try:
-        from vtk import vtkXMLUnstructuredGridReader, vtkXMLPolyDataReader
+        from vtk import vtkXMLUnstructuredGridReader, vtkXMLPolyDataReader, vtkXMLImageDataReader
     except ImportError:
         print("VTK not found")
         exit(255)
+
+    def _get_unstructured_points(reader):
+        points = reader.GetOutput().GetPoints()
+        return [points.GetPoint(i) for i in range(points.GetNumberOfPoints())]
+
+    def _get_structured_points(reader):
+        output = reader.GetOutput()
+        x0, x1, y0, y1, z0, z1 = output.GetExtent()
+        pidx = 0
+        points = []
+        for _ in range(z0, z1+1):
+            for _ in range(y0, y1+1):
+                for _ in range(x0, x1+1):
+                    points.append(output.GetPoint(pidx))
+                    pidx += 1
+        return points
 
     e = VTKErrorObserver()
     ext = splitext(filename)[1]
     if ext == ".vtu":
         reader = vtkXMLUnstructuredGridReader()
-        reader.AddObserver("ErrorEvent", e)
+        point_collector = _get_unstructured_points
     elif ext == ".vtp":
         reader = vtkXMLPolyDataReader()
-        reader.AddObserver("ErrorEvent", e)
+        point_collector = _get_unstructured_points
+    elif ext == ".vti":
+        reader = vtkXMLImageDataReader()
+        point_collector = _get_structured_points
     else:
         raise NotImplementedError("Unsupported vtk extension")
+    reader.AddObserver("ErrorEvent", e)
     reader.SetFileName(filename)
     reader.Update()
     if e.ErrorOccurred():
         raise IOError(f"Error reading VTK file '{filename}': {e.ErrorMessage()}")
 
     _, space_dim = _get_grid_and_space_dimension(filename)
-    _check_vtk_file(reader, space_dim, reference_function)
+    _check_vtk_file(reader, point_collector(reader), space_dim, reference_function)
 
 
 def test(filename: str) -> None:
     ext = splitext(filename)[1]
-    if ext in [".vtu", ".vtp"]:
+    if ext in [".vtu", ".vtp", ".vti"]:
         print(f"Comparing file '{filename}'")
         _test_vtk(filename, _TestFunction())
     elif ext == ".pvd":

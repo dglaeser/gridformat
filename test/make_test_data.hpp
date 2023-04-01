@@ -10,19 +10,38 @@
 #include <gridformat/grid/writer.hpp>
 #include <gridformat/grid.hpp>
 
+// test grids
+#include "grid/unstructured_grid.hpp"
+#include "grid/structured_grid.hpp"
+
 namespace GridFormat::Test {
 
-template<typename Grid, typename Cell>
-auto _compute_cell_center(const Grid& g, const Cell& c) {
-    std::array<double, Grid::space_dimension> result;
+template<int space_dim, typename Cell>
+auto _compute_cell_center(const GridFormat::Test::StructuredGrid<space_dim>& g, const Cell& c) {
+    return g.center(c);
+}
+
+template<int dim, int space_dim, typename Cell>
+auto _compute_cell_center(const GridFormat::Test::UnstructuredGrid<dim, space_dim>& g, const Cell& c) {
+    std::array<double, space_dim> result;
     std::ranges::fill(result, 0.0);
     for (std::size_t i = 0; i < c.corners.size(); ++i)
-        for (std::size_t dir = 0; dir < Grid::space_dimension; ++dir)
+        for (std::size_t dir = 0; dir < space_dim; ++dir)
             result[dir] += g.points()[c.corners[i]].coordinates[dir];
     std::ranges::for_each(result, [&] (auto& value) {
         value /= static_cast<double>(c.corners.size());
     });
     return result;
+}
+
+template<int dim, typename Point>
+auto _get_point_coordinates(const GridFormat::Test::StructuredGrid<dim>& g, const Point& p) {
+    return g.center(p);
+}
+
+template<int dim, int space_dim, typename Point>
+auto _get_point_coordinates(const GridFormat::Test::UnstructuredGrid<dim, space_dim>&, const Point& p) {
+    return p.coordinates;
 }
 
 template<typename T, typename Position>
@@ -39,20 +58,18 @@ template<typename T, typename Grid>
 std::vector<T> make_point_data(const Grid& grid) {
     std::vector<T> result(GridFormat::number_of_points(grid));
     for (const auto& p : GridFormat::points(grid))
-        result[GridFormat::id(grid, p)] = test_function<T>(
-            GridFormat::coordinates(grid, p)
-        );
+        result[p.id] = test_function<T>(_get_point_coordinates(grid, p));
     return result;
 }
 
 template<typename T, typename Grid>
 std::vector<T> make_cell_data(const Grid& grid) {
     std::vector<T> result;
-    result.reserve(GridFormat::number_of_cells(grid));
+    result.resize(GridFormat::number_of_cells(grid));
     for (const auto& c : GridFormat::cells(grid))
-        result.push_back(test_function<T>(
+        result[c.id] = test_function<T>(
             _compute_cell_center(grid, c)
-        ));
+        );
     return result;
 }
 
