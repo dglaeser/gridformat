@@ -30,7 +30,7 @@ enum class CellType {
 
 
 //! Return the dimension of a grid cell type
-inline int dimension(CellType ct) {
+inline int cell_dimension(CellType ct) {
     switch (ct) {
         case CellType::vertex: return 0;
         case CellType::segment: return 1;
