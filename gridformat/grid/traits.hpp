@@ -29,9 +29,8 @@ struct NumberOfPoints;
 template<typename Grid>
 struct NumberOfCells;
 
-//! Exposes the number of cells in a grid via a static function `get(const Grid&)` (optional trait)
-template<typename Grid>
-struct NumberOfCellCorners;
+//! \addtogroup UnstructuredGrid
+//! \{
 
 //! Get the points of a cell via a static function `get(const Grid&, const Cell&)`
 template<typename Grid, typename Cell>
@@ -48,6 +47,33 @@ struct PointCoordinates;
 //! Metafunction to obtain a unique id for a point via a static function `get(const Grid&, const Point&)`
 template<typename Grid, typename Point>
 struct PointId;
+
+//! Exposes the number of corners of a cell via a static function `get(const Grid&, const Cell&)` (optional trait)
+template<typename Grid>
+struct NumberOfCellCorners;
+
+//! \} group UnstructuredGrid
+
+//! \addtogroup StructuredGrid
+//! \{
+
+//! Metafunction to obtain the origin of a structured grid via a static function `get(const Grid&)`
+template<typename Grid>
+struct Origin;
+
+//! Metafunction to obtain the spacing of a structured grid via a static function `get(const Grid&)`
+template<typename Grid>
+struct Spacing;
+
+//! Metafunction to obtain the number of cells per direction via a static function `get(const Grid&)`
+template<typename Grid>
+struct Extents;
+
+//! Metafunction to obtain the location (MDIndex) of an entity in a structured grid via a static function `get(const Grid&, const Entity&)`
+template<typename Grid, typename Entity>
+struct Location;
+
+//! \} group StructuredGrid
 
 //! \} group Grid
 
