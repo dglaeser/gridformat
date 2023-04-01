@@ -59,7 +59,7 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
         Parallel::barrier(_comm);  // ensure all pieces finished successfully
         if (Parallel::rank(_comm) == 0)
             _write_pvtu_file(filename_with_ext);
-        Parallel::barrier(_comm);  // ensure .pvd file is written before returning
+        Parallel::barrier(_comm);  // ensure .pvtu file is written before returning
     }
 
     void _write_piece(const std::string& par_filename) const {
@@ -104,7 +104,10 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
                     arr.set_attribute("format", VTK::data_format_name(encoder, data_format));
                 }, this->_xml_settings.encoder);
             }, this->_xml_settings.data_format);
-            arr.set_attribute("NumberOfComponents", std::pow(vtk_space_dim, field.layout().dimension() - 1));
+            arr.set_attribute(
+                "NumberOfComponents",
+                static_cast<std::size_t>(std::pow(vtk_space_dim, field.layout().dimension() - 1))
+            );
         };
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             _add_pdata_array(ppoint_data, name, this->_get_point_field(name));
