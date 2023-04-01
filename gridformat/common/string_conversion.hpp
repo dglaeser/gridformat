@@ -13,6 +13,9 @@
 #include <sstream>
 #include <utility>
 #include <locale>
+#include <ranges>
+#include <string_view>
+#include <algorithm>
 
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/exceptions.hpp>
@@ -41,6 +44,17 @@ inline std::string as_string(T&& t) {
 
 inline const std::string& as_string(const std::string& t) {
     return t;
+}
+
+template<std::ranges::range R> requires(!std::constructible_from<std::string, R>)
+inline std::string as_string(R&& range, std::string_view delimiter = " ") {
+    std::string result;
+    std::ranges::for_each(range, [&] (const auto& entry) {
+        result += delimiter;
+        result += as_string(entry);
+    });
+    result.erase(0, delimiter.size());
+    return result;
 }
 
 template<Concepts::Scalar T>
