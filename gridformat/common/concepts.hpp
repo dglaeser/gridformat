@@ -23,9 +23,9 @@ namespace GridFormat::Concepts {
 
 template<typename T>
 concept StaticallySizedRange
-    = std::ranges::range<T> and
-    is_complete<GridFormat::StaticSize<T>> and
-    requires {{ GridFormat::StaticSize<T>::value } -> std::convertible_to<std::size_t>; };
+    = std::ranges::range<std::decay_t<T>> and
+    is_complete<StaticSize<std::decay_t<T>>> and
+    requires {{ static_size<std::decay_t<T>> } -> std::convertible_to<std::size_t>; };
 
 template<typename T1, typename T2>
 concept Interoperable = std::is_convertible_v<T1, T2> || std::is_convertible_v<T2, T1>;
@@ -41,7 +41,7 @@ concept WriterFor = requires(T& t, Data data) {
 };
 
 template<typename T, typename Writer>
-concept WritableWith = WriterFor<Writer, T>;
+concept WritableWith = WriterFor<std::remove_reference_t<Writer>, T>;
 
 template<typename T, typename ValueType>
 concept RangeOf = std::ranges::range<T> and std::convertible_to<std::ranges::range_value_t<T>, ValueType>;
