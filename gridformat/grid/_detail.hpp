@@ -89,6 +89,58 @@ namespace GridFormat::GridDetail {
             { Traits::NumberOfCellCorners<T>::get(grid, cell) } -> std::convertible_to<std::size_t>;
         };
 
+    template<typename T>
+    concept ExposesOrigin = is_complete<Traits::Origin<T>> && requires(const T& grid) {
+        { Traits::Origin<T>::get(grid) } -> Concepts::StaticallySizedMDRange<1>;
+    };
+
+    template<typename T>
+    concept ExposesSpacing = is_complete<Traits::Spacing<T>> && requires(const T& grid) {
+        { Traits::Spacing<T>::get(grid) } -> Concepts::StaticallySizedMDRange<1>;
+    };
+
+    template<typename T>
+    concept ExposesExtents = is_complete<Traits::Extents<T>> && requires(const T& grid) {
+        { Traits::Extents<T>::get(grid) } -> Concepts::StaticallySizedMDRange<1>;
+        requires std::convertible_to<
+            std::ranges::range_value_t<decltype(Traits::Extents<T>::get(grid))>,
+            std::size_t
+        >;
+    };
+
+    template<typename T>
+    concept ExposesCellLocation = is_complete<Traits::Location<T, Cell<T>>> && requires(const T& grid, const Cell<T>& cell) {
+        { Traits::Location<T, Cell<T>>::get(grid, cell) } -> Concepts::StaticallySizedMDRange<1>;
+        requires std::convertible_to<
+            std::ranges::range_value_t<decltype(Traits::Location<T, Cell<T>>::get(grid, cell))>,
+            std::size_t
+        >;
+    };
+
+    template<typename T>
+    concept ExposesPointLocation = is_complete<Traits::Location<T, Point<T>>> && requires(const T& grid, const Point<T>& point) {
+        { Traits::Location<T, Point<T>>::get(grid, point) } -> Concepts::StaticallySizedMDRange<1>;
+        requires std::convertible_to<
+            std::ranges::range_value_t<decltype(Traits::Location<T, Point<T>>::get(grid, point))>,
+            std::size_t
+        >;
+    };
+
+    template<ExposesSpacing T>
+    using Spacing = std::decay_t<decltype(Traits::Spacing<T>::get(std::declval<const T&>()))>;
+
+    template<ExposesOrigin T>
+    using Origin = std::decay_t<decltype(Traits::Origin<T>::get(std::declval<const T&>()))>;
+
+    template<ExposesExtents T>
+    using Extents = std::decay_t<decltype(Traits::Extents<T>::get(std::declval<const T&>()))>;
+
+    template<ExposesCellLocation T>
+    using CellLocation = std::decay_t<decltype(Traits::Location<T, Cell<T>>::get(std::declval<const T&>(), std::declval<const Cell<T>>()))>;
+
+    template<ExposesPointLocation T>
+    using PointLocation = std::decay_t<decltype(Traits::Location<T, Point<T>>::get(std::declval<const T&>(), std::declval<const Point<T>>()))>;
+
     template<typename Grid, std::invocable<PointReference<Grid>> T>
     using PointFunctionValueType = std::decay_t<std::invoke_result_t<T, PointReference<Grid>>>;
 
