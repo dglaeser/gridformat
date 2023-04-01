@@ -29,9 +29,9 @@ namespace FieldTransformationDetail {
         enum Direction { forward, backward };
 
         template<std::convertible_to<MDLayout> _L1,
-                std::convertible_to<MDLayout> _L2>
+                 std::convertible_to<MDLayout> _L2>
         MDIndexMapWalk(_L1&& source_layout,
-                    _L2&& target_layout)
+                       _L2&& target_layout)
         : _source_layout{std::forward<_L1>(source_layout)}
         , _target_layout{std::forward<_L2>(target_layout)} {
             if (_source_layout.dimension() != _target_layout.dimension())
