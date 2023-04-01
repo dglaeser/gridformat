@@ -9,6 +9,8 @@
 #define GRIDFORMAT_COMMON_MD_INDEX_HPP_
 
 #include <cassert>
+#include <cstddef>
+#include <array>
 #include <vector>
 #include <ostream>
 #include <utility>
@@ -16,6 +18,7 @@
 #include <iterator>
 #include <algorithm>
 #include <numeric>
+#include <memory_resource>
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/md_layout.hpp>
@@ -27,23 +30,38 @@ namespace GridFormat {
 
 //! Represents a multi-dimensional index.
 class MDIndex {
+    static constexpr std::size_t buffered_dimensions = 5;
+
  public:
-    MDIndex() = default;
+    MDIndex()
+    : _buffer{}
+    , _resource{_buffer.data(), _buffer.size()}
+    , _indices{&_resource}
+    {}
+
+    MDIndex(const MDIndex& other)
+    : MDIndex() {
+        *this = other;
+    }
 
     //! Construct from a range of indices
     template<std::ranges::forward_range R>
-    explicit MDIndex(R&& indices) {
+    explicit MDIndex(R&& indices)
+    : MDIndex() {
         _indices.reserve(Ranges::size(indices));
         std::ranges::copy(indices, std::back_inserter(_indices));
     }
 
-    //! Move-construct from a vector of indices
-    explicit MDIndex(std::vector<std::size_t>&& indices)
-    : _indices{std::move(indices)}
-    {}
+    //! Construct from a vector of indices
+    explicit MDIndex(const std::vector<std::size_t>& indices)
+    : MDIndex() {
+        _indices.reserve(Ranges::size(indices));
+        std::ranges::copy(indices, std::back_inserter(_indices));
+    }
 
     //! Zero-initialize a md-index with a given size
-    explicit MDIndex(std::integral auto size) {
+    explicit MDIndex(std::integral auto size)
+    : MDIndex() {
         _indices.resize(size, std::size_t{0});
     }
 
@@ -51,6 +69,13 @@ class MDIndex {
     explicit MDIndex(const MDLayout& layout)
     : MDIndex(layout.dimension())
     {}
+
+    MDIndex& operator=(const MDIndex& other) {
+        _indices.clear();
+        _indices.resize(other.size());
+        std::ranges::copy(other._indices, _indices.begin());
+        return *this;
+    }
 
     std::size_t size() const {
         return _indices.size();
@@ -81,7 +106,9 @@ class MDIndex {
     }
 
  private:
-    std::vector<std::size_t> _indices;
+    std::array<std::byte, buffered_dimensions*sizeof(std::size_t)> _buffer;
+    std::pmr::monotonic_buffer_resource _resource;
+    std::pmr::vector<std::size_t> _indices;
 };
 
 

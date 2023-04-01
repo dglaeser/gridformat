@@ -80,5 +80,27 @@ int main() {
         ));
     };
 
+    "md_index_copy_constructor"_test = [] () {
+        MDIndex index{{1, 2}};
+        MDIndex other{index};
+        index.set(0, 42);
+        index.set(1, 42);
+        expect(eq(index.get(0), std::size_t{42}));
+        expect(eq(index.get(1), std::size_t{42}));
+        expect(eq(other.get(0), std::size_t{1}));
+        expect(eq(other.get(1), std::size_t{2}));
+    };
+
+    "md_index_copy_assignment"_test = [] () {
+        MDIndex index{{1, 2}};
+        MDIndex other = index;
+        index.set(0, 42);
+        index.set(1, 42);
+        expect(eq(index.get(0), std::size_t{42}));
+        expect(eq(index.get(1), std::size_t{42}));
+        expect(eq(other.get(0), std::size_t{1}));
+        expect(eq(other.get(1), std::size_t{2}));
+    };
+
     return 0;
 }
