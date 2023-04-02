@@ -54,6 +54,28 @@ concept MinCommunicator = ParallelDetail::Reducer<T, ParallelTraits::Min<T>>;
 template<typename T>
 concept SumCommunicator = ParallelDetail::Reducer<T, ParallelTraits::Sum<T>>;
 
+template<typename T>
+concept BroadCastCommunicator = is_complete<ParallelTraits::BroadCast<T>> && requires(const T& t) {
+    { ParallelTraits::BroadCast<T>::get(t, int{}) } -> std::convertible_to<int>;
+    { ParallelTraits::BroadCast<T>::get(t, double{}) } -> std::convertible_to<double>;
+    { ParallelTraits::BroadCast<T>::get(t, std::array<int, 2>{}) } -> RangeOf<int>;
+    { ParallelTraits::BroadCast<T>::get(t, std::array<double, 2>{}) } -> RangeOf<double>;
+};
+
+template<typename T>
+concept GatherCommunicator = is_complete<ParallelTraits::Gather<T>> && requires(const T& t) {
+    { ParallelTraits::Gather<T>::get(t, int{}) } -> RangeOf<int>;
+    { ParallelTraits::Gather<T>::get(t, double{}) } -> RangeOf<double>;
+    { ParallelTraits::Gather<T>::get(t, std::array<int, 2>{}) } -> RangeOf<int>;
+    { ParallelTraits::Gather<T>::get(t, std::array<double, 2>{}) } -> RangeOf<double>;
+};
+
+template<typename T>
+concept ScatterCommunicator = is_complete<ParallelTraits::Scatter<T>> && requires(const T& t) {
+    { ParallelTraits::Scatter<T>::get(t, std::array<int, 2>{}) } -> RangeOf<int>;
+    { ParallelTraits::Scatter<T>::get(t, std::array<double, 2>{}) } -> RangeOf<double>;
+};
+
 //! \} group Concepts
 
 }  // namespace GridFormat::Concepts

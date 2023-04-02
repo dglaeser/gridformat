@@ -36,20 +36,38 @@ inline int barrier(const C& comm) {
 
 //! Return the maximum of the given values over all processes
 template<Concepts::MaxCommunicator C, typename T>
-inline auto max(const C& comm, const T& values) {
-    return ParallelTraits::Max<C>::get(comm, values);
+inline auto max(const C& comm, const T& values, int root = 0) {
+    return ParallelTraits::Max<C>::get(comm, values, root);
 }
 
 //! Return the minimum of the given values over all processes
 template<Concepts::MinCommunicator C, typename T>
-inline auto min(const C& comm, const T& values) {
-    return ParallelTraits::Min<C>::get(comm, values);
+inline auto min(const C& comm, const T& values, int root = 0) {
+    return ParallelTraits::Min<C>::get(comm, values, root);
 }
 
 //! Return the sum of the given values over all processes
 template<Concepts::SumCommunicator C, typename T>
-inline auto sum(const C& comm, const T& values) {
-    return ParallelTraits::Sum<C>::get(comm, values);
+inline auto sum(const C& comm, const T& values, int root = 0) {
+    return ParallelTraits::Sum<C>::get(comm, values, root);
+}
+
+//! Broadcast values from the root to all other processes
+template<Concepts::SumCommunicator C, typename T>
+inline auto broadcast(const C& comm, const T& values, int root = 0) {
+    return ParallelTraits::BroadCast<C>::get(comm, values, root);
+}
+
+//! Gather values from all processes to the root process
+template<Concepts::SumCommunicator C, typename T>
+inline auto gather(const C& comm, const T& values, int root = 0) {
+    return ParallelTraits::Gather<C>::get(comm, values, root);
+}
+
+//! Scatter values from the root to all other processes
+template<Concepts::SumCommunicator C, typename T>
+inline auto scatter(const C& comm, const T& values, int root = 0) {
+    return ParallelTraits::Scatter<C>::get(comm, values, root);
 }
 
 //! \} group GrParallelid
