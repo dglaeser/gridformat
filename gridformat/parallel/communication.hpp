@@ -70,7 +70,7 @@ inline auto scatter(const C& comm, const T& values, int root = 0) {
     return ParallelTraits::Scatter<C>::get(comm, values, root);
 }
 
-//! \} group GrParallelid
+//! \} group Parallel
 
 }  // namespace GridFormat::Parallel
 
