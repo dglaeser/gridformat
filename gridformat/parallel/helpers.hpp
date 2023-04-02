@@ -31,6 +31,12 @@ decltype(auto) access_gathered(R&& values, const C& comm, const Index& index) {
     return std::ranges::data(std::forward<R>(values))[index.rank*N + index.i];
 }
 
+//! Return a range over all ranks of the given communicator
+template<Concepts::Communicator C>
+std::ranges::view auto ranks(const C& comm) {
+    return std::views::iota(0, size(comm));
+}
+
 //! \} group Parallel
 
 }  // namespace GridFormat::Parallel
