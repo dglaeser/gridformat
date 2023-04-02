@@ -10,7 +10,7 @@
 
 #include <ranges>
 #include <utility>
-#include <iterator>
+#include <concepts>
 #include <functional>
 #include <type_traits>
 
@@ -25,7 +25,7 @@ namespace GridFormat::Ranges {
  * \brief Return the size of a range
  */
 template<std::ranges::sized_range R> requires(!Concepts::StaticallySizedRange<R>)
-constexpr auto size(R&& r) {
+inline constexpr auto size(R&& r) {
     return std::ranges::size(r);
 }
 
@@ -38,7 +38,7 @@ constexpr auto size(R&& r) {
 template<std::ranges::range R> requires(
     !std::ranges::sized_range<R> and
     !Concepts::StaticallySizedRange<R>)
-constexpr auto size(R&& r) {
+inline constexpr auto size(R&& r) {
     return std::ranges::distance(r);
 }
 
@@ -47,7 +47,7 @@ constexpr auto size(R&& r) {
  * \brief Return the size of a range with size known at compile time.
  */
 template<Concepts::StaticallySizedRange R>
-constexpr auto size(R&&) {
+inline constexpr auto size(R&&) {
     return StaticSize<std::decay_t<R>>::value;
 }
 
@@ -56,8 +56,8 @@ constexpr auto size(R&&) {
  * \brief Convert the given range into an array with the given dimension.
  */
 template<std::size_t N, std::ranges::range R, typename T = std::ranges::range_value_t<R>>
-constexpr auto to_array(R&&r) {
-    if (size(std::forward<R>(r)) < N)
+inline constexpr auto to_array(R&&r) {
+    if (size(r) < N)
         throw SizeError("Range too small for the given target dimension");
     std::array<T, N> result;
     std::ranges::copy_n(std::ranges::cbegin(std::forward<R>(r)), N, result.begin());
@@ -71,8 +71,10 @@ constexpr auto to_array(R&&r) {
 template<std::ranges::range R,
          typename Comp = std::ranges::less,
          typename EqPredicate = std::equal_to<std::ranges::range_value_t<R>>>
-constexpr decltype(auto) sort_and_unique(R&& r, Comp comparator = {}, EqPredicate eq = {}) {
-    std::ranges::sort(std::forward<R>(r), comparator);
+inline constexpr decltype(auto) sort_and_unique(R&& r,
+                                                Comp comparator = {},
+                                                EqPredicate eq = {}) {
+    std::ranges::sort(r, comparator);
     return std::ranges::unique(std::forward<R>(r), eq);
 }
 
