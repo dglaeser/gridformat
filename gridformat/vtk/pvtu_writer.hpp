@@ -17,9 +17,12 @@
 #include <gridformat/common/exceptions.hpp>
 
 #include <gridformat/parallel/communication.hpp>
+#include <gridformat/parallel/helpers.hpp>
+
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/xml/element.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
+#include <gridformat/vtk/parallel.hpp>
 
 namespace GridFormat {
 
@@ -70,16 +73,7 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
             writer.set_cell_field(name, this->_get_shared_cell_field(name));
         });
-        writer.write(_piece_filename(par_filename));
-    }
-
-    std::string _piece_filename(const std::string& par_filename) const {
-        return _piece_filename(par_filename, Parallel::rank(_comm));
-    }
-
-    std::string _piece_filename(const std::string& par_filename, int rank) const {
-        const std::string base_name = par_filename.substr(0, par_filename.find_last_of("."));
-        return base_name + "-" + std::to_string(rank);
+        writer.write(PVTK::piece_basefilename(par_filename, Parallel::rank(_comm)));
     }
 
     void _write_pvtu_file(const std::string& filename_with_ext) const {
@@ -91,30 +85,18 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
         XMLElement& grid = pvtk_xml.add_child("PUnstructuredGrid");
         XMLElement& ppoint_data = grid.add_child("PPointData");
         XMLElement& pcell_data = grid.add_child("PCellData");
-
-        const auto _add_pdata_array = [&] (XMLElement& section,
-                                            const std::string& name,
-                                            const Field& field) {
-            static constexpr std::size_t vtk_space_dim = 3;
-            XMLElement& arr = section.add_child("PDataArray");
-            arr.set_attribute("Name", name);
-            arr.set_attribute("type", VTK::attribute_name(field.precision()));
+        std::visit([&] (const auto& encoder) {
             std::visit([&] (const auto& data_format) {
-                std::visit([&] (const auto& encoder) {
-                    arr.set_attribute("format", VTK::data_format_name(encoder, data_format));
-                }, this->_xml_settings.encoder);
+                PVTK::PDataArrayHelper pdata_helper{encoder, data_format, ppoint_data};
+                PVTK::PDataArrayHelper cdata_helper{encoder, data_format, pcell_data};
+                std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
+                    pdata_helper.add(name, this->_get_point_field(name));
+                });
+                std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
+                    cdata_helper.add(name, this->_get_cell_field(name));
+                });
             }, this->_xml_settings.data_format);
-            arr.set_attribute(
-                "NumberOfComponents",
-                static_cast<std::size_t>(std::pow(vtk_space_dim, field.layout().dimension() - 1))
-            );
-        };
-        std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            _add_pdata_array(ppoint_data, name, this->_get_point_field(name));
-        });
-        std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            _add_pdata_array(pcell_data, name, this->_get_cell_field(name));
-        });
+        }, this->_xml_settings.encoder);
 
         XMLElement& point_array = grid.add_child("PPoints").add_child("PDataArray");
         point_array.set_attribute("NumberOfComponents", "3");
@@ -122,10 +104,12 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
             point_array.set_attribute("type", VTK::attribute_name(prec));
         }, this->_xml_settings.coordinate_precision);
 
-        for (int rank : std::views::iota(0, Parallel::size(_comm)))
+        std::ranges::for_each(Parallel::ranks(_comm), [&] (int rank) {
             grid.add_child("Piece").set_attribute(
-                "Source", _piece_filename(filename_with_ext, rank) + ".vtu"
+                "Source",
+                PVTK::piece_basefilename(filename_with_ext, rank) + ".vtu"
             );
+        });
 
         write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
     }
