@@ -12,6 +12,7 @@
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/callable_overload_set.hpp>
+#include <gridformat/vtk/common.hpp>
 
 // forward declarations
 namespace GridFormat { class DynamicPrecision; }
