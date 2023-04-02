@@ -15,6 +15,7 @@
 #include <type_traits>
 
 #include <gridformat/common/concepts.hpp>
+#include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/type_traits.hpp>
 
 namespace GridFormat::Ranges {
@@ -48,6 +49,19 @@ constexpr auto size(R&& r) {
 template<Concepts::StaticallySizedRange R>
 constexpr auto size(R&&) {
     return StaticSize<std::decay_t<R>>::value;
+}
+
+/*!
+ * \ingroup Common
+ * \brief Convert the given range into an array with the given dimension.
+ */
+template<std::size_t N, std::ranges::range R, typename T = std::ranges::range_value_t<R>>
+constexpr auto to_array(R&&r) {
+    if (size(std::forward<R>(r)) < N)
+        throw SizeError("Range too small for the given target dimension");
+    std::array<T, N> result;
+    std::ranges::copy_n(std::ranges::cbegin(std::forward<R>(r)), N, result.begin());
+    return result;
 }
 
 /*!
