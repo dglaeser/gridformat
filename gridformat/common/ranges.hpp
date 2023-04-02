@@ -56,11 +56,28 @@ inline constexpr auto size(R&&) {
  * \brief Convert the given range into an array with the given dimension.
  */
 template<std::size_t N, std::ranges::range R, typename T = std::ranges::range_value_t<R>>
-inline constexpr auto to_array(R&&r) {
+inline constexpr auto to_array(R&& r) {
     if (size(r) < N)
         throw SizeError("Range too small for the given target dimension");
     std::array<T, N> result;
     std::ranges::copy_n(std::ranges::cbegin(std::forward<R>(r)), N, result.begin());
+    return result;
+}
+
+/*!
+ * \ingroup Common
+ * \brief Flatten the given 2d range into a 1d vector.
+ */
+template<Concepts::MDRange<2> R> requires(
+    Concepts::StaticallySizedMDRange<std::ranges::range_value_t<R>, 1>)
+inline constexpr auto as_flat_vector(R&& r) {
+    std::vector<MDRangeValueType<R>> result;
+    result.reserve(size(r)*static_size<std::ranges::range_value_t<R>>);
+    std::ranges::for_each(r, [&] (const auto& sub_range) {
+        std::ranges::for_each(sub_range, [&] (const auto& entry) {
+            result.push_back(entry);
+        });
+    });
     return result;
 }
 
