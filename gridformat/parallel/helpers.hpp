@@ -8,6 +8,7 @@
 #ifndef GRIDFORMAT_PARALLEL_HELPERS_HPP_
 #define GRIDFORMAT_PARALLEL_HELPERS_HPP_
 
+#include <array>
 #include <ranges>
 
 #include <gridformat/parallel/concepts.hpp>
@@ -23,12 +24,23 @@ struct Index {
     int rank;
 };
 
-//! Access a vector containing N elements per process for the given rank and index
+//! Access an entry in a vector containing N elements per process for the given rank and index
 template<std::size_t N, Concepts::Communicator C, std::ranges::contiguous_range R>
 decltype(auto) access_gathered(R&& values, const C& comm, const Index& index) {
     if (std::ranges::size(values) != N*size(comm))
         throw SizeError("Range size does not match number of processors times N");
     return std::ranges::data(std::forward<R>(values))[index.rank*N + index.i];
+}
+
+//! Get all entries from a vector containing N elements per process for the given rank
+template<std::size_t N, Concepts::Communicator C, std::ranges::contiguous_range R>
+auto access_gathered(R&& values, const C& comm, int rank) {
+    if (std::ranges::size(values) != N*size(comm))
+        throw SizeError("Range size does not match number of processors times N");
+    std::array<std::ranges::range_value_t<R>, N> result;
+    for (std::size_t i = 0; i < N; ++i)
+        result[i] = std::ranges::data(std::forward<R>(values))[rank*N + i];
+    return result;
 }
 
 //! Return a range over all ranks of the given communicator
