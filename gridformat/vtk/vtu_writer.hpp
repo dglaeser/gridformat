@@ -35,11 +35,11 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, VTUWriter<Grid>> {
     : ParentType(grid, ".vtu", std::move(xml_opts))
     {}
 
-    VTUWriter with(VTK::XMLOptions xml_opts) const {
+ private:
+    VTUWriter _with(VTK::XMLOptions xml_opts) const override {
         return VTUWriter{this->grid(), std::move(xml_opts)};
     }
 
- private:
     void _write(std::ostream& s) const override {
         auto context = this->_get_write_context("UnstructuredGrid");
         this->_set_attribute(context, "Piece", "NumberOfPoints", number_of_points(this->grid()));

@@ -43,12 +43,12 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
     , _comm(comm)
     {}
 
-    PVTUWriter with(VTK::XMLOptions xml_opts) const {
-        return PVTUWriter{this->grid(), _comm, std::move(xml_opts)};
-    }
-
  private:
     Communicator _comm;
+
+    PVTUWriter _with(VTK::XMLOptions xml_opts) const override {
+        return PVTUWriter{this->grid(), _comm, std::move(xml_opts)};
+    }
 
     void _write(std::ostream&) const override {
         throw InvalidState(
@@ -66,7 +66,7 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
     }
 
     void _write_piece(const std::string& par_filename) const {
-        VTUWriter writer{this->grid(), this->_xml_opts()};
+        VTUWriter writer{this->grid(), this->_xml_opts};
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             writer.set_point_field(name, VTK::make_vtk_field(this->_get_shared_point_field(name)));
         });

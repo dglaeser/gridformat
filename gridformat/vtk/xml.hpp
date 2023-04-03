@@ -168,37 +168,42 @@ class XMLWriterBase
                            std::string extension,
                            XMLOptions xml_opts = {})
     : ParentType(grid, std::move(extension))
-    , _xml_settings{XMLDetail::XMLSettings::from<GridCoordinateType>(xml_opts)} {
+    , _xml_opts{std::move(xml_opts)}
+    , _xml_settings{XMLDetail::XMLSettings::from<GridCoordinateType>(_xml_opts)}
+    {}
+
+    Impl with(XMLOptions opts) const {
+        return _with_fields(_with(std::move(opts)));
     }
 
     Impl with_data_format(const XML::DataFormat& format) const {
-        auto opts = _xml_opts();
+        auto opts = _xml_opts;
         Variant::unwrap_to(opts.data_format, format);
-        return this->_impl().with(std::move(opts));
-    };
+        return with(std::move(opts));
+    }
 
     Impl with_compression(const XML::Compressor& compressor) const {
-        auto opts = _xml_opts();
+        auto opts = _xml_opts;
         Variant::unwrap_to(opts.compressor, compressor);
-        return this->_impl().with(std::move(opts));
-    };
+        return with(std::move(opts));
+    }
 
     Impl with_encoding(const XML::Encoder& encoder) const {
-        auto opts = _xml_opts();
+        auto opts = _xml_opts;
         Variant::unwrap_to(opts.encoder, encoder);
-        return this->_impl().with(std::move(opts));
-    };
+        return with(std::move(opts));
+    }
 
     Impl with_coordinate_precision(const XML::CoordinatePrecision& prec) const {
-        auto opts = _xml_opts();
+        auto opts = _xml_opts;
         Variant::unwrap_to(opts.coordinate_precision, prec);
-        return this->_impl().with(std::move(opts));
+        return with(std::move(opts));
     }
 
     Impl with_header_precision(const XML::HeaderPrecision& prec) const {
-        auto opts = _xml_opts();
+        auto opts = _xml_opts;
         opts.header_precision = prec;
-        return this->_impl().with(std::move(opts));
+        return with(std::move(opts));
     }
 
     template<typename T>
@@ -211,27 +216,19 @@ class XMLWriterBase
         ParentType::set_meta_data(name, std::move(text));
     }
 
+ private:
+    virtual Impl _with(XMLOptions opts) const = 0;
+
  protected:
+    XMLOptions _xml_opts;
     XMLDetail::XMLSettings _xml_settings;
 
-    XMLOptions _xml_opts() const {
-        return std::visit([&] (const auto& encoder) {
-            return std::visit([&] (const auto& compressor) {
-                return std::visit([&] (const auto& data_format) {
-                    return std::visit([&] (const auto& coord_prec) {
-                        return std::visit([&] (const auto& header_prec) {
-                            return XMLOptions{
-                                .encoder = encoder,
-                                .compressor = compressor,
-                                .data_format = data_format,
-                                .coordinate_precision = coord_prec,
-                                .header_precision = header_prec
-                            };
-                        }, _xml_settings.header_precision);
-                    }, _xml_settings.coordinate_precision);
-                }, _xml_settings.data_format);
-            }, _xml_settings.compressor);
-        }, _xml_settings.encoder);
+    Impl _with_fields(Impl&& impl) const {
+        for (const auto& [name, field_ptr] : point_fields(*this))
+            impl.set_point_field(name, field_ptr);
+        for (const auto& [name, field_ptr] : cell_fields(*this))
+            impl.set_cell_field(name, field_ptr);
+        return impl;
     }
 
     struct WriteContext {

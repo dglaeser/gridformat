@@ -51,12 +51,12 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
     , _comm(comm)
     {}
 
-    PVTIWriter with(VTK::XMLOptions xml_opts) const {
-        return PVTIWriter{this->grid(), _comm, std::move(xml_opts)};
-    }
-
  private:
     Communicator _comm;
+
+    PVTIWriter _with(VTK::XMLOptions xml_opts) const override {
+        return PVTIWriter{this->grid(), _comm, std::move(xml_opts)};
+    }
 
     void _write(std::ostream&) const override {
         throw InvalidState(
@@ -148,7 +148,7 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
     void _write_piece(const std::string& par_filename,
                       const std::array<std::size_t, dim>& offset,
                       typename VTIWriter<Grid>::Domain domain) const {
-        auto writer = VTIWriter{this->grid(), this->_xml_opts()}
+        auto writer = VTIWriter{this->grid(), this->_xml_opts}
                         .as_piece_for(std::move(domain))
                         .with_offset(offset);
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {

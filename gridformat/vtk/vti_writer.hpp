@@ -99,25 +99,25 @@ class VTIWriter : public VTK::XMLWriterBase<Grid, VTIWriter<Grid>> {
     : ParentType(grid, ".vti", std::move(xml_opts))
     {}
 
-    VTIWriter with(VTK::XMLOptions xml_opts) const {
-        return VTIWriter{this->grid(), std::move(xml_opts)};
-    }
-
     VTIWriter as_piece_for(Domain domain) const {
-        auto result = VTIWriter{this->grid(), this->_xml_opts()};
+        auto result = this->with(this->_xml_opts);
         result._domain = std::move(domain);
         result._offset = _offset;
         return result;
     }
 
     VTIWriter with_offset(Offset offset) const {
-        auto result = VTIWriter{this->grid(), this->_xml_opts()};
+        auto result = this->with(this->_xml_opts);
         result._offset = std::move(offset);
         result._domain = _domain;
         return result;
     }
 
  private:
+    VTIWriter _with(VTK::XMLOptions xml_opts) const override {
+        return VTIWriter{this->grid(), std::move(xml_opts)};
+    }
+
     void _write(std::ostream& s) const override {
         auto context = this->_get_write_context("ImageData");
         _set_attributes(context);

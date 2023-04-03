@@ -10,6 +10,7 @@
 
 #include <ranges>
 #include <ostream>
+#include <algorithm>
 #include <functional>
 
 #include <gridformat/common/ranges.hpp>
@@ -48,11 +49,11 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
     : ParentType(grid, ".vtp", std::move(xml_opts))
     {}
 
-    VTPWriter with(VTK::XMLOptions xml_opts) const {
+ private:
+    VTPWriter _with(VTK::XMLOptions xml_opts) const override {
         return VTPWriter{this->grid(), std::move(xml_opts)};
     }
 
- private:
     void _write(std::ostream& s) const override {
         auto verts_range = _get_cell_range(
             CellTypesPredicate<1>{this->grid(), {CellType::vertex}}
