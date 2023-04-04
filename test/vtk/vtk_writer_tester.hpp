@@ -65,10 +65,11 @@ class WriterTester {
     >;
 
  public:
-    explicit WriterTester(Grid&& grid, std::string extension)
+    explicit WriterTester(Grid&& grid, std::string extension, bool verbose = true)
     : _grid{std::move(grid)}
     , _extension{std::move(extension)}
-    , _prefix{_extension.substr(1)} {
+    , _prefix{_extension.substr(1)}
+    , _verbose{verbose} {
         _xml_options.push_back({.encoder = ascii, .compressor = none, .data_format = inlined});
         _xml_options.push_back({.encoder = base64, .compressor = none, .data_format = inlined});
         _xml_options.push_back({.encoder = base64, .compressor = none, .data_format = appended});
@@ -154,7 +155,8 @@ class WriterTester {
     template<typename Writer>
     void _write(const Writer& w, const std::string& filename) const {
         w.write(filename);
-        std::cout << GridFormat::as_highlight("Wrote '" + filename + _extension + "'") << std::endl;
+        if (_verbose)
+            std::cout << GridFormat::as_highlight("Wrote '" + filename + _extension + "'") << std::endl;
     }
 
     template<typename T>
@@ -186,6 +188,7 @@ class WriterTester {
     Grid _grid;
     std::string _extension;
     std::string _prefix;
+    bool _verbose;
     std::vector<GridFormat::VTK::XMLOptions> _xml_options;
 };
 
