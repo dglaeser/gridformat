@@ -103,9 +103,11 @@ class StructuredGridMapperHelper {
  public:
     using Origin = std::array<T, dim>;
 
-    explicit StructuredGridMapperHelper(std::integral auto ranks)
+    explicit StructuredGridMapperHelper(std::integral auto ranks,
+                                        T default_epsilon = 1e-6)
     : _origins(ranks)
-    , _set(ranks, false) {
+    , _set(ranks, false)
+    , _default_epsilon{default_epsilon} {
         std::ranges::fill(_reverse, false);
     }
 
@@ -199,12 +201,13 @@ class StructuredGridMapperHelper {
         for (T _dx : dx)
             if (_dx > 1e-8*size)
                 return _dx*0.1;
-        throw InvalidState("Could not compute suitable epsilon");
+        return _default_epsilon;
     }
 
     std::vector<Origin> _origins;
     std::vector<bool> _set;
     std::array<bool, dim> _reverse;
+    T _default_epsilon;
 };
 
 }  // namespace GridFormat::PVTK

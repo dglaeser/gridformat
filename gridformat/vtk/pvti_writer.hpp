@@ -87,6 +87,10 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
     auto _extents_and_origin(const std::vector<CT>& all_origins,
                              const std::vector<std::size_t>& all_extents) const
     {
+        const auto local_spacing = spacing(this->grid());
+        const auto min_spacing = *std::ranges::min_element(local_spacing);
+        const auto default_epsilon = min_spacing*1e-2;
+
         const auto num_ranks = Parallel::size(_comm);
         std::vector<std::array<std::size_t, dim>> pieces_begin(num_ranks);
         std::vector<std::array<std::size_t, dim>> pieces_end(num_ranks);
@@ -94,7 +98,7 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         std::array<CT, dim> origin;
 
         if (Parallel::rank(_comm) == 0) {
-            const auto mapper_helper = _make_mapper_helper(all_origins);
+            const auto mapper_helper = _make_mapper_helper(all_origins, default_epsilon);
             const auto rank_mapper = mapper_helper.make_mapper();
             origin = mapper_helper.compute_origin();
 
@@ -128,8 +132,8 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         );
     }
 
-    auto _make_mapper_helper(const std::vector<CT>& all_origins) const {
-        PVTK::StructuredGridMapperHelper<CT, dim> helper(Parallel::size(_comm));
+    auto _make_mapper_helper(const std::vector<CT>& all_origins, CT default_eps) const {
+        PVTK::StructuredGridMapperHelper<CT, dim> helper(Parallel::size(_comm), default_eps);
         std::ranges::for_each(Parallel::ranks(_comm), [&] (int rank) {
             helper.set_origin_for(rank, Parallel::access_gathered<dim>(all_origins, _comm, rank));
         });
