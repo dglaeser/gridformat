@@ -166,6 +166,9 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
     elif ext == ".vtp":
         reader = vtk.vtkXMLPolyDataReader()
         point_collector = _get_unstructured_points
+    elif ext == ".pvtp":
+        reader = vtk.vtkXMLPPolyDataReader()
+        point_collector = _get_unstructured_points
     elif ext == ".vti":
         reader = vtk.vtkXMLImageDataReader()
         point_collector = _get_structured_points
