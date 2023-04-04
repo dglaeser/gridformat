@@ -8,6 +8,7 @@ from typing import Callable, Tuple, List
 from math import sin, cos, isclose
 from xml.etree import ElementTree
 from sys import exit
+from numpy import array, ndarray, sum as np_sum
 
 class _TestFunction:
     def __init__(self, scaling: float = 1.0) -> None:
@@ -79,15 +80,18 @@ def _check_vtk_file(vtk_reader,
     rel_tol = 1e-5
     abs_tol = 1e-3
 
+    # precompute cell centers
     output = vtk_reader.GetOutput()
-    def _compute_cell_center(cell_id: int, ) -> tuple:
+    num_cells = output.GetNumberOfCells()
+    points = array(points)
+    cell_centers = ndarray(shape=(num_cells, 3))
+    for cell_id in range(num_cells):
         from vtk import vtkIdList
         ids = vtkIdList()
         output.GetCellPoints(cell_id, ids)
-        result = (0., 0., 0.)
-        for i in range(ids.GetNumberOfIds()):
-            result = _add_points(result, points[ids.GetId(i)])
-        return _scale_point(result, 1.0/float(ids.GetNumberOfIds()))
+        corner_indices = [ids.GetId(_i) for _i in range(ids.GetNumberOfIds())]
+        cell_centers[cell_id] = np_sum(points[corner_indices], axis=0)
+        cell_centers[cell_id] /= float(ids.GetNumberOfIds())
 
     def _compare_data_array(arr, position_call_back):
         for i in range(arr.GetNumberOfTuples()):
@@ -114,7 +118,7 @@ def _check_vtk_file(vtk_reader,
         arr = cell_data.GetArray(i)
         print(f"Comparing cell array '{name}'")
         for i in range(arr.GetNumberOfTuples()):
-            _compare_data_array(arr, lambda i: _compute_cell_center(i))
+            _compare_data_array(arr, lambda i: cell_centers[i])
 
 
 def _read_pvd_pieces(filename: str) -> List[_TimeStep]:
