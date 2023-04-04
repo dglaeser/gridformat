@@ -128,18 +128,9 @@ def _read_pvd_pieces(filename: str) -> List[_TimeStep]:
     ]
 
 
-def _read_pvtu_pieces(filename: str) -> List[str]:
-    tree = ElementTree.parse(filename)
-    root = tree.getroot()
-    return [
-        piece.attrib["Source"]
-        for piece in root.find("PUnstructuredGrid").findall("Piece")
-    ]
-
-
 def _test_vtk(filename: str, reference_function: Callable[[list], float]):
     try:
-        from vtk import vtkXMLUnstructuredGridReader, vtkXMLPolyDataReader, vtkXMLImageDataReader
+        import vtk
     except ImportError:
         print("VTK not found")
         exit(255)
@@ -163,13 +154,19 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
     e = VTKErrorObserver()
     ext = splitext(filename)[1]
     if ext == ".vtu":
-        reader = vtkXMLUnstructuredGridReader()
+        reader = vtk.vtkXMLUnstructuredGridReader()
+        point_collector = _get_unstructured_points
+    elif ext == ".pvtu":
+        reader = vtk.vtkXMLPUnstructuredGridReader()
         point_collector = _get_unstructured_points
     elif ext == ".vtp":
-        reader = vtkXMLPolyDataReader()
+        reader = vtk.vtkXMLPolyDataReader()
         point_collector = _get_unstructured_points
     elif ext == ".vti":
-        reader = vtkXMLImageDataReader()
+        reader = vtk.vtkXMLImageDataReader()
+        point_collector = _get_structured_points
+    elif ext == ".pvti":
+        reader = vtk.vtkXMLPImageDataReader()
         point_collector = _get_structured_points
     else:
         raise NotImplementedError("Unsupported vtk extension")
@@ -185,26 +182,13 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
 
 def test(filename: str) -> None:
     ext = splitext(filename)[1]
-    if ext in [".vtu", ".vtp", ".vti"]:
-        print(f"Comparing file '{filename}'")
-        _test_vtk(filename, _TestFunction())
-    elif ext == ".pvd":
+    if ext == ".pvd":
         for timestep in _read_pvd_pieces(filename):
             print(f"Comparing timestep '{timestep.time}' in file {timestep.filename}")
-            if splitext(timestep.filename)[1].startswith(".p"):
-                for piece in _read_pvtu_pieces(timestep.filename):
-                    print(f" -- Comparing piece '{piece}'")
-                    _test_vtk(piece, _TestFunction(float(timestep.time)))
-            else:
-                _test_vtk(timestep.filename, _TestFunction(float(timestep.time)))
-    elif ext == ".pvtu":
-        print(f"Comparing pvtu file {filename}")
-        for piece in _read_pvtu_pieces(filename):
-            print(f"Comparing piece '{piece}'")
-            _test_vtk(piece, _TestFunction())
+            _test_vtk(timestep.filename, _TestFunction(float(timestep.time)))
     else:
-        print(f"No reader for files with extension {ext}")
-        exit(255)
+        print(f"Comparing file '{filename}'")
+        _test_vtk(filename, _TestFunction())
 
 
 if __name__ == "__main__":
