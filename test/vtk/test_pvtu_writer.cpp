@@ -1,11 +1,8 @@
 // SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <iostream>
-
 #include <mpi.h>
 
-#include <gridformat/common/logging.hpp>
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/vtk/pvtu_writer.hpp>
 

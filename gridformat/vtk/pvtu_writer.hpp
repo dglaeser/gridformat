@@ -11,11 +11,8 @@
 #include <ostream>
 #include <string>
 #include <fstream>
-#include <cmath>
 
-#include <gridformat/common/field.hpp>
 #include <gridformat/common/exceptions.hpp>
-
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/parallel/helpers.hpp>
 
