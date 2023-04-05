@@ -139,42 +139,37 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
         print("VTK not found")
         exit(255)
 
-    def _get_unstructured_points(reader):
+    def _get_points_from_grid(reader):
         points = reader.GetOutput().GetPoints()
         return [points.GetPoint(i) for i in range(points.GetNumberOfPoints())]
 
-    def _get_structured_points(reader):
+    def _get_rectilinear_points(reader):
         output = reader.GetOutput()
-        x0, x1, y0, y1, z0, z1 = output.GetExtent()
-        pidx = 0
-        points = []
-        for _ in range(z0, z1+1):
-            for _ in range(y0, y1+1):
-                for _ in range(x0, x1+1):
-                    points.append(output.GetPoint(pidx))
-                    pidx += 1
-        return points
+        return array([output.GetPoint(i) for i in range(output.GetNumberOfPoints())])
 
     e = VTKErrorObserver()
     ext = splitext(filename)[1]
     if ext == ".vtu":
         reader = vtk.vtkXMLUnstructuredGridReader()
-        point_collector = _get_unstructured_points
+        point_collector = _get_points_from_grid
     elif ext == ".pvtu":
         reader = vtk.vtkXMLPUnstructuredGridReader()
-        point_collector = _get_unstructured_points
+        point_collector = _get_points_from_grid
     elif ext == ".vtp":
         reader = vtk.vtkXMLPolyDataReader()
-        point_collector = _get_unstructured_points
+        point_collector = _get_points_from_grid
+    elif ext == ".vtr":
+        reader = vtk.vtkXMLRectilinearGridReader()
+        point_collector = _get_rectilinear_points
     elif ext == ".pvtp":
         reader = vtk.vtkXMLPPolyDataReader()
-        point_collector = _get_unstructured_points
+        point_collector = _get_points_from_grid
     elif ext == ".vti":
         reader = vtk.vtkXMLImageDataReader()
-        point_collector = _get_structured_points
+        point_collector = _get_rectilinear_points
     elif ext == ".pvti":
         reader = vtk.vtkXMLPImageDataReader()
-        point_collector = _get_structured_points
+        point_collector = _get_rectilinear_points
     else:
         raise NotImplementedError("Unsupported vtk extension")
     reader.AddObserver("ErrorEvent", e)

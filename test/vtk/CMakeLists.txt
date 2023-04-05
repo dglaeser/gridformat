@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 gridformat_add_regression_test(test_vti_writer test_vti_writer.cpp "vti_*")
+gridformat_add_regression_test(test_vtr_writer test_vtr_writer.cpp "vtr_*")
 gridformat_add_regression_test(test_vtu_writer test_vtu_writer.cpp "vtu_*")
 gridformat_add_regression_test(test_pvd_writer test_pvd_writer.cpp "pvd_time_series*.pvd")
 gridformat_add_regression_test(test_vtp_writer test_vtp_writer.cpp "vtp_*")
