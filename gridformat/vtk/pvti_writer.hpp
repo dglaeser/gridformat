@@ -175,9 +175,9 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         pvtk_xml.set_attribute("type", "PImageData");
 
         XMLElement& grid = pvtk_xml.add_child("PImageData");
-        grid.set_attribute("WholeExtent", VTIDetail::extents_string(extents));
-        grid.set_attribute("Origin", VTIDetail::number_string_3d(origin));
-        grid.set_attribute("Spacing", VTIDetail::number_string_3d(spacing(this->grid())));
+        grid.set_attribute("WholeExtent", VTK::CommonDetail::extents_string(extents));
+        grid.set_attribute("Origin", VTK::CommonDetail::number_string_3d(origin));
+        grid.set_attribute("Spacing", VTK::CommonDetail::number_string_3d(spacing(this->grid())));
 
         XMLElement& ppoint_data = grid.add_child("PPointData");
         XMLElement& pcell_data = grid.add_child("PCellData");
@@ -203,7 +203,7 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
             }
 
             auto& piece = grid.add_child("Piece");
-            piece.set_attribute("Extent", VTIDetail::extents_string(extents_begin, extents_end));
+            piece.set_attribute("Extent", VTK::CommonDetail::extents_string(extents_begin, extents_end));
             piece.set_attribute("Source", PVTK::piece_basefilename(filename_with_ext, rank) + ".vti");
         });
 

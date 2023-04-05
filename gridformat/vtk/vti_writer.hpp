@@ -16,66 +16,12 @@
 #include <optional>
 
 #include <gridformat/common/field_storage.hpp>
-#include <gridformat/common/string_conversion.hpp>
-#include <gridformat/common/concepts.hpp>
-
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/grid/type_traits.hpp>
 #include <gridformat/vtk/common.hpp>
 #include <gridformat/vtk/xml.hpp>
 
 namespace GridFormat {
-
-#ifndef DOXYGEN
-namespace VTIDetail {
-
-    template<Concepts::StaticallySizedRange R>
-    std::string number_string_3d(const R& r) {
-        if constexpr (static_size<std::decay_t<R>> == 3)
-            return as_string(r);
-        if constexpr (static_size<std::decay_t<R>> == 2)
-            return as_string(r) + " 0";
-        if constexpr (static_size<std::decay_t<R>> == 1)
-            return as_string(r) + " 0 0";
-    }
-
-    template<Concepts::StaticallySizedRange R>
-    std::string extents_string(const R& r) {
-        int i = 0;
-        std::string result;
-        std::ranges::for_each(r, [&] (const auto& entry) {
-            result += (i > 0 ? " 0 " : "0 ") + as_string(entry);
-            ++i;
-        });
-        for (i = static_size<R>; i < 3; ++i)
-            result += " 0 0";
-        return result;
-    }
-    template<Concepts::StaticallySizedRange R1,
-             Concepts::StaticallySizedRange R2>
-    std::string extents_string(const R1& r1, const R2& r2) {
-        static_assert(static_size<R1> == static_size<R2>);
-        int i = 0;
-        std::string result;
-        auto it1 = std::ranges::begin(r1);
-        auto it2 = std::ranges::begin(r2);
-        for (; it1 != std::ranges::end(r1); ++it1, ++it2, ++i)
-            result += (i > 0 ? " " : "")
-                        + as_string(*it1) + " "
-                        + as_string(*it2);
-        for (i = static_size<R1>; i < 3; ++i)
-            result += " 0 0";
-        return result;
-    }
-
-    template<Concepts::StructuredGrid Grid>
-    std::string extents_string(const Grid& grid) {
-        return extents_string(extents(grid));
-    }
-
-}  // namespace VTIDetail
-#endif  // DOXYGEN
-
 
 /*!
  * \ingroup VTK
@@ -139,27 +85,30 @@ class VTIWriter : public VTK::XMLWriterBase<Grid, VTIWriter<Grid>> {
     void _set_attributes(typename ParentType::WriteContext& context) const {
         _set_domain_attributes(context);
         _set_extent_attributes(context);
-        this->_set_attribute(context, "", "Spacing", VTIDetail::number_string_3d(spacing(this->grid())));
+        this->_set_attribute(context, "", "Spacing", VTK::CommonDetail::number_string_3d(spacing(this->grid())));
     }
 
     void _set_domain_attributes(typename ParentType::WriteContext& context) const {
+        using VTK::CommonDetail::extents_string;
+        using VTK::CommonDetail::number_string_3d;
         if (_domain) {
-            this->_set_attribute(context, "", "WholeExtent", VTIDetail::extents_string(_domain->whole_extent));
-            this->_set_attribute(context, "", "Origin", VTIDetail::number_string_3d(_domain->origin));
+            this->_set_attribute(context, "", "WholeExtent", extents_string(_domain->whole_extent));
+            this->_set_attribute(context, "", "Origin", number_string_3d(_domain->origin));
         } else {
-            this->_set_attribute(context, "", "WholeExtent", VTIDetail::extents_string(this->grid()));
-            this->_set_attribute(context, "", "Origin", VTIDetail::number_string_3d(origin(this->grid())));
+            this->_set_attribute(context, "", "WholeExtent", extents_string(this->grid()));
+            this->_set_attribute(context, "", "Origin", number_string_3d(origin(this->grid())));
         }
     }
 
     void _set_extent_attributes(typename ParentType::WriteContext& context) const {
+        using VTK::CommonDetail::extents_string;
         if (int i = 0; _offset) {
             auto begin = (*_offset);
             auto end = GridFormat::extents(this->grid());
             std::ranges::for_each(end, [&] (std::integral auto& ex) { ex += begin[i++]; });
-            this->_set_attribute(context, "Piece", "Extent", VTIDetail::extents_string(begin, end));
+            this->_set_attribute(context, "Piece", "Extent", extents_string(begin, end));
         } else {
-            this->_set_attribute(context, "Piece", "Extent", VTIDetail::extents_string(this->grid()));
+            this->_set_attribute(context, "Piece", "Extent", extents_string(this->grid()));
         }
     }
 
