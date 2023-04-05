@@ -161,6 +161,9 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
     elif ext == ".vtr":
         reader = vtk.vtkXMLRectilinearGridReader()
         point_collector = _get_rectilinear_points
+    elif ext == ".pvtr":
+        reader = vtk.vtkXMLPRectilinearGridReader()
+        point_collector = _get_rectilinear_points
     elif ext == ".pvtp":
         reader = vtk.vtkXMLPPolyDataReader()
         point_collector = _get_points_from_grid
