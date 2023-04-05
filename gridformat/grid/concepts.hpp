@@ -26,23 +26,31 @@ concept EntitySet =
     GridDetail::ExposesCellRange<T>;
 
 template<typename T>
-concept ImageGrid =
+concept StructuredGrid =
     EntitySet<T> and
-    GridDetail::ExposesOrigin<T> and
-    GridDetail::ExposesSpacing<T> and
     GridDetail::ExposesExtents<T> and
     GridDetail::ExposesCellLocation<T> and
     GridDetail::ExposesPointLocation<T> and
     all_equal<
-        static_size<GridDetail::Origin<T>>,
-        static_size<GridDetail::Spacing<T>>,
         static_size<GridDetail::Extents<T>>,
         static_size<GridDetail::CellLocation<T>>,
         static_size<GridDetail::PointLocation<T>>
     >;
 
 template<typename T>
-concept StructuredGrid = ImageGrid<T>;
+concept ImageGrid =
+    StructuredGrid<T> and
+    GridDetail::ExposesOrigin<T> and
+    GridDetail::ExposesSpacing<T> and
+    all_equal<
+        static_size<GridDetail::Origin<T>>,
+        static_size<GridDetail::Spacing<T>>
+    >;
+
+template<typename T>
+concept RectilinearGrid =
+    StructuredGrid<T> and
+    GridDetail::ExposesOrdinates<T>;
 
 template<typename T>
 concept UnstructuredGrid =
@@ -53,7 +61,7 @@ concept UnstructuredGrid =
     GridDetail::ExposesCellPoints<T>;
 
 template<typename T>
-concept Grid = ImageGrid<T> or UnstructuredGrid<T>;
+concept Grid = ImageGrid<T> or RectilinearGrid<T> or UnstructuredGrid<T>;
 
 template<typename T, typename Grid>
 concept PointFunction

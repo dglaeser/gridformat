@@ -69,6 +69,10 @@ struct Spacing;
 template<typename Grid>
 struct Extents;
 
+//! Metafunction to obtain the coordinates of a rectilinear grid via a static function `get(const Grid&)`
+template<typename Grid>
+struct Ordinates;
+
 //! Metafunction to obtain the location (MDIndex) of an entity in a structured grid via a static function `get(const Grid&, const Entity&)`
 template<typename Grid, typename Entity>
 struct Location;

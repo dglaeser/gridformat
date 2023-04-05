@@ -98,6 +98,11 @@ Concepts::StaticallySizedRange decltype(auto) origin(const Grid& grid) {
     return Traits::Origin<Grid>::get(grid);
 }
 
+template<GridDetail::ExposesOrdinates Grid>
+Concepts::MDRange<1> decltype(auto) ordinates(const Grid& grid, unsigned dir) {
+    return Traits::Ordinates<Grid>::get(grid, dir);
+}
+
 template<GridDetail::ExposesSpacing Grid>
 Concepts::StaticallySizedRange decltype(auto) spacing(const Grid& grid) {
     return Traits::Spacing<Grid>::get(grid);

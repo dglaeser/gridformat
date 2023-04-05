@@ -164,6 +164,15 @@ class StructuredGrid {
     std::size_t number_of_cells(int i) const { return _num_cells[i]; }
     std::size_t number_of_points(int i) const { return _num_cells[i] + 1; }
 
+    auto ordinates(int dir) const {
+        std::vector<double> result;
+        result.reserve(number_of_points(dir));
+        for (std::size_t i = 0; i < number_of_points(dir); ++i)
+            result.push_back(_origin[dir] + _spacing[dir]*i);
+        std::ranges::sort(result);
+        return result;
+    }
+
  private:
     std::array<double, dim> _origin;
     std::array<double, dim> _size;
@@ -210,6 +219,13 @@ template<int dim>
 struct Extents<Test::StructuredGrid<dim>> {
     static const auto& get(const Test::StructuredGrid<dim>& grid) {
         return grid.extents();
+    }
+};
+
+template<int dim>
+struct Ordinates<Test::StructuredGrid<dim>> {
+    static auto get(const Test::StructuredGrid<dim>& grid, unsigned int dir) {
+        return grid.ordinates(dir);
     }
 };
 
