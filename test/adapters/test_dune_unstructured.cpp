@@ -4,6 +4,7 @@
 
 #include <gridformat/grid/adapters/dune.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
+#include "../vtk/vtk_writer_tester.hpp"
 #include "../make_test_data.hpp"
 
 int main() {
@@ -14,6 +15,7 @@ int main() {
 
     const auto& grid_view = grid.leafGridView();
     GridFormat::VTUWriter writer{grid_view};
+    GridFormat::Test::VTK::add_meta_data(writer);
     writer.set_point_field("pfunc", [&] (const auto& vertex) {
         return GridFormat::Test::test_function<double>(vertex.geometry().center());
     });
