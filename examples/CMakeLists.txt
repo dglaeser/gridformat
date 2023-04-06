@@ -36,3 +36,4 @@ function(gridformat_add_example NAME SOURCE)
 endfunction()
 
 gridformat_add_example(example_unstructured example_unstructured.cpp)
+gridformat_add_example(example_triangular example_triangular.cpp)

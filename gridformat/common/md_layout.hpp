@@ -8,6 +8,7 @@
 #ifndef GRIDFORMAT_COMMON_MD_LAYOUT_HPP_
 #define GRIDFORMAT_COMMON_MD_LAYOUT_HPP_
 
+#include <cstddef>
 #include <ostream>
 #include <utility>
 #include <vector>
@@ -16,6 +17,7 @@
 #include <iterator>
 #include <algorithm>
 #include <initializer_list>
+#include <memory_resource>
 
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/concepts.hpp>
@@ -28,19 +30,39 @@ namespace GridFormat {
  * \brief Represents the layout (dimension, extents) of a multi-dimensional range
  */
 class MDLayout {
+    static constexpr std::size_t buffered_dimensions = 5;
+
  public:
-    MDLayout() = default;
+    MDLayout()
+    : _buffer{}
+    , _resource{_buffer.data(), _buffer.size()}
+    , _extents{&_resource}
+    {}
+
+    MDLayout(const MDLayout& other)
+    : MDLayout() {
+        *this = other;
+    }
 
     template<std::ranges::forward_range R>
-    explicit MDLayout(R&& extents) {
+    explicit MDLayout(R&& extents)
+    : MDLayout() {
         _extents.reserve(Ranges::size(extents));
         std::ranges::copy(extents, std::back_inserter(_extents));
     }
 
     template<std::integral T>
-    explicit MDLayout(std::initializer_list<T> extents) {
+    explicit MDLayout(std::initializer_list<T> extents)
+    : MDLayout() {
         _extents.reserve(Ranges::size(extents));
         std::ranges::copy(extents, std::back_inserter(_extents));
+    }
+
+    MDLayout& operator=(const MDLayout& other) {
+        _extents.clear();
+        _extents.resize(other._extents.size());
+        std::ranges::copy(other._extents, _extents.begin());
+        return *this;
     }
 
     std::size_t dimension() const {
@@ -93,7 +115,9 @@ class MDLayout {
     }
 
  private:
-    std::vector<std::size_t> _extents;
+    std::array<std::byte, buffered_dimensions*sizeof(std::size_t)> _buffer;
+    std::pmr::monotonic_buffer_resource _resource;
+    std::pmr::vector<std::size_t> _extents;
 };
 
 

@@ -13,9 +13,11 @@
 #include <ranges>
 #include <utility>
 #include <type_traits>
+#include <functional>
 #include <optional>
 
 #include <gridformat/common/detail/crtp.hpp>
+#include <gridformat/common/callable_overload_set.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/variant.hpp>
@@ -58,6 +60,7 @@ namespace XMLDetail {
 namespace XML {
 
 using HeaderPrecision = std::variant<UInt32, UInt64>;
+using CoordinatePrecision = std::variant<Float32, Float64>;
 using Compressor = ExtendedVariant<XMLDetail::Compressor, None>;
 using Encoder = std::variant<Encoding::Ascii, Encoding::Base64, Encoding::RawBinary>;
 using DataFormat = std::variant<VTK::DataFormat::Inlined, VTK::DataFormat::Appended>;
@@ -70,7 +73,7 @@ struct XMLOptions {
     using EncoderOption = ExtendedVariant<XML::Encoder, Automatic>;
     using CompressorOption = ExtendedVariant<XML::Compressor, Automatic>;
     using DataFormatOption = ExtendedVariant<XML::DataFormat, Automatic>;
-    using CoordinatePrecisionOption = std::variant<DynamicPrecision, Automatic>;
+    using CoordinatePrecisionOption = ExtendedVariant<XML::CoordinatePrecision, Automatic>;
     EncoderOption encoder = automatic;
     CompressorOption compressor = automatic;
     DataFormatOption data_format = automatic;
@@ -92,7 +95,7 @@ namespace XMLDetail {
         XML::Encoder encoder;
         XML::Compressor compressor;
         XML::DataFormat data_format;
-        DynamicPrecision coordinate_precision;
+        XML::CoordinatePrecision coordinate_precision;
         XML::HeaderPrecision header_precision;
 
         template<typename GridCoordinateType>
@@ -106,13 +109,13 @@ namespace XMLDetail {
                 .data_format = _format,
                 .coordinate_precision =
                     Variant::is<Automatic>(opts.coordinate_precision) ?
-                        DynamicPrecision{Precision<GridCoordinateType>{}} :
-                        Variant::unwrap(Variant::without<Automatic>(opts.coordinate_precision)),
+                        XML::CoordinatePrecision{Precision<GridCoordinateType>{}} :
+                        Variant::without<Automatic>(opts.coordinate_precision),
                 .header_precision = opts.header_precision
             };
         }
 
-    private:
+     private:
         static XML::Encoder _make_encoder(const typename XMLOptions::EncoderOption& enc) {
             if (Variant::is<Automatic>(enc))
                 return Encoding::base64;
@@ -165,58 +168,67 @@ class XMLWriterBase
                            std::string extension,
                            XMLOptions xml_opts = {})
     : ParentType(grid, std::move(extension))
-    , _xml_settings{XMLDetail::XMLSettings::from<GridCoordinateType>(xml_opts)} {
+    , _xml_opts{std::move(xml_opts)}
+    , _xml_settings{XMLDetail::XMLSettings::from<GridCoordinateType>(_xml_opts)}
+    {}
+
+    Impl with(XMLOptions opts) const {
+        return _with_fields(_with(std::move(opts)));
     }
 
     Impl with_data_format(const XML::DataFormat& format) const {
-        auto opts = _xml_opts();
+        auto opts = _xml_opts;
         Variant::unwrap_to(opts.data_format, format);
-        return this->_impl().with(std::move(opts));
-    };
+        return with(std::move(opts));
+    }
 
     Impl with_compression(const XML::Compressor& compressor) const {
-        auto opts = _xml_opts();
+        auto opts = _xml_opts;
         Variant::unwrap_to(opts.compressor, compressor);
-        return this->_impl().with(std::move(opts));
-    };
+        return with(std::move(opts));
+    }
 
     Impl with_encoding(const XML::Encoder& encoder) const {
-        auto opts = _xml_opts();
+        auto opts = _xml_opts;
         Variant::unwrap_to(opts.encoder, encoder);
-        return this->_impl().with(std::move(opts));
-    };
+        return with(std::move(opts));
+    }
 
-    Impl with_coordinate_precision(const DynamicPrecision& prec) const {
-        auto opts = _xml_opts();
-        opts.coordinate_precision = prec;
-        return this->_impl().with(std::move(opts));
+    Impl with_coordinate_precision(const XML::CoordinatePrecision& prec) const {
+        auto opts = _xml_opts;
+        Variant::unwrap_to(opts.coordinate_precision, prec);
+        return with(std::move(opts));
     }
 
     Impl with_header_precision(const XML::HeaderPrecision& prec) const {
-        auto opts = _xml_opts();
+        auto opts = _xml_opts;
         opts.header_precision = prec;
-        return this->_impl().with(std::move(opts));
+        return with(std::move(opts));
     }
 
+    template<typename T>
+    void set_meta_data(const std::string& name, T&& value) {
+        ParentType::set_meta_data(name, std::forward<T>(value));
+    }
+
+    void set_meta_data(const std::string& name, std::string text) {
+        text.push_back('\0');
+        ParentType::set_meta_data(name, std::move(text));
+    }
+
+ private:
+    virtual Impl _with(XMLOptions opts) const = 0;
+
  protected:
+    XMLOptions _xml_opts;
     XMLDetail::XMLSettings _xml_settings;
 
-    XMLOptions _xml_opts() const {
-        return std::visit([&] (const auto& encoder) {
-            return std::visit([&] (const auto& compressor) {
-                return std::visit([&] (const auto& data_format) {
-                    return std::visit([&] (const auto& header_prec) {
-                        return XMLOptions{
-                            .encoder = encoder,
-                            .compressor = compressor,
-                            .data_format = data_format,
-                            .coordinate_precision = _xml_settings.coordinate_precision,
-                            .header_precision = header_prec
-                        };
-                    }, _xml_settings.header_precision);
-                }, _xml_settings.data_format);
-            }, _xml_settings.compressor);
-        }, _xml_settings.encoder);
+    Impl _with_fields(Impl&& impl) const {
+        for (const auto& [name, field_ptr] : point_fields(*this))
+            impl.set_point_field(name, field_ptr);
+        for (const auto& [name, field_ptr] : cell_fields(*this))
+            impl.set_cell_field(name, field_ptr);
+        return impl;
     }
 
     struct WriteContext {
@@ -226,23 +238,65 @@ class XMLWriterBase
     };
 
     WriteContext _get_write_context(std::string vtk_grid_type) const {
-        XMLElement xml("VTKFile");
-        xml.set_attribute("type", vtk_grid_type);
-        xml.set_attribute("version", "2.0");
-        std::visit([&] <typename T> (const Precision<T>& prec) {
-            xml.set_attribute("header_type", attribute_name(prec));
-        }, _xml_settings.header_precision);
-        xml.set_attribute("byte_order", attribute_name(std::endian::native));
-        xml.add_child(vtk_grid_type);
-        std::visit([&] <typename C> (const C& c) {
-            if constexpr (!is_none<C>)
-                xml.set_attribute("compressor", attribute_name(c));
+        return std::visit([&] (const auto& compressor) {
+            return std::visit([&] (const auto& header_precision) {
+                XMLElement xml("VTKFile");
+                xml.set_attribute("type", vtk_grid_type);
+                xml.set_attribute("version", "2.0");
+                xml.set_attribute("byte_order", attribute_name(std::endian::native));
+                xml.set_attribute("header_type", attribute_name(DynamicPrecision{header_precision}));
+                if constexpr (!is_none<std::decay_t<decltype(compressor)>>)
+                    xml.set_attribute("compressor", attribute_name(compressor));
+
+                xml.add_child(vtk_grid_type).add_child("FieldData");
+                WriteContext context{
+                    .vtk_grid_type = std::move(vtk_grid_type),
+                    .xml_representation = std::move(xml),
+                    .appendix = {}
+                };
+                _add_meta_data_fields(context);
+                return context;
+            }, _xml_settings.header_precision);
         }, _xml_settings.compressor);
-        return {
-            .vtk_grid_type = std::move(vtk_grid_type),
-            .xml_representation = std::move(xml),
-            .appendix = {}
-        };
+    }
+
+    void _add_meta_data_fields(WriteContext& context) const {
+        XMLElement& field_data = context.xml_representation
+                                    .get_child(context.vtk_grid_type)
+                                    .get_child("FieldData");
+        std::visit([&] (const auto& encoder) {
+            std::visit([&] (const auto& compressor) {
+                std::visit([&] (const auto& data_format) {
+                    std::visit([&] (const auto& header_precision) {
+                        const auto& names = this->_meta_data_field_names();
+                        std::ranges::for_each(names, [&] (const std::string& name) {
+                            const auto& field = this->_get_meta_data_field(name);
+                            const auto layout = field.layout();
+                            const auto precision = field.precision();
+
+                            auto& array = field_data.add_child("DataArray");
+                            array.set_attribute("Name", name);
+                            array.set_attribute("format", data_format_name(encoder, data_format));
+                            if (precision.template is<char>()) {
+                                array.set_attribute("type", "String");
+                                array.set_attribute("NumberOfTuples", 1);
+                            } else {
+                                array.set_attribute("NumberOfTuples", layout.extent(0));
+                                array.set_attribute("type", attribute_name(precision));
+                                array.set_attribute(
+                                    "NumberOfComponents",
+                                    layout.dimension() > 1
+                                        ? layout.sub_layout(1).number_of_entries()
+                                        : 1
+                                );
+                            }
+                            DataArray content{field, encoder, compressor, header_precision};
+                            _set_data_array_content(data_format, array, context.appendix, std::move(content));
+                        });
+                    }, _xml_settings.header_precision);
+                }, _xml_settings.data_format);
+            }, _xml_settings.compressor);
+        }, _xml_settings.encoder);
     }
 
     template<typename ValueType>
@@ -262,22 +316,32 @@ class XMLWriterBase
         da.set_attribute("Name", std::move(data_array_name));
         da.set_attribute("type", attribute_name(field.precision()));
         da.set_attribute("NumberOfComponents", (layout.dimension() == 1 ? 1 : layout.number_of_entries(1)));
-        std::visit([&] (const auto& compressor) {
-            std::visit([&] (const auto& encoder) {
-                std::visit([&] <typename DataFormat> (const DataFormat& data_format) {
-                    std::visit([&] <typename T> (const Precision<T>&) {
+        std::visit([&] (const auto& encoder) {
+            std::visit([&] (const auto& compressor) {
+                std::visit([&] (const auto& data_format) {
+                    std::visit([&] (const auto& header_prec) {
                         da.set_attribute("format", data_format_name(encoder, data_format));
-                        auto data_array = DataArray{field, encoder, compressor, Precision<T>{}};
-                        if constexpr (std::is_same_v<DataFormat, VTK::DataFormat::Inlined>)
-                            da.set_content(std::move(data_array));
-                        else if constexpr (std::is_same_v<DataFormat, VTK::DataFormat::Appended>)
-                            context.appendix.add(std::move(data_array));
-                        else
-                            throw ValueError("Unsupported data format");
+                        DataArray content{field, encoder, compressor, header_prec};
+                        _set_data_array_content(data_format, da, context.appendix, std::move(content));
                     }, _xml_settings.header_precision);
-                }, this->_xml_settings.data_format);
-            }, this->_xml_settings.encoder);
-        }, this->_xml_settings.compressor);
+                }, _xml_settings.data_format);
+            }, _xml_settings.compressor);
+        }, _xml_settings.encoder);
+    }
+
+    template<typename DataFormat, typename Appendix, typename Content> requires(!std::is_lvalue_reference_v<Content>)
+    void _set_data_array_content(const DataFormat&,
+                                 XMLElement& e,
+                                 Appendix& app,
+                                 Content&& c) const {
+        static constexpr bool is_inlined = std::is_same_v<DataFormat, VTK::DataFormat::Inlined>;
+        static constexpr bool is_appended = std::is_same_v<DataFormat, VTK::DataFormat::Appended>;
+        static_assert(is_inlined || is_appended, "Unknown data format");
+
+        if constexpr (is_inlined)
+            e.set_content(std::move(c));
+        else
+            app.add(std::move(c));
     }
 
     XMLElement& _access_element(WriteContext& context, const std::vector<std::string>& sub_elem_names) const {

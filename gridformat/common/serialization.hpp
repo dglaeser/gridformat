@@ -10,9 +10,11 @@
 
 #include <vector>
 #include <cstddef>
+#include <algorithm>
 #include <span>
 
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/concepts.hpp>
 
 namespace GridFormat {
 
@@ -25,9 +27,19 @@ class Serialization {
     using Byte = std::byte;
 
     Serialization() = default;
+
     explicit Serialization(std::size_t size)
     : _data{size}
     {}
+
+    template<Concepts::Scalar T>
+    static Serialization from_scalar(const T& value) {
+        Serialization result{sizeof(value)};
+        std::byte* out = result.as_span().data();
+        const std::byte* value_bytes = reinterpret_cast<const std::byte*>(&value);
+        std::copy_n(value_bytes, sizeof(value), out);
+        return result;
+    }
 
     std::size_t size() const { return _data.size(); }
     void resize(std::size_t size, Byte value = Byte{0}) { _data.resize(size, value); }

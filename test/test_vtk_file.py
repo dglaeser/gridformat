@@ -8,6 +8,14 @@ from typing import Callable, Tuple, List
 from math import sin, cos, isclose
 from xml.etree import ElementTree
 from sys import exit
+from numpy import array, ndarray, sum as np_sum
+
+try:
+    import vtk
+    HAVE_VTK = True
+except ImportError:
+    HAVE_VTK = False
+
 
 class _TestFunction:
     def __init__(self, scaling: float = 1.0) -> None:
@@ -73,22 +81,23 @@ def _get_grid_and_space_dimension(filename: str) -> Tuple[int, int]:
 
 
 def _check_vtk_file(vtk_reader,
+                    points,
                     space_dim,
                     reference_function: Callable[[list], float]) -> None:
     rel_tol = 1e-5
     abs_tol = 1e-3
 
+    # precompute cell centers
     output = vtk_reader.GetOutput()
-    points = output.GetPoints()
-
-    def _compute_cell_center(cell_id: int, ) -> tuple:
-        from vtk import vtkIdList
-        ids = vtkIdList()
+    num_cells = output.GetNumberOfCells()
+    points = array(points)
+    cell_centers = ndarray(shape=(num_cells, 3))
+    for cell_id in range(num_cells):
+        ids = vtk.vtkIdList()
         output.GetCellPoints(cell_id, ids)
-        result = (0., 0., 0.)
-        for i in range(ids.GetNumberOfIds()):
-            result = _add_points(result, points.GetPoint(ids.GetId(i)))
-        return _scale_point(result, 1.0/float(ids.GetNumberOfIds()))
+        corner_indices = [ids.GetId(_i) for _i in range(ids.GetNumberOfIds())]
+        cell_centers[cell_id] = np_sum(points[corner_indices], axis=0)
+        cell_centers[cell_id] /= float(ids.GetNumberOfIds())
 
     def _compare_data_array(arr, position_call_back):
         for i in range(arr.GetNumberOfTuples()):
@@ -107,7 +116,7 @@ def _check_vtk_file(vtk_reader,
         arr = point_data.GetArray(i)
         print(f"Comparing point array '{name}'")
         for i in range(arr.GetNumberOfTuples()):
-            _compare_data_array(arr, lambda i: points.GetPoint(i))
+            _compare_data_array(arr, lambda i: points[i])
 
     cell_data = output.GetCellData()
     for i in range(cell_data.GetNumberOfArrays()):
@@ -115,7 +124,7 @@ def _check_vtk_file(vtk_reader,
         arr = cell_data.GetArray(i)
         print(f"Comparing cell array '{name}'")
         for i in range(arr.GetNumberOfTuples()):
-            _compare_data_array(arr, lambda i: _compute_cell_center(i))
+            _compare_data_array(arr, lambda i: cell_centers[i])
 
 
 def _read_pvd_pieces(filename: str) -> List[_TimeStep]:
@@ -129,63 +138,71 @@ def _read_pvd_pieces(filename: str) -> List[_TimeStep]:
     ]
 
 
-def _read_pvtu_pieces(filename: str) -> List[str]:
-    tree = ElementTree.parse(filename)
-    root = tree.getroot()
-    return [
-        piece.attrib["Source"]
-        for piece in root.find("PUnstructuredGrid").findall("Piece")
-    ]
-
-
 def _test_vtk(filename: str, reference_function: Callable[[list], float]):
-    try:
-        from vtk import vtkXMLUnstructuredGridReader, vtkXMLPolyDataReader
-    except ImportError:
-        print("VTK not found")
-        exit(255)
+    def _get_points_from_grid(reader):
+        points = reader.GetOutput().GetPoints()
+        return array([points.GetPoint(i) for i in range(points.GetNumberOfPoints())])
+
+    def _get_rectilinear_points(reader):
+        output = reader.GetOutput()
+        return array([output.GetPoint(i) for i in range(output.GetNumberOfPoints())])
 
     e = VTKErrorObserver()
     ext = splitext(filename)[1]
     if ext == ".vtu":
-        reader = vtkXMLUnstructuredGridReader()
-        reader.AddObserver("ErrorEvent", e)
+        reader = vtk.vtkXMLUnstructuredGridReader()
+        point_collector = _get_points_from_grid
+    elif ext == ".pvtu":
+        reader = vtk.vtkXMLPUnstructuredGridReader()
+        point_collector = _get_points_from_grid
     elif ext == ".vtp":
-        reader = vtkXMLPolyDataReader()
-        reader.AddObserver("ErrorEvent", e)
+        reader = vtk.vtkXMLPolyDataReader()
+        point_collector = _get_points_from_grid
+    elif ext == ".vtr":
+        reader = vtk.vtkXMLRectilinearGridReader()
+        point_collector = _get_rectilinear_points
+    elif ext == ".vts":
+        reader = vtk.vtkXMLStructuredGridReader()
+        point_collector = _get_points_from_grid
+    elif ext == ".pvts":
+        reader = vtk.vtkXMLPStructuredGridReader()
+        point_collector = _get_points_from_grid
+    elif ext == ".pvtr":
+        reader = vtk.vtkXMLPRectilinearGridReader()
+        point_collector = _get_rectilinear_points
+    elif ext == ".pvtp":
+        reader = vtk.vtkXMLPPolyDataReader()
+        point_collector = _get_points_from_grid
+    elif ext == ".vti":
+        reader = vtk.vtkXMLImageDataReader()
+        point_collector = _get_rectilinear_points
+    elif ext == ".pvti":
+        reader = vtk.vtkXMLPImageDataReader()
+        point_collector = _get_rectilinear_points
     else:
         raise NotImplementedError("Unsupported vtk extension")
+    reader.AddObserver("ErrorEvent", e)
     reader.SetFileName(filename)
     reader.Update()
     if e.ErrorOccurred():
         raise IOError(f"Error reading VTK file '{filename}': {e.ErrorMessage()}")
 
     _, space_dim = _get_grid_and_space_dimension(filename)
-    _check_vtk_file(reader, space_dim, reference_function)
+    _check_vtk_file(reader, point_collector(reader), space_dim, reference_function)
 
 
-def test(filename: str) -> None:
+def test(filename: str) -> int | None:
+    if not HAVE_VTK:
+        return 255
+
     ext = splitext(filename)[1]
-    if ext in [".vtu", ".vtp"]:
-        print(f"Comparing file '{filename}'")
-        _test_vtk(filename, _TestFunction())
-    elif ext == ".pvd":
+    if ext == ".pvd":
         for timestep in _read_pvd_pieces(filename):
             print(f"Comparing timestep '{timestep.time}' in file {timestep.filename}")
-            if splitext(timestep.filename)[1].startswith(".p"):
-                for piece in _read_pvtu_pieces(timestep.filename):
-                    print(f" -- Comparing piece '{piece}'")
-                    _test_vtk(piece, _TestFunction(float(timestep.time)))
-            else:
-                _test_vtk(timestep.filename, _TestFunction(float(timestep.time)))
-    elif ext == ".pvtu":
-        print(f"Comparing pvtu file {filename}")
-        for piece in _read_pvtu_pieces(filename):
-            print(f"Comparing piece '{piece}'")
-            _test_vtk(piece, _TestFunction())
+            _test_vtk(timestep.filename, _TestFunction(float(timestep.time)))
     else:
-        print(f"No reader for files with extension {ext}")
-        exit(255)
+        print(f"Comparing file '{filename}'")
+        _test_vtk(filename, _TestFunction())
 
 
 if __name__ == "__main__":

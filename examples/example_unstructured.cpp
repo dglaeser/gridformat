@@ -8,13 +8,10 @@
 
 #include <gridformat/writer.hpp>
 
-// Exemplary (inefficient) implementation of a raster grid with unit-sized cells
+// Exemplary implementation of a raster grid with unit-sized cells
 class MyGrid {
     template<int codim>
-    struct Entity {
-        std::size_t _x_id;
-        std::size_t _y_id;
-    };
+    struct Entity { std::size_t _id; };
 
  public:
     using Point = Entity<2>;
@@ -23,56 +20,52 @@ class MyGrid {
     MyGrid(std::size_t cells_x, std::size_t cells_y)
     : _cells_x(cells_x)
     , _cells_y(cells_y) {
-        _points.reserve(_num_points());
-        _cells.reserve(_num_cells());
-        std::ranges::for_each(
-            std::views::iota(std::size_t{0}, _num_points()),
-            [&] (std::size_t id) {
-                const auto [xidx, yidx] = _get_point_index_pair(id);
-                _points.emplace_back(Point{xidx, yidx});
-            }
-        );
-        std::ranges::for_each(
-            std::views::iota(std::size_t{0}, _num_cells()),
-            [&] (std::size_t id) {
-                const auto [xidx, yidx] = _get_cell_index_pair(id);
-                _cells.emplace_back(Cell{xidx, yidx});
-            }
-        );
     }
 
-    std::array<double, 2> get_position(const Point& p) const {
+    std::array<double, 2> get_point_coordinates(const Point& p) const {
+        const auto [x, y] = _get_point_index_pair(p._id);
         return {
-            static_cast<double>(p._x_id),
-            static_cast<double>(p._y_id)
+            static_cast<double>(x),
+            static_cast<double>(y)
         };
     }
 
-    std::array<double, 2> get_center(const Cell& c) const {
+    std::array<double, 2> get_cell_center(const Cell& c) const {
+        const auto [x0, y0] = _get_cell_index_pair(c._id);
         return {
-            static_cast<double>(c._x_id) + 0.5,
-            static_cast<double>(c._y_id) + 0.5
+            static_cast<double>(x0) + 0.5,
+            static_cast<double>(y0) + 0.5
         };
     }
 
-    const std::ranges::range auto& points() const { return _points; }
-    const std::ranges::range auto& cells() const { return _cells; }
+    std::size_t number_of_cells() const { return _cells_x*_cells_y; }
+    std::size_t number_of_points() const { return (_cells_x + 1)*(_cells_y + 1); }
 
-    std::size_t number_of_cells_x() const { return _cells_x; }
-    std::size_t number_of_cells_y() const { return _cells_y; }
+    std::ranges::range auto points() const {
+        return std::views::iota(std::size_t{0}, number_of_points())
+            | std::views::transform([&] (std::size_t i) { return Point{i}; });
+    }
 
-    std::size_t number_of_points_x() const { return _cells_x + 1; }
-    std::size_t number_of_points_y() const { return _cells_y + 1; }
+    std::ranges::range auto cells() const {
+        return std::views::iota(std::size_t{0}, number_of_cells())
+            | std::views::transform([&] (std::size_t i) { return Cell{i}; });
+    }
+
+    std::ranges::range auto cell_corners(const Cell& c) const {
+        const auto [x0, y0] = _get_cell_index_pair(c._id);
+        return std::views::iota(0, 4)
+            | std::views::transform([nx=_cells_x+1, x0=x0, y0=y0] (int i) {
+                switch (i) {
+                    case 0: return Point{y0*nx + x0};
+                    case 1: return Point{y0*nx + x0 + 1};
+                    case 2: return Point{(y0+1)*nx + x0 + 1};
+                    case 3: return Point{(y0+1)*nx + x0};
+                    default: throw GridFormat::ValueError("Unexpected corner index");
+                }
+            });
+    }
 
  private:
-    std::size_t _num_points() const {
-        return (_cells_x + 1)*(_cells_y + 1);
-    }
-
-    std::size_t _num_cells() const {
-        return _cells_x*_cells_y;
-    }
-
     std::pair<std::size_t, std::size_t> _get_point_index_pair(std::size_t id) const {
         return {id%(_cells_x + 1), id/(_cells_x + 1)};
     }
@@ -83,8 +76,6 @@ class MyGrid {
 
     std::size_t _cells_x;
     std::size_t _cells_y;
-    std::vector<Point> _points;
-    std::vector<Cell> _cells;
 };
 
 // Although structured, we register MyGrid as UnstructuredGrid
@@ -93,47 +84,42 @@ namespace GridFormat::Traits {
 template<>
 struct Points<MyGrid> {
     static std::ranges::view auto get(const MyGrid& grid) {
-        return grid.points() | std::views::all;
+        return grid.points();
     }
 };
 
 template<>
 struct Cells<MyGrid> {
     static std::ranges::view auto get(const MyGrid& grid) {
-        return grid.cells() | std::views::all;
+        return grid.cells();
     }
 };
 
 template<>
 struct CellType<MyGrid, typename MyGrid::Cell> {
     static auto get(const MyGrid&, const typename MyGrid::Cell&) {
-        return GridFormat::CellType::quadrilateral;
+        return GridFormat::CellType::rectangle;
     }
 };
 
 template<>
 struct CellPoints<MyGrid, typename MyGrid::Cell> {
-    static auto get(const MyGrid&, const typename MyGrid::Cell& c) {
-        return std::array<typename MyGrid::Point, 4>{
-            typename MyGrid::Point{c._x_id, c._y_id},
-            typename MyGrid::Point{c._x_id + 1, c._y_id},
-            typename MyGrid::Point{c._x_id + 1, c._y_id + 1},
-            typename MyGrid::Point{c._x_id, c._y_id + 1}
-        };
+    static auto get(const MyGrid& grid, const typename MyGrid::Cell& c) {
+        return grid.cell_corners(c);
     }
 };
 
 template<>
 struct PointCoordinates<MyGrid, typename MyGrid::Point> {
     static auto get(const MyGrid& grid, const typename MyGrid::Point& p) {
-        return grid.get_position(p);
+        return grid.get_point_coordinates(p);
     }
 };
 
 template<>
 struct PointId<MyGrid, typename MyGrid::Point> {
-    static auto get(const MyGrid& grid, const typename MyGrid::Point& p) {
-        return p._y_id*grid.number_of_points_x() + p._x_id;
+    static auto get(const MyGrid&, const typename MyGrid::Point& p) {
+        return p._id;
     }
 };
 
@@ -152,10 +138,10 @@ int main() {
 
     // attach point and cell data via lambdas
     writer.set_point_field("test_func", [&] (const auto& point) {
-        return test_function(grid.get_position(point));
+        return test_function(grid.get_point_coordinates(point));
     });
     writer.set_cell_field("test_func", [&] (const auto& cell) {
-        return test_function(grid.get_center(cell));
+        return test_function(grid.get_cell_center(cell));
     });
 
     // write the file providing a base filename

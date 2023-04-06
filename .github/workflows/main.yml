@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-tests:
+  full-setup:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -51,9 +51,37 @@ jobs:
         run: |
           pushd build && ctest --output-on-failure && popd
 
-      - name: install
+  test-installation:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        compiler_pkg: [g++-12]
+        include:
+           - c_compiler: gcc-12
+             compiler_pkg: g++-12
+           - cxx_compiler: g++-12
+             compiler_pkg: g++-12
+    steps:
+      - name: install-compiler
+        run: sudo apt install ${{ matrix.compiler_pkg }} mpi-default-bin mpi-default-dev
+
+      - name: install-pip-packages
+        run: python3 -m pip install vtk
+
+      - name: checkout-repository
+        uses: actions/checkout@v2
+
+      - name: install-adapted-packages
+        uses: ./.github/actions/install-adapted-packages
+
+      - name: install-gridformat
         run: |
-          cmake -DCMAKE_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=$(pwd)/install -B build
+          cmake -DCMAKE_C_COMPILER=${{matrix.c_compiler}} \
+                -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}} \
+                -DGRIDFORMAT_BUILD_TESTS=OFF \
+                -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
+                -B build && \
+          cmake --build build && \
           cmake --install build
 
       - name: test-installed-pkg
@@ -85,12 +113,36 @@ jobs:
                   -B build
           pushd build && make && ctest --output-on-failure
 
+  minimal-setup:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        compiler_pkg: [g++-12]
+        include:
+           - c_compiler: gcc-12
+             compiler_pkg: g++-12
+           - cxx_compiler: g++-12
+             compiler_pkg: g++-12
+    steps:
       - name: remove-optional-dependencies
         run: sudo apt remove liblz4-dev liblzma-dev
 
-      - name: build-with-minimal-setup
+      - name: install-compiler
+        run: sudo apt install ${{ matrix.compiler_pkg }} mpi-default-bin mpi-default-dev
+
+      - name: install-pip-packages
+        run: python3 -m pip install vtk
+
+      - name: checkout-repository
+        uses: actions/checkout@v2
+
+      - name: build
         uses: ./.github/actions/build-tests
         with:
           c_compiler: /usr/bin/${{matrix.c_compiler}}
           cxx_compiler: /usr/bin/${{matrix.cxx_compiler}}
           build_dir: build
+
+      - name: test
+        run: |
+          pushd build && ctest --output-on-failure && popd

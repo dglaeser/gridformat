@@ -50,9 +50,10 @@ struct Cell {
     }
 };
 
-template<int space_dim>
+template<int max_dim, int space_dim>
 class UnstructuredGrid {
  public:
+    static constexpr int dim = max_dim;
     static constexpr int space_dimension = space_dim;
     using Point = Test::Point<space_dim>;
     using Cell = Test::Cell;
@@ -105,7 +106,7 @@ class UnstructuredGrid {
 
 template<int space_dim = 1>
 auto make_unstructured_0d() {
-    return UnstructuredGrid<space_dim>{
+    return UnstructuredGrid<0, space_dim>{
         {
             Point<space_dim>::make_from_value(0.0, 0),
             Point<space_dim>::make_from_value(1.0, 1),
@@ -135,7 +136,7 @@ auto make_unstructured_1d(std::size_t num_cells = 500) {
     for (std::size_t i = 0; i < num_cells; ++i)
         cells.emplace_back(Cell{{i, i+1}, CellType::segment, i});
 
-    return UnstructuredGrid<space_dim>{std::move(points), std::move(cells)};
+    return UnstructuredGrid<1, space_dim>{std::move(points), std::move(cells)};
 }
 
 template<int space_dim = 2>
@@ -148,7 +149,7 @@ auto make_unstructured_2d() {
             return Point<space_dim>{{vals[0], vals[1], 0.0}, id};
     };
 
-    return UnstructuredGrid<space_dim>{
+    return UnstructuredGrid<2, space_dim>{
         {
             _make_point({0.0, 0.0}, 0),
             _make_point({1.0, 0.0}, 1),
@@ -169,7 +170,7 @@ auto make_unstructured_2d() {
 }
 
 auto make_unstructured_3d() {
-    return UnstructuredGrid<3>{
+    return UnstructuredGrid<3, 3>{
         {
             {{0.0, 0.0, 0.0}, 0},
             {{1.0, 0.0, 0.0}, 1},
@@ -204,52 +205,52 @@ auto make_unstructured() {
 
 namespace Traits {
 
-template<int space_dim>
-struct Points<Test::UnstructuredGrid<space_dim>> {
-    static std::ranges::range auto get(const Test::UnstructuredGrid<space_dim>& grid) {
+template<int dim, int space_dim>
+struct Points<Test::UnstructuredGrid<dim, space_dim>> {
+    static std::ranges::range auto get(const Test::UnstructuredGrid<dim, space_dim>& grid) {
         return grid.points() | std::views::all;
     }
 };
 
-template<int space_dim>
-struct Cells<Test::UnstructuredGrid<space_dim>> {
-    static std::ranges::range auto get(const Test::UnstructuredGrid<space_dim>& grid) {
+template<int dim, int space_dim>
+struct Cells<Test::UnstructuredGrid<dim, space_dim>> {
+    static std::ranges::range auto get(const Test::UnstructuredGrid<dim, space_dim>& grid) {
         return grid.cells() | std::views::all;
     }
 };
 
-template<int space_dim>
-struct PointCoordinates<Test::UnstructuredGrid<space_dim>,
-                        typename Test::UnstructuredGrid<space_dim>::Point> {
-    static const auto& get([[maybe_unused]] const Test::UnstructuredGrid<space_dim>& grid,
-                           const typename Test::UnstructuredGrid<space_dim>::Point& p) {
+template<int dim, int space_dim>
+struct PointCoordinates<Test::UnstructuredGrid<dim, space_dim>,
+                        typename Test::UnstructuredGrid<dim, space_dim>::Point> {
+    static const auto& get([[maybe_unused]] const Test::UnstructuredGrid<dim, space_dim>& grid,
+                           const typename Test::UnstructuredGrid<dim, space_dim>::Point& p) {
         return p.coordinates;
     }
 };
 
-template<int space_dim>
-struct PointId<Test::UnstructuredGrid<space_dim>,
-               typename Test::UnstructuredGrid<space_dim>::Point> {
-    static auto get([[maybe_unused]] const Test::UnstructuredGrid<space_dim>& grid,
-                    const typename Test::UnstructuredGrid<space_dim>::Point& p) {
+template<int dim, int space_dim>
+struct PointId<Test::UnstructuredGrid<dim, space_dim>,
+               typename Test::UnstructuredGrid<dim, space_dim>::Point> {
+    static auto get([[maybe_unused]] const Test::UnstructuredGrid<dim, space_dim>& grid,
+                    const typename Test::UnstructuredGrid<dim, space_dim>::Point& p) {
         return p.id;
     }
 };
 
-template<int space_dim>
-struct CellType<Test::UnstructuredGrid<space_dim>,
-                typename Test::UnstructuredGrid<space_dim>::Cell> {
-    static auto get([[maybe_unused]] const Test::UnstructuredGrid<space_dim>& grid,
-                    const typename Test::UnstructuredGrid<space_dim>::Cell& cell) {
+template<int dim, int space_dim>
+struct CellType<Test::UnstructuredGrid<dim, space_dim>,
+                typename Test::UnstructuredGrid<dim, space_dim>::Cell> {
+    static auto get([[maybe_unused]] const Test::UnstructuredGrid<dim, space_dim>& grid,
+                    const typename Test::UnstructuredGrid<dim, space_dim>::Cell& cell) {
         return cell.cell_type;
     }
 };
 
-template<int space_dim>
-struct CellPoints<Test::UnstructuredGrid<space_dim>,
-                  typename Test::UnstructuredGrid<space_dim>::Cell> {
-    static auto get(const Test::UnstructuredGrid<space_dim>& grid,
-                    const typename Test::UnstructuredGrid<space_dim>::Cell& cell) {
+template<int dim, int space_dim>
+struct CellPoints<Test::UnstructuredGrid<dim, space_dim>,
+                  typename Test::UnstructuredGrid<dim, space_dim>::Cell> {
+    static auto get(const Test::UnstructuredGrid<dim, space_dim>& grid,
+                    const typename Test::UnstructuredGrid<dim, space_dim>::Cell& cell) {
         return std::views::transform(cell.corners, [&] (std::integral auto idx) {
             return grid.points()[idx];
         });

@@ -8,15 +8,18 @@
 #ifndef GRIDFORMAT_VTK_COMMON_HPP_
 #define GRIDFORMAT_VTK_COMMON_HPP_
 
+#include <ranges>
 #include <cassert>
 #include <utility>
 #include <type_traits>
 #include <algorithm>
 
+#include <gridformat/common/concepts.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/type_traits.hpp>
+#include <gridformat/common/string_conversion.hpp>
 #include <gridformat/common/field_transformations.hpp>
 #include <gridformat/common/field.hpp>
 
@@ -68,6 +71,7 @@ inline constexpr std::uint8_t cell_type_number(CellType t) {
         case (CellType::vertex): return 1;
         case (CellType::segment): return 3;
         case (CellType::triangle): return 5;
+        case (CellType::rectangle): return 8;
         case (CellType::quadrilateral): return 9;
         case (CellType::polygon): return 7;
         case (CellType::tetrahedron): return 10;
@@ -205,6 +209,56 @@ auto make_cell_types_field(const Grid& grid) {
         }
     });
 }
+
+#ifndef DOXYGEN
+namespace CommonDetail {
+
+    template<Concepts::StaticallySizedRange R>
+    std::string number_string_3d(const R& r) {
+        if constexpr (static_size<std::decay_t<R>> == 3)
+            return as_string(r);
+        if constexpr (static_size<std::decay_t<R>> == 2)
+            return as_string(r) + " 0";
+        if constexpr (static_size<std::decay_t<R>> == 1)
+            return as_string(r) + " 0 0";
+    }
+
+    template<Concepts::StaticallySizedRange R>
+    std::string extents_string(const R& r) {
+        int i = 0;
+        std::string result;
+        std::ranges::for_each(r, [&] (const auto& entry) {
+            result += (i > 0 ? " 0 " : "0 ") + as_string(entry);
+            ++i;
+        });
+        for (i = static_size<R>; i < 3; ++i)
+            result += " 0 0";
+        return result;
+    }
+    template<Concepts::StaticallySizedRange R1,
+                Concepts::StaticallySizedRange R2>
+    std::string extents_string(const R1& r1, const R2& r2) {
+        static_assert(static_size<R1> == static_size<R2>);
+        int i = 0;
+        std::string result;
+        auto it1 = std::ranges::begin(r1);
+        auto it2 = std::ranges::begin(r2);
+        for (; it1 != std::ranges::end(r1); ++it1, ++it2, ++i)
+            result += (i > 0 ? " " : "")
+                        + as_string(*it1) + " "
+                        + as_string(*it2);
+        for (i = static_size<R1>; i < 3; ++i)
+            result += " 0 0";
+        return result;
+    }
+
+    template<Concepts::StructuredGrid Grid>
+    std::string extents_string(const Grid& grid) {
+        return extents_string(extents(grid));
+    }
+
+}  // namespace CommonDetail
+#endif  // DOXYGEN
 
 //! \} group VTK
 }  // namespace GridFormat::VTK

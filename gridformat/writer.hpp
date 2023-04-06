@@ -99,7 +99,7 @@ template<Concepts::UnstructuredGrid Grid>
 inline int max_cell_dim(const Grid& grid) {
     int max_dim = 0;
     std::ranges::for_each(cells(grid), [&] (const auto& cell) {
-        max_dim = std::max(dimension(type(grid, cell)), max_dim);
+        max_dim = std::max(cell_dimension(type(grid, cell)), max_dim);
     });
     return max_dim;
 }

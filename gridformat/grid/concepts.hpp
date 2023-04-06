@@ -21,16 +21,52 @@ namespace GridFormat::Concepts {
 //! \{
 
 template<typename T>
-concept UnstructuredGrid =
+concept EntitySet =
     GridDetail::ExposesPointRange<T> and
-    GridDetail::ExposesCellRange<T> and
+    GridDetail::ExposesCellRange<T>;
+
+template<typename T>
+concept StructuredEntitySet =
+    EntitySet<T> and
+    GridDetail::ExposesExtents<T> and
+    GridDetail::ExposesCellLocation<T> and
+    GridDetail::ExposesPointLocation<T> and
+    all_equal<
+        static_size<GridDetail::Extents<T>>,
+        static_size<GridDetail::CellLocation<T>>,
+        static_size<GridDetail::PointLocation<T>>
+    >;
+
+template<typename T>
+concept ImageGrid =
+    StructuredEntitySet<T> and
+    GridDetail::ExposesOrigin<T> and
+    GridDetail::ExposesSpacing<T> and
+    all_equal<
+        static_size<GridDetail::Origin<T>>,
+        static_size<GridDetail::Spacing<T>>
+    >;
+
+template<typename T>
+concept RectilinearGrid =
+    StructuredEntitySet<T> and
+    GridDetail::ExposesOrdinates<T>;
+
+template<typename T>
+concept StructuredGrid =
+    StructuredEntitySet<T> and
+    GridDetail::ExposesPointCoordinates<T>;
+
+template<typename T>
+concept UnstructuredGrid =
+    EntitySet<T> and
     GridDetail::ExposesPointCoordinates<T> and
     GridDetail::ExposesPointId<T> and
     GridDetail::ExposesCellType<T> and
     GridDetail::ExposesCellPoints<T>;
 
 template<typename T>
-concept Grid = UnstructuredGrid<T>;
+concept Grid = ImageGrid<T> or RectilinearGrid<T> or StructuredGrid<T> or UnstructuredGrid<T>;
 
 template<typename T, typename Grid>
 concept PointFunction

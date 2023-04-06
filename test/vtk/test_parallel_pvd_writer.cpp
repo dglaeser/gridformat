@@ -42,7 +42,10 @@ int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
 
     const auto grid = GridFormat::Test::make_unstructured_2d();
-    GridFormat::PVDWriter pvd_writer{GridFormat::PVTUWriter{grid, MPI_COMM_WORLD}, "pvd_parallel_time_series_2d_in_2d"};
+    GridFormat::PVDWriter pvd_writer{
+        GridFormat::PVTUWriter{grid, MPI_COMM_WORLD},
+        "pvd_parallel_time_series_2d_in_2d"
+    };
     test<2>(grid, pvd_writer);
 
     MPI_Finalize();

@@ -18,15 +18,15 @@
 namespace GridFormat::GridDetail {
 
     template<typename T>
-    concept ForwardView = std::ranges::view<T> and std::ranges::forward_range<T>;
+    concept ViewableForwardRange = std::ranges::viewable_range<T> and std::ranges::forward_range<T>;
 
     template<typename T, typename Grid>
     concept EntityRange = requires(const Grid& grid) {
-        { T::get(grid) } -> ForwardView;
+        { T::get(grid) } -> ViewableForwardRange;
     };
 
     template<typename Grid, EntityRange<Grid> Range>
-    using EntityReference = decltype(*std::ranges::begin(Range::get(std::declval<const Grid&>())));
+    using EntityReference = std::ranges::range_reference_t<decltype(Range::get(std::declval<const Grid&>()))>;
 
     template<typename Grid, EntityRange<Grid> Range>
     using Entity = std::decay_t<EntityReference<Grid, Range>>;
@@ -88,6 +88,69 @@ namespace GridFormat::GridDetail {
     concept ExposesNumberOfCellCorners = is_complete<Traits::NumberOfCellCorners<T>> && requires(const T& grid, const Cell<T>& cell) {
             { Traits::NumberOfCellCorners<T>::get(grid, cell) } -> std::convertible_to<std::size_t>;
         };
+
+    template<typename T>
+    concept ExposesOrigin = is_complete<Traits::Origin<T>> && requires(const T& grid) {
+        { Traits::Origin<T>::get(grid) } -> Concepts::StaticallySizedMDRange<1>;
+    };
+
+    template<typename T>
+    concept ExposesSpacing = is_complete<Traits::Spacing<T>> && requires(const T& grid) {
+        { Traits::Spacing<T>::get(grid) } -> Concepts::StaticallySizedMDRange<1>;
+    };
+
+    template<typename T>
+    concept ExposesExtents = is_complete<Traits::Extents<T>> && requires(const T& grid) {
+        { Traits::Extents<T>::get(grid) } -> Concepts::StaticallySizedMDRange<1>;
+        requires std::convertible_to<
+            std::ranges::range_value_t<decltype(Traits::Extents<T>::get(grid))>,
+            std::size_t
+        >;
+    };
+
+    template<typename T>
+    concept ExposesOrdinates = is_complete<Traits::Ordinates<T>> && requires(const T& grid) {
+        { Traits::Ordinates<T>::get(grid, unsigned{}) } -> Concepts::MDRange<1>;
+        requires Concepts::Scalar<
+            MDRangeValueType<std::decay_t<decltype(Traits::Ordinates<T>::get(grid, unsigned{}))>>
+        >;
+    };
+
+    template<typename T>
+    concept ExposesCellLocation = is_complete<Traits::Location<T, Cell<T>>> && requires(const T& grid, const Cell<T>& cell) {
+        { Traits::Location<T, Cell<T>>::get(grid, cell) } -> Concepts::StaticallySizedMDRange<1>;
+        requires std::convertible_to<
+            std::ranges::range_value_t<decltype(Traits::Location<T, Cell<T>>::get(grid, cell))>,
+            std::size_t
+        >;
+    };
+
+    template<typename T>
+    concept ExposesPointLocation = is_complete<Traits::Location<T, Point<T>>> && requires(const T& grid, const Point<T>& point) {
+        { Traits::Location<T, Point<T>>::get(grid, point) } -> Concepts::StaticallySizedMDRange<1>;
+        requires std::convertible_to<
+            std::ranges::range_value_t<decltype(Traits::Location<T, Point<T>>::get(grid, point))>,
+            std::size_t
+        >;
+    };
+
+    template<ExposesSpacing T>
+    using Spacing = std::decay_t<decltype(Traits::Spacing<T>::get(std::declval<const T&>()))>;
+
+    template<ExposesOrigin T>
+    using Origin = std::decay_t<decltype(Traits::Origin<T>::get(std::declval<const T&>()))>;
+
+    template<ExposesOrdinates T>
+    using Ordinates = std::decay_t<decltype(Traits::Ordinates<T>::get(std::declval<const T&>(), unsigned{}))>;
+
+    template<ExposesExtents T>
+    using Extents = std::decay_t<decltype(Traits::Extents<T>::get(std::declval<const T&>()))>;
+
+    template<ExposesCellLocation T>
+    using CellLocation = std::decay_t<decltype(Traits::Location<T, Cell<T>>::get(std::declval<const T&>(), std::declval<const Cell<T>>()))>;
+
+    template<ExposesPointLocation T>
+    using PointLocation = std::decay_t<decltype(Traits::Location<T, Point<T>>::get(std::declval<const T&>(), std::declval<const Point<T>>()))>;
 
     template<typename Grid, std::invocable<PointReference<Grid>> T>
     using PointFunctionValueType = std::decay_t<std::invoke_result_t<T, PointReference<Grid>>>;

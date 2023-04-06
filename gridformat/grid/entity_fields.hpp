@@ -30,27 +30,45 @@ namespace GridFormat {
 #ifndef DOXYGEN
 namespace EntityFieldsDetail {
 
-template<Concepts::Scalar ValueType>
-void fill_buffer(const Concepts::Scalar auto& value,
-                 std::byte* buffer,
-                 std::size_t& offset) {
-    const auto cast_value = static_cast<ValueType>(value);
-    std::copy_n(
-        reinterpret_cast<const std::byte*>(&cast_value),
-        sizeof(ValueType),
-        buffer + offset
-    );
-    offset += sizeof(ValueType);
-}
+    template<Concepts::Scalar ValueType>
+    void fill_buffer(const Concepts::Scalar auto& value,
+                    std::byte* buffer,
+                    std::size_t& offset) {
+        const auto cast_value = static_cast<ValueType>(value);
+        std::copy_n(
+            reinterpret_cast<const std::byte*>(&cast_value),
+            sizeof(ValueType),
+            buffer + offset
+        );
+        offset += sizeof(ValueType);
+    }
 
-template<Concepts::Scalar ValueType>
-void fill_buffer(const std::ranges::range auto& r,
-                 std::byte* buffer,
-                 std::size_t& offset) {
-    std::ranges::for_each(r, [&] (const auto& entry) {
-        fill_buffer<ValueType>(entry, buffer, offset);
-    });
-}
+    template<Concepts::Scalar ValueType>
+    void fill_buffer(const std::ranges::range auto& r,
+                    std::byte* buffer,
+                    std::size_t& offset) {
+        std::ranges::for_each(r, [&] (const auto& entry) {
+            fill_buffer<ValueType>(entry, buffer, offset);
+        });
+    }
+
+    template<typename ValueType, typename Grid, typename Entities, typename F>
+    void fill_structured(const Grid& grid,
+                         const Entities& entities,
+                         const F& field_function,
+                         const MDLayout& layout,
+                         Serialization& serialization) {
+        auto values = serialization.as_span_of<ValueType>();
+        const auto values_offset = layout.dimension() == 1 ? 1 : layout.sub_layout(1).number_of_entries();
+        std::ranges::for_each(entities, [&] (const auto& e) {
+            const auto index = flat_index(grid, e);
+            const auto cur_offset = index*values_offset;
+            auto cur_values = std::as_writable_bytes(values.subspan(cur_offset));
+
+            std::size_t offset = 0;
+            EntityFieldsDetail::fill_buffer<ValueType>(field_function(e), cur_values.data(), offset);
+        });
+    }
 
 }  // namespace EntityFieldsDetail
 #endif  // DOXYGEN
@@ -65,6 +83,7 @@ template<Concepts::Grid Grid,
          Concepts::Scalar ValueType = GridDetail::PointFunctionScalarType<Grid, FieldFunction>>
 class PointField : public Field {
     using FieldType = GridDetail::PointFunctionValueType<Grid, FieldFunction>;
+    static constexpr bool structured = Concepts::StructuredGrid<Grid>;
 
  public:
     explicit PointField(const Grid& grid,
@@ -94,16 +113,22 @@ class PointField : public Field {
     Serialization _serialized() const override {
         const auto layout = _layout();
         Serialization serialization(_size_in_bytes(layout));
-        _fill(serialization);
+        _fill(serialization, layout);
         return serialization;
     }
 
-    void _fill(Serialization& serialization) const {
+    void _fill(Serialization& serialization, const MDLayout&) const requires(!structured) {
         std::size_t offset = 0;
         std::byte* buffer = serialization.as_span().data();
         std::ranges::for_each(points(_grid), [&] (const auto& p) {
             EntityFieldsDetail::fill_buffer<ValueType>(_field_function(p), buffer, offset);
         });
+    }
+
+    void _fill(Serialization& serialization, const MDLayout& layout) const requires(structured) {
+        EntityFieldsDetail::fill_structured<ValueType>(
+            _grid, points(_grid), _field_function, layout, serialization
+        );
     }
 
     const Grid& _grid;
@@ -119,6 +144,7 @@ template<typename Grid,
          Concepts::Scalar ValueType = GridDetail::CellFunctionScalarType<Grid, FieldFunction>>
 class CellField : public Field {
     using FieldType = GridDetail::CellFunctionValueType<Grid, FieldFunction>;
+    static constexpr bool structured = Concepts::StructuredGrid<Grid>;
 
  public:
     explicit CellField(const Grid& grid,
@@ -148,16 +174,22 @@ class CellField : public Field {
     Serialization _serialized() const override {
         const auto layout = _layout();
         Serialization serialization(_size_in_bytes(layout));
-        _fill(serialization);
+        _fill(serialization, layout);
         return serialization;
     }
 
-    void _fill(Serialization& serialization) const {
+    void _fill(Serialization& serialization, const MDLayout&) const requires(!structured) {
         std::size_t offset = 0;
         std::byte* buffer = serialization.as_span().data();
         std::ranges::for_each(cells(_grid), [&] (const auto& c) {
             EntityFieldsDetail::fill_buffer<ValueType>(_field_function(c), buffer, offset);
         });
+    }
+
+    void _fill(Serialization& serialization, const MDLayout& layout) const requires(structured) {
+        EntityFieldsDetail::fill_structured<ValueType>(
+            _grid, cells(_grid), _field_function, layout, serialization
+        );
     }
 
     const Grid& _grid;

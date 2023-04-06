@@ -35,11 +35,11 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, VTUWriter<Grid>> {
     : ParentType(grid, ".vtu", std::move(xml_opts))
     {}
 
-    VTUWriter with(VTK::XMLOptions xml_opts) const {
+ private:
+    VTUWriter _with(VTK::XMLOptions xml_opts) const override {
         return VTUWriter{this->grid(), std::move(xml_opts)};
     }
 
- private:
     void _write(std::ostream& s) const override {
         auto context = this->_get_write_context("UnstructuredGrid");
         this->_set_attribute(context, "Piece", "NumberOfPoints", number_of_points(this->grid()));
@@ -57,9 +57,9 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, VTUWriter<Grid>> {
         });
 
         const auto point_id_map = make_point_id_map(this->grid());
-        const FieldPtr coords_field = this->_xml_settings.coordinate_precision.visit(
-            [&] <typename T> (const Precision<T>&) { return VTK::make_coordinates_field<T>(this->grid()); }
-        );
+        const FieldPtr coords_field = std::visit([&] <typename T> (const Precision<T>&) {
+            return VTK::make_coordinates_field<T>(this->grid());
+        }, this->_xml_settings.coordinate_precision);
         const FieldPtr connectivity_field = std::visit([&] <typename T> (const Precision<T>&) {
             return VTK::make_connectivity_field<T>(this->grid(), point_id_map);
         }, this->_xml_settings.header_precision);

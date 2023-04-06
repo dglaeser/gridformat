@@ -10,6 +10,7 @@
 
 #include <ranges>
 #include <ostream>
+#include <algorithm>
 #include <functional>
 
 #include <gridformat/common/ranges.hpp>
@@ -48,11 +49,11 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
     : ParentType(grid, ".vtp", std::move(xml_opts))
     {}
 
-    VTPWriter with(VTK::XMLOptions xml_opts) const {
+ private:
+    VTPWriter _with(VTK::XMLOptions xml_opts) const override {
         return VTPWriter{this->grid(), std::move(xml_opts)};
     }
 
- private:
     void _write(std::ostream& s) const override {
         auto verts_range = _get_cell_range(
             CellTypesPredicate<1>{this->grid(), {CellType::vertex}}
@@ -61,7 +62,7 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
             CellTypesPredicate<1>{this->grid(), {CellType::segment}}
         );
         auto polys_range = _get_cell_range(
-            CellTypesPredicate<3>{this->grid(), {CellType::quadrilateral, CellType::polygon, CellType::triangle}}
+            CellTypesPredicate<4>{this->grid(), {CellType::quadrilateral, CellType::rectangle, CellType::polygon, CellType::triangle}}
         );
 
         const auto num_verts = Ranges::size(verts_range);
@@ -86,9 +87,9 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
             this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
         });
 
-        const FieldPtr coords_field = this->_xml_settings.coordinate_precision.visit(
-            [&] <typename T> (const Precision<T>&) { return VTK::make_coordinates_field<T>(this->grid()); }
-        );
+        const FieldPtr coords_field = std::visit([&] <typename T> (const Precision<T>&) {
+            return VTK::make_coordinates_field<T>(this->grid());
+        }, this->_xml_settings.coordinate_precision);
         this->_set_data_array(context, "Piece.Points", "Coordinates", *coords_field);
 
         const auto point_id_map = make_point_id_map(this->grid());
