@@ -10,6 +10,13 @@ from xml.etree import ElementTree
 from sys import exit
 from numpy import array, ndarray, sum as np_sum
 
+try:
+    import vtk
+    HAVE_VTK = True
+except ImportError:
+    HAVE_VTK = False
+
+
 class _TestFunction:
     def __init__(self, scaling: float = 1.0) -> None:
         self._scaling = scaling
@@ -86,8 +93,7 @@ def _check_vtk_file(vtk_reader,
     points = array(points)
     cell_centers = ndarray(shape=(num_cells, 3))
     for cell_id in range(num_cells):
-        from vtk import vtkIdList
-        ids = vtkIdList()
+        ids = vtk.vtkIdList()
         output.GetCellPoints(cell_id, ids)
         corner_indices = [ids.GetId(_i) for _i in range(ids.GetNumberOfIds())]
         cell_centers[cell_id] = np_sum(points[corner_indices], axis=0)
@@ -133,12 +139,6 @@ def _read_pvd_pieces(filename: str) -> List[_TimeStep]:
 
 
 def _test_vtk(filename: str, reference_function: Callable[[list], float]):
-    try:
-        import vtk
-    except ImportError:
-        print("VTK not found")
-        exit(255)
-
     def _get_points_from_grid(reader):
         points = reader.GetOutput().GetPoints()
         return array([points.GetPoint(i) for i in range(points.GetNumberOfPoints())])
@@ -164,6 +164,9 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
     elif ext == ".vts":
         reader = vtk.vtkXMLStructuredGridReader()
         point_collector = _get_points_from_grid
+    elif ext == ".pvts":
+        reader = vtk.vtkXMLPStructuredGridReader()
+        point_collector = _get_points_from_grid
     elif ext == ".pvtr":
         reader = vtk.vtkXMLPRectilinearGridReader()
         point_collector = _get_rectilinear_points
@@ -188,7 +191,10 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
     _check_vtk_file(reader, point_collector(reader), space_dim, reference_function)
 
 
-def test(filename: str) -> None:
+def test(filename: str) -> int | None:
+    if not HAVE_VTK:
+        return 255
+
     ext = splitext(filename)[1]
     if ext == ".pvd":
         for timestep in _read_pvd_pieces(filename):

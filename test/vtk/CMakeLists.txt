@@ -11,4 +11,5 @@ gridformat_add_parallel_regression_test(test_pvtp_writer test_pvtp_writer.cpp 2 
 gridformat_add_parallel_regression_test(test_pvtu_writer test_pvtu_writer.cpp 2 "pvtu_*.pvtu")
 gridformat_add_parallel_regression_test(test_pvti_writer test_pvti_writer.cpp 2 "pvti_*.pvti")
 gridformat_add_parallel_regression_test(test_pvtr_writer test_pvtr_writer.cpp 2 "pvtr_*.pvtr")
+gridformat_add_parallel_regression_test(test_pvts_writer test_pvts_writer.cpp 2 "pvts_*.pvts")
 gridformat_add_parallel_regression_test(test_parallel_pvd_writer test_parallel_pvd_writer.cpp 2 "pvd_parallel_*.pvd")
