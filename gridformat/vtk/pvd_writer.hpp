@@ -78,6 +78,9 @@ class PVDWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
     }
 
     void _add_fields_to_writer() {
+        std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
+            _vtk_writer.set_meta_data(name, this->_get_shared_meta_data_field(name));
+        });
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             _vtk_writer.set_point_field(name, this->_get_shared_point_field(name));
         });

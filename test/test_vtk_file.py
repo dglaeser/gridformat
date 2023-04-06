@@ -87,8 +87,17 @@ def _check_vtk_file(vtk_reader,
     rel_tol = 1e-5
     abs_tol = 1e-3
 
-    # precompute cell centers
     output = vtk_reader.GetOutput()
+    field_data = output.GetFieldData()
+    expected_field_data = ["literal", "string", "numbers"]
+    for i in range(field_data.GetNumberOfArrays()):
+        expected_field_data.remove(field_data.GetAbstractArray(i).GetName())
+    if expected_field_data:
+        raise RuntimeError(f"Did not find the following metadata: {expected_field_data}")
+    else:
+        print("Found all expected field data")
+
+    # precompute cell centers
     num_cells = output.GetNumberOfCells()
     points = array(points)
     cell_centers = ndarray(shape=(num_cells, 3))
