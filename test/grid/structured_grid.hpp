@@ -236,6 +236,13 @@ struct Location<Test::StructuredGrid<dim>, Entity> {
     }
 };
 
+template<int dim, typename Point>
+struct PointCoordinates<Test::StructuredGrid<dim>, Point> {
+    static decltype(auto) get(const Test::StructuredGrid<dim>& grid, const Point& p) {
+        return grid.center(p);
+    }
+};
+
 }  // namespace Traits
 }  // namespace GridFormat
 

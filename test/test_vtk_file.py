@@ -141,7 +141,7 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
 
     def _get_points_from_grid(reader):
         points = reader.GetOutput().GetPoints()
-        return [points.GetPoint(i) for i in range(points.GetNumberOfPoints())]
+        return array([points.GetPoint(i) for i in range(points.GetNumberOfPoints())])
 
     def _get_rectilinear_points(reader):
         output = reader.GetOutput()
@@ -161,6 +161,9 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
     elif ext == ".vtr":
         reader = vtk.vtkXMLRectilinearGridReader()
         point_collector = _get_rectilinear_points
+    elif ext == ".vts":
+        reader = vtk.vtkXMLStructuredGridReader()
+        point_collector = _get_points_from_grid
     elif ext == ".pvtr":
         reader = vtk.vtkXMLPRectilinearGridReader()
         point_collector = _get_rectilinear_points
