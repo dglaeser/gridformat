@@ -10,6 +10,7 @@
 
 #include <ranges>
 #include <utility>
+#include <iterator>
 #include <concepts>
 #include <functional>
 #include <type_traits>
@@ -49,6 +50,17 @@ inline constexpr auto size(R&& r) {
 template<Concepts::StaticallySizedRange R>
 inline constexpr auto size(R&&) {
     return StaticSize<std::decay_t<R>>::value;
+}
+
+/*!
+ * \ingroup Common
+ * \brief Return the value at the i-th position of the range.
+ */
+template<std::integral I, std::ranges::range R>
+inline constexpr auto at(I i, const R& r) {
+    auto it = std::ranges::begin(r);
+    std::advance(it, i);
+    return *it;
 }
 
 /*!
