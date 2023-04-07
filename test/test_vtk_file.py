@@ -7,8 +7,8 @@ from dataclasses import dataclass
 from typing import Callable, Tuple, List
 from math import sin, cos, isclose
 from xml.etree import ElementTree
-from sys import exit
 from numpy import array, ndarray, sum as np_sum
+from sys import exit
 
 try:
     import vtk
@@ -218,4 +218,6 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-p", "--filepath", required=True)
     args = vars(parser.parse_args())
-    test(args["filepath"])
+    ret_code = test(args["filepath"])
+    if ret_code is not None:
+        exit(ret_code)
