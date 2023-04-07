@@ -131,7 +131,7 @@ class StructuredGridMapperHelper {
             auto ordinates = _get_ordinates(dir);
             if (ordinates.size() > 1) {
                 const auto eps = _epsilon(ordinates);
-                _sort_ordinates(ordinates, eps);
+                _sort_ordinates(ordinates, eps, _reverse[dir]);
 
                 for (unsigned rank = 0; rank < _origins.size(); ++rank) {
                     const auto rank_origin = _origins[rank][dir];
@@ -158,7 +158,7 @@ class StructuredGridMapperHelper {
         Origin result;
         for (unsigned dir = 0; dir < dim; ++dir) {
             auto ordinates = _get_ordinates(dir);
-            _sort_ordinates(ordinates);
+            _sort_ordinates(ordinates, _reverse[dir]);
             result[dir] = ordinates[0];
         }
         return result;
@@ -175,17 +175,19 @@ class StructuredGridMapperHelper {
         return result;
     }
 
-    void _sort_ordinates(std::vector<T>& ordinates) const {
+    void _sort_ordinates(std::vector<T>& ordinates, bool reverse) const {
         if (ordinates.size() > 1)
-            _sort_ordinates(ordinates, _epsilon(ordinates));
+            _sort_ordinates(ordinates, _epsilon(ordinates), reverse);
     }
 
-    void _sort_ordinates(std::vector<T>& ordinates, const T& eps) const {
+    void _sort_ordinates(std::vector<T>& ordinates, const T& eps, bool reverse) const {
         if (ordinates.size() > 1) {
             auto [it, _] = Ranges::sort_and_unique(
                 ordinates, {}, [&] (T a, T b) { return abs(a - b) < eps; }
             );
             ordinates.erase(it, ordinates.end());
+            if (reverse)
+                std::ranges::reverse(ordinates);
         }
     }
 

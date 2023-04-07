@@ -87,8 +87,12 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
     auto _extents_and_origin(const std::vector<CT>& all_origins,
                              const std::vector<std::size_t>& all_extents) const
     {
-        const auto local_spacing = spacing(this->grid());
-        const auto min_spacing = *std::ranges::min_element(local_spacing);
+        const auto min_spacing = std::ranges::min(
+            spacing(this->grid()) | std::views::transform([&] (const CT dx) {
+                using std::abs;
+                return abs(dx);
+            })
+        );
         const auto default_epsilon = min_spacing*1e-2;
 
         const auto num_ranks = Parallel::size(_comm);

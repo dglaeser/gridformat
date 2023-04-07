@@ -118,10 +118,8 @@ class VTRWriter : public VTK::XMLWriterBase<Grid, VTRWriter<Grid>> {
         std::array<FieldPtr, space_dim> result;
         std::visit([&] <typename T> (const Precision<T>& prec) {
             for (unsigned dir = 0; dir < space_dim; ++dir) {
-                if (dir < dim) {
-                    assert(std::ranges::is_sorted(ordinates(this->grid(), dir)));
+                if (dir < dim)
                     result[dir] = make_shared(RangeField{ordinates(this->grid(), dir), prec});
-                }
                 else
                     result[dir] = make_shared(RangeField{std::vector<double>{}, prec});
             }

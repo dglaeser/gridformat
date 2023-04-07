@@ -102,7 +102,8 @@ class PVTSWriter : public VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator
                              const std::array<int, dim>& orientations) const
     {
         const auto max_coord = std::ranges::max(all_origins, {}, [&] (const CT& x) {
-            using std::abs; return abs(x);
+            using std::abs;
+            return abs(x);
         });
         const auto default_epsilon = 1e-6*max_coord;
 
