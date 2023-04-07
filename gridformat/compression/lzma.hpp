@@ -15,6 +15,7 @@
 #include <vector>
 #include <cassert>
 #include <algorithm>
+#include <tuple>
 
 #include <lzma.h>
 
@@ -52,11 +53,7 @@ class LZMA {
         if (std::numeric_limits<HeaderType>::max() < _opts.block_size)
             throw TypeError("Chosen HeaderType is too small for given block size");
 
-        Serialization out(lzma_stream_buffer_bound(in.size()));
-        auto blocks = _compress<HeaderType>(
-            in.template as_span_of<const LZMAByte>(),
-            out.template as_span_of<LZMAByte>()
-        );
+        auto [blocks, out] = _compress<HeaderType>(in.template as_span_of<const LZMAByte>());
         in = std::move(out);
         in.resize(blocks.compressed_size());
         return blocks;
@@ -68,19 +65,21 @@ class LZMA {
 
  private:
     template<std::integral HeaderType>
-    CompressedBlocks<HeaderType> _compress(std::span<const LZMAByte> in,
-                                           std::span<LZMAByte> out) const {
+    auto _compress(std::span<const LZMAByte> in) const {
         HeaderType block_size = static_cast<HeaderType>(_opts.block_size);
         HeaderType size_in_bytes = static_cast<HeaderType>(in.size());
         Blocks<HeaderType> blocks{size_in_bytes, block_size};
 
+        Serialization compressed;
         std::vector<LZMAByte> block_buffer;
         std::vector<HeaderType> compressed_block_sizes;
         block_buffer.reserve(lzma_stream_buffer_bound(_opts.block_size));
         compressed_block_sizes.reserve(blocks.number_of_blocks);
+        compressed.resize(block_buffer.capacity()*blocks.number_of_blocks);
 
         HeaderType cur_in = 0;
         HeaderType cur_out = 0;
+        auto out = compressed.template as_span_of<LZMAByte>();
         while (cur_in < size_in_bytes) {
             using std::min;
             const HeaderType cur_block_size = min(block_size, size_in_bytes - cur_in);
@@ -95,7 +94,7 @@ class LZMA {
             if (lzma_ret != LZMA_OK)
                 throw InvalidState(as_error("(LZMACompressor) Error upon compression"));
 
-            assert(cur_out + out_pos < out.size());
+            assert(cur_out + out_pos <= out.size());
             std::copy_n(block_buffer.data(),
                         out_pos,
                         out.data() + cur_out);
@@ -107,7 +106,10 @@ class LZMA {
         if (cur_in != size_in_bytes)
             throw InvalidState(as_error("(LZMACompressor) unexpected number of bytes processed"));
 
-        return {blocks, std::move(compressed_block_sizes)};
+        return std::make_tuple(
+            CompressedBlocks<HeaderType>{blocks, std::move(compressed_block_sizes)},
+            compressed
+        );
     }
 
     Options _opts;

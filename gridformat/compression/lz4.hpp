@@ -15,6 +15,7 @@
 #include <vector>
 #include <cassert>
 #include <algorithm>
+#include <tuple>
 
 #include <lz4.h>
 
@@ -52,11 +53,7 @@ class LZ4 {
         if (std::numeric_limits<HeaderType>::max() < _opts.block_size)
             throw TypeError("Chosen HeaderType is too small for given block size");
 
-        Serialization out(LZ4_COMPRESSBOUND(in.size()));
-        auto blocks = _compress<HeaderType>(
-            in.template as_span_of<const LZ4Byte>(),
-            out.template as_span_of<LZ4Byte>()
-        );
+        auto [blocks, out] = _compress<HeaderType>(in.template as_span_of<const LZ4Byte>());
         in = std::move(out);
         in.resize(blocks.compressed_size());
         return blocks;
@@ -68,19 +65,21 @@ class LZ4 {
 
  private:
     template<std::integral HeaderType>
-    CompressedBlocks<HeaderType> _compress(std::span<const LZ4Byte> in,
-                                           std::span<LZ4Byte> out) const {
+    auto _compress(std::span<const LZ4Byte> in) const {
         HeaderType block_size = static_cast<HeaderType>(_opts.block_size);
         HeaderType size_in_bytes = static_cast<HeaderType>(in.size());
         Blocks<HeaderType> blocks{size_in_bytes, block_size};
 
+        Serialization compressed;
         std::vector<LZ4Byte> block_buffer;
         std::vector<HeaderType> compressed_block_sizes;
         block_buffer.reserve(LZ4_COMPRESSBOUND(_opts.block_size));
         compressed_block_sizes.reserve(blocks.number_of_blocks);
+        compressed.resize(block_buffer.capacity()*blocks.number_of_blocks);
 
         HeaderType cur_in = 0;
         HeaderType cur_out = 0;
+        auto out = compressed.template as_span_of<LZ4Byte>();
         while (cur_in < size_in_bytes) {
             using std::min;
             const HeaderType cur_block_size = min(block_size, size_in_bytes - cur_in);
@@ -96,7 +95,7 @@ class LZ4 {
             if (compressed_length == 0)
                 throw InvalidState(as_error("Error upon compression with LZ4"));
 
-            assert(cur_out + compressed_length < out.size());
+            assert(cur_out + compressed_length <= out.size());
             std::copy_n(block_buffer.data(),
                         compressed_length,
                         out.data() + cur_out);
@@ -108,7 +107,10 @@ class LZ4 {
         if (cur_in != size_in_bytes)
             throw InvalidState(as_error("(LZ4Compressor) unexpected number of bytes processed"));
 
-        return {blocks, std::move(compressed_block_sizes)};
+        return std::make_tuple(
+            CompressedBlocks<HeaderType>{blocks, std::move(compressed_block_sizes)},
+            compressed
+        );
     }
 
     Options _opts;
