@@ -69,9 +69,15 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         const auto& local_origin = origin(this->grid());
         const auto& local_extents = extents(this->grid());
 
+        PVTK::StructuredParallelGridHelper helper{_comm};
         const auto all_origins = Parallel::gather(_comm, local_origin, root_rank);
         const auto all_extents = Parallel::gather(_comm, local_extents, root_rank);
-        const auto [exts_begin, exts_end, whole_extent, origin] = _extents_and_origin(all_origins, all_extents);
+        const auto is_negative_axis = _determine_axis_orientation();
+        const auto [exts_begin, exts_end, whole_extent, origin] = helper.compute_extents_and_origin(
+            all_origins,
+            all_extents,
+            is_negative_axis
+        );
 
         const auto my_whole_extent = Parallel::broadcast(_comm, whole_extent, root_rank);
         const auto my_whole_origin = Parallel::broadcast(_comm, origin, root_rank);
@@ -84,73 +90,14 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         Parallel::barrier(_comm);  // ensure .pvti file is written before returning
     }
 
-    auto _extents_and_origin(const std::vector<CT>& all_origins,
-                             const std::vector<std::size_t>& all_extents) const
-    {
-        const auto min_spacing = std::ranges::min(
-            spacing(this->grid()) | std::views::transform([&] (const CT dx) {
-                using std::abs;
-                return abs(dx);
-            })
+    auto _determine_axis_orientation() const {
+        std::array<bool, dim> result;
+        std::ranges::copy(
+            spacing(this->grid())
+            | std::views::transform([&] (const CT dx) { return dx <= CT{0}; }),
+            result.begin()
         );
-        const auto default_epsilon = min_spacing*1e-2;
-
-        const auto num_ranks = Parallel::size(_comm);
-        std::vector<std::array<std::size_t, dim>> pieces_begin(num_ranks);
-        std::vector<std::array<std::size_t, dim>> pieces_end(num_ranks);
-        std::array<std::size_t, dim> whole_extent;
-        std::array<CT, dim> origin;
-
-        if (Parallel::rank(_comm) == 0) {
-            const auto mapper_helper = _make_mapper_helper(all_origins, default_epsilon);
-            const auto rank_mapper = mapper_helper.make_mapper();
-            origin = mapper_helper.compute_origin();
-
-            for (unsigned dir = 0; dir < dim; ++dir) {
-                for (int rank = 0; rank < num_ranks; ++rank) {
-                    auto ranks_below = rank_mapper.ranks_below(rank_mapper.location(rank), dir);
-                    const std::size_t offset = std::accumulate(
-                        std::ranges::begin(ranks_below),
-                        std::ranges::end(ranks_below),
-                        std::size_t{0},
-                        [&] (const std::size_t current, int r) {
-                            return current + Parallel::access_gathered<dim>(all_extents, _comm, {dir, r});
-                        }
-                    );
-                    pieces_begin[rank][dir] = offset;
-                    pieces_end[rank][dir] = offset + Parallel::access_gathered<dim>(all_extents, _comm, {dir, rank});
-                }
-
-                whole_extent[dir] = (*std::max_element(
-                    pieces_end.begin(), pieces_end.end(),
-                    [&] (const auto& a1, const auto& a2) { return a1[dir] < a2[dir]; }
-                ))[dir];
-            }
-        }
-
-        return std::make_tuple(
-            std::move(pieces_begin),
-            std::move(pieces_end),
-            std::move(whole_extent),
-            std::move(origin)
-        );
-    }
-
-    auto _make_mapper_helper(const std::vector<CT>& all_origins, CT default_eps) const {
-        PVTK::StructuredGridMapperHelper<CT, dim> helper(Parallel::size(_comm), default_eps);
-        std::ranges::for_each(Parallel::ranks(_comm), [&] (int rank) {
-            helper.set_origin_for(rank, Parallel::access_gathered<dim>(all_origins, _comm, rank));
-        });
-
-        // reverse orientation if spacing is negative
-        int dir = 0;
-        std::ranges::for_each(spacing(this->grid()), [&] (CT dx) {
-            if (dx < CT{0})
-                helper.reverse(dir);
-            dir++;
-        });
-
-        return helper;
+        return result;
     }
 
     void _write_piece(const std::string& par_filename,

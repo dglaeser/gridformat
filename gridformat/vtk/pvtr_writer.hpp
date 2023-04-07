@@ -67,11 +67,16 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
 
     virtual void _write(const std::string& filename_with_ext) const {
         const auto& local_extents = extents(this->grid());
-        const auto [origin, orientation] = _get_origin_and_orientations();
+        const auto [origin, is_negative_axis] = _get_origin_and_orientations();
 
+        PVTK::StructuredParallelGridHelper helper{_comm};
         const auto all_origins = Parallel::gather(_comm, origin, root_rank);
         const auto all_extents = Parallel::gather(_comm, local_extents, root_rank);
-        const auto [exts_begin, exts_end, whole_extent] = _extents_and_origin(all_origins, all_extents, orientation);
+        const auto [exts_begin, exts_end, whole_extent, _] = helper.compute_extents_and_origin(
+            all_origins,
+            all_extents,
+            is_negative_axis
+        );
 
         const auto my_whole_extent = Parallel::broadcast(_comm, whole_extent, root_rank);
         const auto my_extent_offset = Parallel::scatter(_comm, Ranges::as_flat_vector(exts_begin), root_rank);
@@ -85,79 +90,14 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
 
     auto _get_origin_and_orientations() const {
         std::array<CT, dim> origin;
-        std::array<int, dim> orientations;
+        std::array<bool, dim> is_negative_axis;
         for (unsigned dir = 0; dir < dim; ++dir) {
             std::array<CT, 2> ordinates_01;
             std::ranges::copy(std::views::take(ordinates(this->grid(), dir), 2), ordinates_01.begin());
             origin[dir] = ordinates_01[0];
-            orientations[dir] = ordinates_01[1] - ordinates_01[0] >= CT{0} ? 1 : -1;
+            is_negative_axis[dir] = ordinates_01[1] - ordinates_01[0] < CT{0};
         }
-        return std::make_tuple(origin, orientations);
-    }
-
-
-    auto _extents_and_origin(const std::vector<CT>& all_origins,
-                             const std::vector<std::size_t>& all_extents,
-                             const std::array<int, dim>& orientations) const
-    {
-        const auto max_coord = std::ranges::max(all_origins, {}, [&] (const CT& x) {
-            using std::abs;
-            return abs(x);
-        });
-        const auto default_epsilon = 1e-6*max_coord;
-
-        const auto num_ranks = Parallel::size(_comm);
-        std::vector<std::array<std::size_t, dim>> pieces_begin(num_ranks);
-        std::vector<std::array<std::size_t, dim>> pieces_end(num_ranks);
-        std::array<std::size_t, dim> whole_extent;
-
-        if (Parallel::rank(_comm) == 0) {
-            const auto mapper_helper = _make_mapper_helper(all_origins, orientations, default_epsilon);
-            const auto rank_mapper = mapper_helper.make_mapper();
-
-            for (unsigned dir = 0; dir < dim; ++dir) {
-                for (int rank = 0; rank < num_ranks; ++rank) {
-                    auto ranks_below = rank_mapper.ranks_below(rank_mapper.location(rank), dir);
-                    const std::size_t offset = std::accumulate(
-                        std::ranges::begin(ranks_below),
-                        std::ranges::end(ranks_below),
-                        std::size_t{0},
-                        [&] (const std::size_t current, int r) {
-                            return current + Parallel::access_gathered<dim>(all_extents, _comm, {dir, r});
-                        }
-                    );
-                    pieces_begin[rank][dir] = offset;
-                    pieces_end[rank][dir] = offset + Parallel::access_gathered<dim>(all_extents, _comm, {dir, rank});
-                }
-
-                whole_extent[dir] = (*std::max_element(
-                    pieces_end.begin(), pieces_end.end(),
-                    [&] (const auto& a1, const auto& a2) { return a1[dir] < a2[dir]; }
-                ))[dir];
-            }
-        }
-
-        return std::make_tuple(
-            std::move(pieces_begin),
-            std::move(pieces_end),
-            std::move(whole_extent)
-        );
-    }
-
-    auto _make_mapper_helper(const std::vector<CT>& all_origins,
-                             const std::array<int, dim>& orientations,
-                             CT default_eps) const {
-        PVTK::StructuredGridMapperHelper<CT, dim> helper(Parallel::size(_comm), default_eps);
-        std::ranges::for_each(Parallel::ranks(_comm), [&] (int rank) {
-            helper.set_origin_for(rank, Parallel::access_gathered<dim>(all_origins, _comm, rank));
-        });
-
-        // reverse orientation if spacing is negative
-        for (unsigned dir = 0; dir < dim; ++dir)
-            if (orientations[dir] < 0)
-                helper.reverse(dir);
-
-        return helper;
+        return std::make_tuple(origin, is_negative_axis);
     }
 
     void _write_piece(const std::string& par_filename,
