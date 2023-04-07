@@ -120,12 +120,8 @@ auto make_unstructured_0d() {
     };
 }
 
-
-// in 1d, use larger grids (easy to define/create) such that
-// we run in situations where we need to compress more than
-// one block when writing into compressed result files
 template<int space_dim = 1>
-auto make_unstructured_1d(std::size_t num_cells = 500) {
+auto make_unstructured_1d(std::size_t num_cells = 10) {
     std::vector<Point<space_dim>> points;
     points.reserve(num_cells + 1);
     for (std::size_t i = 0; i < num_cells + 1; ++i)

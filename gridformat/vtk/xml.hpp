@@ -224,6 +224,8 @@ class XMLWriterBase
     XMLDetail::XMLSettings _xml_settings;
 
     Impl _with_fields(Impl&& impl) const {
+        for (const auto [name, field_ptr] : meta_data_fields(*this))
+            impl.set_meta_data(std::move(name), std::move(field_ptr));
         for (const auto& [name, field_ptr] : point_fields(*this))
             impl.set_point_field(name, field_ptr);
         for (const auto& [name, field_ptr] : cell_fields(*this))

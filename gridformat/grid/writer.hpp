@@ -52,6 +52,16 @@ class GridWriterBase {
         _meta_data.set(name, ScalarField{value});
     }
 
+    template<std::derived_from<Field> F>
+    void set_meta_data(const std::string& name, F&& field) {
+        static_assert(!std::is_lvalue_reference_v<F>, "Cannot take metadata fields by reference, please move");
+        set_meta_data(name, std::make_shared<const F>(std::move(field)));
+    }
+
+    void set_meta_data(const std::string& name, std::shared_ptr<const Field> ptr) {
+        _meta_data.set(name, ptr);
+    }
+
     template<Concepts::PointFunction<Grid> F, Concepts::Scalar T = GridDetail::PointFunctionScalarType<Grid, F>>
     void set_point_field(const std::string& name, F&& point_function, const Precision<T>& prec = {}) {
         static_assert(!std::is_lvalue_reference_v<F>, "Cannot take functions by reference, please move");
@@ -85,6 +95,7 @@ class GridWriterBase {
     }
 
     void clear() {
+        _meta_data.clear();
         _point_fields.clear();
         _cell_fields.clear();
     }
@@ -103,6 +114,13 @@ class GridWriterBase {
     friend Concepts::RangeOf<std::pair<std::string, FieldPtr>> auto cell_fields(const GridWriterBase& writer) {
         return writer._cell_field_names() | std::views::transform([&] (std::string n) {
             auto field_ptr = writer._get_shared_cell_field(n);
+            return std::make_pair(std::move(n), std::move(field_ptr));
+        });
+    }
+
+    friend Concepts::RangeOf<std::pair<std::string, FieldPtr>> auto meta_data_fields(const GridWriterBase& writer) {
+        return writer._meta_data_field_names() | std::views::transform([&] (std::string n) {
+            auto field_ptr = writer._get_shared_meta_data_field(n);
             return std::make_pair(std::move(n), std::move(field_ptr));
         });
     }
@@ -148,6 +166,10 @@ class GridWriterBase {
 
     const Field& _get_meta_data_field(const std::string& name) const {
         return _meta_data.get(name);
+    }
+
+    std::shared_ptr<const Field> _get_shared_meta_data_field(const std::string& name) const {
+        return _meta_data.get_shared(name);
     }
 
  private:

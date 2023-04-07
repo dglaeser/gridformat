@@ -3,13 +3,14 @@
 #ifndef GRIDFORMAT_TEST_VTK_WRITER_TESTER_HPP_
 #define GRIDFORMAT_TEST_VTK_WRITER_TESTER_HPP_
 
+#include <vector>
 #include <string>
 #include <utility>
 #include <type_traits>
 
 #include <gridformat/common/precision.hpp>
-#include <gridformat/common/variant.hpp>
 #include <gridformat/common/logging.hpp>
+#include <gridformat/common/range_field.hpp>
 
 #include <gridformat/vtk/attributes.hpp>
 #include <gridformat/vtk/common.hpp>
@@ -51,6 +52,13 @@ using namespace GridFormat::Compression;
 using namespace GridFormat::VTK::DataFormat;
 using GridFormat::none;
 
+template<typename Writer>
+void add_meta_data(Writer& w) {
+    w.set_meta_data("literal", "some_literal_text");
+    w.set_meta_data("string", std::string{"some_string_text"});
+    w.set_meta_data("numbers", RangeField{std::vector<int>{1, 2, 3, 4}});
+}
+
 template<typename Grid>
 class WriterTester {
 
@@ -65,25 +73,32 @@ class WriterTester {
     >;
 
  public:
-    explicit WriterTester(Grid&& grid, std::string extension, bool verbose = true)
+    explicit WriterTester(Grid&& grid,
+                          std::string extension,
+                          bool verbose = true,
+                          std::string suffix = "")
     : _grid{std::move(grid)}
     , _extension{std::move(extension)}
     , _prefix{_extension.substr(1)}
+    , _suffix{std::move(suffix)}
     , _verbose{verbose} {
         _xml_options.push_back({.encoder = ascii, .compressor = none, .data_format = inlined});
         _xml_options.push_back({.encoder = base64, .compressor = none, .data_format = inlined});
         _xml_options.push_back({.encoder = base64, .compressor = none, .data_format = appended});
         _xml_options.push_back({.encoder = raw, .compressor = none, .data_format = appended});
+
+        // for compressors, use small block size such that multiple blocks are compressed/written
+        static constexpr std::size_t block_size = 100;
 #if GRIDFORMAT_HAVE_LZ4
-        _xml_options.push_back({.encoder = raw, .compressor = lz4, .data_format = appended});
+        _xml_options.push_back({.encoder = raw, .compressor = lz4.with({.block_size = block_size}), .data_format = appended});
         _xml_options.push_back({.encoder = base64, .compressor = lz4, .data_format = appended});
 #endif
 #if GRIDFORMAT_HAVE_LZMA
-        _xml_options.push_back({.encoder = raw, .compressor = lzma, .data_format = appended});
+        _xml_options.push_back({.encoder = raw, .compressor = lzma.with({.block_size = block_size}), .data_format = appended});
         _xml_options.push_back({.encoder = base64, .compressor = lzma, .data_format = appended});
 #endif
 #if GRIDFORMAT_HAVE_ZLIB
-        _xml_options.push_back({.encoder = raw, .compressor = zlib, .data_format = appended});
+        _xml_options.push_back({.encoder = raw, .compressor = zlib.with({.block_size = block_size}), .data_format = appended});
         _xml_options.push_back({.encoder = base64, .compressor = zlib, .data_format = appended});
 #endif
     }
@@ -102,6 +117,7 @@ class WriterTester {
         auto writer = factory(_grid, opts);
         const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(_grid);
         GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<double>{});
+        add_meta_data(writer);
         _write_with(writer, opts);
         _write_with_header(writer, opts, GridFormat::uint32);
         _write_with_coordprec(writer, opts, GridFormat::float32);
@@ -116,6 +132,7 @@ class WriterTester {
             auto cpy = writer.with_encoding(GridFormat::Variant::without<Automatic>(_opts.encoder))
                              .with_compression(GridFormat::Variant::without<Automatic>(_opts.compressor))
                              .with_data_format(GridFormat::Variant::without<Automatic>(_opts.data_format));
+            add_meta_data(cpy);
             _write_with(cpy, _opts, "_modified");
         });
     }
@@ -126,6 +143,7 @@ class WriterTester {
         auto writer = factory(_grid, opts);
         const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(_grid);
         GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
+        add_meta_data(writer);
         _write(writer, _add_field_prec_suffix(_make_filename(opts), GridFormat::Precision<float>{}));
     }
 
@@ -182,12 +200,14 @@ class WriterTester {
         result += std::visit([] (const auto& c) { return _name(c); }, opts.compressor);
         result += "_format_";
         result += std::visit([] (const auto& f) { return _name(f); }, opts.data_format);
+        result += (_suffix.empty() ? "" : "_" + _suffix);
         return result;
     }
 
     Grid _grid;
     std::string _extension;
     std::string _prefix;
+    std::string _suffix;
     bool _verbose;
     std::vector<GridFormat::VTK::XMLOptions> _xml_options;
 };

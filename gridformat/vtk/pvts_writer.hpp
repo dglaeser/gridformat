@@ -166,6 +166,9 @@ class PVTSWriter : public VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator
         auto writer = VTSWriter{this->grid(), this->_xml_opts}
                         .as_piece_for(std::move(domain))
                         .with_offset(offset);
+        std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
+            writer.set_meta_data(name, VTK::make_vtk_field(this->_get_shared_meta_data_field(name)));
+        });
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             writer.set_point_field(name, VTK::make_vtk_field(this->_get_shared_point_field(name)));
         });
