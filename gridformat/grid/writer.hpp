@@ -104,6 +104,16 @@ class GridWriterBase {
         return _grid;
     }
 
+    template<typename Writer>
+    void copy_fields(Writer& w) const {
+        for (const auto& [name, field_ptr] : meta_data_fields(*this))
+            w.set_meta_data(name, field_ptr);
+        for (const auto& [name, field_ptr] : point_fields(*this))
+            w.set_point_field(name, field_ptr);
+        for (const auto& [name, field_ptr] : cell_fields(*this))
+            w.set_cell_field(name, field_ptr);
+    }
+
     friend Concepts::RangeOf<std::pair<std::string, FieldPtr>> auto point_fields(const GridWriterBase& writer) {
         return writer._point_field_names() | std::views::transform([&] (std::string n) {
             auto field_ptr = writer._get_shared_point_field(n);

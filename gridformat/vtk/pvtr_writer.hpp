@@ -106,15 +106,7 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
         auto writer = VTRWriter{this->grid(), this->_xml_opts}
                         .as_piece_for(std::move(domain))
                         .with_offset(offset);
-        std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
-            writer.set_meta_data(name, VTK::make_vtk_field(this->_get_shared_meta_data_field(name)));
-        });
-        std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            writer.set_point_field(name, VTK::make_vtk_field(this->_get_shared_point_field(name)));
-        });
-        std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            writer.set_cell_field(name, this->_get_shared_cell_field(name));
-        });
+        this->copy_fields(writer);
         writer.write(PVTK::piece_basefilename(par_filename, Parallel::rank(_comm)));
     }
 

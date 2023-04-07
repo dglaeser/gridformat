@@ -64,15 +64,7 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
 
     void _write_piece(const std::string& par_filename) const {
         VTUWriter writer{this->grid(), this->_xml_opts};
-        std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
-            writer.set_meta_data(name, VTK::make_vtk_field(this->_get_shared_meta_data_field(name)));
-        });
-        std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            writer.set_point_field(name, VTK::make_vtk_field(this->_get_shared_point_field(name)));
-        });
-        std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            writer.set_cell_field(name, this->_get_shared_cell_field(name));
-        });
+        this->copy_fields(writer);
         writer.write(PVTK::piece_basefilename(par_filename, Parallel::rank(_comm)));
     }
 
