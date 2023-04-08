@@ -19,18 +19,32 @@ int main(int argc, char** argv) {
     int rank = GridFormat::Parallel::rank(MPI_COMM_WORLD);
     double xoffset = static_cast<double>(rank%2);
     double yoffset = static_cast<double>(rank/2);
-    GridFormat::Test::VTK::WriterTester tester{
-         GridFormat::Test::StructuredGrid<2>{
+    {
+        GridFormat::Test::VTK::WriterTester tester{
+            GridFormat::Test::StructuredGrid<2>{
+                {{1.0, 1.0}},
+                {{10, 10}},
+                {{xoffset, yoffset}}
+            },
+            ".pvti",
+            rank == 0
+        };
+        tester.test([&] (const auto& grid, const auto& opts) {
+            return GridFormat::PVTIWriter{grid, MPI_COMM_WORLD, opts};
+        });
+    }
+    {
+        GridFormat::Test::StructuredGrid<2> grid{
             {{1.0, 1.0}},
             {{10, 10}},
             {{xoffset, yoffset}}
-        },
-        ".pvti",
-        rank == 0
-    };
-    tester.test([&] (const auto& grid, const auto& opts) {
-        return GridFormat::PVTIWriter{grid, MPI_COMM_WORLD, opts};
-    });
+        };
+        grid.invert();
+        GridFormat::Test::VTK::WriterTester tester{std::move(grid), ".pvti", (rank == 0), "inverted"};
+        tester.test([&] (const auto& grid, const auto& opts) {
+            return GridFormat::PVTIWriter{grid, MPI_COMM_WORLD, opts};
+        });
+    }
 
     MPI_Finalize();
     return 0;

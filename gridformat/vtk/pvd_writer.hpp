@@ -63,7 +63,7 @@ class PVDWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
     }
 
     std::string _write_time_step_file(const std::integral auto index) {
-        _add_fields_to_writer();
+        this->copy_fields(_vtk_writer);
         const auto filename = _vtk_writer.write(
             _base_filename + "-" + _get_file_number_string(index)
         );
@@ -85,18 +85,6 @@ class PVDWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
         dataset.set_attribute("name", "");
         dataset.set_attribute("file", filename);
         return dataset;
-    }
-
-    void _add_fields_to_writer() {
-        std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
-            _vtk_writer.set_meta_data(name, this->_get_shared_meta_data_field(name));
-        });
-        std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            _vtk_writer.set_point_field(name, this->_get_shared_point_field(name));
-        });
-        std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            _vtk_writer.set_cell_field(name, this->_get_shared_cell_field(name));
-        });
     }
 
     VTKWriter _vtk_writer;

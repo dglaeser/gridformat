@@ -8,8 +8,8 @@
 #include "vtk_writer_tester.hpp"
 
 template<int dim>
-void _test(GridFormat::Test::StructuredGrid<dim>&& grid) {
-    GridFormat::Test::VTK::WriterTester tester{std::move(grid), ".vti"};
+void _test(GridFormat::Test::StructuredGrid<dim>&& grid, std::string suffix = "") {
+    GridFormat::Test::VTK::WriterTester tester{std::move(grid), ".vti", true, suffix};
     tester.test([&] (const auto& grid, const auto& xml_opts) {
         return GridFormat::VTIWriter{grid, xml_opts};
     });
@@ -29,6 +29,13 @@ int main() {
             {{10, 10, 10}}
         }
     );
+
+    GridFormat::Test::StructuredGrid<3> inverted{
+        {{1.0, 1.0, 1.0}},
+        {{10, 10, 10}}
+    };
+    inverted.invert();
+    _test(std::move(inverted), "inverted");
 
     return 0;
 }

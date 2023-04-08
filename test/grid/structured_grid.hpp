@@ -169,8 +169,11 @@ class StructuredGrid {
         result.reserve(number_of_points(dir));
         for (std::size_t i = 0; i < number_of_points(dir); ++i)
             result.push_back(_origin[dir] + _spacing[dir]*i);
-        std::ranges::sort(result);
         return result;
+    }
+
+    void invert() {
+        std::ranges::for_each(_spacing, [] (auto& s) { s *= -1.0; });
     }
 
  private:
