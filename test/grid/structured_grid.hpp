@@ -92,17 +92,17 @@ class StructuredGrid {
     }
 
     std::array<double, dim> center(const Point& p) const {
-        std::array<double, dim> result;
+        std::array<double, dim> local_pos;
         for (int i = 0; i < dim; ++i)
-            result[i] = _origin[i] + static_cast<double>(p.position[i])*_spacing[i];
-        return result;
+            local_pos[i] = static_cast<double>(p.position[i]);
+        return _position_at(local_pos);
     }
 
     std::array<double, dim> center(const Cell& c) const {
-        std::array<double, dim> result;
+        std::array<double, dim> local_pos;
         for (int i = 0; i < dim; ++i)
-            result[i] = _origin[i] + (static_cast<double>(c.position[i]) + 0.5)*_spacing[i];
-        return result;
+            local_pos[i] = static_cast<double>(c.position[i]) + 0.5;
+        return _position_at(local_pos);
     }
 
     std::size_t number_of_cells() const {
@@ -176,14 +176,56 @@ class StructuredGrid {
         std::ranges::for_each(_spacing, [] (auto& s) { s *= -1.0; });
     }
 
+    const auto& get_basis() const {
+        return _basis;
+    }
+
+ protected:
+    void set_basis(std::array<std::array<double, dim>, dim> basis) {
+        _basis = std::move(basis);
+    }
+
  private:
+    static auto _standard_basis() {
+        std::array<std::array<double, dim>, dim> result;
+        std::ranges::for_each(result, [] (auto& sub_range) {
+            std::ranges::fill(sub_range, 0.0);
+        });
+        for (int i = 0; i < dim; ++i)
+            result[i][i] = 1.0;
+        return result;
+    }
+
+    std::array<double, dim> _position_at(const std::array<double, dim>& local_pos) const {
+        std::array<double, dim> result = _origin;
+        for (int i = 0; i < dim; ++i)
+            for (int j = 0; j < dim; ++j)
+                result[j] += _basis[i][j]*_spacing[i]*local_pos[i];
+        return result;
+    }
+
     std::array<double, dim> _origin;
     std::array<double, dim> _size;
     std::array<std::size_t, dim> _num_cells;
     std::array<double, dim> _spacing;
+    std::array<std::array<double, dim>, dim> _basis = _standard_basis();
 
     std::vector<Cell> _cells;
     std::vector<Point> _points;
+};
+
+template<int dim>
+class OrientedStructuredGrid : public StructuredGrid<dim> {
+    using ParentType = StructuredGrid<dim>;
+
+ public:
+    OrientedStructuredGrid(std::array<std::array<double, dim>, dim> basis,
+                           std::array<double, dim> size,
+                           std::array<std::size_t, dim> cells,
+                           std::array<double, dim> origin = Detail::make_filled_array<dim>(0.0))
+    : ParentType(size, cells, origin) {
+        this->set_basis(std::move(basis));
+    };
 };
 
 }  // namespace Test
@@ -243,6 +285,54 @@ template<int dim, typename Point>
 struct PointCoordinates<Test::StructuredGrid<dim>, Point> {
     static decltype(auto) get(const Test::StructuredGrid<dim>& grid, const Point& p) {
         return grid.center(p);
+    }
+};
+
+
+template<int dim>
+struct Points<Test::OrientedStructuredGrid<dim>>
+: public Points<Test::StructuredGrid<dim>>
+{};
+
+template<int dim>
+struct Cells<Test::OrientedStructuredGrid<dim>>
+: public Cells<Test::StructuredGrid<dim>>
+{};
+
+template<int dim>
+struct Origin<Test::OrientedStructuredGrid<dim>>
+: public Origin<Test::StructuredGrid<dim>>
+{};
+
+template<int dim>
+struct Spacing<Test::OrientedStructuredGrid<dim>>
+: public Spacing<Test::StructuredGrid<dim>>
+{};
+
+template<int dim>
+struct Extents<Test::OrientedStructuredGrid<dim>>
+: public Extents<Test::StructuredGrid<dim>>
+{};
+
+template<int dim>
+struct Ordinates<Test::OrientedStructuredGrid<dim>>
+: public Ordinates<Test::StructuredGrid<dim>>
+{};
+
+template<int dim, typename Entity>
+struct Location<Test::OrientedStructuredGrid<dim>, Entity>
+: public Location<Test::StructuredGrid<dim>, Entity>
+{};
+
+template<int dim, typename Point>
+struct PointCoordinates<Test::OrientedStructuredGrid<dim>, Point>
+: public PointCoordinates<Test::StructuredGrid<dim>, Point>
+{};
+
+template<int dim>
+struct Basis<Test::OrientedStructuredGrid<dim>> {
+    static decltype(auto) get(const Test::OrientedStructuredGrid<dim>& grid) {
+        return grid.get_basis();
     }
 };
 
