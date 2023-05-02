@@ -124,6 +124,7 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         grid.set_attribute("WholeExtent", VTK::CommonDetail::extents_string(extents));
         grid.set_attribute("Origin", VTK::CommonDetail::number_string_3d(origin));
         grid.set_attribute("Spacing", VTK::CommonDetail::number_string_3d(spacing(this->grid())));
+        grid.set_attribute("Direction", VTK::CommonDetail::direction_string(basis(this->grid())));
 
         XMLElement& ppoint_data = grid.add_child("PPointData");
         XMLElement& pcell_data = grid.add_child("PCellData");
