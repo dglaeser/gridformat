@@ -30,5 +30,20 @@ int main() {
         expect(eq(span[0], 42.0));
     };
 
+    "scalar_field_export_test"_test = [] () {
+        const GridFormat::ScalarField field{int{42}};
+        double value;
+        field.export_to(value);
+        expect(eq(value, double{42.0}));
+    };
+
+    "scalar_field_export_to_range_test"_test = [] () {
+        const GridFormat::ScalarField field{int{42}};
+        std::vector<double> values(1);
+        field.export_to(values);
+        expect(eq(values.size(), std::size_t{1}));
+        expect(eq(values[0], double{42.0}));
+    };
+
     return 0;
 }
