@@ -47,13 +47,13 @@ class Serialization {
     std::span<std::byte> as_span() { return {_data}; }
     std::span<const std::byte> as_span() const { return {_data}; }
 
-    template<typename T>
+    template<Concepts::Scalar T>
     std::span<T> as_span_of() {
         _check_valid_cast<T>();
         return std::span{reinterpret_cast<T*>(_data.data()), _data.size()/sizeof(T)};
     }
 
-    template<typename T>
+    template<Concepts::Scalar T>
     std::span<std::add_const_t<T>> as_span_of() const {
         _check_valid_cast<T>();
         return std::span{reinterpret_cast<std::add_const_t<T>*>(_data.data()), _data.size()/sizeof(T)};
