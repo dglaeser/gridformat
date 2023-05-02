@@ -54,5 +54,34 @@ int main() {
         expect(std::ranges::equal(data, doubles));
     };
 
+    "range_field_export"_test = [] () {
+        const GridFormat::RangeField field{
+            std::vector<std::array<int, 3>>{{0, 1, 2}, {3, 4, 5}}
+        };
+        std::vector<std::array<double, 3>> out(2);
+        field.export_to(out);
+        expect(std::ranges::equal(out[0], std::vector<double>{0.0, 1.0, 2.0}));
+        expect(std::ranges::equal(out[1], std::vector<double>{3.0, 4.0, 5.0}));
+    };
+
+    "range_field_flat_export"_test = [] () {
+        const GridFormat::RangeField field{
+            std::vector<std::array<int, 3>>{{0, 1, 2}, {3, 4, 5}}
+        };
+        std::vector<double> out(6);
+        field.export_to(out);
+        expect(std::ranges::equal(out, std::vector<double>{0.0, 1.0, 2.0, 3.0, 4.0, 5.0}));
+    };
+
+    "range_field_reshaped_export"_test = [] () {
+        const GridFormat::RangeField field{
+            std::vector<int>{{0, 1, 2, 3, 4, 5}}
+        };
+        std::vector<std::array<double, 3>> out(2);
+        field.export_to(out);
+        expect(std::ranges::equal(out[0], std::vector<double>{0.0, 1.0, 2.0}));
+        expect(std::ranges::equal(out[1], std::vector<double>{3.0, 4.0, 5.0}));
+    };
+
     return 0;
 }
