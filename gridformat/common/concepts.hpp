@@ -52,6 +52,12 @@ concept MDRange = std::ranges::range<T> and mdrange_dimension<T> == dim;
 template<typename T, std::size_t dim>
 concept StaticallySizedMDRange = StaticallySizedRange<T> and MDRange<T, dim>;
 
+template<typename T, typename Index = std::size_t>
+concept Indexable = requires(T& t) { { t[std::declval<const Index&>()] }; };
+
+template<typename T>
+concept IndexableRange = std::ranges::range<T> and Indexable<T>;
+
 template<typename T>
 concept Scalar = is_scalar<T>;
 

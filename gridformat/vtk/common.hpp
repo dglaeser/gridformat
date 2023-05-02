@@ -276,6 +276,30 @@ namespace CommonDetail {
         return extents_string(extents(grid));
     }
 
+    template<Concepts::StaticallySizedRange R1,
+             Concepts::StaticallySizedRange R2>
+    std::array<std::size_t, 6> get_extents(const R1& r1, const R2& r2) {
+        static_assert(static_size<R1> == static_size<R2>);
+        int i = 0;
+        std::array<std::size_t, 6> result;
+        std::ranges::fill(result, 0);
+
+        auto it1 = std::ranges::begin(r1);
+        auto it2 = std::ranges::begin(r2);
+        for (; it1 != std::ranges::end(r1); ++it1, ++it2, ++i) {
+            result[i*2 + 0] = *it1;
+            result[i*2 + 1] = *it2;
+        }
+        return result;
+    }
+
+    template<Concepts::StaticallySizedRange R>
+    std::array<std::size_t, 6> get_extents(const R& r1) {
+        std::array<std::size_t, static_size<R>> origin;
+        std::ranges::fill(origin, 0);
+        return get_extents(origin, r1);
+    }
+
 }  // namespace CommonDetail
 #endif  // DOXYGEN
 
