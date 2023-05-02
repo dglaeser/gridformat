@@ -37,6 +37,8 @@ template<typename T>
 struct SpaceDimension;
 template<int dim>
 struct SpaceDimension<StructuredGrid<dim>> : public std::integral_constant<int, dim> {};
+template<int dim>
+struct SpaceDimension<OrientedStructuredGrid<dim>> : public std::integral_constant<int, dim> {};
 template<int dim, int space_dim>
 struct SpaceDimension<UnstructuredGrid<dim, space_dim>> : public std::integral_constant<int, space_dim> {};
 
@@ -44,6 +46,8 @@ template<typename T>
 struct Dimension;
 template<int dim>
 struct Dimension<StructuredGrid<dim>> : public std::integral_constant<int, dim> {};
+template<int dim>
+struct Dimension<OrientedStructuredGrid<dim>> : public std::integral_constant<int, dim> {};
 template<int dim, int space_dim>
 struct Dimension<UnstructuredGrid<dim, space_dim>> : public std::integral_constant<int, dim> {};
 
