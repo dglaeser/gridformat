@@ -100,6 +100,11 @@ namespace GridFormat::GridDetail {
     };
 
     template<typename T>
+    concept ExposesBasis = is_complete<Traits::Basis<T>> && requires(const T& grid) {
+        { Traits::Basis<T>::get(grid) } -> Concepts::StaticallySizedMDRange<2>;
+    };
+
+    template<typename T>
     concept ExposesExtents = is_complete<Traits::Extents<T>> && requires(const T& grid) {
         { Traits::Extents<T>::get(grid) } -> Concepts::StaticallySizedMDRange<1>;
         requires std::convertible_to<
@@ -145,6 +150,9 @@ namespace GridFormat::GridDetail {
 
     template<ExposesExtents T>
     using Extents = std::decay_t<decltype(Traits::Extents<T>::get(std::declval<const T&>()))>;
+
+    template<ExposesBasis T>
+    using Basis = std::decay_t<decltype(Traits::Basis<T>::get(std::declval<const T&>()))>;
 
     template<ExposesCellLocation T>
     using CellLocation = std::decay_t<decltype(Traits::Location<T, Cell<T>>::get(std::declval<const T&>(), std::declval<const Cell<T>>()))>;

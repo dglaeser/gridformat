@@ -108,6 +108,28 @@ Concepts::StaticallySizedRange decltype(auto) spacing(const Grid& grid) {
     return Traits::Spacing<Grid>::get(grid);
 }
 
+template<Concepts::ImageGrid Grid>
+Concepts::StaticallySizedMDRange<2> decltype(auto) basis(const Grid& grid) {
+    static constexpr std::size_t dim = dimension<Grid>;
+    if constexpr (GridDetail::ExposesBasis<Grid>) {
+        using ResultType = std::decay_t<decltype(Traits::Basis<Grid>::get(grid))>;
+        static_assert(static_size<ResultType> == dim);
+        static_assert(static_size<std::ranges::range_value_t<ResultType>> == dim);
+        return Traits::Basis<Grid>::get(grid);
+    }
+    else {
+        using Vector = std::array<CoordinateType<Grid>, dim>;
+        using ResultType = std::array<Vector, dim>;
+        static_assert(dim >= 1 && dim <= 3);
+        if constexpr (dim == 1)
+            return ResultType{{1.}};
+        else if constexpr (dim == 2)
+            return ResultType{Vector{1.0, 0.0}, Vector{0.0, 1.0}};
+        else
+            return ResultType{Vector{1.0, 0.0, 0.0}, Vector{0.0, 1.0, 0.0}, Vector{0.0, 0.0, 1.0}};
+    }
+}
+
 template<GridDetail::ExposesCellLocation Grid>
 Concepts::StaticallySizedRange decltype(auto) location(const Grid& grid, const Cell<Grid>& c) {
     return Traits::Location<Grid, Cell<Grid>>::get(grid, c);
