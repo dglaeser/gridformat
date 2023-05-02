@@ -86,6 +86,7 @@ class VTIWriter : public VTK::XMLWriterBase<Grid, VTIWriter<Grid>> {
         _set_domain_attributes(context);
         _set_extent_attributes(context);
         this->_set_attribute(context, "", "Spacing", VTK::CommonDetail::number_string_3d(spacing(this->grid())));
+        this->_set_attribute(context, "", "Direction", VTK::CommonDetail::direction_string(basis(this->grid())));
     }
 
     void _set_domain_attributes(typename ParentType::WriteContext& context) const {

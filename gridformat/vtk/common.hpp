@@ -18,6 +18,7 @@
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/ranges.hpp>
+#include <gridformat/common/matrix.hpp>
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/string_conversion.hpp>
 #include <gridformat/common/field_transformations.hpp>
@@ -224,6 +225,22 @@ namespace CommonDetail {
             return as_string(r) + " 0 0";
     }
 
+    template<Concepts::StaticallySizedMDRange<2> R>
+    std::string direction_string(const R& basis) {
+        Matrix m{basis};
+        m.transpose();
+
+        std::string result = "";
+        std::ranges::for_each(m, [&] (const auto& row) {
+            if (result != "")
+                result += " ";
+            result += number_string_3d(row);
+        });
+        for (int i = static_size<R>; i < 3; ++i)
+            result += " 0 0 0";
+        return result;
+    }
+
     template<Concepts::StaticallySizedRange R>
     std::string extents_string(const R& r) {
         int i = 0;
@@ -236,8 +253,9 @@ namespace CommonDetail {
             result += " 0 0";
         return result;
     }
+
     template<Concepts::StaticallySizedRange R1,
-                Concepts::StaticallySizedRange R2>
+             Concepts::StaticallySizedRange R2>
     std::string extents_string(const R1& r1, const R2& r2) {
         static_assert(static_size<R1> == static_size<R2>);
         int i = 0;
