@@ -65,6 +65,10 @@ struct Origin;
 template<typename Grid>
 struct Spacing;
 
+//! Metafunction to obtain the Basis of a structured grid via a static function `get(const Grid&)` (optional trait)
+template<typename Grid>
+struct Basis;
+
 //! Metafunction to obtain the number of cells per direction via a static function `get(const Grid&)`
 template<typename Grid>
 struct Extents;
