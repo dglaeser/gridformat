@@ -17,6 +17,7 @@
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
+#include <gridformat/common/exceptions.hpp>
 
 namespace GridFormat {
 
@@ -30,8 +31,13 @@ class Field {
 
     MDLayout layout() const { return _layout(); }
     DynamicPrecision precision() const { return _precision(); }
-    Serialization serialized() const { return _serialized(); }
     std::size_t size_in_bytes() const { return layout().number_of_entries()*precision().size_in_bytes(); }
+    Serialization serialized() const {
+        auto result = _serialized();
+        if (result.size() != size_in_bytes())
+            throw SizeError("Serialized size does not match expected number of bytes");
+        return result;
+    }
 
  private:
     DynamicPrecision _prec;
