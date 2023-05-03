@@ -49,7 +49,7 @@ inline constexpr auto size(R&& r) {
  */
 template<Concepts::StaticallySizedRange R>
 inline constexpr auto size(R&&) {
-    return StaticSize<std::decay_t<R>>::value;
+    return StaticSize<R>::value;
 }
 
 /*!

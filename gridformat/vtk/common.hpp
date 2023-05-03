@@ -215,11 +215,12 @@ namespace CommonDetail {
 
     template<Concepts::StaticallySizedRange R>
     std::string number_string_3d(const R& r) {
-        if constexpr (static_size<std::decay_t<R>> == 3)
+        static_assert(static_size<R> >= 1 || static_size<R> <= 3);
+        if constexpr (static_size<R> == 3)
             return as_string(r);
-        if constexpr (static_size<std::decay_t<R>> == 2)
+        if constexpr (static_size<R> == 2)
             return as_string(r) + " 0";
-        if constexpr (static_size<std::decay_t<R>> == 1)
+        if constexpr (static_size<R> == 1)
             return as_string(r) + " 0 0";
     }
 
