@@ -19,10 +19,12 @@
 #include <tuple>
 #include <cmath>
 
+#include <gridformat/common/math.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/field.hpp>
+#include <gridformat/grid/grid.hpp>
 
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/xml/element.hpp>
@@ -104,10 +106,13 @@ template<typename T, std::size_t dim>
 class StructuredGridMapperHelper {
  public:
     using Origin = std::array<T, dim>;
+    using Basis = std::array<Origin, dim>;
 
     explicit StructuredGridMapperHelper(std::integral auto ranks,
+                                        const Basis& basis,
                                         T default_epsilon = 1e-6)
-    : _origins(ranks)
+    : _basis(basis)
+    , _origins(ranks)
     , _set(ranks, false)
     , _default_epsilon{default_epsilon} {
         std::ranges::fill(_reverse, false);
@@ -136,10 +141,10 @@ class StructuredGridMapperHelper {
                 _sort_ordinates(ordinates, eps, _reverse[dir]);
 
                 for (unsigned rank = 0; rank < _origins.size(); ++rank) {
-                    const auto rank_origin = _origins[rank][dir];
+                    const auto rank_origin_ordinate = _get_ordinate(_origins[rank], dir);
                     auto it = std::ranges::find_if(ordinates, [&] (const T o) {
                         using std::abs;
-                        return abs(o - rank_origin) < eps;
+                        return abs(o - rank_origin_ordinate) < eps;
                     });
                     if (it == ordinates.end())
                         throw InvalidState("Could not determine rank ordinate");
@@ -147,7 +152,7 @@ class StructuredGridMapperHelper {
                 }
             } else {
                 for (unsigned rank = 0; rank < _origins.size(); ++rank)
-                    map[rank][dir] = ordinates[0];
+                    map[rank][dir] = 0;
             }
         }
         return StructuredGridMapper<dim>{std::move(map)};
@@ -171,10 +176,16 @@ class StructuredGridMapperHelper {
         std::vector<T> result;
         result.reserve(_origins.size());
         std::ranges::copy(
-            std::views::transform(_origins, [&] (const Origin& o) { return o[axis]; }),
+            std::views::transform(_origins, [&] (const Origin& o) {
+                return _get_ordinate(o, axis);
+            }),
             std::back_inserter(result)
         );
         return result;
+    }
+
+    auto _get_ordinate(const Origin& o, unsigned int axis) const {
+        return dot_product(o, _basis[axis]);
     }
 
     void _sort_ordinates(std::vector<T>& ordinates, bool reverse) const {
@@ -211,6 +222,7 @@ class StructuredGridMapperHelper {
         return _default_epsilon;
     }
 
+    const Basis& _basis;
     std::vector<Origin> _origins;
     std::vector<bool> _set;
     std::array<bool, dim> _reverse;
@@ -229,7 +241,9 @@ class StructuredParallelGridHelper {
     template<Concepts::Scalar CT, std::size_t dim>
     auto compute_extents_and_origin(const std::vector<CT>& all_origins,
                                     const std::vector<std::size_t>& all_extents,
-                                    const std::array<bool, dim>& is_negative_axis) const {
+                                    const std::array<bool, dim>& is_negative_axis,
+                                    const std::array<std::array<CT, dim>, dim>& basis
+                                        = GridDetail::standard_basis<CT, dim>()) const {
         const auto num_ranks = Parallel::size(_comm);
         std::vector<std::array<std::size_t, dim>> pieces_begin(num_ranks);
         std::vector<std::array<std::size_t, dim>> pieces_end(num_ranks);
@@ -241,7 +255,7 @@ class StructuredParallelGridHelper {
                 using std::abs;
                 return abs(v);
             }));
-            const auto mapper_helper = _make_mapper_helper(all_origins, is_negative_axis, default_epsilon);
+            const auto mapper_helper = _make_mapper_helper(basis, all_origins, is_negative_axis, default_epsilon);
             const auto rank_mapper = mapper_helper.make_mapper();
             origin = mapper_helper.compute_origin();
 
@@ -277,10 +291,11 @@ class StructuredParallelGridHelper {
 
  private:
     template<Concepts::Scalar CT, std::size_t dim>
-    auto _make_mapper_helper(const std::vector<CT>& all_origins,
+    auto _make_mapper_helper(const std::array<std::array<CT, dim>, dim>& basis,
+                             const std::vector<CT>& all_origins,
                              const std::array<bool, dim>& is_negative_axis,
                              CT default_eps) const {
-        StructuredGridMapperHelper<CT, dim> helper(Parallel::size(_comm), default_eps);
+        StructuredGridMapperHelper<CT, dim> helper(Parallel::size(_comm), basis, default_eps);
         std::ranges::for_each(Parallel::ranks(_comm), [&] (int rank) {
             helper.set_origin_for(rank, Parallel::access_gathered<dim>(all_origins, _comm, rank));
         });
