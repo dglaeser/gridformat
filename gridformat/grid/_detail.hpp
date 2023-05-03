@@ -51,7 +51,7 @@ namespace GridFormat::GridDetail {
 
     template<typename T>
     concept ExposesPointCoordinates = is_complete<Traits::PointCoordinates<T, Point<T>>> && requires(const T& grid) {
-        { Traits::PointCoordinates<T, Point<T>>::get(grid, std::declval<const Point<T>&>()) } -> std::ranges::range;
+        { Traits::PointCoordinates<T, Point<T>>::get(grid, std::declval<const Point<T>&>()) } -> Concepts::StaticallySizedRange;
     };
 
     template<ExposesPointCoordinates T>
