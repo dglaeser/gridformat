@@ -25,6 +25,21 @@
 
 namespace GridFormat {
 
+#ifndef DOXYGEN
+namespace GridDetail {
+
+    template<typename T, std::size_t dim>
+    std::array<std::array<T, dim>, dim> standard_basis() {
+        std::array<std::array<T, dim>, dim> result;
+        std::ranges::for_each(result, [&] (auto& b) { std::ranges::fill(b, T{0.0}); });
+        for (std::size_t i = 0; i < dim; ++i)
+            result[i][i] = 1.0;
+        return result;
+    }
+
+}  // namespace GridDetail
+#endif  // DOXYGEN
+
 //! \addtogroup Grid
 //! \{
 
@@ -118,15 +133,7 @@ Concepts::StaticallySizedMDRange<2> decltype(auto) basis(const Grid& grid) {
         return Traits::Basis<Grid>::get(grid);
     }
     else {
-        using Vector = std::array<CoordinateType<Grid>, dim>;
-        using ResultType = std::array<Vector, dim>;
-        static_assert(dim >= 1 && dim <= 3);
-        if constexpr (dim == 1)
-            return ResultType{{1.}};
-        else if constexpr (dim == 2)
-            return ResultType{Vector{1.0, 0.0}, Vector{0.0, 1.0}};
-        else
-            return ResultType{Vector{1.0, 0.0, 0.0}, Vector{0.0, 1.0, 0.0}, Vector{0.0, 0.0, 1.0}};
+        return GridDetail::standard_basis<CoordinateType<Grid>, dim>();
     }
 }
 
