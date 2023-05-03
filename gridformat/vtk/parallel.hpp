@@ -198,13 +198,16 @@ class StructuredGridMapperHelper {
         const auto min = *std::ranges::min_element(ordinates);
         const auto size = max - min;
 
-        std::vector<T> dx; dx.reserve(ordinates.size());
-        std::adjacent_difference(ordinates.begin(), ordinates.end(), std::back_inserter(dx));
-        std::ranges::for_each(dx, [] (auto& v) { v = std::abs(v); });
-        std::ranges::sort(dx);
-        for (T _dx : dx)
-            if (_dx > 1e-8*size)
-                return _dx*0.1;
+        if (size > _default_epsilon) {
+            std::vector<T> dx; dx.reserve(ordinates.size());
+            std::adjacent_difference(ordinates.begin(), ordinates.end(), std::back_inserter(dx));
+            std::ranges::for_each(dx, [] (auto& v) { v = std::abs(v); });
+            std::ranges::sort(dx);
+            for (T _dx : dx)
+                if (_dx > 1e-8*size)
+                    return _dx*0.1;
+        }
+
         return _default_epsilon;
     }
 
