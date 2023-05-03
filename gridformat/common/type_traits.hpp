@@ -321,6 +321,8 @@ template<Detail::HasStaticSizeFunction T>
 struct StaticSize<T> {
     static constexpr std::size_t value = T::size();
 };
+template<typename T> requires(is_complete<StaticSize<std::remove_const_t<T>>>)
+struct StaticSize<T&> : public StaticSize<std::remove_const_t<T>> {};
 
 template<typename T>
 inline constexpr std::size_t static_size = StaticSize<T>::value;
