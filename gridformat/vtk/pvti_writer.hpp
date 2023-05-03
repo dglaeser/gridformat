@@ -76,7 +76,8 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         const auto [exts_begin, exts_end, whole_extent, origin] = helper.compute_extents_and_origin(
             all_origins,
             all_extents,
-            is_negative_axis
+            is_negative_axis,
+            basis(this->grid())
         );
 
         const auto my_whole_extent = Parallel::broadcast(_comm, whole_extent, root_rank);
