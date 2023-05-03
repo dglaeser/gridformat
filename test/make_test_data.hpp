@@ -56,7 +56,7 @@ T test_function(const Position& pos) {
 
 template<typename T, typename Grid>
 std::vector<T> make_point_data(const Grid& grid) {
-    std::vector<T> result(GridFormat::number_of_points(grid));
+    std::vector<T> result(GridFormat::number_of_points(grid), T{0.0});
     for (const auto& p : GridFormat::points(grid))
         result[p.id] = test_function<T>(_get_point_coordinates(grid, p));
     return result;
@@ -65,7 +65,7 @@ std::vector<T> make_point_data(const Grid& grid) {
 template<typename T, typename Grid>
 std::vector<T> make_cell_data(const Grid& grid) {
     std::vector<T> result;
-    result.resize(GridFormat::number_of_cells(grid));
+    result.resize(GridFormat::number_of_cells(grid), T{0.0});
     for (const auto& c : GridFormat::cells(grid))
         result[c.id] = test_function<T>(
             _compute_cell_center(grid, c)
