@@ -7,8 +7,10 @@
 #include <cmath>
 #include <algorithm>
 
+#include <gridformat/common/range_field.hpp>
 #include <gridformat/grid/writer.hpp>
 #include <gridformat/grid.hpp>
+
 
 // test grids
 #include "grid/unstructured_grid.hpp"
@@ -148,6 +150,13 @@ void add_test_data(GridWriterBase<Grid>& writer,
     writer.set_cell_field("cscalar_custom_prec", [&] (const auto& c) { return data.cell_scalars[c.id]; }, prec);
     writer.set_cell_field("cvector_custom_prec", [&] (const auto& c) { return data.cell_vectors[c.id]; }, prec);
     writer.set_cell_field("ctensor_custom_prec", [&] (const auto& c) { return data.cell_tensors[c.id]; }, prec);
+}
+
+template<typename Writer>
+void add_meta_data(Writer& w) {
+    w.set_meta_data("literal", "some_literal_text");
+    w.set_meta_data("string", std::string{"some_string_text"});
+    w.set_meta_data("numbers", RangeField{std::vector<int>{1, 2, 3, 4}});
 }
 
 }  // namespace GridFormat::Test

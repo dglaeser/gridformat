@@ -14,7 +14,7 @@ void test(const Grid& grid) {
     GridFormat::PVDWriter pvd_writer{GridFormat::VTUWriter{grid}, "pvd_time_series_2d_in_2d"};
     auto test_data = GridFormat::Test::make_test_data<dim, double>(grid, sim_time);
     GridFormat::Test::add_test_data(pvd_writer, test_data, GridFormat::Precision<float>{});
-    GridFormat::Test::VTK::add_meta_data(pvd_writer);
+    GridFormat::Test::add_meta_data(pvd_writer);
 
     std::string filename = pvd_writer.write(sim_time);
     std::cout << "Wrote '" << GridFormat::as_highlight(filename) << "'" << std::endl;

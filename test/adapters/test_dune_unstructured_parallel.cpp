@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 
     const auto& grid_view = grid.leafGridView();
     GridFormat::PVTUWriter writer{grid_view, mpi_helper.getCommunicator()};
-    GridFormat::Test::VTK::add_meta_data(writer);
+    GridFormat::Test::add_meta_data(writer);
     writer.set_point_field("pfunc", [&] (const auto& vertex) {
         return GridFormat::Test::test_function<double>(vertex.geometry().center());
     });

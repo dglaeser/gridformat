@@ -15,7 +15,7 @@ int main() {
 
     const auto& grid_view = grid.leafGridView();
     GridFormat::VTUWriter writer{grid_view};
-    GridFormat::Test::VTK::add_meta_data(writer);
+    GridFormat::Test::add_meta_data(writer);
     writer.set_point_field("pfunc", [&] (const auto& vertex) {
         return GridFormat::Test::test_function<double>(vertex.geometry().center());
     });
