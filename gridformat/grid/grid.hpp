@@ -25,6 +25,21 @@
 
 namespace GridFormat {
 
+#ifndef DOXYGEN
+namespace GridDetail {
+
+    template<typename T, std::size_t dim>
+    std::array<std::array<T, dim>, dim> standard_basis() {
+        std::array<std::array<T, dim>, dim> result;
+        std::ranges::for_each(result, [&] (auto& b) { std::ranges::fill(b, T{0.0}); });
+        for (std::size_t i = 0; i < dim; ++i)
+            result[i][i] = 1.0;
+        return result;
+    }
+
+}  // namespace GridDetail
+#endif  // DOXYGEN
+
 //! \addtogroup Grid
 //! \{
 
@@ -106,6 +121,20 @@ Concepts::MDRange<1> decltype(auto) ordinates(const Grid& grid, unsigned dir) {
 template<GridDetail::ExposesSpacing Grid>
 Concepts::StaticallySizedRange decltype(auto) spacing(const Grid& grid) {
     return Traits::Spacing<Grid>::get(grid);
+}
+
+template<Concepts::ImageGrid Grid>
+Concepts::StaticallySizedMDRange<2> decltype(auto) basis(const Grid& grid) {
+    static constexpr std::size_t dim = dimension<Grid>;
+    if constexpr (GridDetail::ExposesBasis<Grid>) {
+        using ResultType = std::decay_t<decltype(Traits::Basis<Grid>::get(grid))>;
+        static_assert(static_size<ResultType> == dim);
+        static_assert(static_size<std::ranges::range_value_t<ResultType>> == dim);
+        return Traits::Basis<Grid>::get(grid);
+    }
+    else {
+        return GridDetail::standard_basis<CoordinateType<Grid>, dim>();
+    }
 }
 
 template<GridDetail::ExposesCellLocation Grid>
