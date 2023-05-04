@@ -38,7 +38,7 @@ struct AsciiFormatOptions {
     std::string line_prefix = "";
     std::size_t entries_per_line = std::numeric_limits<std::size_t>::max();
 
-    bool operator==(const AsciiFormatOptions& other) {
+    bool operator==(const AsciiFormatOptions& other) const {
         return delimiter == other.delimiter
             && line_prefix == other.line_prefix
             && entries_per_line == other.entries_per_line;
