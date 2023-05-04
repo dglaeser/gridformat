@@ -63,16 +63,39 @@ inline constexpr auto at(I i, const R& r) {
     return *it;
 }
 
+
+#ifndef DOXYGEN
+namespace Detail {
+
+template<auto N, typename R>
+struct ResultArraySize;
+
+template<Concepts::StaticallySizedRange R>
+struct ResultArraySize<automatic, R> : std::integral_constant<std::size_t, static_size<R>> {};
+
+template<std::integral auto n, typename R>
+struct ResultArraySize<n, R> : std::integral_constant<std::size_t, n> {};
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
 /*!
  * \ingroup Common
  * \brief Convert the given range into an array with the given dimension.
  */
-template<std::size_t N, std::ranges::range R, typename T = std::ranges::range_value_t<R>>
+template<auto n = automatic, typename T = Automatic, std::ranges::range R>
 inline constexpr auto to_array(R&& r) {
-    if (size(r) < N)
+    using N = std::decay_t<decltype(n)>;
+    static_assert(std::integral<N> || std::same_as<N, Automatic>);
+    static_assert(Concepts::StaticallySizedRange<R> || !std::same_as<N, Automatic>);
+    constexpr std::size_t result_size = Detail::ResultArraySize<n, R>::value;
+
+    if (size(r) < result_size)
         throw SizeError("Range too small for the given target dimension");
-    std::array<T, N> result;
-    std::ranges::copy_n(std::ranges::cbegin(std::forward<R>(r)), N, result.begin());
+
+    using ValueType = std::conditional_t<std::is_same_v<T, Automatic>, std::ranges::range_value_t<R>, T>;
+    std::array<ValueType, result_size> result;
+    std::ranges::copy_n(std::ranges::cbegin(std::forward<R>(r)), result_size, result.begin());
     return result;
 }
 
