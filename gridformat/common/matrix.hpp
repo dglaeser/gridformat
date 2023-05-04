@@ -39,6 +39,11 @@ class Matrix {
                 std::swap(_entries[row][col], _entries[col][row]);
     }
 
+    Matrix& transposed() {
+        transpose();
+        return *this;
+    }
+
     auto begin() const { return std::ranges::begin(_entries); }
     auto end() const { return std::ranges::end(_entries); }
 
