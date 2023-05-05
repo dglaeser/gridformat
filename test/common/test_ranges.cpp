@@ -2,11 +2,32 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <vector>
+#include <ranges>
+#include <utility>
 #include <algorithm>
+#include <forward_list>
 
 #include <gridformat/common/ranges.hpp>
 
 #include "../testing.hpp"
+
+template<std::ranges::sized_range R>
+std::size_t get_sized_range_size(R&& r) {
+    static_assert(!GridFormat::Concepts::StaticallySizedRange<R>);
+    return GridFormat::Ranges::size(std::forward<R>(r));
+}
+
+template<std::ranges::range R>
+std::size_t get_non_sized_range_size(R&& r) {
+    static_assert(!std::ranges::sized_range<R>);
+    static_assert(!GridFormat::Concepts::StaticallySizedRange<R>);
+    return GridFormat::Ranges::size(std::forward<R>(r));
+}
+
+template<GridFormat::Concepts::StaticallySizedRange R>
+constexpr std::size_t get_static_size_range(R&& r) {
+    return GridFormat::Ranges::size(std::forward<R>(r));
+}
 
 int main() {
 
@@ -75,6 +96,19 @@ int main() {
         GridFormat::Ranges::FlatView view{values};
         std::ranges::for_each(view, [&] (auto& v) { v = 0; });
         expect(std::ranges::equal(view, std::vector{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
+    };
+
+    "sized_range_size"_test = [] () {
+        expect(eq(get_sized_range_size(std::vector<int>(5)), 5_ul));
+    };
+
+    "non_sized_range_size"_test = [] () {
+        std::forward_list<int> list{0, 1};
+        expect(eq(get_non_sized_range_size(list), 2_ul));
+    };
+
+    "statically_sized_range_size"_test = [] () {
+        static_assert(get_static_size_range(std::array<int, 2>{}) == 2);
     };
 
     return 0;

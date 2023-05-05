@@ -37,8 +37,7 @@ inline constexpr auto size(R&& r) {
 /*!
  * \ingroup Common
  * \brief Return the size of a range
- * \note This has complexitx O(N), but we also
- *       want to support user-given non-sized ranges.
+ * \note This has complexitx O(N), but we also want to support user-given non-sized ranges.
  */
 template<std::ranges::range R> requires(
     !std::ranges::sized_range<R> and
