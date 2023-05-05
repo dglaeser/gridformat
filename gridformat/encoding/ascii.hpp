@@ -12,6 +12,7 @@
 #include <limits>
 #include <algorithm>
 #include <optional>
+#include <cstdint>
 
 #include <gridformat/common/output_stream.hpp>
 
