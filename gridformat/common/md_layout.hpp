@@ -34,14 +34,14 @@ class MDLayout {
  public:
     MDLayout() = default;
 
-    template<std::ranges::forward_range R>
+    template<Concepts::MDRange<1> R>
     explicit MDLayout(R&& extents) {
         _extents.reserve(Ranges::size(extents));
         std::ranges::copy(extents, std::back_inserter(_extents));
     }
 
     template<std::integral T>
-    explicit MDLayout(std::initializer_list<T> extents) {
+    explicit MDLayout(const std::initializer_list<T>& extents) {
         _extents.reserve(Ranges::size(extents));
         std::ranges::copy(extents, std::back_inserter(_extents));
     }

@@ -55,27 +55,27 @@ int main() {
 
     "md_index_flat"_test = [] () {
         expect(eq(
-            GridFormat::flat_index(MDIndex{{{0}}}, GridFormat::MDLayout{std::vector{{1}}}),
+            GridFormat::flat_index(MDIndex{{0}}, GridFormat::MDLayout{std::vector{{1}}}),
             std::size_t{0}
         ));
         expect(eq(
-            GridFormat::flat_index(MDIndex{{{1}}}, GridFormat::MDLayout{std::vector{{2}}}),
+            GridFormat::flat_index(MDIndex{{1}}, GridFormat::MDLayout{std::vector{{2}}}),
             std::size_t{1}
         ));
         expect(eq(
-            GridFormat::flat_index(MDIndex{{{0, 1}}}, GridFormat::MDLayout{std::vector{{2, 2}}}),
+            GridFormat::flat_index(MDIndex{{0, 1}}, GridFormat::MDLayout{std::vector{{2, 2}}}),
             std::size_t{1}
         ));
         expect(eq(
-            GridFormat::flat_index(MDIndex{{{1, 0}}}, GridFormat::MDLayout{std::vector{{2, 2}}}),
+            GridFormat::flat_index(MDIndex{{1, 0}}, GridFormat::MDLayout{std::vector{{2, 2}}}),
             std::size_t{2}
         ));
         expect(eq(
-            GridFormat::flat_index(MDIndex{{{1, 1}}}, GridFormat::MDLayout{std::vector{{2, 2}}}),
+            GridFormat::flat_index(MDIndex{{1, 1}}, GridFormat::MDLayout{std::vector{{2, 2}}}),
             std::size_t{3}
         ));
         expect(eq(
-            GridFormat::flat_index(MDIndex{{{1, 2, 3}}}, GridFormat::MDLayout{std::vector{{2, 3, 4}}}),
+            GridFormat::flat_index(MDIndex{{1, 2, 3}}, GridFormat::MDLayout{std::vector{{2, 3, 4}}}),
             std::size_t{23}
         ));
     };
