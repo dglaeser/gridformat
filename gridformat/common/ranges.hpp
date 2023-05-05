@@ -67,14 +67,14 @@ inline constexpr auto at(I i, const R& r) {
 #ifndef DOXYGEN
 namespace Detail {
 
-template<auto N, typename R>
-struct ResultArraySize;
+    template<auto N, typename R>
+    struct ResultArraySize;
 
-template<Concepts::StaticallySizedRange R>
-struct ResultArraySize<automatic, R> : std::integral_constant<std::size_t, static_size<R>> {};
+    template<Concepts::StaticallySizedRange R>
+    struct ResultArraySize<automatic, R> : std::integral_constant<std::size_t, static_size<R>> {};
 
-template<std::integral auto n, typename R>
-struct ResultArraySize<n, R> : std::integral_constant<std::size_t, n> {};
+    template<std::integral auto n, typename R>
+    struct ResultArraySize<n, R> : std::integral_constant<std::size_t, n> {};
 
 }  // namespace Detail
 #endif  // DOXYGEN
@@ -101,19 +101,33 @@ inline constexpr auto to_array(R&& r) {
 
 /*!
  * \ingroup Common
- * \brief Flatten the given 2d range into a 1d vector.
+ * \brief Flatten the given 2d range into a 1d range.
  */
 template<Concepts::MDRange<2> R> requires(
     Concepts::StaticallySizedMDRange<std::ranges::range_value_t<R>, 1>)
-inline constexpr auto as_flat_vector(R&& r) {
-    std::vector<MDRangeValueType<R>> result;
-    result.reserve(size(r)*static_size<std::ranges::range_value_t<R>>);
-    std::ranges::for_each(r, [&] (const auto& sub_range) {
-        std::ranges::for_each(sub_range, [&] (const auto& entry) {
-            result.push_back(entry);
+inline constexpr auto flat(R&& r) {
+    if constexpr (Concepts::StaticallySizedRange<R>) {
+        constexpr std::size_t element_size = static_size<std::ranges::range_value_t<R>>;
+        constexpr std::size_t flat_size = element_size*static_size<R>;
+        std::array<MDRangeValueType<R>, flat_size> result;
+        auto it = result.begin();
+        std::ranges::for_each(r, [&] (const auto& sub_range) {
+            std::ranges::for_each(sub_range, [&] (const auto& entry) {
+                *it = entry;
+                ++it;
+            });
         });
-    });
-    return result;
+        return result;
+    } else {
+        std::vector<MDRangeValueType<R>> result;
+        result.reserve(size(r)*static_size<std::ranges::range_value_t<R>>);
+        std::ranges::for_each(r, [&] (const auto& sub_range) {
+            std::ranges::for_each(sub_range, [&] (const auto& entry) {
+                result.push_back(entry);
+            });
+        });
+        return result;
+    }
 }
 
 /*!

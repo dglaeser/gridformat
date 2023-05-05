@@ -79,7 +79,7 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
         );
 
         const auto my_whole_extent = Parallel::broadcast(_comm, whole_extent, root_rank);
-        const auto my_extent_offset = Parallel::scatter(_comm, Ranges::as_flat_vector(exts_begin), root_rank);
+        const auto my_extent_offset = Parallel::scatter(_comm, Ranges::flat(exts_begin), root_rank);
 
         _write_piece(filename_with_ext, Ranges::to_array<dim>(my_extent_offset), {my_whole_extent});
         Parallel::barrier(_comm);  // ensure all pieces finished successfully
