@@ -35,13 +35,8 @@ class EncodedField {
 
     friend std::ostream& operator<<(std::ostream& s, const EncodedField& field) {
         auto encoded = field._encoder(s);
-        auto serialization = field._field.serialized();
-        const auto layout = field._field.layout();
-
-        field._field.precision().visit([&] <typename T> (const Precision<T>&) {
-            if (serialization.size() != layout.number_of_entries()*sizeof(T))
-                throw SizeError("Serialized size does not match field specifications");
-            encoded.write(serialization.template as_span_of<T>());
+        field._field.visit_field_values([&] <typename T> (std::span<const T> data) {
+            encoded.write(data);
         });
         return s;
     }
