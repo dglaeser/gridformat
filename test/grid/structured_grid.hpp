@@ -141,7 +141,7 @@ class StructuredGrid {
         std::size_t result = cell.position[0];
         for (unsigned i = 1; i < dim; ++i) {
             const auto offset = std::accumulate(
-                _num_cells.begin() + i, _num_cells.end(), std::size_t{1}, std::multiplies{}
+                _num_cells.begin(), _num_cells.begin() + i, std::size_t{1}, std::multiplies{}
             );
             result += offset*cell.position[i];
         }
@@ -154,7 +154,7 @@ class StructuredGrid {
         std::ranges::for_each(num_points, [&] (auto& n) { n += 1; });
         for (unsigned i = 1; i < dim; ++i) {
             const auto offset = std::accumulate(
-                num_points.begin() + i, num_points.end(), std::size_t{1}, std::multiplies{}
+                num_points.begin(), num_points.begin() + i, std::size_t{1}, std::multiplies{}
             );
             result += offset*point.position[i];
         }
