@@ -18,35 +18,42 @@ void _test(Grid&& grid, std::string suffix = "") {
 }
 
 int main() {
-    _test(
-        GridFormat::Test::StructuredGrid<2>{
-            {{1.0, 1.0}},
-            {{10, 10}}
+    for (std::size_t nx : {2})
+        for (std::size_t ny : {2, 3}) {
+            const auto base_suffix = std::to_string(nx) + "_" + std::to_string(ny);
+            _test(
+                GridFormat::Test::StructuredGrid<2>{{{1.0, 1.0}}, {{nx, ny}}},
+                base_suffix
+            );
+
+            _test(
+                GridFormat::Test::StructuredGrid<2>{{{1.0, 1.0}}, {{nx, ny}}, {{1.0, 1.0}}},
+                base_suffix + "_shifted"
+            );
+
+            GridFormat::Test::StructuredGrid<2> inverted{{{1.0, 1.0}}, {{nx, ny}}, {{1.0, 1.0}}};
+            inverted.invert();
+            _test(std::move(inverted), base_suffix + "_inverted");
         }
-    );
 
-    _test(
-        GridFormat::Test::StructuredGrid<3>{
-            {{1.0, 1.0, 1.0}},
-            {{10, 10, 10}}
-        }
-    );
+    for (std::size_t nx : {2})
+        for (std::size_t ny : {2, 3})
+            for (std::size_t nz : {2, 4}) {
+                const auto base_suffix = std::to_string(nx) + "_" + std::to_string(ny) + "_" + std::to_string(nz);
+                _test(
+                    GridFormat::Test::StructuredGrid<3>{{{1.0, 1.0, 1.0}}, {{nx, ny, nz}}},
+                    base_suffix
+                );
 
-    _test(
-        GridFormat::Test::StructuredGrid<3>{
-            {{1.0, 1.0, 1.0}},
-            {{10, 10, 10}},
-            {{1.0, 1.0, 1.0}}
-        },
-        "shifted"
-    );
+                _test(
+                    GridFormat::Test::StructuredGrid<3>{{{1.0, 1.0, 1.0}}, {{nx, ny, nz}}, {{1.0, 1.0, 1.0}}},
+                    base_suffix + "_shifted"
+                );
 
-    GridFormat::Test::StructuredGrid<3> inverted{
-        {{1.0, 1.0, 1.0}},
-        {{10, 10, 10}}
-    };
-    inverted.invert();
-    _test(std::move(inverted), "inverted");
+                GridFormat::Test::StructuredGrid<3> inverted{{{1.0, 1.0, 1.0}}, {{nx, ny, nz}}, {{1.0, 1.0, 1.0}}};
+                inverted.invert();
+                _test(std::move(inverted), base_suffix + "_inverted");
+            }
 
     constexpr auto sqrt2_half = 1.0/std::numbers::sqrt2;
     _test(
@@ -56,7 +63,7 @@ int main() {
                 std::array<double, 2>{-sqrt2_half, sqrt2_half}
             },
             {{1.0, 1.0}},
-            {{10, 10}}
+            {{3, 4}}
         },
         "oriented"
     );
@@ -69,7 +76,7 @@ int main() {
                 std::array<double, 3>{0.0, 0.0, 1.0}
             },
             {{1.0, 1.0, 1.0}},
-            {{10, 10, 10}}
+            {{2, 3, 4}}
         },
         "oriented"
     );
