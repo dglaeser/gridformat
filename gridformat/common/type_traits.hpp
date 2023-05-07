@@ -128,11 +128,27 @@ namespace Detail {
         static constexpr std::size_t value = 1;
     };
 
+    template<std::size_t i, std::size_t depth, std::ranges::range R>
+    struct MDRangeValueTypeAt;
+
+    template<std::size_t i, std::size_t depth, std::ranges::range R> requires(i < depth)
+    struct MDRangeValueTypeAt<i, depth, R> {
+        using type = typename MDRangeValueTypeAt<i+1, depth, std::ranges::range_value_t<R>>::type;
+    };
+
+    template<std::size_t i, std::size_t depth, std::ranges::range R> requires(i == depth)
+    struct MDRangeValueTypeAt<i, depth, R> {
+        using type = std::ranges::range_value_t<R>;
+    };
+
 }  // end namespace Detail
 #endif  // DOXYGEN
 
 template<std::ranges::range R>
 inline constexpr std::size_t mdrange_dimension = Detail::MDRangeDimension<R>::value;
+
+template<std::size_t depth, std::ranges::range R> requires(depth < mdrange_dimension<R>)
+using MDRangeValueTypeAt = typename Detail::MDRangeValueTypeAt<0, depth, R>::type;
 
 
 #ifndef DOXYGEN
