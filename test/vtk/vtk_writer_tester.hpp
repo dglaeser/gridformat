@@ -117,6 +117,7 @@ class WriterTester {
         _write_with(writer, opts);
         _write_with_header(writer, opts, GridFormat::uint32);
         _write_with_coordprec(writer, opts, GridFormat::float32);
+        _check_failure_with_invalid_opts(writer);
     }
 
     template<typename Factory> requires(is_writer_factory<Factory>)
@@ -171,6 +172,21 @@ class WriterTester {
         w.write(filename);
         if (_verbose)
             std::cout << GridFormat::as_highlight("Wrote '" + filename + _extension + "'") << std::endl;
+    }
+
+    template<typename Writer>
+    void _check_failure_with_invalid_opts(Writer& w) const {
+        GridFormat::VTK::XMLOptions ascii_appended;
+        ascii_appended.encoder = Encoding::ascii;
+        ascii_appended.data_format = GridFormat::VTK::DataFormat::appended;
+        try { w.with(ascii_appended).write("should_fail"); }
+        catch (const GridFormat::ValueError& e) {}
+
+        GridFormat::VTK::XMLOptions raw_inline;
+        ascii_appended.encoder = Encoding::raw;
+        ascii_appended.data_format = GridFormat::VTK::DataFormat::inlined;
+        try { w.with(ascii_appended).write("should_fail"); }
+        catch (const GridFormat::ValueError& e) {}
     }
 
     template<typename T>
