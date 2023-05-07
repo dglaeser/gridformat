@@ -156,9 +156,10 @@ std::size_t flat_index(const Grid& grid, const Entity& e) {
     static_assert(static_size<std::decay_t<decltype(loc)>> == dimension<Grid>);
 
     int i = 0;
-    std::array<std::size_t, dimension<Grid>> offsets;
+    std::array<std::size_t, dimension<Grid> + 1> offsets;
+    offsets[0] = 1;
     std::ranges::for_each(extent, [&] (const std::size_t ext) {
-        offsets[i] = (i == 0 ? 1 : (ext + extent_diff)*offsets[i-1]);
+        offsets[i+1] = (ext + extent_diff)*offsets[i];
         i++;
     });
 
