@@ -83,6 +83,13 @@ class MDLayout {
         return std::ranges::equal(_extents, other._extents);
     }
 
+    template<std::ranges::range R>
+    void export_to(R& out) const {
+        if (Ranges::size(out) < dimension())
+            throw SizeError("Given output range is too small");
+        std::ranges::copy(_extents, std::ranges::begin(out));
+    }
+
     friend std::ostream& operator<<(std::ostream& s, const MDLayout& layout) {
         s << "(";
         if (layout._extents.size() > 0) {
