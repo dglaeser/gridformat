@@ -51,6 +51,9 @@ endfunction()
 
 find_package(Python COMPONENTS Interpreter)
 function(gridformat_add_regression_test NAME SOURCE REGEX)
+    if (ARGC GREATER "3")
+        set(SCRIPT_ARGS ${ARGV3})
+    endif ()
     if (NOT ${Python_Interpreter_FOUND})
         message(STATUS "Skipping regression testing for '${NAME}' because Python was not found")
         gridformat_add_test(${NAME} ${SOURCE})
@@ -58,7 +61,7 @@ function(gridformat_add_regression_test NAME SOURCE REGEX)
         gridformat_add_test_exe(${NAME} ${SOURCE})
         add_test(
             NAME ${NAME}
-            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py  -c "./${NAME}" -r ${REGEX}
+            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py  -c "./${NAME}" -r ${REGEX} ${SCRIPT_ARGS}
         )
         gridformat_set_test_props(${NAME})
     endif ()
@@ -66,6 +69,9 @@ endfunction()
 
 find_package(MPI COMPONENTS CXX)
 function(gridformat_add_parallel_regression_test NAME SOURCE NPROC REGEX)
+    if (ARGC GREATER "4")
+        set(SCRIPT_ARGS ${ARGV4})
+    endif ()
     if (NOT ${MPI_FOUND})
         message(STATUS "Skipping parallel test '${NAME}' because MPI was not found")
         gridformat_add_test_if(MPI_FOUND ${NAME} ${SOURCE})
@@ -73,23 +79,29 @@ function(gridformat_add_parallel_regression_test NAME SOURCE NPROC REGEX)
         gridformat_add_test_exe(${NAME} ${SOURCE})
         add_test(
             NAME ${NAME}
-            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c "${MPIEXEC} -n ${NPROC} --oversubscribe ${NAME}" -r ${REGEX}
+            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c "${MPIEXEC} -n ${NPROC} --oversubscribe ${NAME}" -r ${REGEX} ${SCRIPT_ARGS}
         )
         gridformat_set_test_props(${NAME})
     endif ()
 endfunction()
 
 function(gridformat_add_regression_test_if CONDITION NAME SOURCE REGEX)
+    if (ARGC GREATER "4")
+        set(SCRIPT_ARGS ${ARGV4})
+    endif ()
     if (${CONDITION})
-        gridformat_add_regression_test(${NAME} ${SOURCE} ${REGEX})
+        gridformat_add_regression_test(${NAME} ${SOURCE} ${REGEX} ${SCRIPT_ARGS})
     else ()
         gridformat_add_test_if(${CONDITION} ${NAME} ${SOURCE})
     endif ()
 endfunction()
 
 function(gridformat_add_parallel_regression_test_if CONDITION NAME SOURCE NPROC REGEX)
+    if (ARGC GREATER "5")
+        set(SCRIPT_ARGS ${ARGV5})
+    endif ()
     if (${CONDITION})
-        gridformat_add_parallel_regression_test(${NAME} ${SOURCE} ${NPROC} ${REGEX})
+        gridformat_add_parallel_regression_test(${NAME} ${SOURCE} ${NPROC} ${REGEX} ${SCRIPT_ARGS})
     else ()
         gridformat_add_test_if(${CONDITION} ${NAME} ${SOURCE})
     endif ()
