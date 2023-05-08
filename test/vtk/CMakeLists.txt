@@ -20,3 +20,52 @@ gridformat_add_parallel_regression_test(test_pvts_writer_nranks_2 test_pvts_writ
 gridformat_add_parallel_regression_test(test_pvts_writer_nranks_4 test_pvts_writer.cpp 4 "pvts_*nranks_4*.pvts")
 
 gridformat_add_parallel_regression_test(test_parallel_pvd_writer test_parallel_pvd_writer.cpp 2 "pvd_parallel_*.pvd")
+
+gridformat_add_regression_test_if(
+    GRIDFORMAT_HAVE_HIGH_FIVE
+    test_vtk_hdf_unstructured_grid_writer
+    test_vtk_hdf_unstructured_grid_writer.cpp
+    "vtk_*unstructured*hdf"
+)
+
+gridformat_add_regression_test_if(
+    GRIDFORMAT_HAVE_HIGH_FIVE
+    test_vtk_hdf_image_grid_writer
+    test_vtk_hdf_image_grid_writer.cpp
+    "vtk_*image*hdf"
+    "--skip-metadata"
+)
+
+gridformat_add_parallel_regression_test_if(
+    GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+    test_vtk_hdf_parallel_unstructured_grid_writer_nranks_2
+    test_vtk_hdf_parallel_unstructured_grid_writer.cpp
+    2
+    "pvtk_*unstructured*nranks_2*hdf"
+)
+
+gridformat_add_parallel_regression_test_if(
+    GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+    test_vtk_hdf_parallel_unstructured_grid_writer_nranks_4
+    test_vtk_hdf_parallel_unstructured_grid_writer.cpp
+    4
+    "pvtk_*unstructured*nranks_4*hdf"
+)
+
+gridformat_add_parallel_regression_test_if(
+    GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+    test_vtk_hdf_parallel_image_grid_writer_nranks_2
+    test_vtk_hdf_parallel_image_grid_writer.cpp
+    2
+    "pvtk_*image*nranks_2*hdf"
+    "--skip-metadata"
+)
+
+gridformat_add_parallel_regression_test_if(
+    GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+    test_vtk_hdf_parallel_image_grid_writer_nranks_4
+    test_vtk_hdf_parallel_image_grid_writer.cpp
+    4
+    "pvtk_*image*nranks_4*hdf"
+    "--skip-metadata"
+)
