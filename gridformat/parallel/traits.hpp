@@ -180,7 +180,7 @@ struct Sum<MPI_Comm> {
     static T get(MPI_Comm comm, const T& value, int root_rank = 0) {
         static constexpr int num_values = 1;
         T result;
-        MPIDetail::reduce(&value, &result, comm, MPI_SUM, 1, root_rank);
+        MPIDetail::reduce(&value, &result, comm, MPI_SUM, num_values, root_rank);
         return result;
     }
 
@@ -200,7 +200,7 @@ struct BroadCast<MPI_Comm> {
         static constexpr int num_values = 1;
         T result = value;
         MPI_Bcast(
-            &value,
+            &result,
             num_values,
             MPIDetail::get_data_type<T>(),
             root_rank,
