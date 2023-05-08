@@ -272,7 +272,7 @@ struct Gather<MPI_Comm> {
         static constexpr int num_values = static_size<R>;
 
         const int this_rank = Rank<MPI_Comm>::get(comm);
-        std::vector<T> result(Size<MPI_Comm>::get(comm)*num_values);
+        std::vector<T> result(Size<MPI_Comm>::get(comm)*num_values, T{0});
         MPI_Gather(
             std::ranges::cdata(values),
             num_values,
