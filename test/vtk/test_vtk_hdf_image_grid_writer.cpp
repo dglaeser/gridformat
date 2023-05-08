@@ -1,0 +1,78 @@
+// SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#include <iostream>
+#include <numbers>
+
+#include <gridformat/common/logging.hpp>
+#include <gridformat/vtk/hdf_writer.hpp>
+
+#include "../grid/structured_grid.hpp"
+#include "../make_test_data.hpp"
+#include "vtk_writer_tester.hpp"
+
+template<typename Grid>
+void _test(Grid&& grid, const std::string& base_filename) {
+    GridFormat::VTKHDFWriter writer{grid};
+    auto test_data = GridFormat::Test::make_test_data<GridFormat::dimension<Grid>, double>(grid);
+    GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
+    GridFormat::Test::add_meta_data(writer);
+    std::cout << "Wrote '"
+              << GridFormat::as_highlight(writer.write(base_filename))
+              << "'" << std::endl;
+}
+
+int main() {
+    for (std::size_t nx : {2})
+        for (std::size_t ny : {2, 3})
+            _test(
+                GridFormat::Test::StructuredGrid<2>({{1.0, 1.0}}, {{nx, ny}}),
+                std::string{"vtk_2d_in_2d_image"}
+                    + "_" + std::to_string(nx)
+                    + "_" + std::to_string(ny)
+            );
+
+    for (std::size_t nx : {2})
+        for (std::size_t ny : {2, 3})
+            for (std::size_t nz : {2, 4})
+                _test(
+                    GridFormat::Test::StructuredGrid<3>({{1.0, 1.0, 1.0}}, {{nx, ny, nz}}),
+                    std::string{"vtk_3d_in_3d_image"}
+                    + "_" + std::to_string(nx)
+                    + "_" + std::to_string(ny)
+                    + "_" + std::to_string(nz)
+                );
+
+    // TODO: the vtkHDFReader in python, at least the way we use it, does not yield the correct
+    //       point coordinates, but still the axis-aligned ones. Interestingly, ParaView correctly
+    //       displays the files we produce. Also, we obtain the points of a read .vti files in the
+    //       same way in our test script and that works fine. For now, we only test if the files
+    //       are successfully written, but we use filenames such that they are not regression-tested.
+    constexpr auto sqrt2_half = 1.0/std::numbers::sqrt2;
+    _test(
+        GridFormat::Test::OrientedStructuredGrid<2>{
+            {
+                std::array<double, 2>{sqrt2_half, sqrt2_half},
+                std::array<double, 2>{-sqrt2_half, sqrt2_half}
+            },
+            {{1.0, 1.0}},
+            {{3, 4}}
+        },
+        "_ignore_regression_vtk_2d_in_2d_image_oriented"
+    );
+
+    _test(
+        GridFormat::Test::OrientedStructuredGrid<3>{
+            {
+                std::array<double, 3>{sqrt2_half, sqrt2_half, 0.0},
+                std::array<double, 3>{-sqrt2_half, sqrt2_half, 0.0},
+                std::array<double, 3>{0.0, 0.0, 1.0}
+            },
+            {{1.0, 1.0, 1.0}},
+            {{2, 3, 4}}
+        },
+        "_ignore_regression_vtk_3d_in_3d_image_oriented"
+    );
+
+    return 0;
+}
