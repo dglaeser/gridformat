@@ -72,7 +72,7 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         PVTK::StructuredParallelGridHelper helper{_comm};
         const auto all_origins = Parallel::gather(_comm, local_origin, root_rank);
         const auto all_extents = Parallel::gather(_comm, local_extents, root_rank);
-        const auto is_negative_axis = _determine_axis_orientation();
+        const auto is_negative_axis = VTK::CommonDetail::structured_grid_axis_orientation(spacing(this->grid()));
         const auto [exts_begin, exts_end, whole_extent, origin] = helper.compute_extents_and_origin(
             all_origins,
             all_extents,
@@ -89,16 +89,6 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         if (Parallel::rank(_comm) == 0)
             _write_pvti_file(filename_with_ext, my_whole_origin, my_whole_extent, exts_begin, exts_end);
         Parallel::barrier(_comm);  // ensure .pvti file is written before returning
-    }
-
-    auto _determine_axis_orientation() const {
-        std::array<bool, dim> result;
-        std::ranges::copy(
-            spacing(this->grid())
-            | std::views::transform([&] (const CT dx) { return dx <= CT{0}; }),
-            result.begin()
-        );
-        return result;
     }
 
     void _write_piece(const std::string& par_filename,
