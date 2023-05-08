@@ -251,8 +251,7 @@ struct Gather<MPI_Comm> {
         const int this_rank = Rank<MPI_Comm>::get(comm);
 
         std::vector<T> result;
-        if (this_rank == root_rank)
-            result.resize(Size<MPI_Comm>::get(comm));
+        result.resize(Size<MPI_Comm>::get(comm), T{0});
 
         MPI_Gather(
             &value,
