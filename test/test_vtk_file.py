@@ -5,7 +5,7 @@ from os.path import splitext
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from typing import Callable, Tuple, List
-from math import sin, cos, isclose
+from math import sin, cos, sqrt, isclose
 from xml.etree import ElementTree
 from numpy import array, ndarray, sum as np_sum
 from sys import exit
@@ -115,8 +115,10 @@ def _check_vtk_file(vtk_reader,
             point = position_call_back(i)
             value = arr.GetTuple(i)
             reference = reference_function(_restrict_to_space_dim(point, space_dim))
+            ncomps = arr.GetNumberOfComponents()
+            vtk_dim = int(sqrt(ncomps)) if ncomps > 3 else ncomps
             for comp in range(arr.GetNumberOfComponents()):
-                if comp/3 < space_dim and comp%3 < space_dim:
+                if comp/vtk_dim < space_dim and comp%vtk_dim < space_dim:
                     assert isclose(reference, value[comp], rel_tol=rel_tol, abs_tol=abs_tol)
                 else:
                     assert isclose(0.0, value[comp], rel_tol=rel_tol, abs_tol=abs_tol)
