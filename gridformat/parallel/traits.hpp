@@ -289,7 +289,9 @@ struct Gather<MPI_Comm> {
 
 template<>
 struct Scatter<MPI_Comm> {
-    template<std::ranges::contiguous_range R>
+    template<std::ranges::contiguous_range R> requires(
+        !Concepts::StaticallySizedRange<R> and
+        std::ranges::sized_range<R>)
     static auto get(MPI_Comm comm, const R& values, int root_rank = 0) {
         using T = std::ranges::range_value_t<R>;
         const int num_values = static_cast<int>(std::ranges::size(values));
@@ -299,6 +301,29 @@ struct Scatter<MPI_Comm> {
             throw SizeError("Cannot scatter data with unequal chunks per process");
 
         std::vector<T> result(num_values/size);
+        MPI_Scatter(
+            std::ranges::cdata(values),
+            num_values/size,
+            MPIDetail::get_data_type<T>(),
+            result.data(),
+            num_values/size,
+            MPIDetail::get_data_type<T>(),
+            root_rank,
+            comm
+        );
+        return result;
+    }
+
+    template<std::ranges::contiguous_range R> requires(Concepts::StaticallySizedRange<R>)
+    static auto get(MPI_Comm comm, const R& values, int root_rank = 0) {
+        using T = std::ranges::range_value_t<R>;
+        const int num_values = static_cast<int>(std::ranges::size(values));
+        const int size = Size<MPI_Comm>::get(comm);
+
+        if (num_values%size != 0)
+            throw SizeError("Cannot scatter data with unequal chunks per process");
+
+        std::array<T, static_size<R>> result(num_values/size);
         MPI_Scatter(
             std::ranges::cdata(values),
             num_values/size,
