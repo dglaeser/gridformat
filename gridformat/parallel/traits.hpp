@@ -64,6 +64,88 @@ struct Scatter;
 
 }  // namespace GridFormat::ParallelTraits
 
+namespace GridFormat {
+
+struct NullCommunicator {};
+
+namespace ParallelTraits {
+
+template<>
+struct Size<NullCommunicator> {
+    static constexpr int get(const NullCommunicator&) { return 1; }
+};
+
+template<>
+struct Rank<NullCommunicator> {
+    static constexpr int get(const NullCommunicator&) { return 0; }
+};
+
+template<>
+struct Barrier<NullCommunicator> {
+    static constexpr int get(const NullCommunicator&) { return 0; }
+};
+
+template<>
+struct Max<NullCommunicator> {
+    template<typename T>
+    static constexpr const T& get(const NullCommunicator&, const T& data, [[maybe_unused]] int root_rank = 0) {
+        return data;
+    }
+};
+
+template<>
+struct Min<NullCommunicator> {
+    template<typename T>
+    static constexpr const T& get(const NullCommunicator&, const T& data, [[maybe_unused]] int root_rank = 0) {
+        return data;
+    }
+};
+
+template<>
+struct Sum<NullCommunicator> {
+    template<typename T>
+    static constexpr const T& get(const NullCommunicator&, const T& data, [[maybe_unused]] int root_rank = 0) {
+        return data;
+    }
+};
+
+template<>
+struct BroadCast<NullCommunicator> {
+    template<typename T>
+    static constexpr const T& get(const NullCommunicator&, const T& data, [[maybe_unused]] int root_rank = 0) {
+        return data;
+    }
+};
+
+template<>
+struct Gather<NullCommunicator> {
+    template<typename T>
+    static constexpr std::vector<T> get(const NullCommunicator&, const T&, [[maybe_unused]] int root_rank = 0) {
+        throw NotImplemented("Gather on null communicator");
+    }
+};
+
+template<>
+struct Scatter<NullCommunicator> {
+    template<std::ranges::contiguous_range R> requires(!Concepts::StaticallySizedRange<R>)
+    static constexpr std::vector<std::ranges::range_value_t<R>> get(const NullCommunicator&,
+                                                                    const R&,
+                                                                    [[maybe_unused]] int root_rank = 0) {
+        throw NotImplemented("Scatter on null communicator");
+    }
+
+    template<std::ranges::contiguous_range R> requires(Concepts::StaticallySizedRange<R>)
+    static constexpr std::array<std::ranges::range_value_t<R>, static_size<R>> get(const NullCommunicator&,
+                                                                                   const R&,
+                                                                                   [[maybe_unused]] int root_rank = 0) {
+        throw NotImplemented("Scatter on null communicator");
+    }
+};
+
+}  // namespace ParallelTraits
+
+}  // namespace GridFormat
+
 #if GRIDFORMAT_HAVE_MPI
 
 #include <mpi.h>
