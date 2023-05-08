@@ -17,6 +17,7 @@
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/concepts.hpp>
+#include <gridformat/common/flat_index_mapper.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
@@ -108,6 +109,13 @@ Concepts::StaticallySizedRange decltype(auto) extents(const Grid& grid) {
     return Traits::Extents<Grid>::get(grid);
 }
 
+template<GridDetail::ExposesExtents Grid>
+auto point_extents(const Grid& grid) {
+    std::ranges::range auto result = extents(grid);
+    std::ranges::for_each(result, [] (std::integral auto& ext) { ext++; });
+    return result;
+}
+
 template<GridDetail::ExposesOrigin Grid>
 Concepts::StaticallySizedRange decltype(auto) origin(const Grid& grid) {
     return Traits::Origin<Grid>::get(grid);
@@ -145,32 +153,6 @@ Concepts::StaticallySizedRange decltype(auto) location(const Grid& grid, const C
 template<GridDetail::ExposesPointLocation Grid>
 Concepts::StaticallySizedRange decltype(auto) location(const Grid& grid, const Point<Grid>& p) {
     return Traits::Location<Grid, Point<Grid>>::get(grid, p);
-}
-
-template<Concepts::StructuredGrid Grid, typename Entity>
-std::size_t flat_index(const Grid& grid, const Entity& e) {
-    static constexpr std::size_t extent_diff = std::is_same_v<Entity, Point<Grid>> ? 1 : 0;
-    const auto& extent = extents(grid);
-    const auto& loc = location(grid, e);
-    static_assert(static_size<std::decay_t<decltype(extent)>> == dimension<Grid>);
-    static_assert(static_size<std::decay_t<decltype(loc)>> == dimension<Grid>);
-
-    int i = 0;
-    std::array<std::size_t, dimension<Grid>> offsets;
-    std::ranges::for_each(extent, [&] (const std::size_t ext) {
-        offsets[i] = (i == 0 ? 1 : (ext + extent_diff)*offsets[i-1]);
-        i++;
-    });
-
-    i = 0;
-    return std::accumulate(
-        std::ranges::begin(loc),
-        std::ranges::end(loc),
-        std::size_t{0},
-        [&] (std::size_t current, std::size_t index) {
-            return current + index*offsets[i++];
-        }
-    );
 }
 
 template<GridDetail::ExposesPointRange Grid> requires(GridDetail::ExposesPointId<Grid>)

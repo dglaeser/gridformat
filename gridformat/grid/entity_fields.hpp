@@ -18,6 +18,7 @@
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
+#include <gridformat/common/flat_index_mapper.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/field.hpp>
 
@@ -52,16 +53,21 @@ namespace EntityFieldsDetail {
         });
     }
 
-    template<typename ValueType, typename Grid, typename Entities, typename F>
+    template<typename ValueType,
+             typename Grid,
+             typename Entities,
+             typename IndexMapper,
+             typename F>
     void fill_structured(const Grid& grid,
                          const Entities& entities,
+                         const IndexMapper& index_mapper,
                          const F& field_function,
                          const MDLayout& layout,
                          Serialization& serialization) {
         auto values = serialization.as_span_of<ValueType>();
         const auto values_offset = layout.dimension() == 1 ? 1 : layout.sub_layout(1).number_of_entries();
         std::ranges::for_each(entities, [&] (const auto& e) {
-            const auto index = flat_index(grid, e);
+            const auto index = index_mapper.map(location(grid, e));
             const auto cur_offset = index*values_offset;
             auto cur_values = std::as_writable_bytes(values.subspan(cur_offset));
 
@@ -127,7 +133,7 @@ class PointField : public Field {
 
     void _fill(Serialization& serialization, const MDLayout& layout) const requires(structured) {
         EntityFieldsDetail::fill_structured<ValueType>(
-            _grid, points(_grid), _field_function, layout, serialization
+            _grid, points(_grid), FlatIndexMapper{point_extents(_grid)}, _field_function, layout, serialization
         );
     }
 
@@ -188,7 +194,7 @@ class CellField : public Field {
 
     void _fill(Serialization& serialization, const MDLayout& layout) const requires(structured) {
         EntityFieldsDetail::fill_structured<ValueType>(
-            _grid, cells(_grid), _field_function, layout, serialization
+            _grid, cells(_grid), FlatIndexMapper{extents(_grid)}, _field_function, layout, serialization
         );
     }
 
