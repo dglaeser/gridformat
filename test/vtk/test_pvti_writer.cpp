@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
     // {
     //     constexpr auto sqrt2_half = 1.0/std::numbers::sqrt2;
     //     double oriented_xoffset = xoffset*sqrt2_half - yoffset*sqrt2_half;
-    //     double oriented_yoffset = xoffset*sqrt2_half - yoffset*sqrt2_half;
+    //     double oriented_yoffset = xoffset*sqrt2_half + yoffset*sqrt2_half;
     //     GridFormat::Test::OrientedStructuredGrid<2> grid{
     //         {
     //             std::array<double, 2>{sqrt2_half, sqrt2_half},
