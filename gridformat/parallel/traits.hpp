@@ -209,10 +209,27 @@ struct BroadCast<MPI_Comm> {
         return result;
     }
 
-    template<Concepts::StaticallySizedMDRange<1> R> requires(std::ranges::contiguous_range<R>)
+    template<std::ranges::contiguous_range R> requires(
+        !Concepts::StaticallySizedRange<R> and
+        std::ranges::sized_range<R>)
     static auto get(MPI_Comm comm, const R& values, int root_rank = 0) {
         using T = std::ranges::range_value_t<R>;
-        static constexpr int num_values = static_size<R>;
+        const auto num_values = std::ranges::size(values);
+        std::vector<T> result(values.begin(), values.end());
+        MPI_Bcast(
+            result.data(),
+            num_values,
+            MPIDetail::get_data_type<T>(),
+            root_rank,
+            comm
+        );
+        return result;
+    }
+
+    template<std::ranges::contiguous_range R> requires(Concepts::StaticallySizedRange<R>)
+    static auto get(MPI_Comm comm, const R& values, int root_rank = 0) {
+        using T = std::ranges::range_value_t<R>;
+        static constexpr auto num_values = static_size<R>;
         std::array<T, num_values> result;
         std::ranges::copy(values, result.begin());
         MPI_Bcast(
