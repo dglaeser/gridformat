@@ -109,6 +109,13 @@ Concepts::StaticallySizedRange decltype(auto) extents(const Grid& grid) {
     return Traits::Extents<Grid>::get(grid);
 }
 
+template<GridDetail::ExposesExtents Grid>
+auto point_extents(const Grid& grid) {
+    std::ranges::range auto result = extents(grid);
+    std::ranges::for_each(result, [] (std::integral auto& ext) { ext++; });
+    return result;
+}
+
 template<GridDetail::ExposesOrigin Grid>
 Concepts::StaticallySizedRange decltype(auto) origin(const Grid& grid) {
     return Traits::Origin<Grid>::get(grid);
@@ -150,14 +157,10 @@ Concepts::StaticallySizedRange decltype(auto) location(const Grid& grid, const P
 
 template<Concepts::StructuredGrid Grid, typename Entity>
 std::size_t flat_index(const Grid& grid, const Entity& e) {
-    if constexpr (std::is_same_v<Entity, Point<Grid>>) {
-        std::array<std::size_t, dimension<Grid>> pextents;
-        std::ranges::copy(extents(grid), pextents.begin());
-        std::ranges::for_each(pextents, [] (auto& ext) { ext++; });
-        return FlatIndexMapper{pextents}.map(location(grid, e));
-    } else {
+    if constexpr (std::is_same_v<Entity, Point<Grid>>)
+        return FlatIndexMapper{point_extents(grid)}.map(location(grid, e));
+    else
         return FlatIndexMapper{extents(grid)}.map(location(grid, e));
-    }
 }
 
 template<GridDetail::ExposesPointRange Grid> requires(GridDetail::ExposesPointId<Grid>)
