@@ -10,7 +10,6 @@
 
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/logging.hpp>
-#include <gridformat/common/range_field.hpp>
 
 #include <gridformat/vtk/attributes.hpp>
 #include <gridformat/vtk/common.hpp>
@@ -55,13 +54,6 @@ using namespace GridFormat::Encoding;
 using namespace GridFormat::Compression;
 using namespace GridFormat::VTK::DataFormat;
 using GridFormat::none;
-
-template<typename Writer>
-void add_meta_data(Writer& w) {
-    w.set_meta_data("literal", "some_literal_text");
-    w.set_meta_data("string", std::string{"some_string_text"});
-    w.set_meta_data("numbers", RangeField{std::vector<int>{1, 2, 3, 4}});
-}
 
 template<typename Grid>
 class WriterTester {
@@ -121,10 +113,11 @@ class WriterTester {
         auto writer = factory(_grid, opts);
         const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(_grid);
         GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<double>{});
-        add_meta_data(writer);
+        GridFormat::Test::add_meta_data(writer);
         _write_with(writer, opts);
         _write_with_header(writer, opts, GridFormat::uint32);
         _write_with_coordprec(writer, opts, GridFormat::float32);
+        _check_failure_with_invalid_opts(writer);
     }
 
     template<typename Factory> requires(is_writer_factory<Factory>)
@@ -136,7 +129,7 @@ class WriterTester {
             auto cpy = writer.with_encoding(GridFormat::Variant::without<Automatic>(_opts.encoder))
                              .with_compression(GridFormat::Variant::without<Automatic>(_opts.compressor))
                              .with_data_format(GridFormat::Variant::without<Automatic>(_opts.data_format));
-            add_meta_data(cpy);
+            GridFormat::Test::add_meta_data(cpy);
             _write_with(cpy, _opts, "_modified");
         });
     }
@@ -147,7 +140,7 @@ class WriterTester {
         auto writer = factory(_grid, opts);
         const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(_grid);
         GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
-        add_meta_data(writer);
+        GridFormat::Test::add_meta_data(writer);
         _write(writer, _add_field_prec_suffix(_make_filename(opts), GridFormat::Precision<float>{}));
     }
 
@@ -179,6 +172,21 @@ class WriterTester {
         w.write(filename);
         if (_verbose)
             std::cout << GridFormat::as_highlight("Wrote '" + filename + _extension + "'") << std::endl;
+    }
+
+    template<typename Writer>
+    void _check_failure_with_invalid_opts(Writer& w) const {
+        GridFormat::VTK::XMLOptions ascii_appended;
+        ascii_appended.encoder = Encoding::ascii;
+        ascii_appended.data_format = GridFormat::VTK::DataFormat::appended;
+        try { w.with(ascii_appended).write("should_fail"); }
+        catch (const GridFormat::ValueError& e) {}
+
+        GridFormat::VTK::XMLOptions raw_inline;
+        ascii_appended.encoder = Encoding::raw;
+        ascii_appended.data_format = GridFormat::VTK::DataFormat::inlined;
+        try { w.with(ascii_appended).write("should_fail"); }
+        catch (const GridFormat::ValueError& e) {}
     }
 
     template<typename T>

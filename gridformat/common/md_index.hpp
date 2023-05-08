@@ -9,14 +9,15 @@
 #define GRIDFORMAT_COMMON_MD_INDEX_HPP_
 
 #include <cassert>
-#include <vector>
 #include <ostream>
 #include <utility>
 #include <concepts>
 #include <iterator>
 #include <algorithm>
+#include <initializer_list>
 #include <numeric>
 
+#include <gridformat/common/concepts.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/reserved_vector.hpp>
 #include <gridformat/common/md_layout.hpp>
@@ -34,14 +35,15 @@ class MDIndex {
     MDIndex() = default;
 
     //! Construct from a range of indices
-    template<std::ranges::forward_range R>
+    template<Concepts::MDRange<1> R>
     explicit MDIndex(R&& indices) {
         _indices.reserve(Ranges::size(indices));
         std::ranges::copy(indices, std::back_inserter(_indices));
     }
 
     //! Construct from a vector of indices
-    explicit MDIndex(const std::vector<std::size_t>& indices) {
+    template<std::integral T>
+    explicit MDIndex(const std::initializer_list<T>& indices) {
         _indices.reserve(Ranges::size(indices));
         std::ranges::copy(indices, std::back_inserter(_indices));
     }

@@ -63,9 +63,9 @@ class Field {
         const auto my_layout = layout();
         const auto input_range_layout = get_md_layout(output_range);
 
-        if (input_range_layout.number_of_entries() != my_layout.number_of_entries())
+        if (input_range_layout.number_of_entries() < my_layout.number_of_entries())
             throw TypeError(
-                std::string{"Cannot fill the given range due to a mismatch in entries: "} +
+                std::string{"Cannot fill the given range. Too few entries. "} +
                 "Number of field entries: '" + std::to_string(my_layout.number_of_entries()) + "'; " +
                 "Number of range entries: '" + std::to_string(input_range_layout.number_of_entries()) + "'"
             );
@@ -103,7 +103,9 @@ class Field {
                 _export_to(sub_range, data, offset);
             });
         else
-            std::ranges::for_each(range, [&] <typename V> (V& value) { value = static_cast<V>(data[offset++]); });
+            std::ranges::for_each(range, [&] <typename V> (V& value) {
+                value = static_cast<V>(data[offset++]);
+            });
     }
 };
 

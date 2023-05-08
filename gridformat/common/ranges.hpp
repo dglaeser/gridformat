@@ -63,34 +63,71 @@ inline constexpr auto at(I i, const R& r) {
     return *it;
 }
 
+
+#ifndef DOXYGEN
+namespace Detail {
+
+    template<auto N, typename R>
+    struct ResultArraySize;
+
+    template<Concepts::StaticallySizedRange R>
+    struct ResultArraySize<automatic, R> : std::integral_constant<std::size_t, static_size<R>> {};
+
+    template<std::integral auto n, typename R>
+    struct ResultArraySize<n, R> : std::integral_constant<std::size_t, n> {};
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
 /*!
  * \ingroup Common
  * \brief Convert the given range into an array with the given dimension.
  */
-template<std::size_t N, std::ranges::range R, typename T = std::ranges::range_value_t<R>>
+template<auto n = automatic, typename T = Automatic, std::ranges::range R>
 inline constexpr auto to_array(R&& r) {
-    if (size(r) < N)
+    using N = std::decay_t<decltype(n)>;
+    static_assert(std::integral<N> || std::same_as<N, Automatic>);
+    static_assert(Concepts::StaticallySizedRange<R> || !std::same_as<N, Automatic>);
+    constexpr std::size_t result_size = Detail::ResultArraySize<n, R>::value;
+
+    if (size(r) < result_size)
         throw SizeError("Range too small for the given target dimension");
-    std::array<T, N> result;
-    std::ranges::copy_n(std::ranges::cbegin(std::forward<R>(r)), N, result.begin());
+
+    using ValueType = std::conditional_t<std::is_same_v<T, Automatic>, std::ranges::range_value_t<R>, T>;
+    std::array<ValueType, result_size> result;
+    std::ranges::copy_n(std::ranges::cbegin(std::forward<R>(r)), result_size, result.begin());
     return result;
 }
 
 /*!
  * \ingroup Common
- * \brief Flatten the given 2d range into a 1d vector.
+ * \brief Flatten the given 2d range into a 1d range.
  */
 template<Concepts::MDRange<2> R> requires(
     Concepts::StaticallySizedMDRange<std::ranges::range_value_t<R>, 1>)
-inline constexpr auto as_flat_vector(R&& r) {
-    std::vector<MDRangeValueType<R>> result;
-    result.reserve(size(r)*static_size<std::ranges::range_value_t<R>>);
-    std::ranges::for_each(r, [&] (const auto& sub_range) {
-        std::ranges::for_each(sub_range, [&] (const auto& entry) {
-            result.push_back(entry);
+inline constexpr auto flat(R&& r) {
+    if constexpr (Concepts::StaticallySizedRange<R>) {
+        constexpr std::size_t element_size = static_size<std::ranges::range_value_t<R>>;
+        constexpr std::size_t flat_size = element_size*static_size<R>;
+        std::array<MDRangeValueType<R>, flat_size> result;
+        auto it = result.begin();
+        std::ranges::for_each(r, [&] (const auto& sub_range) {
+            std::ranges::for_each(sub_range, [&] (const auto& entry) {
+                *it = entry;
+                ++it;
+            });
         });
-    });
-    return result;
+        return result;
+    } else {
+        std::vector<MDRangeValueType<R>> result;
+        result.reserve(size(r)*static_size<std::ranges::range_value_t<R>>);
+        std::ranges::for_each(r, [&] (const auto& sub_range) {
+            std::ranges::for_each(sub_range, [&] (const auto& entry) {
+                result.push_back(entry);
+            });
+        });
+        return result;
+    }
 }
 
 /*!
