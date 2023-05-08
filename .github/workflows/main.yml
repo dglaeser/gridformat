@@ -25,9 +25,6 @@ jobs:
              compiler_pkg: g++-12
 
     steps:
-      - name: install-compiler
-        run: sudo apt install ${{ matrix.compiler_pkg }} mpi-default-bin mpi-default-dev
-
       - name: install-pip-packages
         run: python3 -m pip install vtk reuse
 
@@ -36,6 +33,11 @@ jobs:
 
       - name: check-reuse-compliance
         run: reuse lint
+
+      - name: install-dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          compiler: ${{ matrix.compiler_pkg }}
 
       - name: install-adapted-packages
         uses: ./.github/actions/install-adapted-packages
@@ -62,14 +64,16 @@ jobs:
            - cxx_compiler: g++-12
              compiler_pkg: g++-12
     steps:
-      - name: install-compiler
-        run: sudo apt install ${{ matrix.compiler_pkg }} mpi-default-bin mpi-default-dev
-
       - name: install-pip-packages
         run: python3 -m pip install vtk
 
       - name: checkout-repository
         uses: actions/checkout@v2
+
+      - name: install-dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          compiler: ${{ matrix.compiler_pkg }}
 
       - name: install-adapted-packages
         uses: ./.github/actions/install-adapted-packages
@@ -79,6 +83,7 @@ jobs:
           cmake -DCMAKE_C_COMPILER=${{matrix.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}} \
                 -DGRIDFORMAT_BUILD_TESTS=OFF \
+                -DGRIDFORMAT_FETCH_DEPENDENCIES=ON \
                 -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
                 -B build && \
           cmake --build build && \
@@ -127,7 +132,7 @@ jobs:
       - name: remove-optional-dependencies
         run: sudo apt remove liblz4-dev liblzma-dev
 
-      - name: install-compiler
+      - name: install-dependencies
         run: sudo apt install ${{ matrix.compiler_pkg }} mpi-default-bin mpi-default-dev
 
       - name: install-pip-packages

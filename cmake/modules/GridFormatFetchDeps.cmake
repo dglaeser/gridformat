@@ -18,4 +18,5 @@ if (GRIDFORMAT_FETCH_DEPENDENCIES)
         )
         FetchContent_MakeAvailable(HighFive)
     endif ()
+
 endif ()

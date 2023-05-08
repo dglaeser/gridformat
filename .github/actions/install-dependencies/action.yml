@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: install-dependencies
+inputs:
+  compiler:
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: install-all-dependencies
+      run: |
+        sudo apt install ${{ inputs.compiler }} \
+                         mpi-default-bin mpi-default-dev \
+                         libhdf5-mpi-dev \
+                         libboost-system-dev libboost-serialization-dev \
+                         git
+        git clone https://github.com/BlueBrain/HighFive.git
+        pushd HighFive && cmake -B build && cmake --build build && sudo cmake --install build && popd
+        rm -rf HighFive
+      shell: bash
