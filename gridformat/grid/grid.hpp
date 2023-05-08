@@ -155,14 +155,6 @@ Concepts::StaticallySizedRange decltype(auto) location(const Grid& grid, const P
     return Traits::Location<Grid, Point<Grid>>::get(grid, p);
 }
 
-template<Concepts::StructuredGrid Grid, typename Entity>
-std::size_t flat_index(const Grid& grid, const Entity& e) {
-    if constexpr (std::is_same_v<Entity, Point<Grid>>)
-        return FlatIndexMapper{point_extents(grid)}.map(location(grid, e));
-    else
-        return FlatIndexMapper{extents(grid)}.map(location(grid, e));
-}
-
 template<GridDetail::ExposesPointRange Grid> requires(GridDetail::ExposesPointId<Grid>)
 std::unordered_map<std::size_t, std::size_t> make_point_id_map(const Grid& grid) {
     std::size_t i = 0;
