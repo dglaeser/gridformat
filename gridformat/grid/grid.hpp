@@ -17,6 +17,7 @@
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/concepts.hpp>
+#include <gridformat/common/flat_index_mapper.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
@@ -149,29 +150,14 @@ Concepts::StaticallySizedRange decltype(auto) location(const Grid& grid, const P
 
 template<Concepts::StructuredGrid Grid, typename Entity>
 std::size_t flat_index(const Grid& grid, const Entity& e) {
-    static constexpr std::size_t extent_diff = std::is_same_v<Entity, Point<Grid>> ? 1 : 0;
-    const auto& extent = extents(grid);
-    const auto& loc = location(grid, e);
-    static_assert(static_size<std::decay_t<decltype(extent)>> == dimension<Grid>);
-    static_assert(static_size<std::decay_t<decltype(loc)>> == dimension<Grid>);
-
-    int i = 0;
-    std::array<std::size_t, dimension<Grid> + 1> offsets;
-    offsets[0] = 1;
-    std::ranges::for_each(extent, [&] (const std::size_t ext) {
-        offsets[i+1] = (ext + extent_diff)*offsets[i];
-        i++;
-    });
-
-    i = 0;
-    return std::accumulate(
-        std::ranges::begin(loc),
-        std::ranges::end(loc),
-        std::size_t{0},
-        [&] (std::size_t current, std::size_t index) {
-            return current + index*offsets[i++];
-        }
-    );
+    if constexpr (std::is_same_v<Entity, Point<Grid>>) {
+        std::array<std::size_t, dimension<Grid>> pextents;
+        std::ranges::copy(extents(grid), pextents.begin());
+        std::ranges::for_each(pextents, [] (auto& ext) { ext++; });
+        return FlatIndexMapper{pextents}.map(location(grid, e));
+    } else {
+        return FlatIndexMapper{extents(grid)}.map(location(grid, e));
+    }
 }
 
 template<GridDetail::ExposesPointRange Grid> requires(GridDetail::ExposesPointId<Grid>)
