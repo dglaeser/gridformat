@@ -192,6 +192,12 @@ def _test_vtk(filename: str, skip_metadata: bool, reference_function: Callable[[
     elif ext == ".pvti":
         reader = vtk.vtkXMLPImageDataReader()
         point_collector = _get_rectilinear_points
+    elif ext == ".hdf" and "image" in filename:
+        reader = vtk.vtkHDFReader()
+        point_collector = _get_rectilinear_points
+    elif ext == ".hdf" and "unstructured" in filename:
+        reader = vtk.vtkHDFReader()
+        point_collector = _get_points_from_grid
     else:
         raise NotImplementedError("Unsupported vtk extension")
     reader.AddObserver("ErrorEvent", e)
