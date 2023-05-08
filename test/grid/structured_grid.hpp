@@ -13,6 +13,7 @@
 #include <functional>
 #include <algorithm>
 
+#include <gridformat/common/flat_index_mapper.hpp>
 #include <gridformat/grid/traits.hpp>
 #include <gridformat/grid/cell_type.hpp>
 
@@ -87,8 +88,12 @@ class StructuredGrid {
         std::shuffle(_points.begin(), _points.end(), g);
 
         // set the cell/point ids
-        std::ranges::for_each(_cells, [&] (auto& c) { c.id = id(c); });
-        std::ranges::for_each(_points, [&] (auto& p) { p.id = id(p); });
+        auto points = cells;
+        std::ranges::for_each(points, [] (auto& value) { value++; });
+        FlatIndexMapper cell_mapper{cells};
+        FlatIndexMapper point_mapper{points};
+        std::ranges::for_each(_cells, [&] (auto& c) { c.id = cell_mapper.map(c.position); });
+        std::ranges::for_each(_points, [&] (auto& p) { p.id = point_mapper.map(p.position); });
     }
 
     std::array<double, dim> center(const Point& p) const {
@@ -136,30 +141,6 @@ class StructuredGrid {
     const auto& origin() const { return _origin; }
     const auto& extents() const { return _num_cells; }
     const auto& spacing() const { return _spacing; }
-
-    std::size_t id(const Cell& cell) const {
-        std::size_t result = cell.position[0];
-        for (unsigned i = 1; i < dim; ++i) {
-            const auto offset = std::accumulate(
-                _num_cells.begin(), _num_cells.begin() + i, std::size_t{1}, std::multiplies{}
-            );
-            result += offset*cell.position[i];
-        }
-        return result;
-    }
-
-    std::size_t id(const Point& point) const {
-        std::size_t result = point.position[0];
-        auto num_points = _num_cells;
-        std::ranges::for_each(num_points, [&] (auto& n) { n += 1; });
-        for (unsigned i = 1; i < dim; ++i) {
-            const auto offset = std::accumulate(
-                num_points.begin(), num_points.begin() + i, std::size_t{1}, std::multiplies{}
-            );
-            result += offset*point.position[i];
-        }
-        return result;
-    }
 
     std::size_t number_of_cells(int i) const { return _num_cells[i]; }
     std::size_t number_of_points(int i) const { return _num_cells[i] + 1; }
