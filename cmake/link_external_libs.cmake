@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+include(GridFormatFetchDeps)
+
 find_package(ZLIB)
 if (ZLIB_FOUND)
     target_link_libraries(${PROJECT_NAME} INTERFACE ZLIB::ZLIB)
