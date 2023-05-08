@@ -83,11 +83,27 @@ namespace Detail {
         using type = std::ranges::range_value_t<R>;
     };
 
+    template<std::ranges::range R, typename Enable = void>
+    struct MDRangeReferenceType;
+
+    template<std::ranges::range R>
+    struct MDRangeReferenceType<R, std::enable_if_t<has_sub_range<R>>> {
+        using type = typename MDRangeReferenceType<std::ranges::range_reference_t<R>>::type;
+    };
+
+    template<std::ranges::range R>
+    struct MDRangeReferenceType<R, std::enable_if_t<!has_sub_range<R>>> {
+        using type = std::ranges::range_reference_t<R>;
+    };
+
 }  // namespace Detail
 #endif // DOXYGEN
 
 template<std::ranges::range R>
 using MDRangeValueType = typename Detail::MDRangeValueType<R>::type;
+
+template<std::ranges::range R>
+using MDRangeReferenceType = typename Detail::MDRangeReferenceType<R>::type;
 
 template<std::ranges::range R> requires(is_scalar<MDRangeValueType<R>>)
 using MDRangeScalar = MDRangeValueType<R>;
