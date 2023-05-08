@@ -12,8 +12,13 @@ on:
     - cron: '30 22 * * 0'
   workflow_dispatch:
 
+env:
+  DEFAULT_COMPILER_PKG: g++-12
+  DEFAULT_C_COMPILER: gcc-12
+  DEFAULT_CXX_COMPILER: g++-12
+
 jobs:
-  full-setup:
+  test-compilers:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -25,17 +30,18 @@ jobs:
              compiler_pkg: g++-12
 
     steps:
-      - name: install-compiler
-        run: sudo apt install ${{ matrix.compiler_pkg }} mpi-default-bin mpi-default-dev
-
-      - name: install-pip-packages
-        run: python3 -m pip install vtk reuse
-
       - name: checkout-repository
         uses: actions/checkout@v2
+        with:
+          submodules: true
 
       - name: check-reuse-compliance
-        run: reuse lint
+        run: python3 -m pip install reuse && reuse lint
+
+      - name: install-dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          compiler: ${{ matrix.compiler_pkg }}
 
       - name: install-adapted-packages
         uses: ./.github/actions/install-adapted-packages
@@ -51,98 +57,49 @@ jobs:
         run: |
           pushd build && ctest --output-on-failure && popd
 
-  test-installation:
+
+  test-full-installation:
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        compiler_pkg: [g++-12]
-        include:
-           - c_compiler: gcc-12
-             compiler_pkg: g++-12
-           - cxx_compiler: g++-12
-             compiler_pkg: g++-12
     steps:
-      - name: install-compiler
-        run: sudo apt install ${{ matrix.compiler_pkg }} mpi-default-bin mpi-default-dev
-
-      - name: install-pip-packages
-        run: python3 -m pip install vtk
-
       - name: checkout-repository
         uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: install-dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          compiler: $DEFAULT_COMPILER_PKG
 
       - name: install-adapted-packages
         uses: ./.github/actions/install-adapted-packages
 
-      - name: install-gridformat
-        run: |
-          cmake -DCMAKE_C_COMPILER=${{matrix.c_compiler}} \
-                -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}} \
-                -DGRIDFORMAT_BUILD_TESTS=OFF \
-                -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
-                -B build && \
-          cmake --build build && \
-          cmake --install build
+      - name: test-installed-package
+        uses: ./.github/actions/test-installed-pkg
+        with:
+          c_compiler: /usr/bin/$DEFAULT_C_COMPILER
+          cxx_compiler: /usr/bin/$DEFAULT_CXX_COMPILER
 
-      - name: test-installed-pkg
-        run: |
-          mkdir installation-test && cp -r test installation-test
-          pushd installation-test
-            echo "cmake_minimum_required(VERSION 3.18)" > CMakeLists.txt
-            echo "project(gridformat_test_suite VERSION 1.0.0)" >> CMakeLists.txt
-            echo "enable_testing()" >> CMakeLists.txt
-            echo "find_package(gridformat REQUIRED)" >> CMakeLists.txt
-            echo "add_subdirectory(test)" >> CMakeLists.txt
-            cmake -Dgridformat_ROOT=$(pwd)/../install \
-                  -DCMAKE_C_COMPILER=/usr/bin/${{ matrix.c_compiler }} \
-                  -DCMAKE_CXX_COMPILER=/usr/bin/${{ matrix.cxx_compiler }} \
-                  -B build
-            pushd build && make build_tests && ctest --output-on-failure && popd
-          popd
 
-      - name: test-examples
-        run: |
-          GFMT_TREE=$GITHUB_HEAD_REF
-          if [[ -z "$GFMT_TREE" ]]; then
-            GFMT_TREE=$GITHUB_SHA
-          fi
-          pushd examples
-            cmake -DCMAKE_C_COMPILER=/usr/bin/${{ matrix.c_compiler }} \
-                  -DCMAKE_CXX_COMPILER=/usr/bin/${{ matrix.cxx_compiler }} \
-                  -DGRIDFORMAT_FETCH_TREE=$GFMT_TREE \
-                  -B build
-          pushd build && make && ctest --output-on-failure
-
-  minimal-setup:
+  test-minimal-installation:
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        compiler_pkg: [g++-12]
-        include:
-           - c_compiler: gcc-12
-             compiler_pkg: g++-12
-           - cxx_compiler: g++-12
-             compiler_pkg: g++-12
     steps:
+      - name: checkout-repository
+        uses: actions/checkout@v2
+        with:
+          submodules: false
+
       - name: remove-optional-dependencies
         run: sudo apt remove liblz4-dev liblzma-dev
 
       - name: install-compiler
-        run: sudo apt install ${{ matrix.compiler_pkg }} mpi-default-bin mpi-default-dev
+        run: sudo apt install $DEFAULT_COMPILER_PKG
 
-      - name: install-pip-packages
+      - name: install-vtk
         run: python3 -m pip install vtk
 
-      - name: checkout-repository
-        uses: actions/checkout@v2
-
-      - name: build
-        uses: ./.github/actions/build-tests
+      - name: test-installed-package
+        uses: ./.github/actions/test-installed-pkg
         with:
-          c_compiler: /usr/bin/${{matrix.c_compiler}}
-          cxx_compiler: /usr/bin/${{matrix.cxx_compiler}}
-          build_dir: build
-
-      - name: test
-        run: |
-          pushd build && ctest --output-on-failure && popd
+          c_compiler: /usr/bin/$DEFAULT_C_COMPILER
+          cxx_compiler: /usr/bin/$DEFAULT_CXX_COMPILER

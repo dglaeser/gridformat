@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: install-dependencies
+inputs:
+  compiler:
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: install-dependencies
+      run: |
+        sudo apt install ${{ inputs.compiler }} \
+                         mpi-default-bin mpi-default-dev \
+                         libhdf5-mpi-dev
+        python3 -m pip install vtk
+      shell: bash
