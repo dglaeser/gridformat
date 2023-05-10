@@ -12,6 +12,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-c", "--command", required=True)
     parser.add_argument("-r", "--regex", required=True)
+    parser.add_argument("-sm", "--skip-metadata", required=False, action="store_true")
     args = vars(parser.parse_args())
 
     mypath = abspath(__file__)
@@ -27,7 +28,12 @@ if __name__ == "__main__":
         if fnmatch(_file, f"{args['regex']}"):
             print(f"Regression testing '{_file}'")
             try:
-                run(["python3", vtk_check_script, "-p", _file], check=True)
+                run(
+                    ["python3", vtk_check_script, "-p", _file] + (
+                        ["--skip-metadata"] if args["skip_metadata"] else []
+                    ),
+                    check=True
+                )
             except CalledProcessError as e:
                 ret_code = max(ret_code, e.returncode)
     exit(ret_code)

@@ -58,7 +58,7 @@ class Field {
     }
 
     template<std::ranges::range R> requires(Concepts::Scalar<MDRangeValueType<R>>)
-    void export_to(R& output_range) const {
+    void export_to(R&& output_range) const {
         const auto serialization = serialized();
         const auto my_layout = layout();
         const auto input_range_layout = get_md_layout(output_range);

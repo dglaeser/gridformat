@@ -5,7 +5,7 @@ from os.path import splitext
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from typing import Callable, Tuple, List
-from math import sin, cos, isclose
+from math import sin, cos, sqrt, isclose
 from xml.etree import ElementTree
 from numpy import array, ndarray, sum as np_sum
 from sys import exit
@@ -83,19 +83,21 @@ def _get_grid_and_space_dimension(filename: str) -> Tuple[int, int]:
 def _check_vtk_file(vtk_reader,
                     points,
                     space_dim,
-                    reference_function: Callable[[list], float]) -> None:
+                    reference_function: Callable[[list], float],
+                    skip_metadata: bool) -> None:
     rel_tol = 1e-5
     abs_tol = 1e-3
 
     output = vtk_reader.GetOutput()
-    field_data = output.GetFieldData()
-    expected_field_data = ["literal", "string", "numbers"]
-    for i in range(field_data.GetNumberOfArrays()):
-        expected_field_data.remove(field_data.GetAbstractArray(i).GetName())
-    if expected_field_data:
-        raise RuntimeError(f"Did not find the following metadata: {expected_field_data}")
-    else:
-        print("Found all expected field data")
+    if not skip_metadata:
+        field_data = output.GetFieldData()
+        expected_field_data = ["literal", "string", "numbers"]
+        for i in range(field_data.GetNumberOfArrays()):
+            expected_field_data.remove(field_data.GetAbstractArray(i).GetName())
+        if expected_field_data:
+            raise RuntimeError(f"Did not find the following metadata: {expected_field_data}")
+        else:
+            print("Found all expected field data")
 
     # precompute cell centers
     num_cells = output.GetNumberOfCells()
@@ -113,8 +115,10 @@ def _check_vtk_file(vtk_reader,
             point = position_call_back(i)
             value = arr.GetTuple(i)
             reference = reference_function(_restrict_to_space_dim(point, space_dim))
+            ncomps = arr.GetNumberOfComponents()
+            vtk_dim = int(sqrt(ncomps)) if ncomps > 3 else ncomps
             for comp in range(arr.GetNumberOfComponents()):
-                if comp/3 < space_dim and comp%3 < space_dim:
+                if comp/vtk_dim < space_dim and comp%vtk_dim < space_dim:
                     assert isclose(reference, value[comp], rel_tol=rel_tol, abs_tol=abs_tol)
                 else:
                     assert isclose(0.0, value[comp], rel_tol=rel_tol, abs_tol=abs_tol)
@@ -147,7 +151,7 @@ def _read_pvd_pieces(filename: str) -> List[_TimeStep]:
     ]
 
 
-def _test_vtk(filename: str, reference_function: Callable[[list], float]):
+def _test_vtk(filename: str, skip_metadata: bool, reference_function: Callable[[list], float]):
     def _get_points_from_grid(reader):
         points = reader.GetOutput().GetPoints()
         return array([points.GetPoint(i) for i in range(points.GetNumberOfPoints())])
@@ -197,10 +201,10 @@ def _test_vtk(filename: str, reference_function: Callable[[list], float]):
         raise IOError(f"Error reading VTK file '{filename}': {e.ErrorMessage()}")
 
     _, space_dim = _get_grid_and_space_dimension(filename)
-    _check_vtk_file(reader, point_collector(reader), space_dim, reference_function)
+    _check_vtk_file(reader, point_collector(reader), space_dim, reference_function, skip_metadata)
 
 
-def test(filename: str) -> int | None:
+def test(filename: str, skip_metadata: bool = False) -> int | None:
     if not HAVE_VTK:
         return 255
 
@@ -208,16 +212,17 @@ def test(filename: str) -> int | None:
     if ext == ".pvd":
         for timestep in _read_pvd_pieces(filename):
             print(f"Comparing timestep '{timestep.time}' in file {timestep.filename}")
-            _test_vtk(timestep.filename, _TestFunction(float(timestep.time)))
+            _test_vtk(timestep.filename, skip_metadata, _TestFunction(float(timestep.time)))
     else:
         print(f"Comparing file '{filename}'")
-        _test_vtk(filename, _TestFunction())
+        _test_vtk(filename, skip_metadata, _TestFunction())
 
 
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-p", "--filepath", required=True)
+    parser.add_argument("-sm", "--skip-metadata", required=False, action="store_true")
     args = vars(parser.parse_args())
-    ret_code = test(args["filepath"])
+    ret_code = test(args["filepath"], skip_metadata=(True if args["skip_metadata"] else False))
     if ret_code is not None:
         exit(ret_code)
