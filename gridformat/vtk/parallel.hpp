@@ -138,10 +138,10 @@ class StructuredGridMapperHelper {
         std::vector<std::array<std::size_t, dim>> map(_origins.size());
         for (unsigned dir = 0; dir < dim; ++dir) {
             auto ordinates = _get_ordinates(dir);
-            if (ordinates.size() > 1) {
-                const auto eps = _epsilon(ordinates);
-                _sort_ordinates(ordinates, eps, _reverse[dir]);
+            const auto eps = _epsilon(ordinates);
+            _sort_ordinates(ordinates, eps, _reverse[dir]);
 
+            if (ordinates.size() > 1) {
                 for (unsigned rank = 0; rank < _origins.size(); ++rank) {
                     const auto rank_origin_ordinate = _get_ordinate(_origins[rank], dir);
                     auto it = std::ranges::find_if(ordinates, [&] (const T o) {
