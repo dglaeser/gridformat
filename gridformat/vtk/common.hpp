@@ -276,6 +276,16 @@ namespace CommonDetail {
         return extents_string(extents(grid));
     }
 
+    template<Concepts::StaticallySizedRange Spacing>
+    auto structured_grid_axis_orientation(const Spacing& spacing) {
+        std::array<bool, static_size<Spacing>> result;
+        std::ranges::copy(
+            spacing | std::views::transform([&] <typename CT> (const CT dx) { return dx <= CT{0}; }),
+            result.begin()
+        );
+        return result;
+    }
+
 }  // namespace CommonDetail
 #endif  // DOXYGEN
 

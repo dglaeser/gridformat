@@ -27,6 +27,8 @@
 #include <gridformat/grid/grid.hpp>
 
 #include <gridformat/parallel/communication.hpp>
+#include <gridformat/parallel/helpers.hpp>
+
 #include <gridformat/xml/element.hpp>
 #include <gridformat/vtk/attributes.hpp>
 
@@ -136,10 +138,10 @@ class StructuredGridMapperHelper {
         std::vector<std::array<std::size_t, dim>> map(_origins.size());
         for (unsigned dir = 0; dir < dim; ++dir) {
             auto ordinates = _get_ordinates(dir);
-            if (ordinates.size() > 1) {
-                const auto eps = _epsilon(ordinates);
-                _sort_ordinates(ordinates, eps, _reverse[dir]);
+            const auto eps = _epsilon(ordinates);
+            _sort_ordinates(ordinates, eps, _reverse[dir]);
 
+            if (ordinates.size() > 1) {
                 for (unsigned rank = 0; rank < _origins.size(); ++rank) {
                     const auto rank_origin_ordinate = _get_ordinate(_origins[rank], dir);
                     auto it = std::ranges::find_if(ordinates, [&] (const T o) {
@@ -238,12 +240,13 @@ class StructuredParallelGridHelper {
     , _root_rank{root_rank}
     {}
 
-    template<Concepts::Scalar CT, std::size_t dim>
+    template<Concepts::Scalar CT,
+             std::size_t dim,
+             Concepts::StaticallySizedMDRange<2> B = std::array<std::array<CT, dim>, dim>>
     auto compute_extents_and_origin(const std::vector<CT>& all_origins,
                                     const std::vector<std::size_t>& all_extents,
                                     const std::array<bool, dim>& is_negative_axis,
-                                    const std::array<std::array<CT, dim>, dim>& basis
-                                        = GridDetail::standard_basis<CT, dim>()) const {
+                                    const B& basis = GridDetail::standard_basis<CT, dim>()) const {
         const auto num_ranks = Parallel::size(_comm);
         std::vector<std::array<std::size_t, dim>> pieces_begin(num_ranks);
         std::vector<std::array<std::size_t, dim>> pieces_end(num_ranks);
@@ -290,8 +293,8 @@ class StructuredParallelGridHelper {
     }
 
  private:
-    template<Concepts::Scalar CT, std::size_t dim>
-    auto _make_mapper_helper(const std::array<std::array<CT, dim>, dim>& basis,
+    template<Concepts::StaticallySizedMDRange<2> Basis, Concepts::Scalar CT, std::size_t dim>
+    auto _make_mapper_helper(const Basis& basis,
                              const std::vector<CT>& all_origins,
                              const std::array<bool, dim>& is_negative_axis,
                              CT default_eps) const {
