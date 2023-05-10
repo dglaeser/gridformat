@@ -132,24 +132,37 @@ TestData<T, dim> make_test_data(const Grid& grid, double timestep = 1.0) {
 }
 
 template<typename Grid, typename T, std::size_t dim, typename FieldPrec>
-void add_test_data(GridWriterBase<Grid>& writer,
-                   const TestData<T, dim>& data,
-                   const Precision<FieldPrec>& prec) {
+void add_test_point_data(GridWriterBase<Grid>& writer,
+                         const TestData<T, dim>& data,
+                         const Precision<FieldPrec>& prec) {
     writer.set_point_field("pscalar", [&] (const auto& p) { return data.point_scalars[p.id]; });
     writer.set_point_field("pvector", [&] (const auto& p) { return data.point_vectors[p.id]; });
     writer.set_point_field("ptensor", [&] (const auto& p) { return data.point_tensors[p.id]; });
 
+    writer.set_point_field("pscalar_custom_prec", [&] (const auto& p) { return data.point_scalars[p.id]; }, prec);
+    writer.set_point_field("pvector_custom_prec", [&] (const auto& p) { return data.point_vectors[p.id]; }, prec);
+    writer.set_point_field("ptensor_custom_prec", [&] (const auto& p) { return data.point_tensors[p.id]; }, prec);
+}
+
+template<typename Grid, typename T, std::size_t dim, typename FieldPrec>
+void add_test_cell_data(GridWriterBase<Grid>& writer,
+                        const TestData<T, dim>& data,
+                        const Precision<FieldPrec>& prec) {
     writer.set_cell_field("cscalar", [&] (const auto& c) { return data.cell_scalars[c.id]; });
     writer.set_cell_field("cvector", [&] (const auto& c) { return data.cell_vectors[c.id]; });
     writer.set_cell_field("ctensor", [&] (const auto& c) { return data.cell_tensors[c.id]; });
 
-    writer.set_point_field("pscalar_custom_prec", [&] (const auto& p) { return data.point_scalars[p.id]; }, prec);
-    writer.set_point_field("pvector_custom_prec", [&] (const auto& p) { return data.point_vectors[p.id]; }, prec);
-    writer.set_point_field("ptensor_custom_prec", [&] (const auto& p) { return data.point_tensors[p.id]; }, prec);
-
     writer.set_cell_field("cscalar_custom_prec", [&] (const auto& c) { return data.cell_scalars[c.id]; }, prec);
     writer.set_cell_field("cvector_custom_prec", [&] (const auto& c) { return data.cell_vectors[c.id]; }, prec);
     writer.set_cell_field("ctensor_custom_prec", [&] (const auto& c) { return data.cell_tensors[c.id]; }, prec);
+}
+
+template<typename Grid, typename T, std::size_t dim, typename FieldPrec>
+void add_test_data(GridWriterBase<Grid>& writer,
+                   const TestData<T, dim>& data,
+                   const Precision<FieldPrec>& prec) {
+    add_test_point_data(writer, data, prec);
+    add_test_cell_data(writer, data, prec);
 }
 
 template<typename Writer>
