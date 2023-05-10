@@ -64,6 +64,88 @@ struct Scatter;
 
 }  // namespace GridFormat::ParallelTraits
 
+namespace GridFormat {
+
+struct NullCommunicator {};
+
+namespace ParallelTraits {
+
+template<>
+struct Size<NullCommunicator> {
+    static constexpr int get(const NullCommunicator&) { return 1; }
+};
+
+template<>
+struct Rank<NullCommunicator> {
+    static constexpr int get(const NullCommunicator&) { return 0; }
+};
+
+template<>
+struct Barrier<NullCommunicator> {
+    static constexpr int get(const NullCommunicator&) { return 0; }
+};
+
+template<>
+struct Max<NullCommunicator> {
+    template<typename T>
+    static constexpr const T& get(const NullCommunicator&, const T& data, [[maybe_unused]] int root_rank = 0) {
+        return data;
+    }
+};
+
+template<>
+struct Min<NullCommunicator> {
+    template<typename T>
+    static constexpr const T& get(const NullCommunicator&, const T& data, [[maybe_unused]] int root_rank = 0) {
+        return data;
+    }
+};
+
+template<>
+struct Sum<NullCommunicator> {
+    template<typename T>
+    static constexpr const T& get(const NullCommunicator&, const T& data, [[maybe_unused]] int root_rank = 0) {
+        return data;
+    }
+};
+
+template<>
+struct BroadCast<NullCommunicator> {
+    template<typename T>
+    static constexpr const T& get(const NullCommunicator&, const T& data, [[maybe_unused]] int root_rank = 0) {
+        return data;
+    }
+};
+
+template<>
+struct Gather<NullCommunicator> {
+    template<typename T>
+    static constexpr std::vector<T> get(const NullCommunicator&, const T&, [[maybe_unused]] int root_rank = 0) {
+        throw NotImplemented("Gather on null communicator");
+    }
+};
+
+template<>
+struct Scatter<NullCommunicator> {
+    template<std::ranges::contiguous_range R> requires(!Concepts::StaticallySizedRange<R>)
+    static constexpr std::vector<std::ranges::range_value_t<R>> get(const NullCommunicator&,
+                                                                    const R&,
+                                                                    [[maybe_unused]] int root_rank = 0) {
+        throw NotImplemented("Scatter on null communicator");
+    }
+
+    template<std::ranges::contiguous_range R> requires(Concepts::StaticallySizedRange<R>)
+    static constexpr std::array<std::ranges::range_value_t<R>, static_size<R>> get(const NullCommunicator&,
+                                                                                   const R&,
+                                                                                   [[maybe_unused]] int root_rank = 0) {
+        throw NotImplemented("Scatter on null communicator");
+    }
+};
+
+}  // namespace ParallelTraits
+
+}  // namespace GridFormat
+
 #if GRIDFORMAT_HAVE_MPI
 
 #include <mpi.h>
@@ -180,7 +262,7 @@ struct Sum<MPI_Comm> {
     static T get(MPI_Comm comm, const T& value, int root_rank = 0) {
         static constexpr int num_values = 1;
         T result;
-        MPIDetail::reduce(&value, &result, comm, MPI_SUM, 1, root_rank);
+        MPIDetail::reduce(&value, &result, comm, MPI_SUM, num_values, root_rank);
         return result;
     }
 
@@ -200,7 +282,7 @@ struct BroadCast<MPI_Comm> {
         static constexpr int num_values = 1;
         T result = value;
         MPI_Bcast(
-            &value,
+            &result,
             num_values,
             MPIDetail::get_data_type<T>(),
             root_rank,
@@ -209,10 +291,27 @@ struct BroadCast<MPI_Comm> {
         return result;
     }
 
-    template<Concepts::StaticallySizedMDRange<1> R> requires(std::ranges::contiguous_range<R>)
+    template<std::ranges::contiguous_range R> requires(
+        !Concepts::StaticallySizedRange<R> and
+        std::ranges::sized_range<R>)
     static auto get(MPI_Comm comm, const R& values, int root_rank = 0) {
         using T = std::ranges::range_value_t<R>;
-        static constexpr int num_values = static_size<R>;
+        const auto num_values = std::ranges::size(values);
+        std::vector<T> result(values.begin(), values.end());
+        MPI_Bcast(
+            result.data(),
+            num_values,
+            MPIDetail::get_data_type<T>(),
+            root_rank,
+            comm
+        );
+        return result;
+    }
+
+    template<std::ranges::contiguous_range R> requires(Concepts::StaticallySizedRange<R>)
+    static auto get(MPI_Comm comm, const R& values, int root_rank = 0) {
+        using T = std::ranges::range_value_t<R>;
+        static constexpr auto num_values = static_size<R>;
         std::array<T, num_values> result;
         std::ranges::copy(values, result.begin());
         MPI_Bcast(
@@ -234,8 +333,7 @@ struct Gather<MPI_Comm> {
         const int this_rank = Rank<MPI_Comm>::get(comm);
 
         std::vector<T> result;
-        if (this_rank == root_rank)
-            result.resize(Size<MPI_Comm>::get(comm));
+        result.resize(Size<MPI_Comm>::get(comm), T{0});
 
         MPI_Gather(
             &value,
@@ -256,7 +354,7 @@ struct Gather<MPI_Comm> {
         static constexpr int num_values = static_size<R>;
 
         const int this_rank = Rank<MPI_Comm>::get(comm);
-        std::vector<T> result(Size<MPI_Comm>::get(comm)*num_values);
+        std::vector<T> result(Size<MPI_Comm>::get(comm)*num_values, T{0});
         MPI_Gather(
             std::ranges::cdata(values),
             num_values,
@@ -273,7 +371,9 @@ struct Gather<MPI_Comm> {
 
 template<>
 struct Scatter<MPI_Comm> {
-    template<std::ranges::contiguous_range R>
+    template<std::ranges::contiguous_range R> requires(
+        !Concepts::StaticallySizedRange<R> and
+        std::ranges::sized_range<R>)
     static auto get(MPI_Comm comm, const R& values, int root_rank = 0) {
         using T = std::ranges::range_value_t<R>;
         const int num_values = static_cast<int>(std::ranges::size(values));
@@ -283,6 +383,29 @@ struct Scatter<MPI_Comm> {
             throw SizeError("Cannot scatter data with unequal chunks per process");
 
         std::vector<T> result(num_values/size);
+        MPI_Scatter(
+            std::ranges::cdata(values),
+            num_values/size,
+            MPIDetail::get_data_type<T>(),
+            result.data(),
+            num_values/size,
+            MPIDetail::get_data_type<T>(),
+            root_rank,
+            comm
+        );
+        return result;
+    }
+
+    template<std::ranges::contiguous_range R> requires(Concepts::StaticallySizedRange<R>)
+    static auto get(MPI_Comm comm, const R& values, int root_rank = 0) {
+        using T = std::ranges::range_value_t<R>;
+        const int num_values = static_cast<int>(std::ranges::size(values));
+        const int size = Size<MPI_Comm>::get(comm);
+
+        if (num_values%size != 0)
+            throw SizeError("Cannot scatter data with unequal chunks per process");
+
+        std::array<T, static_size<R>> result(num_values/size);
         MPI_Scatter(
             std::ranges::cdata(values),
             num_values/size,
