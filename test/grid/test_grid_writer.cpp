@@ -140,6 +140,8 @@ auto make_cell_values_sorted_by_grid(const Grid& grid, const std::vector<T>& dat
 
 int main() {
     using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::throws;
+    using GridFormat::Testing::expect;
 
     const auto grid = GridFormat::Test::make_unstructured_2d();
 
@@ -258,6 +260,27 @@ int main() {
             writer.get_cell_field("test"),
             make_cell_values<double>(grid)
         );
+    };
+
+    "grid_writer_remove_point_field"_test = [&] () {
+        MyWriter writer{grid};
+        writer.set_point_field("test", [&] (const auto&) { return 1.0; });
+        auto field = writer.remove_point_field("test");
+        expect(throws([&] () { writer.remove_point_field("test"); }));
+    };
+
+    "grid_writer_remove_cell_field"_test = [&] () {
+        MyWriter writer{grid};
+        writer.set_cell_field("test", [&] (const auto&) { return 1.0; });
+        auto field = writer.remove_cell_field("test");
+        expect(throws([&] () { writer.remove_cell_field("test"); }));
+    };
+
+    "grid_writer_remove_meta_data"_test = [&] () {
+        MyWriter writer{grid};
+        writer.set_meta_data("test", 1.0);
+        auto field = writer.remove_meta_data("test");
+        expect(throws([&] () { writer.remove_meta_data("test"); }));
     };
 
     return 0;
