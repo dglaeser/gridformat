@@ -9,14 +9,43 @@ gridformat_add_regression_test(test_pvd_writer test_pvd_writer.cpp "pvd_time_ser
 gridformat_add_regression_test(test_vtp_writer test_vtp_writer.cpp "vtp_*")
 gridformat_add_parallel_regression_test(test_pvtp_writer test_pvtp_writer.cpp 2 "pvtp_*.pvtp")
 gridformat_add_parallel_regression_test(test_pvtu_writer test_pvtu_writer.cpp 2 "pvtu_*.pvtu")
-
-gridformat_add_parallel_regression_test(test_pvti_writer_nranks_2 test_pvti_writer.cpp 2 "pvti_*nranks_2*.pvti")
-gridformat_add_parallel_regression_test(test_pvti_writer_nranks_4 test_pvti_writer.cpp 4 "pvti_*nranks_4*.pvti")
-
-gridformat_add_parallel_regression_test(test_pvtr_writer_nranks_2 test_pvtr_writer.cpp 2 "pvtr_*nranks_2*.pvtr")
-gridformat_add_parallel_regression_test(test_pvtr_writer_nranks_4 test_pvtr_writer.cpp 4 "pvtr_*nranks_4*.pvtr")
-
-gridformat_add_parallel_regression_test(test_pvts_writer_nranks_2 test_pvts_writer.cpp 2 "pvts_*nranks_2*.pvts")
-gridformat_add_parallel_regression_test(test_pvts_writer_nranks_4 test_pvts_writer.cpp 4 "pvts_*nranks_4*.pvts")
-
 gridformat_add_parallel_regression_test(test_parallel_pvd_writer test_parallel_pvd_writer.cpp 2 "pvd_parallel_*.pvd")
+
+gridformat_add_regression_test_if(
+    GRIDFORMAT_HAVE_HIGH_FIVE
+    test_vtk_hdf_unstructured_grid_writer
+    test_vtk_hdf_unstructured_grid_writer.cpp
+    "vtk_*unstructured*hdf"
+)
+
+gridformat_add_regression_test_if(
+    GRIDFORMAT_HAVE_HIGH_FIVE
+    test_vtk_hdf_image_grid_writer
+    test_vtk_hdf_image_grid_writer.cpp
+    "vtk_*image*hdf"
+    "--skip-metadata"
+)
+
+set(RANKS 2;4)
+foreach (NR IN LISTS RANKS)
+    gridformat_add_parallel_regression_test(test_pvti_writer_nranks_${NR} test_pvti_writer.cpp ${NR} "pvti_*nranks_${NR}*.pvti")
+    gridformat_add_parallel_regression_test(test_pvtr_writer_nranks_${NR} test_pvtr_writer.cpp ${NR} "pvtr_*nranks_${NR}*.pvtr")
+    gridformat_add_parallel_regression_test(test_pvts_writer_nranks_${NR} test_pvts_writer.cpp ${NR} "pvts_*nranks_${NR}*.pvts")
+
+    gridformat_add_parallel_regression_test_if(
+        GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+        test_vtk_hdf_parallel_unstructured_grid_writer_nranks_${NR}
+        test_vtk_hdf_parallel_unstructured_grid_writer.cpp
+        ${NR}
+        "pvtk_*unstructured*nranks_${NR}*hdf"
+    )
+
+    gridformat_add_parallel_regression_test_if(
+        GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+        test_vtk_hdf_parallel_image_grid_writer_nranks_${NR}
+        test_vtk_hdf_parallel_image_grid_writer.cpp
+        ${NR}
+        "pvtk_*image*nranks_${NR}*hdf"
+        "--skip-metadata"
+    )
+endforeach ()
