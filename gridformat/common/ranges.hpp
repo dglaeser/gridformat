@@ -113,6 +113,17 @@ inline constexpr auto to_array(const R& r) {
 
 /*!
  * \ingroup Common
+ * \brief Return a copy of the range with each entry incremented by the given value.
+ */
+template<std::ranges::range R, typename Increment>
+inline constexpr auto incremented(R&& r, const Increment& inc) {
+    auto result = std::forward<R>(r);
+    std::ranges::for_each(result, [&] (auto& value) { value += inc; });
+    return result;
+}
+
+/*!
+ * \ingroup Common
  * \brief Flatten the given 2d range into a 1d range.
  */
 template<Concepts::MDRange<2> R> requires(
