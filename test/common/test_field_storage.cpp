@@ -76,5 +76,13 @@ int main() {
         expect(throws([&] () { storage.get("fail"); }));
     };
 
+    "field_storage_field_removal"_test = [] () {
+        GridFormat::FieldStorage storage;
+        storage.set("test", MyField{42});
+        storage.get("test");
+        std::shared_ptr<const GridFormat::Field> ptr = storage.pop("test");
+        expect(throws([&] () { storage.get("test"); }));
+    };
+
     return 0;
 }
