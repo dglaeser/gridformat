@@ -95,10 +95,11 @@ FieldPtr make_vtk_field(F&& field) {
 }
 
 template<typename ctype, GridDetail::ExposesPointRange Grid>
-auto make_coordinates_field(const Grid& grid) {
+auto make_coordinates_field(const Grid& grid, bool structured_grid_ordering) {
     return make_vtk_field(PointField{
         grid,
         [&] (const auto& point) { return coordinates(grid, point); },
+        structured_grid_ordering,
         Precision<ctype>{}
     });
 }
@@ -207,7 +208,8 @@ auto make_cell_types_field(const Grid& grid) {
         grid,
         [&] (const auto& cell) {
             return VTK::cell_type_number(type(grid, cell));
-        }
+        },
+        false
     });
 }
 

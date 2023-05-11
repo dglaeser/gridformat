@@ -31,7 +31,7 @@ class PVDWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
 
  public:
     explicit PVDWriter(VTKWriter&& writer, std::string base_filename)
-    : ParentType(writer.grid())
+    : ParentType(writer.grid(), writer.uses_structured_ordering())
     , _vtk_writer{std::move(writer)}
     , _base_filename{std::move(base_filename)}
     , _pvd_filename{_base_filename + ".pvd"}

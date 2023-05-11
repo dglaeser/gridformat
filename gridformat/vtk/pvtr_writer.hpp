@@ -47,7 +47,7 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
     explicit PVTRWriter(const Grid& grid,
                         Communicator comm,
                         VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".pvtr", xml_opts)
+    : ParentType(grid, ".pvtr", true, xml_opts)
     , _comm(comm)
     {}
 

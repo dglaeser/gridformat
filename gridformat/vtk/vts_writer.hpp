@@ -45,7 +45,7 @@ class VTSWriter : public VTK::XMLWriterBase<Grid, VTSWriter<Grid>> {
     using Offset = std::array<std::size_t, dim>;
 
     explicit VTSWriter(const Grid& grid, VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".vts", std::move(xml_opts))
+    : ParentType(grid, ".vts", true, std::move(xml_opts))
     {}
 
     VTSWriter as_piece_for(Domain domain) const {
@@ -83,7 +83,7 @@ class VTSWriter : public VTK::XMLWriterBase<Grid, VTSWriter<Grid>> {
         });
 
         const FieldPtr coords_field = std::visit([&] <typename T> (const Precision<T>&) {
-            return VTK::make_coordinates_field<T>(this->grid());
+            return VTK::make_coordinates_field<T>(this->grid(), true);
         }, this->_xml_settings.coordinate_precision);
         this->_set_data_array(context, "Piece.Points", "Coordinates", *coords_field);
 
