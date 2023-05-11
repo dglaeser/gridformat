@@ -66,6 +66,17 @@ inline constexpr auto at(I i, const R& r) {
     return *it;
 }
 
+/*!
+ * \ingroup Common
+ * \brief Return an array of the desired size, filled with the given value.
+ */
+template<std::size_t dim, typename T>
+inline constexpr auto filled_array(const T& t = default_value<T>) {
+    std::array<T, dim> result;
+    std::ranges::fill(result, t);
+    return result;
+}
+
 
 #ifndef DOXYGEN
 namespace Detail {
@@ -92,13 +103,11 @@ inline constexpr auto to_array(const R& r) {
     static_assert(std::integral<N> || std::same_as<N, Automatic>);
     static_assert(Concepts::StaticallySizedRange<R> || !std::same_as<N, Automatic>);
     constexpr std::size_t result_size = Detail::ResultArraySize<n, R>::value;
-
-    if (size(r) < result_size)
-        throw SizeError("Range too small for the given target dimension");
+    const std::size_t range_size = size(r);
 
     using ValueType = std::conditional_t<std::is_same_v<T, Automatic>, std::ranges::range_value_t<R>, T>;
-    std::array<ValueType, result_size> result;
-    std::ranges::copy_n(std::ranges::begin(r), result_size, result.begin());
+    auto result = filled_array<result_size, ValueType>();
+    std::ranges::copy_n(std::ranges::begin(r), std::min(range_size, result_size), result.begin());
     return result;
 }
 
