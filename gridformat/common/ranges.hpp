@@ -87,7 +87,7 @@ namespace Detail {
  * \brief Convert the given range into an array with the given dimension.
  */
 template<auto n = automatic, typename T = Automatic, std::ranges::range R>
-inline constexpr auto to_array(R&& r) {
+inline constexpr auto to_array(const R& r) {
     using N = std::decay_t<decltype(n)>;
     static_assert(std::integral<N> || std::same_as<N, Automatic>);
     static_assert(Concepts::StaticallySizedRange<R> || !std::same_as<N, Automatic>);
@@ -98,7 +98,7 @@ inline constexpr auto to_array(R&& r) {
 
     using ValueType = std::conditional_t<std::is_same_v<T, Automatic>, std::ranges::range_value_t<R>, T>;
     std::array<ValueType, result_size> result;
-    std::ranges::copy_n(std::ranges::cbegin(std::forward<R>(r)), result_size, result.begin());
+    std::ranges::copy_n(std::ranges::begin(r), result_size, result.begin());
     return result;
 }
 
@@ -108,7 +108,7 @@ inline constexpr auto to_array(R&& r) {
  */
 template<Concepts::MDRange<2> R> requires(
     Concepts::StaticallySizedMDRange<std::ranges::range_value_t<R>, 1>)
-inline constexpr auto flat(R&& r) {
+inline constexpr auto flat(const R& r) {
     if constexpr (Concepts::StaticallySizedRange<R>) {
         constexpr std::size_t element_size = static_size<std::ranges::range_value_t<R>>;
         constexpr std::size_t flat_size = element_size*static_size<R>;
