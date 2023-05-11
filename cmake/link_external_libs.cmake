@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-include(GridFormatFetchDeps)
-
 find_package(ZLIB)
 if (ZLIB_FOUND)
     target_link_libraries(${PROJECT_NAME} INTERFACE ZLIB::ZLIB)
@@ -31,8 +29,27 @@ if (MPI_FOUND)
     set(GRIDFORMAT_HAVE_MPI true)
 endif ()
 
+option(GRIDFORMAT_BUILD_HIGH_FIVE "Controls whether HighFive is included in the build" ON)
 find_package(HighFive QUIET)
-if (HighFive_FOUND)
+if (NOT HighFive_FOUND)
+    if (GRIDFORMAT_BUILD_HIGH_FIVE)
+        if (EXISTS ${CMAKE_SOURCE_DIR}/deps/HighFive/CMakeLists.txt)
+            find_package(Boost QUIET COMPONENTS system serialization)
+            set(HIGHFIVE_USE_BOOST ${Boost_FOUND})
+            set(HIGHFIVE_UNIT_TESTS OFF)
+            set(HIGHFIVE_EXAMPLES OFF)
+            set(GRIDFORMAT_HIGHFIVE_SOURCE_INCLUDED true)
+            message(STATUS "Including HighFive in the source tree")
+            add_subdirectory(${CMAKE_SOURCE_DIR}/deps/HighFive)
+        else ()
+            message(STATUS "HighFive not found")
+        endif ()
+    endif()
+else()
+    message(STATUS "Using preinstalled HighFive package")
+endif ()
+
+if (HighFive_FOUND OR GRIDFORMAT_HIGHFIVE_SOURCE_INCLUDED)
     target_link_libraries(${PROJECT_NAME} INTERFACE HighFive)
     target_compile_definitions(${PROJECT_NAME} INTERFACE GRIDFORMAT_HAVE_HIGH_FIVE)
     set(GRIDFORMAT_HAVE_HIGH_FIVE true)
