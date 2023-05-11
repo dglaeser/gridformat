@@ -14,6 +14,7 @@
 #include <unordered_map>
 
 #include <gridformat/common/field.hpp>
+#include <gridformat/common/exceptions.hpp>
 
 namespace GridFormat {
 
@@ -36,10 +37,12 @@ class FieldStorage {
     }
 
     const Field& get(const std::string& name) const {
-        return *(_fields.at(name));
+        return *(get_shared(name));
     }
 
     std::shared_ptr<const Field> get_shared(const std::string& name) const {
+        if (!_fields.contains(name))
+            throw ValueError("No field with name " + name);
         return _fields.at(name);
     }
 
