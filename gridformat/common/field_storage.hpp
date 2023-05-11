@@ -50,6 +50,12 @@ class FieldStorage {
         return std::views::keys(_fields);
     }
 
+    std::shared_ptr<const Field> pop(const std::string& name) {
+        auto field = get_shared(name);
+        _fields.erase(name);
+        return field;
+    }
+
     void clear() {
         _fields.clear();
     }
