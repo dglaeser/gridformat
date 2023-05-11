@@ -173,7 +173,9 @@ class XMLWriterBase
     {}
 
     Impl with(XMLOptions opts) const {
-        return _with_fields(_with(std::move(opts)));
+        auto result = _with(std::move(opts));
+        this->copy_fields(result);
+        return result;
     }
 
     Impl with_data_format(const XML::DataFormat& format) const {
@@ -222,16 +224,6 @@ class XMLWriterBase
  protected:
     XMLOptions _xml_opts;
     XMLDetail::XMLSettings _xml_settings;
-
-    Impl _with_fields(Impl&& impl) const {
-        for (const auto [name, field_ptr] : meta_data_fields(*this))
-            impl.set_meta_data(std::move(name), std::move(field_ptr));
-        for (const auto& [name, field_ptr] : point_fields(*this))
-            impl.set_point_field(name, field_ptr);
-        for (const auto& [name, field_ptr] : cell_fields(*this))
-            impl.set_cell_field(name, field_ptr);
-        return impl;
-    }
 
     struct WriteContext {
         std::string vtk_grid_type;
