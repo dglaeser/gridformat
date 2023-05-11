@@ -66,6 +66,17 @@ inline constexpr auto at(I i, const R& r) {
     return *it;
 }
 
+/*!
+ * \ingroup Common
+ * \brief Return an array of the desired size, filled with the given value.
+ */
+template<std::size_t dim, typename T>
+inline constexpr auto filled_array(const T& t = default_value<T>) {
+    std::array<T, dim> result;
+    std::ranges::fill(result, t);
+    return result;
+}
+
 
 #ifndef DOXYGEN
 namespace Detail {
@@ -87,18 +98,27 @@ namespace Detail {
  * \brief Convert the given range into an array with the given dimension.
  */
 template<auto n = automatic, typename T = Automatic, std::ranges::range R>
-inline constexpr auto to_array(R&& r) {
+inline constexpr auto to_array(const R& r) {
     using N = std::decay_t<decltype(n)>;
     static_assert(std::integral<N> || std::same_as<N, Automatic>);
     static_assert(Concepts::StaticallySizedRange<R> || !std::same_as<N, Automatic>);
     constexpr std::size_t result_size = Detail::ResultArraySize<n, R>::value;
-
-    if (size(r) < result_size)
-        throw SizeError("Range too small for the given target dimension");
+    const std::size_t range_size = size(r);
 
     using ValueType = std::conditional_t<std::is_same_v<T, Automatic>, std::ranges::range_value_t<R>, T>;
-    std::array<ValueType, result_size> result;
-    std::ranges::copy_n(std::ranges::cbegin(std::forward<R>(r)), result_size, result.begin());
+    auto result = filled_array<result_size, ValueType>();
+    std::ranges::copy_n(std::ranges::begin(r), std::min(range_size, result_size), result.begin());
+    return result;
+}
+
+/*!
+ * \ingroup Common
+ * \brief Return a copy of the range with each entry incremented by the given value.
+ */
+template<std::ranges::range R, typename Increment>
+inline constexpr auto incremented(R&& r, const Increment& inc) {
+    auto result = std::forward<R>(r);
+    std::ranges::for_each(result, [&] (auto& value) { value += inc; });
     return result;
 }
 
@@ -108,7 +128,7 @@ inline constexpr auto to_array(R&& r) {
  */
 template<Concepts::MDRange<2> R> requires(
     Concepts::StaticallySizedMDRange<std::ranges::range_value_t<R>, 1>)
-inline constexpr auto flat(R&& r) {
+inline constexpr auto flat(const R& r) {
     if constexpr (Concepts::StaticallySizedRange<R>) {
         constexpr std::size_t element_size = static_size<std::ranges::range_value_t<R>>;
         constexpr std::size_t flat_size = element_size*static_size<R>;

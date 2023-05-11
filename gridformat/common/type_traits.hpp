@@ -15,6 +15,8 @@
 #include <concepts>
 #include <type_traits>
 
+#include <gridformat/common/exceptions.hpp>
+
 namespace GridFormat {
 
 //! \addtogroup Common
@@ -39,6 +41,18 @@ struct IsScalar<T> : public std::true_type {};
 
 template<typename T>
 inline constexpr bool is_scalar = IsScalar<T>::value;
+
+
+template<typename T>
+struct DefaultValue;
+
+template<typename T> requires(is_scalar<T>)
+struct DefaultValue<T> {
+    static constexpr T value{0};
+};
+
+template<typename T>
+inline constexpr T default_value = DefaultValue<T>::value;
 
 
 #ifndef DOXYGEN

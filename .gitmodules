@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[submodule "deps/HighFive"]
+	path = deps/HighFive
+	url = https://github.com/BlueBrain/HighFive.git
+    fetchRecurseSubmodules = false
+    shallow = true
