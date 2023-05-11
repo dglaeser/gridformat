@@ -7,6 +7,7 @@
 #include <gridformat/common/field_storage.hpp>
 #include <gridformat/common/serialization.hpp>
 #include <gridformat/common/md_layout.hpp>
+#include <gridformat/common/exceptions.hpp>
 
 #include "../testing.hpp"
 
@@ -44,6 +45,7 @@ int get_id_from_serialization(const GridFormat::Field& field) {
 int main() {
     using GridFormat::Testing::operator""_test;
     using GridFormat::Testing::expect;
+    using GridFormat::Testing::throws;
     using GridFormat::Testing::eq;
 
     "field_storage_set"_test = [] () {
@@ -66,6 +68,12 @@ int main() {
 
         const auto& field = storage.get("test");
         expect(eq(get_id_from_serialization(field), 45));
+    };
+
+    "field_storage_invalid_access"_test = [] () {
+        GridFormat::FieldStorage storage;
+        storage.set("test", MyField{42});
+        expect(throws([&] () { storage.get("fail"); }));
     };
 
     return 0;
