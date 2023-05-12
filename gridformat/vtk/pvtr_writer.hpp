@@ -33,7 +33,7 @@ namespace GridFormat {
  * \ingroup VTK
  * \brief Writer for parallel .pvtr files
  */
-template<Concepts::ImageGrid Grid,
+template<Concepts::RectilinearGrid Grid,
          Concepts::Communicator Communicator>
 class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator>> {
     using ParentType = VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator>>;

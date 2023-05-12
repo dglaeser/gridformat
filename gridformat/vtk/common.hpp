@@ -271,7 +271,7 @@ namespace CommonDetail {
         return result;
     }
 
-    template<Concepts::StructuredGrid Grid>
+    template<Concepts::StructuredEntitySet Grid>
     std::string extents_string(const Grid& grid) {
         return extents_string(extents(grid));
     }
