@@ -37,6 +37,7 @@ runs:
           cmake -Dgridformat_ROOT=$(pwd)/../install \
                 -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
+                -DCMAKE_BUILD_TYPE=Release \
                 -B build
           pushd build && make build_tests && ctest --output-on-failure && popd
       shell: bash
