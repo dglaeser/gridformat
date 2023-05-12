@@ -131,7 +131,7 @@ Concepts::StaticallySizedRange decltype(auto) spacing(const Grid& grid) {
     return Traits::Spacing<Grid>::get(grid);
 }
 
-template<Concepts::ImageGrid Grid>
+template<Concepts::StructuredEntitySet Grid>
 Concepts::StaticallySizedMDRange<2> decltype(auto) basis(const Grid& grid) {
     static constexpr std::size_t dim = dimension<Grid>;
     if constexpr (GridDetail::ExposesBasis<Grid>) {
