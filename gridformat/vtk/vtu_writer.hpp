@@ -32,7 +32,7 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, VTUWriter<Grid>> {
  public:
     explicit VTUWriter(const Grid& grid,
                        VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".vtu", std::move(xml_opts))
+    : ParentType(grid, ".vtu", false, std::move(xml_opts))
     {}
 
  private:
@@ -58,7 +58,7 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, VTUWriter<Grid>> {
 
         const auto point_id_map = make_point_id_map(this->grid());
         const FieldPtr coords_field = std::visit([&] <typename T> (const Precision<T>&) {
-            return VTK::make_coordinates_field<T>(this->grid());
+            return VTK::make_coordinates_field<T>(this->grid(), false);
         }, this->_xml_settings.coordinate_precision);
         const FieldPtr connectivity_field = std::visit([&] <typename T> (const Precision<T>&) {
             return VTK::make_connectivity_field<T>(this->grid(), point_id_map);

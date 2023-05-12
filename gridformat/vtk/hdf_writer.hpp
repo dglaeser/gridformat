@@ -31,7 +31,7 @@ namespace VTKHDFDetail {
 
     template<typename Grid, typename C>
     struct VTKHDFWriterSelector;
-    template<Concepts::UnstructuredGrid G, typename C>
+    template<Concepts::UnstructuredGrid G, typename C> requires(!Concepts::ImageGrid<G>)
     struct VTKHDFWriterSelector<G, C> : public std::type_identity<VTKHDFUnstructuredGridWriter<G, C>> {};
     template<Concepts::ImageGrid G, typename C>
     struct VTKHDFWriterSelector<G, C> : public std::type_identity<VTKHDFImageGridWriter<G, C>> {};

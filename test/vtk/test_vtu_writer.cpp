@@ -4,6 +4,8 @@
 #include <gridformat/vtk/vtu_writer.hpp>
 
 #include "../grid/unstructured_grid.hpp"
+#include "../grid/structured_grid.hpp"
+#include "../make_test_data.hpp"
 #include "vtk_writer_tester.hpp"
 
 template<int dim, int space_dim>
@@ -30,6 +32,25 @@ int main() {
     _test<2, 3>();
 
     _test<3, 3>();
+
+    // write out a structured grid as unstructured grid
+    {
+        GridFormat::Test::StructuredGrid<2> grid{{1.0, 1.0}, {10, 10}};
+        GridFormat::VTUWriter writer{grid};
+        const auto data = GridFormat::Test::make_test_data<2, double>(grid);
+        GridFormat::Test::add_test_data(writer, data, GridFormat::Precision<double>{});
+        GridFormat::Test::add_meta_data(writer);
+        writer.write("vtu_2d_in_2d_from_structured_grid");
+    }
+
+    {
+        GridFormat::Test::StructuredGrid<3> grid{{1.0, 1.0, 1.0}, {3, 3, 3}};
+        GridFormat::VTUWriter writer{grid};
+        const auto data = GridFormat::Test::make_test_data<3, double>(grid);
+        GridFormat::Test::add_test_data(writer, data, GridFormat::Precision<double>{});
+        GridFormat::Test::add_meta_data(writer);
+        writer.write("vtu_3d_in_3d_from_structured_grid");
+    }
 
     return 0;
 }

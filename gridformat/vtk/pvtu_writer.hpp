@@ -36,7 +36,7 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
     explicit PVTUWriter(const Grid& grid,
                         Communicator comm,
                         VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".pvtu", xml_opts)
+    : ParentType(grid, ".pvtu", false, xml_opts)
     , _comm(comm)
     {}
 

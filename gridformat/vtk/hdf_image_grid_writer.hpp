@@ -125,13 +125,13 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
  public:
     explicit VTKHDFImageGridWriter(const Grid& grid)
         requires(std::is_same_v<Communicator, NullCommunicator>)
-    : GridWriter<Grid>(grid, ".hdf")
+    : GridWriter<Grid>(grid, ".hdf", true)
     , _comm()
     {}
 
     explicit VTKHDFImageGridWriter(const Grid& grid, const Communicator& comm)
         requires(std::is_copy_constructible_v<Communicator>)
-    : GridWriter<Grid>(grid, ".hdf")
+    : GridWriter<Grid>(grid, ".hdf", true)
     , _comm{comm}
     {}
 

@@ -38,8 +38,9 @@ class GridWriterBase {
  public:
     using Field = typename FieldStorage::Field;
 
-    explicit GridWriterBase(const Grid& grid)
+    explicit GridWriterBase(const Grid& grid, bool use_structured_grid_ordering)
     : _grid(grid)
+    , _structured_ordering{use_structured_grid_ordering}
     {}
 
     template<std::ranges::range R>
@@ -116,6 +117,10 @@ class GridWriterBase {
         return _grid;
     }
 
+    bool uses_structured_ordering() const {
+        return _structured_ordering;
+    }
+
     template<typename Writer>
     void copy_fields(Writer& w) const {
         for (const auto& [name, field_ptr] : meta_data_fields(*this))
@@ -150,12 +155,12 @@ class GridWriterBase {
  protected:
     template<typename EntityFunction, Concepts::Scalar T>
     auto _make_point_field(EntityFunction&& f, const Precision<T>& prec) const {
-        return PointField{_grid, std::move(f), prec};
+        return PointField{_grid, std::move(f), _structured_ordering, prec};
     }
 
     template<typename EntityFunction, Concepts::Scalar T>
     auto _make_cell_field(EntityFunction&& f, const Precision<T>& prec) const {
-        return CellField{_grid, std::move(f), prec};
+        return CellField{_grid, std::move(f), _structured_ordering, prec};
     }
 
     std::ranges::range auto _point_field_names() const {
@@ -199,14 +204,17 @@ class GridWriterBase {
     FieldStorage _point_fields;
     FieldStorage _cell_fields;
     FieldStorage _meta_data;
+    bool _structured_ordering;
 };
 
 //! Abstract base class for writers of grid files
 template<typename Grid>
 class GridWriter : public GridWriterBase<Grid> {
  public:
-    explicit GridWriter(const Grid& grid, std::string extension)
-    : GridWriterBase<Grid>(grid)
+    explicit GridWriter(const Grid& grid,
+                        std::string extension,
+                        bool use_structured_grid_ordering)
+    : GridWriterBase<Grid>(grid, use_structured_grid_ordering)
     , _extension(std::move(extension))
     {}
 
@@ -235,8 +243,8 @@ class GridWriter : public GridWriterBase<Grid> {
 template<typename Grid>
 class TimeSeriesGridWriter : public GridWriterBase<Grid> {
  public:
-    explicit TimeSeriesGridWriter(const Grid& grid)
-    : GridWriterBase<Grid>(grid)
+    explicit TimeSeriesGridWriter(const Grid& grid, bool use_structured_grid_ordering)
+    : GridWriterBase<Grid>(grid, use_structured_grid_ordering)
     {}
 
     std::string write(double t) {

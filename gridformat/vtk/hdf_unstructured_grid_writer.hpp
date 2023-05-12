@@ -49,13 +49,13 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<Grid> {
  public:
     explicit VTKHDFUnstructuredGridWriter(const Grid& grid)
         requires(std::is_same_v<Communicator, NullCommunicator>)
-    : GridWriter<Grid>(grid, ".hdf")
+    : GridWriter<Grid>(grid, ".hdf", false)
     , _comm()
     {}
 
     explicit VTKHDFUnstructuredGridWriter(const Grid& grid, const Communicator& comm)
         requires(std::is_copy_constructible_v<Communicator>)
-    : GridWriter<Grid>(grid, ".hdf")
+    : GridWriter<Grid>(grid, ".hdf", false)
     , _comm{comm}
     {}
 
@@ -124,7 +124,7 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<Grid> {
     }
 
     void _write_coordinates(HighFive::File& file, const IOContext& context) const {
-        const auto coords_field = VTK::make_coordinates_field<CT>(this->grid());
+        const auto coords_field = VTK::make_coordinates_field<CT>(this->grid(), false);
         std::vector<std::array<CT, vtk_space_dim>> coords(number_of_points(this->grid()));
         coords_field->export_to(coords);
         _write_point_field(file, {"VTKHDF", "Points"}, coords, context);

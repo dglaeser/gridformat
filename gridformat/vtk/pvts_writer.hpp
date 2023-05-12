@@ -34,7 +34,7 @@ namespace GridFormat {
  * \ingroup VTK
  * \brief Writer for parallel .pvts files
  */
-template<Concepts::ImageGrid Grid,
+template<Concepts::StructuredGrid Grid,
          Concepts::Communicator Communicator>
 class PVTSWriter : public VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator>> {
     using ParentType = VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator>>;
@@ -48,7 +48,7 @@ class PVTSWriter : public VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator
     explicit PVTSWriter(const Grid& grid,
                         Communicator comm,
                         VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".pvts", xml_opts)
+    : ParentType(grid, ".pvts", true, xml_opts)
     , _comm(comm)
     {}
 

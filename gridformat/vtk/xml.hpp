@@ -166,8 +166,9 @@ class XMLWriterBase
 
     explicit XMLWriterBase(const Grid& grid,
                            std::string extension,
+                           bool use_structured_grid_ordering,
                            XMLOptions xml_opts = {})
-    : ParentType(grid, std::move(extension))
+    : ParentType(grid, std::move(extension), use_structured_grid_ordering)
     , _xml_opts{std::move(xml_opts)}
     , _xml_settings{XMLDetail::XMLSettings::from<GridCoordinateType>(_xml_opts)}
     {}

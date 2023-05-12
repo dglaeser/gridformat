@@ -46,7 +46,7 @@ class VTRWriter : public VTK::XMLWriterBase<Grid, VTRWriter<Grid>> {
     using Offset = std::array<std::size_t, dim>;
 
     explicit VTRWriter(const Grid& grid, VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".vtr", std::move(xml_opts))
+    : ParentType(grid, ".vtr", true, std::move(xml_opts))
     {}
 
     VTRWriter as_piece_for(Domain domain) const {
