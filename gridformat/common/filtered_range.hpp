@@ -83,12 +83,22 @@ class FilteredRange {
             return _it == other._it;
         }
 
-        bool _is_end() const { return _it == _end_it; }
-        bool _current_true() const { return (*_pred)(*_it); }
-        bool _should_increment() const { return !_current_true() && !_is_end(); }
+        bool _is_end() const {
+            return _it == _end_it;
+        }
 
-        _Range* _range;
-        const Predicate* _pred;
+        bool _current_true() const {
+            return (*_pred)(*_it);
+        }
+
+        bool _should_increment() const {
+            if (!_is_end())
+                return !_current_true();
+            return false;
+         }
+
+        _Range* _range{nullptr};
+        const Predicate* _pred{nullptr};
         std::ranges::iterator_t<_Range> _it;
         std::ranges::iterator_t<_Range> _end_it;
     };
