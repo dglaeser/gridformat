@@ -94,6 +94,33 @@ class StructuredGrid {
         FlatIndexMapper point_mapper{points};
         std::ranges::for_each(_cells, [&] (auto& c) { c.id = cell_mapper.map(c.position); });
         std::ranges::for_each(_points, [&] (auto& p) { p.id = point_mapper.map(p.position); });
+
+        // map to each cell-id the indices of its corners in the points vector
+        // this is very inefficient but suffices for our testing purposes (small grids)
+        _cell_corner_indices.resize(number_of_cells());
+        for (const auto& cell : _cells) {
+            const auto cell_pos = cell.position;
+            const auto incremented = [] (auto pos, int dir) { pos[dir]++; return pos; };
+            std::vector point_ids{cell_pos};
+            point_ids.push_back(incremented(cell_pos, 0));
+            point_ids.push_back(incremented(incremented(cell_pos, 0), 1));
+            point_ids.push_back(incremented(cell_pos, 1));
+            if constexpr (dim == 3) {
+                point_ids.push_back(incremented(cell_pos, 2));
+                point_ids.push_back(incremented(incremented(cell_pos, 0), 2));
+                point_ids.push_back(incremented(incremented(incremented(cell_pos, 0), 1), 2));
+                point_ids.push_back(incremented(incremented(cell_pos, 1), 2));
+            }
+
+            _cell_corner_indices[cell.id].resize(dim == 2 ? 4 : 8);
+            for (std::size_t point_index = 0; point_index < number_of_points(); ++point_index) {
+                const auto& p = _points[point_index];
+                const auto is_equal = [&] (const auto& pos) { return std::ranges::equal(pos, p.position); };
+                auto it = std::find_if(point_ids.begin(), point_ids.end(), is_equal);
+                if (it != point_ids.end())
+                    _cell_corner_indices[cell.id][std::distance(point_ids.begin(), it)] = point_index;
+            }
+        }
     }
 
     std::array<double, dim> center(const Point& p) const {
@@ -145,6 +172,12 @@ class StructuredGrid {
     std::size_t number_of_cells(int i) const { return _num_cells[i]; }
     std::size_t number_of_points(int i) const { return _num_cells[i] + 1; }
 
+    std::ranges::range auto corners(const Cell& c) const {
+        return _cell_corner_indices[c.id] | std::views::transform([&] (std::size_t i) {
+            return _points[i];
+        });
+    }
+
     auto ordinates(int dir) const {
         std::vector<double> result;
         result.reserve(number_of_points(dir));
@@ -193,6 +226,7 @@ class StructuredGrid {
 
     std::vector<Cell> _cells;
     std::vector<Point> _points;
+    std::vector<std::vector<std::size_t>> _cell_corner_indices;
 };
 
 template<int dim>
@@ -262,10 +296,34 @@ struct Location<Test::StructuredGrid<dim>, Entity> {
     }
 };
 
+// required for structured grid concept
 template<int dim, typename Point>
 struct PointCoordinates<Test::StructuredGrid<dim>, Point> {
     static decltype(auto) get(const Test::StructuredGrid<dim>& grid, const Point& p) {
         return grid.center(p);
+    }
+};
+
+
+// register as unstructured grid as well
+template<int dim, typename Cell>
+struct CellPoints<Test::StructuredGrid<dim>, Cell> {
+    static auto get(const Test::StructuredGrid<dim>& grid, const Cell& c) {
+        return grid.corners(c);
+    }
+};
+
+template<int dim, typename Point>
+struct PointId<Test::StructuredGrid<dim>, Point> {
+    static auto get(const Test::StructuredGrid<dim>&, const Point& p) {
+        return p.id;
+    }
+};
+
+template<int dim, typename Cell>
+struct CellType<Test::StructuredGrid<dim>, Cell> {
+    static auto get(const Test::StructuredGrid<dim>&, const Cell&) {
+        return dim == 2 ? GridFormat::CellType::quadrilateral : GridFormat::CellType::hexahedron;
     }
 };
 
