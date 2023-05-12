@@ -16,7 +16,6 @@ env:
   DEFAULT_COMPILER_PKG: g++-12
   DEFAULT_C_COMPILER: gcc-12
   DEFAULT_CXX_COMPILER: g++-12
-  DEFAULT_GCOV: gcov-12
 
 jobs:
   test-compilers:
@@ -88,51 +87,6 @@ jobs:
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -B build
           cd build && make memcheck
-
-
-  coverage-and-deploy:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: checkout-repository
-        uses: actions/checkout@v2
-        with:
-          submodules: true
-
-      - name: install-dependencies
-        uses: ./.github/actions/install-dependencies
-        with:
-          compiler: $DEFAULT_COMPILER_PKG
-
-      - name: install-adapted-packages
-        uses: ./.github/actions/install-adapted-packages
-
-      - name: run-coverage
-        run: |
-          sudo apt install gcovr
-          rm -rf build
-          cmake -DCMAKE_C_COMPILER=/usr/bin/$DEFAULT_C_COMPILER \
-                -DCMAKE_CXX_COMPILER=/usr/bin/$DEFAULT_CXX_COMPILER \
-                -DCMAKE_BUILD_TYPE=Debug \
-                -DGRIDFORMAT_BUILD_TESTS=ON \
-                -DGRIDFORMAT_DO_COVERAGE=ON \
-                -DGCOV_PATH=/usr/bin/$DEFAULT_GCOV \
-                -B build
-          cd build && make test_coverage
-          mkdir -p public && cp -r test_coverage/* public
-
-      - name: make-coverage-badge
-        run: |
-          echo "import subprocess" > _script.py
-          echo "percentage = float(open('build/test_coverage.xml').read().split('line-rate=\"')[1].split('\"')[0])*100.0" >> _script.py
-          echo "color = 'success' if percentage >= 90. else ('yellow' if percentage >= 75. else 'red')" >> _script.py
-          echo "subprocess.run(['wget', f'https://img.shields.io/badge/coverage-{percentage:.2f}%25-{color}', '-O', 'coverage.svg'], check=True)" >> _script.py
-          python3 _script.py
-          cp coverage.svg build/public
-
-      - name: deploy-pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: build/public
 
 
   test-full-installation:
