@@ -106,7 +106,7 @@ jobs:
       - name: install-adapted-packages
         uses: ./.github/actions/install-adapted-packages
 
-      - name: make-coverage
+      - name: run-coverage
         run: |
           sudo apt install gcovr
           rm -rf build
@@ -119,6 +119,15 @@ jobs:
                 -B build
           cd build && make test_coverage
           mkdir -p public && cp -r test_coverage/* public
+
+      - name: make-coverage-badge
+        run: |
+          echo "import subprocess" > _script.py
+          echo "percentage = float(open('build/test_coverage.xml').read().split('line-rate=\"')[1].split('\"')[0])*100.0" >> _script.py
+          echo "color = 'success' if percentage >= 90. else ('yellow' if percentage >= 75. else 'red')" >> _script.py
+          echo "subprocess.run(['wget', f'https://img.shields.io/badge/coverage-{percentage:.2f}%25-{color}', '-O', 'coverage.svg'], check=True)" >> _script.py
+          python3 _script.py
+          cp coverage.svg build/public
 
       - name: deploy-pages
         uses: JamesIves/github-pages-deploy-action@v4
