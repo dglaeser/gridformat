@@ -62,6 +62,10 @@ class GridWriterBase {
         _meta_data.set(name, ptr);
     }
 
+    auto remove_meta_data(const std::string& name) {
+        return _meta_data.pop(name);
+    }
+
     template<Concepts::PointFunction<Grid> F, Concepts::Scalar T = GridDetail::PointFunctionScalarType<Grid, F>>
     void set_point_field(const std::string& name, F&& point_function, const Precision<T>& prec = {}) {
         static_assert(!std::is_lvalue_reference_v<F>, "Cannot take functions by reference, please move");
@@ -78,6 +82,10 @@ class GridWriterBase {
         _point_fields.set(name, field_ptr);
     }
 
+    auto remove_point_field(const std::string& name) {
+        return _point_fields.pop(name);
+    }
+
     template<Concepts::CellFunction<Grid> F, Concepts::Scalar T = GridDetail::CellFunctionScalarType<Grid, F>>
     void set_cell_field(const std::string& name, F&& cell_function, const Precision<T>& prec = {}) {
         static_assert(!std::is_lvalue_reference_v<F>, "Cannot take functions by reference, please move");
@@ -92,6 +100,10 @@ class GridWriterBase {
 
     void set_cell_field(const std::string& name, std::shared_ptr<const Field> field_ptr) {
         _cell_fields.set(name, field_ptr);
+    }
+
+    auto remove_cell_field(const std::string& name) {
+        return _cell_fields.pop(name);
     }
 
     void clear() {
