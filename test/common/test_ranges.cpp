@@ -36,12 +36,6 @@ int main() {
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;
 
-
-// In the GitHub runner (with gcc-12), the compiler emits a "maybe-unused" warning from
-// the flat view tests. It wasn't possible to reproduce these on an ubuntu:22.04
-// image, installing the exact same packages. For now, let's just ignore this warning here.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
     "flat_1d_range_view_const"_test = [] () {
         const std::vector<int> values{0, 1, 2, 3, 4, 5};
         auto view = values | GridFormat::Views::flat;
@@ -85,6 +79,10 @@ int main() {
         expect(std::ranges::equal(view, std::vector{0, 0, 0, 0, 0, 0}));
     };
 
+// For 4d ranges, we get a maybe-uninitialized error on release builds
+// & gcc-12 for which we couldn't yet figure out the reason.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
     "flat_4d_range_view_const"_test = [] () {
         const std::vector<std::vector<std::vector<std::vector<int>>>> values{
             {{{0, 1}, {2, 3}}, {{4, 5}}},
