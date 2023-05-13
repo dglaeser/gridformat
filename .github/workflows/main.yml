@@ -47,15 +47,46 @@ jobs:
         uses: ./.github/actions/install-adapted-packages
 
       - name: build-tests
-        uses: ./.github/actions/build-tests
-        with:
-          c_compiler: /usr/bin/${{matrix.c_compiler}}
-          cxx_compiler: /usr/bin/${{matrix.cxx_compiler}}
-          build_dir: build
+        run: |
+          rm -rf build
+          cmake -DCMAKE_C_COMPILER=${{matrix.c_compiler}} \
+                -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}} \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DGRIDFORMAT_BUILD_TESTS=ON \
+                -B build
+          pushd build && make build_tests && popd
 
       - name: test
         run: |
           pushd build && ctest --output-on-failure && popd
+
+
+  mem-check:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: install-dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          compiler: $DEFAULT_COMPILER_PKG
+
+      - name: install-adapted-packages
+        uses: ./.github/actions/install-adapted-packages
+
+      - name: run-valgrind
+        run: |
+          sudo apt install valgrind
+          rm -rf build
+          cmake -DCMAKE_C_COMPILER=/usr/bin/$DEFAULT_C_COMPILER \
+                -DCMAKE_CXX_COMPILER=/usr/bin/$DEFAULT_CXX_COMPILER \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DGRIDFORMAT_BUILD_TESTS=ON \
+                -B build
+          cd build && make memcheck
 
 
   test-full-installation:

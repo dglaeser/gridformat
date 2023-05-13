@@ -264,10 +264,8 @@ namespace CommonDetail {
         std::string result;
         auto it1 = std::ranges::begin(r1);
         auto it2 = std::ranges::begin(r2);
-        for (; it1 != std::ranges::end(r1); ++it1, ++it2, ++i)
-            result += (i > 0 ? " " : "")
-                        + as_string(*it1) + " "
-                        + as_string(*it2);
+        for (; it1 != std::ranges::end(r1) && it2 != std::ranges::end(r2); ++it1, ++it2, ++i)
+            result += (i > 0 ? " " : "") + as_string(*it1) + " " + as_string(*it2);
         for (i = static_size<R1>; i < 3; ++i)
             result += " 0 0";
         return result;

@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  coverage-and-deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: install-dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          compiler: g++-12
+
+      - name: install-adapted-packages
+        uses: ./.github/actions/install-adapted-packages
+
+      - name: run-coverage
+        run: |
+          sudo apt install gcovr
+          rm -rf build
+          cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
+                -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DGRIDFORMAT_BUILD_TESTS=ON \
+                -DGRIDFORMAT_DO_COVERAGE=ON \
+                -DGCOV_PATH=/usr/bin/gcov-12 \
+                -B build
+          cd build && make test_coverage
+          mkdir -p public && cp -r test_coverage/* public
+
+      - name: make-coverage-badge
+        run: |
+          echo "import subprocess" > _script.py
+          echo "percentage = float(open('build/test_coverage.xml').read().split('line-rate=\"')[1].split('\"')[0])*100.0" >> _script.py
+          echo "color = 'success' if percentage >= 90. else ('yellow' if percentage >= 75. else 'red')" >> _script.py
+          echo "subprocess.run(['wget', f'https://img.shields.io/badge/coverage-{percentage:.2f}%25-{color}', '-O', 'coverage.svg'], check=True)" >> _script.py
+          echo "print(f'Overall coverage is: {percentage:.2f}')"
+          python3 _script.py
+          cp coverage.svg build/public
+
+      - name: deploy-pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build/public
