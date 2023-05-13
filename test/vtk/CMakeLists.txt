@@ -26,6 +26,14 @@ gridformat_add_regression_test_if(
     "vtk_hdf_time_series*unstructured*.hdf"
 )
 
+gridformat_add_parallel_regression_test_if(
+    GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+    test_vtk_hdf_parallel_time_series
+    test_vtk_hdf_parallel_time_series.cpp
+    2
+    "pvtk_hdf_time_series*unstructured*.hdf"
+)
+
 gridformat_add_regression_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_image_grid_writer
