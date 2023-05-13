@@ -79,11 +79,11 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
         FieldStorage vtk_point_fields;
         FieldStorage vtk_cell_fields;
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            vtk_point_fields.set(name, VTK::make_vtk_field(this->_get_shared_point_field(name)));
+            vtk_point_fields.set(name, VTK::make_vtk_field(this->_get_point_field_ptr(name)));
             this->_set_data_array(context, "Piece.PointData", name, vtk_point_fields.get(name));
         });
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_shared_cell_field(name)));
+            vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_cell_field_ptr(name)));
             this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
         });
 
