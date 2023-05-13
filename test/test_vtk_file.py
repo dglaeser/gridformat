@@ -106,7 +106,9 @@ def _check_vtk_file(vtk_reader,
         if field_data.GetArray("TimeValue") is not None:
             assert field_data.GetArray("TimeValue").GetNumberOfTuples() == 1
             assert field_data.GetArray("TimeValue").GetNumberOfComponents() == 1
-            reference_function.set_time(field_data.GetArray("TimeValue").GetValue(0))
+            time_value = field_data.GetArray("TimeValue").GetValue(0)
+            print(f"Scaling with time = {time_value}")
+            reference_function.set_time(time_value)
 
     # precompute cell centers
     num_cells = output.GetNumberOfCells()
