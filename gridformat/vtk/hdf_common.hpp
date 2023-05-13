@@ -11,15 +11,21 @@
 
 #include <type_traits>
 
+#ifdef GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wswitch-enum"
 #pragma GCC diagnostic ignored "-Wuseless-cast"
 #pragma GCC diagnostic ignored "-Wcast-qual"
 #pragma GCC diagnostic ignored "-Wnull-dereference"
+#endif  // GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
+
 #include <highfive/H5Easy.hpp>
 #include <highfive/H5File.hpp>
+
+#ifdef GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 #pragma GCC diagnostic pop
+#endif  // GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 
 #if GRIDFORMAT_HAVE_MPI
 #include <mpi.h>
