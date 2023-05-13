@@ -172,7 +172,7 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
         // TODO: There seem to be issues with the vtkImageDataReader when parsing field data?
         // auto fd_group = vtk_group.createGroup("FieldData");
         // std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
-        //     auto field_ptr = this->_get_shared_meta_data_field(name);
+        //     auto field_ptr = this->_get_meta_data_field_ptr(name);
         //     _visit_meta_data_field_values(*field_ptr, [&] (const auto& values) {
         //         fd_group.createDataSet(name, values);
         //     });
@@ -180,7 +180,7 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
 
         auto pd_group = vtk_group.createGroup("PointData");
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            auto field_ptr = VTK::make_vtk_field(this->_get_shared_point_field(name));
+            auto field_ptr = VTK::make_vtk_field(this->_get_point_field_ptr(name));
             _visit_field_values<true>(*field_ptr, [&] (const auto& values) {
                 _write_piece_values(file, pd_group, name, values, point_slice_base);
             });
@@ -188,7 +188,7 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
 
         auto cd_group = vtk_group.createGroup("CellData");
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            auto field_ptr = VTK::make_vtk_field(this->_get_shared_cell_field(name));
+            auto field_ptr = VTK::make_vtk_field(this->_get_cell_field_ptr(name));
             _visit_field_values<false>(*field_ptr, [&] (const auto& values) {
                 _write_piece_values(file, cd_group, name, values, cell_slice_base);
             });

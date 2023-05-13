@@ -116,7 +116,7 @@ int main() {
     using GridFormat::FieldTransformation::extend_all_to;
 
     "transformed_field_identity"_test = [] () {
-        GridFormat::TransformedField transformed{GridFormat::make_shared(MyField{}), identity};
+        GridFormat::TransformedField transformed{GridFormat::make_field_ptr(MyField{}), identity};
         expect(eq(transformed.layout().dimension(), 1_ul));
         expect(eq(transformed.layout().extent(0), 4_ul));
         expect(eq(transformed.precision().is_integral(), true));
@@ -125,7 +125,7 @@ int main() {
     };
 
     "transformed_field_identity_identity"_test = [] () {
-        TransformedField transformed_field{identity(GridFormat::make_shared(MyField{})), identity};
+        TransformedField transformed_field{identity(GridFormat::make_field_ptr(MyField{})), identity};
         expect(eq(transformed_field.layout().dimension(), 1_ul));
         expect(eq(transformed_field.layout().extent(0), 4_ul));
         expect(eq(transformed_field.precision().is_integral(), true));
@@ -134,7 +134,7 @@ int main() {
     };
 
     "transformed_field_extend"_test = [] () {
-        auto field_ptr = GridFormat::make_shared(
+        auto field_ptr = GridFormat::make_field_ptr(
             RangeField{
                 std::vector<std::array<int, 2>>{{2, 3}, {4, 5}},
                 GridFormat::Precision<double>{}
@@ -154,7 +154,7 @@ int main() {
     };
 
     "transformed_field_extend_all"_test = [] () {
-        auto field_ptr = GridFormat::make_shared(
+        auto field_ptr = GridFormat::make_field_ptr(
             RangeField{
                 std::vector<std::array<int, 2>>{{2, 3}, {4, 5}},
                 GridFormat::Precision<double>{}
@@ -173,7 +173,7 @@ int main() {
     };
 
     "transformed_field_extend_flatten"_test = [] () {
-        auto field_ptr = GridFormat::make_shared(
+        auto field_ptr = GridFormat::make_field_ptr(
             RangeField{
                 std::vector<std::array<int, 2>>{{2, 3}, {4, 5}},
                 GridFormat::Precision<double>{}

@@ -37,6 +37,7 @@ template<typename Grid>
 class GridWriterBase {
  public:
     using Field = typename FieldStorage::Field;
+    using FieldPtr = typename FieldStorage::FieldPtr;
 
     explicit GridWriterBase(const Grid& grid, bool use_structured_grid_ordering)
     : _grid(grid)
@@ -56,10 +57,10 @@ class GridWriterBase {
     template<std::derived_from<Field> F>
     void set_meta_data(const std::string& name, F&& field) {
         static_assert(!std::is_lvalue_reference_v<F>, "Cannot take metadata fields by reference, please move");
-        set_meta_data(name, std::make_shared<const F>(std::move(field)));
+        set_meta_data(name, make_field_ptr(std::move(field)));
     }
 
-    void set_meta_data(const std::string& name, std::shared_ptr<const Field> ptr) {
+    void set_meta_data(const std::string& name, FieldPtr ptr) {
         _meta_data.set(name, ptr);
     }
 
@@ -75,12 +76,12 @@ class GridWriterBase {
 
     template<std::derived_from<Field> F>
     void set_point_field(const std::string& name, F&& field) {
-        static_assert(!std::is_lvalue_reference_v<F>, "Cannot take fields by reference, please move or use shared_ptr");
-        set_point_field(name, std::make_shared<const F>(std::forward<F>(field)));
+        static_assert(!std::is_lvalue_reference_v<F>, "Cannot take fields by reference, please move");
+        set_point_field(name, make_field_ptr(std::forward<F>(field)));
     }
 
-    void set_point_field(const std::string& name, std::shared_ptr<const Field> field_ptr) {
-        _point_fields.set(name, field_ptr);
+    void set_point_field(const std::string& name, FieldPtr field_ptr) {
+        _point_fields.set(name, std::move(field_ptr));
     }
 
     auto remove_point_field(const std::string& name) {
@@ -95,11 +96,11 @@ class GridWriterBase {
 
     template<std::derived_from<Field> F>
     void set_cell_field(const std::string& name, F&& field) {
-        static_assert(!std::is_lvalue_reference_v<F>, "Cannot take fields by reference, please move or use shared_ptr");
-        set_cell_field(name, std::make_shared<const F>(std::forward<F>(field)));
+        static_assert(!std::is_lvalue_reference_v<F>, "Cannot take fields by reference, please move");
+        set_cell_field(name, make_field_ptr(std::forward<F>(field)));
     }
 
-    void set_cell_field(const std::string& name, std::shared_ptr<const Field> field_ptr) {
+    void set_cell_field(const std::string& name, FieldPtr field_ptr) {
         _cell_fields.set(name, field_ptr);
     }
 
@@ -133,21 +134,21 @@ class GridWriterBase {
 
     friend Concepts::RangeOf<std::pair<std::string, FieldPtr>> auto point_fields(const GridWriterBase& writer) {
         return writer._point_field_names() | std::views::transform([&] (std::string n) {
-            auto field_ptr = writer._get_shared_point_field(n);
+            auto field_ptr = writer._get_point_field_ptr(n);
             return std::make_pair(std::move(n), std::move(field_ptr));
         });
     }
 
     friend Concepts::RangeOf<std::pair<std::string, FieldPtr>> auto cell_fields(const GridWriterBase& writer) {
         return writer._cell_field_names() | std::views::transform([&] (std::string n) {
-            auto field_ptr = writer._get_shared_cell_field(n);
+            auto field_ptr = writer._get_cell_field_ptr(n);
             return std::make_pair(std::move(n), std::move(field_ptr));
         });
     }
 
     friend Concepts::RangeOf<std::pair<std::string, FieldPtr>> auto meta_data_fields(const GridWriterBase& writer) {
         return writer._meta_data_field_names() | std::views::transform([&] (std::string n) {
-            auto field_ptr = writer._get_shared_meta_data_field(n);
+            auto field_ptr = writer._get_meta_data_field_ptr(n);
             return std::make_pair(std::move(n), std::move(field_ptr));
         });
     }
@@ -175,16 +176,16 @@ class GridWriterBase {
         return _point_fields.get(name);
     }
 
-    std::shared_ptr<const Field> _get_shared_point_field(const std::string& name) const {
-        return _point_fields.get_shared(name);
+    FieldPtr _get_point_field_ptr(const std::string& name) const {
+        return _point_fields.get_ptr(name);
     }
 
     const Field& _get_cell_field(const std::string& name) const {
         return _cell_fields.get(name);
     }
 
-    std::shared_ptr<const Field> _get_shared_cell_field(const std::string& name) const {
-        return _cell_fields.get_shared(name);
+    FieldPtr _get_cell_field_ptr(const std::string& name) const {
+        return _cell_fields.get_ptr(name);
     }
 
     std::ranges::range auto _meta_data_field_names() const {
@@ -195,8 +196,8 @@ class GridWriterBase {
         return _meta_data.get(name);
     }
 
-    std::shared_ptr<const Field> _get_shared_meta_data_field(const std::string& name) const {
-        return _meta_data.get_shared(name);
+    FieldPtr _get_meta_data_field_ptr(const std::string& name) const {
+        return _meta_data.get_ptr(name);
     }
 
  private:

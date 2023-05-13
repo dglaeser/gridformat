@@ -75,11 +75,11 @@ class VTRWriter : public VTK::XMLWriterBase<Grid, VTRWriter<Grid>> {
         FieldStorage vtk_point_fields;
         FieldStorage vtk_cell_fields;
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_shared_point_field(name)));
+            vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_point_field_ptr(name)));
             this->_set_data_array(context, "Piece.PointData", name, vtk_cell_fields.get(name));
         });
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_shared_cell_field(name)));
+            vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_cell_field_ptr(name)));
             this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
         });
 
@@ -119,9 +119,9 @@ class VTRWriter : public VTK::XMLWriterBase<Grid, VTRWriter<Grid>> {
         std::visit([&] <typename T> (const Precision<T>& prec) {
             for (unsigned dir = 0; dir < space_dim; ++dir) {
                 if (dir < dim)
-                    result[dir] = make_shared(RangeField{ordinates(this->grid(), dir), prec});
+                    result[dir] = make_field_ptr(RangeField{ordinates(this->grid(), dir), prec});
                 else
-                    result[dir] = make_shared(RangeField{std::vector<double>{}, prec});
+                    result[dir] = make_field_ptr(RangeField{std::vector<double>{}, prec});
             }
         }, this->_xml_settings.coordinate_precision);
         return result;

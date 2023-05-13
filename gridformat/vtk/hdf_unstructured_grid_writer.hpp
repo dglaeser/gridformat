@@ -133,7 +133,7 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<Grid> {
     void _write_meta_data(HighFive::File& file) const {
         auto group = file.createGroup("VTKHDF/FieldData");
         std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
-            auto field_ptr = this->_get_shared_meta_data_field(name);
+            auto field_ptr = this->_get_meta_data_field_ptr(name);
             _visit_field_values(*field_ptr, [&] <typename T> (T&& values) {
                 group.createDataSet(name, values);
             });
@@ -143,7 +143,7 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<Grid> {
     void _write_point_fields(HighFive::File& file, const IOContext& context) const {
         file.createGroup("VTKHDF/PointData");
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            auto field_ptr = VTK::make_vtk_field(this->_get_shared_point_field(name));
+            auto field_ptr = VTK::make_vtk_field(this->_get_point_field_ptr(name));
             _write_point_field(file, {"VTKHDF/PointData", name}, *field_ptr, context);
         });
     }
@@ -151,7 +151,7 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<Grid> {
     void _write_cell_fields(HighFive::File& file, const IOContext& context) const {
         file.createGroup("VTKHDF/CellData");
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            auto field_ptr = VTK::make_vtk_field(this->_get_shared_cell_field(name));
+            auto field_ptr = VTK::make_vtk_field(this->_get_cell_field_ptr(name));
             _write_cell_field(file, {"VTKHDF/CellData", name}, *field_ptr, context);
         });
     }

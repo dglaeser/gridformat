@@ -14,6 +14,7 @@
 #include <type_traits>
 #include <algorithm>
 
+#include <gridformat/common/field.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
@@ -91,7 +92,7 @@ FieldPtr make_vtk_field(FieldPtr field) {
 
 template<std::derived_from<Field> F> requires (!std::is_lvalue_reference_v<F>)
 FieldPtr make_vtk_field(F&& field) {
-    return make_vtk_field(make_shared(std::forward<F>(field)));
+    return make_vtk_field(make_field_ptr(std::forward<F>(field)));
 }
 
 template<typename ctype, GridDetail::ExposesPointRange Grid>

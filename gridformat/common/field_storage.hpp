@@ -29,7 +29,7 @@ class FieldStorage {
 
     template<std::derived_from<Field> F> requires(!std::is_lvalue_reference_v<F>)
     void set(const std::string& name, F&& field) {
-        _fields.insert_or_assign(name, make_shared(std::move(field)));
+        _fields.insert_or_assign(name, make_field_ptr(std::move(field)));
     }
 
     void set(const std::string& name, FieldPtr field_ptr) {
@@ -37,10 +37,10 @@ class FieldStorage {
     }
 
     const Field& get(const std::string& name) const {
-        return *(get_shared(name));
+        return *(get_ptr(name));
     }
 
-    std::shared_ptr<const Field> get_shared(const std::string& name) const {
+    FieldPtr get_ptr(const std::string& name) const {
         if (!_fields.contains(name))
             throw ValueError("No field with name " + name);
         return _fields.at(name);
@@ -50,8 +50,8 @@ class FieldStorage {
         return std::views::keys(_fields);
     }
 
-    std::shared_ptr<const Field> pop(const std::string& name) {
-        auto field = get_shared(name);
+    FieldPtr pop(const std::string& name) {
+        auto field = get_ptr(name);
         _fields.erase(name);
         return field;
     }

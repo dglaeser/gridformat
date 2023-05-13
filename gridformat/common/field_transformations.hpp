@@ -313,13 +313,13 @@ namespace Detail {
 
     struct IdentityFieldAdapter {
         auto operator()(FieldPtr f) const {
-            return make_shared(IdentityField{f});
+            return make_field_ptr(IdentityField{f});
         }
     };
 
     struct FlattenedFieldAdapter {
         auto operator()(FieldPtr f) const {
-            return make_shared(FlattenedField{f});
+            return make_field_ptr(FlattenedField{f});
         }
     };
 
@@ -332,7 +332,7 @@ namespace Detail {
         auto operator()(FieldPtr f) const {
             if (f->layout().dimension() <= 1)
                 throw SizeError("Extension only works for fields with dimension > 1");
-            return make_shared(ExtendedField{f, _sub_layout});
+            return make_field_ptr(ExtendedField{f, _sub_layout});
         }
 
     private:
@@ -355,7 +355,7 @@ namespace Detail {
             const std::size_t dim = f->layout().dimension();
             if (dim <= 1)
                 throw SizeError("Extension only works for fields with dimension > 1");
-            return make_shared(ExtendedField{f, MDLayout{
+            return make_field_ptr(ExtendedField{f, MDLayout{
                 std::views::iota(std::size_t{1}, dim)
                     | std::views::transform([&] (const auto&) { return _space_dim; })
             }});

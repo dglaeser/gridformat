@@ -80,7 +80,7 @@ int main() {
         GridFormat::FieldStorage storage;
         storage.set("test", MyField{42});
         storage.get("test");
-        std::shared_ptr<const GridFormat::Field> ptr = storage.pop("test");
+        GridFormat::FieldPtr ptr = storage.pop("test");
         expect(throws([&] () { storage.get("test"); }));
     };
 
