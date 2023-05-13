@@ -31,14 +31,14 @@ namespace GridFormat {
  * \ingroup VTK
  * \brief TODO: Doc me
  */
-template<Concepts::UnstructuredGrid Grid, Concepts::Communicator Communicator>
-class VTKHDFUnstructuredGridWriter : public GridWriter<Grid> {
+template<Concepts::UnstructuredGrid G, Concepts::Communicator Communicator>
+class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
     static constexpr int root_rank = 0;
     static constexpr std::size_t vtk_space_dim = 3;
     static constexpr std::array<std::size_t, 2> version{1, 0};
     static constexpr bool use_mpi = VTKHDFDetail::is_mpi_comm<Communicator>;
 
-    using CT = CoordinateType<Grid>;
+    using CT = CoordinateType<G>;
     template<typename T> using Vector = std::array<T, vtk_space_dim>;
     template<typename T> using Tensor = std::array<T, vtk_space_dim*vtk_space_dim>;
 
@@ -47,6 +47,8 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<Grid> {
     using IOContext = VTKHDF::IOContext;
 
  public:
+    using Grid = G;
+
     explicit VTKHDFUnstructuredGridWriter(const Grid& grid)
         requires(std::is_same_v<Communicator, NullCommunicator>)
     : GridWriter<Grid>(grid, ".hdf", false)
