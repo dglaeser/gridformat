@@ -249,8 +249,13 @@ class TimeSeriesGridWriter : public GridWriterBase<Grid> {
     {}
 
     std::string write(double t) {
-        return _write(t);
+        std::string filename = _write(t);
+        _step_count++;
+        return filename;
     }
+
+ protected:
+    unsigned _step_count = 0;
 
  private:
     virtual std::string _write(double) = 0;

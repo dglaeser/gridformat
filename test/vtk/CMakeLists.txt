@@ -7,6 +7,7 @@ gridformat_add_regression_test(test_vts_writer test_vts_writer.cpp "vts_*")
 gridformat_add_regression_test(test_vtu_writer test_vtu_writer.cpp "vtu_*")
 gridformat_add_regression_test(test_pvd_writer test_pvd_writer.cpp "pvd_time_series*.pvd")
 gridformat_add_regression_test(test_vtp_writer test_vtp_writer.cpp "vtp_*")
+gridformat_add_regression_test(test_vtu_time_series test_vtu_time_series.cpp "vtu_time_series*vtu")
 gridformat_add_parallel_regression_test(test_pvtp_writer test_pvtp_writer.cpp 2 "pvtp_*.pvtp")
 gridformat_add_parallel_regression_test(test_pvtu_writer test_pvtu_writer.cpp 2 "pvtu_*.pvtu")
 gridformat_add_parallel_regression_test(test_parallel_pvd_writer test_parallel_pvd_writer.cpp 2 "pvd_parallel_*.pvd")
@@ -16,6 +17,21 @@ gridformat_add_regression_test_if(
     test_vtk_hdf_unstructured_grid_writer
     test_vtk_hdf_unstructured_grid_writer.cpp
     "vtk_*unstructured*hdf"
+)
+
+gridformat_add_regression_test_if(
+    GRIDFORMAT_HAVE_HIGH_FIVE
+    test_vtk_hdf_time_series
+    test_vtk_hdf_time_series.cpp
+    "vtk_hdf_time_series*unstructured*.hdf"
+)
+
+gridformat_add_parallel_regression_test_if(
+    GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+    test_vtk_hdf_parallel_time_series
+    test_vtk_hdf_parallel_time_series.cpp
+    2
+    "pvtk_hdf_time_series*unstructured*.hdf"
 )
 
 gridformat_add_regression_test_if(
