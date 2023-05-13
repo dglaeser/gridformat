@@ -29,6 +29,9 @@ class _TestFunction:
             result *= point[2] + 1.0
         return result*self._scaling
 
+    def set_time(self, value: float) -> None:
+        self._scaling = value
+
 
 class VTKErrorObserver:
    def __init__(self):
@@ -93,11 +96,17 @@ def _check_vtk_file(vtk_reader,
         field_data = output.GetFieldData()
         expected_field_data = ["literal", "string", "numbers"]
         for i in range(field_data.GetNumberOfArrays()):
-            expected_field_data.remove(field_data.GetAbstractArray(i).GetName())
+            name = field_data.GetAbstractArray(i).GetName()
+            if name in expected_field_data:
+                expected_field_data.remove(name)
         if expected_field_data:
             raise RuntimeError(f"Did not find the following metadata: {expected_field_data}")
         else:
             print("Found all expected field data")
+        if field_data.GetArray("TimeValue") is not None:
+            assert field_data.GetArray("TimeValue").GetNumberOfTuples() == 1
+            assert field_data.GetArray("TimeValue").GetNumberOfComponents() == 1
+            reference_function.set_time(field_data.GetArray("TimeValue").GetValue(0))
 
     # precompute cell centers
     num_cells = output.GetNumberOfCells()
