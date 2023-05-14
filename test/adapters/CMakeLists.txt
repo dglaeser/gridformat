@@ -17,6 +17,16 @@ gridformat_add_regression_test_if(DUNE_FOUND
     test_dune_unstructured.cpp
     "dune_vtu*"
 )
+gridformat_add_regression_test_if(DUNE_FOUND
+    test_dune_yasp_image_grid
+    test_dune_yasp_image_grid.cpp
+    "dune_vti*"
+)
+gridformat_add_regression_test_if(DUNE_FOUND
+    test_dune_yasp_rectilinear_grid
+    test_dune_yasp_rectilinear_grid.cpp
+    "dune_vtr*"
+)
 gridformat_add_parallel_regression_test_if(DUNE_FOUND
     test_dune_unstructured_parallel
     test_dune_unstructured_parallel.cpp
@@ -24,15 +34,28 @@ gridformat_add_parallel_regression_test_if(DUNE_FOUND
     "dune_pvtu*pvtu"
 )
 if (${DUNE_FOUND})
-    target_link_libraries(test_dune_unstructured PRIVATE dunecommon dunegeometry dunegrid)
-    target_link_libraries(test_dune_unstructured_parallel PRIVATE dunecommon dunegeometry dunegrid)
+    list(
+        APPEND
+            dune_targets
+            test_dune_unstructured
+            test_dune_unstructured_parallel
+            test_dune_yasp_image_grid
+            test_dune_yasp_rectilinear_grid
+    )
+    foreach (dune_target IN LISTS dune_targets)
+        target_link_libraries(${dune_target} PRIVATE dunecommon dunegeometry dunegrid)
 
-    # the dune cmake setup seems to not properly set the include dirs via target_link_libraries (in case it is installed in non-standard location)
-    target_include_directories(test_dune_unstructured PRIVATE ${dune-grid_INCLUDE_DIRS} ${dune-geometry_INCLUDE_DIRS} ${dune-common_INCLUDE_DIRS})
-    target_include_directories(test_dune_unstructured_parallel PRIVATE ${dune-grid_INCLUDE_DIRS} ${dune-geometry_INCLUDE_DIRS} ${dune-common_INCLUDE_DIRS})
+        # the dune cmake setup seems to not properly set the include dirs via target_link_libraries
+        # (in case it is installed in non-standard location)
+        target_include_directories(
+            ${dune_target}
+            PRIVATE
+                ${dune-grid_INCLUDE_DIRS} ${dune-geometry_INCLUDE_DIRS} ${dune-common_INCLUDE_DIRS}
+        )
 
-    # dune needs this to know if MPI is present
-    if (${MPI_FOUND})
-        target_compile_definitions(test_dune_unstructured_parallel PUBLIC HAVE_MPI=1)
-    endif ()
+        # dune uses this preprocessor variable to know if MPI is present (but doesn't seem to set it itself)
+        if (${MPI_FOUND} AND ${dune_target} MATCHES "parallel")
+            target_compile_definitions(${dune_target} PUBLIC HAVE_MPI=1)
+        endif ()
+    endforeach ()
 endif ()
