@@ -73,7 +73,7 @@ struct Basis;
 template<typename Grid>
 struct Extents;
 
-//! Metafunction to obtain the coordinates of a rectilinear grid via a static function `get(const Grid&)`
+//! Metafunction to obtain the ordinates of a rectilinear grid via a static function `get(const Grid&, int direction)`
 template<typename Grid>
 struct Ordinates;
 

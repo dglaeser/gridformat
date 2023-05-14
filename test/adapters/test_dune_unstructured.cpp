@@ -12,7 +12,8 @@
 #include "../vtk/vtk_writer_tester.hpp"
 #include "../make_test_data.hpp"
 
-int main() {
+int main(int argc, char** argv) {
+    Dune::MPIHelper::instance(argc, argv);
     Dune::YaspGrid<2> grid{
         {1.0, 1.0},
         {10, 10}

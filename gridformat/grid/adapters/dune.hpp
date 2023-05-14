@@ -19,9 +19,13 @@
 namespace Dune {
 
 class GeometryType;
+template<typename Traits> class GridView;
 
-template<typename Traits>
-class GridView;
+// YaspGrid will also be registered as structured grid
+template<class ct, int dim> class EquidistantCoordinates;
+template<class ct, int dim> class EquidistantOffsetCoordinates;
+template<class ct, int dim> class TensorProductCoordinates;
+template<int dim, class Coordinates> class YaspGrid;
 
 }  // namespace Dune
 
@@ -144,6 +148,118 @@ struct PointId<Dune::GridView<Traits>, DuneDetail::Vertex<Dune::GridView<Traits>
         return grid_view.indexSet().index(vertex);
     }
 };
+
+
+#ifndef DOXYGEN
+namespace DuneDetail {
+
+    template<typename T>
+    struct IsDuneYaspGrid : public std::false_type {};
+
+    template<int dim, typename Coords>
+    struct IsDuneYaspGrid<Dune::YaspGrid<dim, Coords>> : public std::true_type {
+        static constexpr bool uses_tp_coords = std::same_as<
+            Coords,
+            Dune::TensorProductCoordinates<typename Coords::ctype, dim>
+        >;
+    };
+
+    template<typename GridView>
+    inline constexpr bool is_yasp_grid_view = IsDuneYaspGrid<typename GridView::Grid>::value;
+
+    template<typename GridView> requires(is_yasp_grid_view<GridView>)
+    inline constexpr bool uses_tensor_product_coords = IsDuneYaspGrid<typename GridView::Grid>::uses_tp_coords;
+
+    template<typename ctype, int dim>
+    auto spacing_in(int direction, const Dune::EquidistantCoordinates<ctype, dim>& coords) {
+        return coords.meshsize(direction, 0);
+    }
+    template<typename ctype, int dim>
+    auto spacing_in(int direction, const Dune::EquidistantOffsetCoordinates<ctype, dim>& coords) {
+        return coords.meshsize(direction, 0);
+    }
+
+}  // namespace DuneDetail
+#endif  // DOXYGEN
+
+
+// Register YaspGrid as structured grid
+template<typename Traits> requires(DuneDetail::is_yasp_grid_view<Dune::GridView<Traits>>)
+struct Extents<Dune::GridView<Traits>> {
+    static auto get(const Dune::GridView<Traits>& grid_view) {
+        const auto level = std::ranges::begin(Cells<Dune::GridView<Traits>>::get(grid_view))->level();
+        const auto& grid_level = *grid_view.grid().begin(level);
+        const auto& interior_grid = grid_level.interior[0];
+        const auto& gc = *interior_grid.dataBegin();
+
+        static constexpr int dim = Traits::Grid::dimension;
+        std::array<std::size_t, dim> result;
+        for (int i = 0; i < Traits::Grid::dimension; ++i)
+            result[i] = gc.max(i) - gc.min(i) + 1;
+        return result;
+    }
+};
+
+template<typename Traits, typename Entity> requires(DuneDetail::is_yasp_grid_view<Dune::GridView<Traits>>)
+struct Location<Dune::GridView<Traits>, Entity> {
+    static auto get(const Dune::GridView<Traits>& grid_view, const Entity& entity) {
+        auto const& grid_level = *grid_view.grid().begin(entity.level());
+        auto const& interior = grid_level.interior[0];
+        auto const& extent_bounds = *interior.dataBegin();
+
+        auto result = entity.impl().transformingsubiterator().coord();
+        for (int i = 0; i < Dune::GridView<Traits>::dimension; ++i)
+            result[i] -= extent_bounds.min(i);
+        return result;
+    }
+};
+
+template<typename Traits> requires(DuneDetail::is_yasp_grid_view<Dune::GridView<Traits>>)
+struct Origin<Dune::GridView<Traits>> {
+    static auto get(const Dune::GridView<Traits>& grid_view) {
+        const auto level = std::ranges::begin(Cells<Dune::GridView<Traits>>::get(grid_view))->level();
+        auto const& grid_level = *grid_view.grid().begin(level);
+        auto const& interior = grid_level.interior[0];
+        auto const& extent_bounds = *interior.dataBegin();
+
+        std::array<typename Traits::Grid::ctype, Traits::Grid::dimension> result;
+        for (int i = 0; i < Traits::Grid::dimension; ++i)
+            result[i] = grid_level.coords.coordinate(i, extent_bounds.min(i));
+        return result;
+    }
+};
+
+template<typename Traits> requires(
+    DuneDetail::is_yasp_grid_view<Dune::GridView<Traits>> and
+    !DuneDetail::uses_tensor_product_coords<Dune::GridView<Traits>>) // spacing not uniquely defined for tpcoords
+struct Spacing<Dune::GridView<Traits>> {
+    static auto get(const Dune::GridView<Traits>& grid_view) {
+        const auto level = std::ranges::begin(Cells<Dune::GridView<Traits>>::get(grid_view))->level();
+        auto const& grid_level = *grid_view.grid().begin(level);
+
+        std::array<typename Traits::Grid::ctype, Traits::Grid::dimension> result;
+        for (int i = 0; i < Traits::Grid::dimension; ++i)
+            result[i] = DuneDetail::spacing_in(i, grid_level.coords);
+        return result;
+    }
+};
+
+template<typename Traits> requires(DuneDetail::is_yasp_grid_view<Dune::GridView<Traits>>)
+struct Ordinates<Dune::GridView<Traits>> {
+    static auto get(const Dune::GridView<Traits>& grid_view, int direction) {
+        const auto level = std::ranges::begin(Cells<Dune::GridView<Traits>>::get(grid_view))->level();
+        auto const& grid_level = *grid_view.grid().begin(level);
+        auto const& interior = grid_level.interior[0];
+        auto const& extent_bounds = *interior.dataBegin();
+
+        const auto num_point_ordinates = extent_bounds.max(direction) - extent_bounds.min(direction) + 2;
+        std::vector<typename Traits::Grid::ctype> ordinates(num_point_ordinates);
+        for (int i = 0; i < num_point_ordinates; ++i)
+            ordinates[i] = grid_level.coords.coordinate(direction, extent_bounds.min(direction) + i);
+        return ordinates;
+    }
+};
+
 
 }  // namespace GridFormat::Traits
 
