@@ -31,7 +31,7 @@ class PVDWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
 
  public:
     explicit PVDWriter(VTKWriter&& writer, std::string base_filename)
-    : ParentType(writer.grid(), writer.uses_structured_ordering())
+    : ParentType(writer.grid(), WriterOptions{writer.uses_structured_ordering(), true})
     , _vtk_writer{std::move(writer)}
     , _base_filename{std::move(base_filename)}
     , _pvd_filename{_base_filename + ".pvd"}
@@ -40,16 +40,6 @@ class PVDWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
         _xml.set_attribute("version", "1.0");
         _xml.add_child("Collection");
         _vtk_writer.clear();
-    }
-
-    template<typename T>
-    void set_meta_data(const std::string& name, T&& value) {
-        ParentType::set_meta_data(name, std::forward<T>(value));
-    }
-
-    void set_meta_data(const std::string& name, std::string text) {
-        text.push_back('\0');
-        ParentType::set_meta_data(name, std::move(text));
     }
 
  private:

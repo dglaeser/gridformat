@@ -32,6 +32,11 @@ namespace GridFormat {
 //! \addtogroup Grid
 //! \{
 
+struct WriterOptions {
+    bool use_structured_grid_ordering;
+    bool append_null_terminator_to_strings;
+};
+
 //! Base class for grid data writers, exposing the interfaces to add fields
 template<typename Grid>
 class GridWriterBase {
@@ -39,14 +44,20 @@ class GridWriterBase {
     using Field = typename FieldStorage::Field;
     using FieldPtr = typename FieldStorage::FieldPtr;
 
-    explicit GridWriterBase(const Grid& grid, bool use_structured_grid_ordering)
+    explicit GridWriterBase(const Grid& grid, WriterOptions opts)
     : _grid(grid)
-    , _structured_ordering{use_structured_grid_ordering}
+    , _opts{std::move(opts)}
     {}
 
     template<std::ranges::range R>
     void set_meta_data(const std::string& name, R&& range) {
         _meta_data.set(name, RangeField{std::forward<R>(range)});
+    }
+
+    void set_meta_data(const std::string& name, std::string text) {
+        if (_opts.append_null_terminator_to_strings)
+            text.push_back('\0');
+        _meta_data.set(name, RangeField{std::move(text)});
     }
 
     template<Concepts::Scalar T>
@@ -119,7 +130,7 @@ class GridWriterBase {
     }
 
     bool uses_structured_ordering() const {
-        return _structured_ordering;
+        return _opts.use_structured_grid_ordering;
     }
 
     template<typename Writer>
@@ -156,12 +167,12 @@ class GridWriterBase {
  protected:
     template<typename EntityFunction, Concepts::Scalar T>
     auto _make_point_field(EntityFunction&& f, const Precision<T>& prec) const {
-        return PointField{_grid, std::move(f), _structured_ordering, prec};
+        return PointField{_grid, std::move(f), uses_structured_ordering(), prec};
     }
 
     template<typename EntityFunction, Concepts::Scalar T>
     auto _make_cell_field(EntityFunction&& f, const Precision<T>& prec) const {
-        return CellField{_grid, std::move(f), _structured_ordering, prec};
+        return CellField{_grid, std::move(f), uses_structured_ordering(), prec};
     }
 
     std::ranges::range auto _point_field_names() const {
@@ -205,17 +216,15 @@ class GridWriterBase {
     FieldStorage _point_fields;
     FieldStorage _cell_fields;
     FieldStorage _meta_data;
-    bool _structured_ordering;
+    WriterOptions _opts;
 };
 
 //! Abstract base class for writers of grid files
 template<typename Grid>
 class GridWriter : public GridWriterBase<Grid> {
  public:
-    explicit GridWriter(const Grid& grid,
-                        std::string extension,
-                        bool use_structured_grid_ordering)
-    : GridWriterBase<Grid>(grid, use_structured_grid_ordering)
+    explicit GridWriter(const Grid& grid, std::string extension, WriterOptions opts)
+    : GridWriterBase<Grid>(grid, std::move(opts))
     , _extension(std::move(extension))
     {}
 
@@ -244,8 +253,8 @@ class GridWriter : public GridWriterBase<Grid> {
 template<typename Grid>
 class TimeSeriesGridWriter : public GridWriterBase<Grid> {
  public:
-    explicit TimeSeriesGridWriter(const Grid& grid, bool use_structured_grid_ordering)
-    : GridWriterBase<Grid>(grid, use_structured_grid_ordering)
+    explicit TimeSeriesGridWriter(const Grid& grid, WriterOptions opts)
+    : GridWriterBase<Grid>(grid, std::move(opts))
     {}
 
     std::string write(double t) {

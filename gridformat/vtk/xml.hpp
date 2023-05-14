@@ -168,7 +168,7 @@ class XMLWriterBase
                            std::string extension,
                            bool use_structured_grid_ordering,
                            XMLOptions xml_opts = {})
-    : ParentType(grid, std::move(extension), use_structured_grid_ordering)
+    : ParentType(grid, std::move(extension), WriterOptions{use_structured_grid_ordering, true})
     , _xml_opts{std::move(xml_opts)}
     , _xml_settings{XMLDetail::XMLSettings::from<GridCoordinateType>(_xml_opts)}
     {}
@@ -207,16 +207,6 @@ class XMLWriterBase
         auto opts = _xml_opts;
         opts.header_precision = prec;
         return with(std::move(opts));
-    }
-
-    template<typename T>
-    void set_meta_data(const std::string& name, T&& value) {
-        ParentType::set_meta_data(name, std::forward<T>(value));
-    }
-
-    void set_meta_data(const std::string& name, std::string text) {
-        text.push_back('\0');
-        ParentType::set_meta_data(name, std::move(text));
     }
 
  private:
