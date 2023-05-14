@@ -373,6 +373,9 @@ struct StaticSize<T&> : public StaticSize<std::remove_const_t<T>> {};
 template<typename T>
 inline constexpr std::size_t static_size = StaticSize<T>::value;
 
+template<typename T>
+inline constexpr bool has_static_size = is_complete<StaticSize<T>>;
+
 //! \} group Common
 
 }  // end namespace GridFormat

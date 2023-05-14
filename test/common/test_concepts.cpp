@@ -36,6 +36,27 @@ int main() {
     static_assert(!GridFormat::Concepts::StaticallySizedRange<std::span<int>>);
     static_assert(!GridFormat::Concepts::StaticallySizedRange<double>);
 
+    static_assert(GridFormat::Concepts::StaticallySizedMDRange<
+        std::array<std::array<int, 2>, 2>,
+        2>
+    );
+    static_assert(GridFormat::Concepts::StaticallySizedMDRange<
+        std::array<std::array<std::array<int, 2>, 2>, 2>,
+        3>
+    );
+    static_assert(!GridFormat::Concepts::StaticallySizedMDRange<
+        std::array<std::array<std::array<int, 2>, 2>, 2>,
+        2>
+    );
+    static_assert(!GridFormat::Concepts::StaticallySizedMDRange<
+        std::array<std::vector<std::array<int, 2>>, 2>,
+        3>
+    );
+    static_assert(!GridFormat::Concepts::StaticallySizedMDRange<
+        std::array<std::array<std::vector<int>, 2>, 2>,
+        3>
+    );
+
     static_assert(GridFormat::Concepts::Interoperable<int, double>);
     static_assert(GridFormat::Concepts::Interoperable<double, int>);
 
