@@ -10,12 +10,14 @@
 
 #include <ranges>
 #include <ostream>
+#include <iostream>
 #include <algorithm>
 #include <functional>
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/filtered_range.hpp>
 #include <gridformat/common/field_storage.hpp>
+#include <gridformat/common/logging.hpp>
 
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/common.hpp>
@@ -30,6 +32,15 @@ namespace GridFormat {
 template<Concepts::UnstructuredGrid Grid>
 class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
     using ParentType = VTK::XMLWriterBase<Grid, VTPWriter<Grid>>;
+
+    static constexpr std::array zero_d_types{CellType::vertex};
+    static constexpr std::array one_d_types{CellType::segment};
+    static constexpr std::array two_d_types{
+        CellType::quadrilateral,
+        CellType::pixel,
+        CellType::polygon,
+        CellType::triangle
+    };
 
     template<std::size_t size>
     struct CellTypesPredicate {
@@ -55,15 +66,19 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
     }
 
     void _write(std::ostream& s) const override {
-        auto verts_range = _get_cell_range(
-            CellTypesPredicate<1>{this->grid(), {CellType::vertex}}
+        auto verts_range = _get_cell_range(CellTypesPredicate{this->grid(), zero_d_types});
+        auto lines_range = _get_cell_range(CellTypesPredicate{this->grid(), one_d_types});
+        auto polys_range = _get_cell_range(CellTypesPredicate{this->grid(), two_d_types});
+        auto unsupported_range = _get_cell_range(
+            [p=CellTypesPredicate{
+                this->grid(), Ranges::merged(Ranges::merged(zero_d_types, one_d_types), two_d_types)
+            }] (const Cell<Grid>& cell) {
+                return !p(cell);
+            }
         );
-        auto lines_range = _get_cell_range(
-            CellTypesPredicate<1>{this->grid(), {CellType::segment}}
-        );
-        auto polys_range = _get_cell_range(
-            CellTypesPredicate<4>{this->grid(), {CellType::quadrilateral, CellType::pixel, CellType::polygon, CellType::triangle}}
-        );
+
+        if (Ranges::size(unsupported_range) > 0)
+            std::cout << as_warning("Grid contains cell types not supported by .vtp; These will be ignored.") << std::endl;
 
         const auto num_verts = Ranges::size(verts_range);
         const auto num_lines = Ranges::size(lines_range);
