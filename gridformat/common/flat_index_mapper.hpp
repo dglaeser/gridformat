@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <functional>
 
+#include <gridformat/common/ranges.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/type_traits.hpp>
 
@@ -58,7 +59,7 @@ class FlatIndexMapper {
     }
 
  private:
-    std::array<IndexType, dim> _offsets;
+    std::array<IndexType, dim> _offsets = Ranges::filled_array<dim>(IndexType{0});
 };
 
 template<Concepts::StaticallySizedMDRange<1> R>
