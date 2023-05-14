@@ -25,7 +25,8 @@ enum class CellType {
     quadrilateral,
     polygon,
     tetrahedron,
-    hexahedron
+    hexahedron,
+    voxel
 };
 
 
@@ -40,6 +41,7 @@ inline int cell_dimension(CellType ct) {
         case CellType::polygon: return 2;
         case CellType::tetrahedron: return 3;
         case CellType::hexahedron: return 3;
+        case CellType::voxel: return 3;
     }
 
     throw InvalidState(as_error("Unsupported cell type"));
