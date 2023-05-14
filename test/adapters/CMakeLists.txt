@@ -33,6 +33,18 @@ gridformat_add_parallel_regression_test_if(DUNE_FOUND
     4
     "dune_pvtu*pvtu"
 )
+gridformat_add_parallel_regression_test_if(DUNE_FOUND
+    test_dune_yasp_parallel_image_grid
+    test_dune_yasp_parallel_image_grid.cpp
+    4
+    "dune_pvti*pvti"
+)
+gridformat_add_parallel_regression_test_if(DUNE_FOUND
+    test_dune_yasp_parallel_rectilinear_grid
+    test_dune_yasp_parallel_rectilinear_grid.cpp
+    4
+    "dune_pvtr*pvtr"
+)
 if (${DUNE_FOUND})
     list(
         APPEND
@@ -41,6 +53,8 @@ if (${DUNE_FOUND})
             test_dune_unstructured_parallel
             test_dune_yasp_image_grid
             test_dune_yasp_rectilinear_grid
+            test_dune_yasp_parallel_image_grid
+            test_dune_yasp_parallel_rectilinear_grid
     )
     foreach (dune_target IN LISTS dune_targets)
         target_link_libraries(${dune_target} PRIVATE dunecommon dunegeometry dunegrid)
