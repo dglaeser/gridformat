@@ -49,8 +49,26 @@ concept RangeOf = std::ranges::range<T> and std::convertible_to<std::ranges::ran
 template<typename T, std::size_t dim>
 concept MDRange = std::ranges::range<T> and mdrange_dimension<T> == dim;
 
+
+#ifndef DOXYGEN
+namespace Detail {
+    template<typename T>
+    struct HasStaticallySizedSubRanges : public std::false_type {};
+    template<std::ranges::range R> requires(!has_sub_range<R> and has_static_size<R>)
+    struct HasStaticallySizedSubRanges<R> : public std::true_type {};
+    template<std::ranges::range R> requires(has_sub_range<R> and has_static_size<R>)
+    struct HasStaticallySizedSubRanges<R> {
+        static constexpr bool value = HasStaticallySizedSubRanges<std::ranges::range_value_t<R>>::value;
+    };
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
 template<typename T, std::size_t dim>
-concept StaticallySizedMDRange = StaticallySizedRange<T> and MDRange<T, dim>;
+concept StaticallySizedMDRange
+    = StaticallySizedRange<T>
+    and Detail::HasStaticallySizedSubRanges<T>::value
+    and MDRange<T, dim>;
 
 template<typename T>
 concept Scalar = is_scalar<T>;
