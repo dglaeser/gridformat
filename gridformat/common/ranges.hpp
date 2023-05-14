@@ -77,6 +77,35 @@ inline constexpr auto filled_array(const T& t = default_value<T>) {
     return result;
 }
 
+/*!
+ * \ingroup Common
+ * \brief Return an array containing the result of an operation
+ *        applied to pairs of elements of the two given ranges.
+ */
+template<typename TargetType = Automatic,
+         typename Op,
+         Concepts::StaticallySizedRange R1,
+         Concepts::StaticallySizedRange R2>
+    requires(static_size<R1> == static_size<R2> and
+             std::invocable<Op, std::ranges::range_reference_t<R1>, std::ranges::range_reference_t<R2>>)
+inline constexpr auto apply_pairwise(const Op& op, R1&& r1, R2&& r2) {
+    using RR1 = std::ranges::range_reference_t<R1>;
+    using RR2 = std::ranges::range_reference_t<R2>;
+    using T = std::conditional_t<
+        std::is_same_v<TargetType, Automatic>,
+        std::invoke_result_t<Op, RR1, RR2>,
+        TargetType
+    >;
+    auto result = filled_array<static_size<R1>, T>();
+    std::transform(
+        std::ranges::begin(r1),
+        std::ranges::end(r1),
+        std::ranges::begin(r2),
+        result.begin(),
+        op
+    );
+    return result;
+}
 
 #ifndef DOXYGEN
 namespace Detail {
