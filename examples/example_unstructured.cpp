@@ -98,7 +98,7 @@ struct Cells<MyGrid> {
 template<>
 struct CellType<MyGrid, typename MyGrid::Cell> {
     static auto get(const MyGrid&, const typename MyGrid::Cell&) {
-        return GridFormat::CellType::rectangle;
+        return GridFormat::CellType::pixel;
     }
 };
 
