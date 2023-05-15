@@ -6,7 +6,7 @@
 #include <ranges>
 #include <cmath>
 
-#include <gridformat/writer.hpp>
+#include <gridformat/gridformat.hpp>
 
 // Exemplary implementation of a raster grid with unit-sized cells
 class MyGrid {
@@ -134,7 +134,7 @@ int main() {
     MyGrid grid(10, 10);
 
     // you may simply get a default writer for your grid
-    auto writer = GridFormat::make_writer(grid);
+    auto writer = GridFormat::Writer{GridFormat::vtu, grid};
 
     // attach point and cell data via lambdas
     writer.set_point_field("test_func", [&] (const auto& point) {
