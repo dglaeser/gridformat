@@ -27,7 +27,7 @@ template<typename Writer>
 void write(Writer&& writer, std::string suffix = "") {
     add_fields(writer);
     suffix = suffix != "" ? "_" + suffix : "";
-    std::cout << "Wrote '" << GridFormat::as_highlight(writer.write("generic_2d_in_2d" + suffix)) << "'" << std::endl;;
+    std::cout << "Wrote '" << GridFormat::as_highlight(writer.write("generic_2d_in_2d" + suffix)) << "'" << std::endl;
 }
 
 int main() {
