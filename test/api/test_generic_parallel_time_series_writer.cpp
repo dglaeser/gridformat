@@ -87,6 +87,7 @@ int main(int argc, char** argv) {
         },
         MPI_COMM_WORLD
     );
+#if GRIDFORMAT_HAVE_HIGH_FIVE
     write(
         GridFormat::Writer{
             GridFormat::time_series(GridFormat::vtk_hdf),
@@ -96,6 +97,7 @@ int main(int argc, char** argv) {
         },
         MPI_COMM_WORLD
     );
+#endif
 
     MPI_Finalize();
     return 0;

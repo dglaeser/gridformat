@@ -60,11 +60,13 @@ int main(int argc, char** argv) {
         GridFormat::Writer{GridFormat::vtp({}), grid, MPI_COMM_WORLD},
         MPI_COMM_WORLD
     );
+#if GRIDFORMAT_HAVE_HIGH_FIVE
     write(
         GridFormat::Writer{GridFormat::vtk_hdf, grid, MPI_COMM_WORLD},
         MPI_COMM_WORLD,
         "unstructured"
     );
+#endif
 
     MPI_Finalize();
     return 0;
