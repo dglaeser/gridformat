@@ -93,7 +93,7 @@ namespace VTKHDFImageDetail {
  * \ingroup VTK
  * \brief TODO: Doc me
  */
-template<Concepts::ImageGrid Grid, Concepts::Communicator Communicator>
+template<Concepts::ImageGrid Grid, Concepts::Communicator Communicator = NullCommunicator>
 class VTKHDFImageGridWriter : public GridWriter<Grid> {
     static constexpr int root_rank = 0;
     static constexpr std::size_t dim = dimension<Grid>;
@@ -125,13 +125,12 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
  public:
     explicit VTKHDFImageGridWriter(const Grid& grid)
         requires(std::is_same_v<Communicator, NullCommunicator>)
-    : GridWriter<Grid>(grid, ".hdf", true)
-    , _comm()
+    : GridWriter<Grid>(grid, ".hdf", {})
     {}
 
     explicit VTKHDFImageGridWriter(const Grid& grid, const Communicator& comm)
         requires(std::is_copy_constructible_v<Communicator>)
-    : GridWriter<Grid>(grid, ".hdf", true)
+    : GridWriter<Grid>(grid, ".hdf", {})
     , _comm{comm}
     {}
 

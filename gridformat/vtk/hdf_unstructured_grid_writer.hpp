@@ -31,7 +31,7 @@ namespace GridFormat {
  * \ingroup VTK
  * \brief TODO: Doc me
  */
-template<Concepts::UnstructuredGrid G, Concepts::Communicator Communicator>
+template<Concepts::UnstructuredGrid G, Concepts::Communicator Communicator = NullCommunicator>
 class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
     static constexpr int root_rank = 0;
     static constexpr std::size_t vtk_space_dim = 3;
@@ -51,13 +51,12 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
 
     explicit VTKHDFUnstructuredGridWriter(const Grid& grid)
         requires(std::is_same_v<Communicator, NullCommunicator>)
-    : GridWriter<Grid>(grid, ".hdf", false)
-    , _comm()
+    : GridWriter<Grid>(grid, ".hdf", {})
     {}
 
     explicit VTKHDFUnstructuredGridWriter(const Grid& grid, const Communicator& comm)
         requires(std::is_copy_constructible_v<Communicator>)
-    : GridWriter<Grid>(grid, ".hdf", false)
+    : GridWriter<Grid>(grid, ".hdf", {})
     , _comm{comm}
     {}
 
