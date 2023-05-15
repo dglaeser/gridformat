@@ -32,6 +32,7 @@ namespace Detail {
     template<typename FileFormat, typename Grid>
     static constexpr bool has_sequential_factory
         = is_complete<WriterFactory<FileFormat>>
+        and Concepts::Grid<Grid>
         and requires(const FileFormat& f, const Grid& grid) {
             { WriterFactory<FileFormat>::make(f, grid) } -> std::derived_from<GridWriter<Grid>>;
         };
@@ -39,6 +40,7 @@ namespace Detail {
     template<typename FileFormat, typename Grid>
     static constexpr bool has_sequential_time_series_factory
         = is_complete<WriterFactory<FileFormat>>
+        and Concepts::Grid<Grid>
         and requires(const FileFormat& f, const Grid& grid) {
             { WriterFactory<FileFormat>::make(f, grid, std::string{}) } -> std::derived_from<TimeSeriesGridWriter<Grid>>;
         };
@@ -46,6 +48,8 @@ namespace Detail {
     template<typename FileFormat, typename Grid, typename Comm>
     static constexpr bool has_parallel_factory
         = is_complete<WriterFactory<FileFormat>>
+        and Concepts::Grid<Grid>
+        and Concepts::Communicator<Comm>
         and requires(const FileFormat& f, const Grid& grid, const Comm& comm) {
             { WriterFactory<FileFormat>::make(f, grid, comm) } -> std::derived_from<GridWriter<Grid>>;
         };
@@ -53,6 +57,8 @@ namespace Detail {
     template<typename FileFormat, typename Grid, typename Comm>
     static constexpr bool has_parallel_time_series_factory
         = is_complete<WriterFactory<FileFormat>>
+        and Concepts::Grid<Grid>
+        and Concepts::Communicator<Comm>
         and requires(const FileFormat& f, const Grid& grid, const Comm& comm) {
             { WriterFactory<FileFormat>::make(f, grid, comm, std::string{}) } -> std::derived_from<TimeSeriesGridWriter<Grid>>;
         };
