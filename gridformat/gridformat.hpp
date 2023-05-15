@@ -88,11 +88,13 @@ namespace Detail {
     template<> struct IsVTKFormat<VTP> : public std::true_type {};
     template<> struct IsVTKFormat<VTU> : public std::true_type {};
     template<> struct IsVTKFormat<VTKHDF> : public std::true_type {};
+    template<> struct IsVTKFormat<VTKHDFImage> : public std::true_type {};
+    template<> struct IsVTKFormat<VTKHDFUnstructured> : public std::true_type {};
 
     struct TimeSeriesClosure {
         template<typename Format> requires(IsVTKFormat<Format>::value)
-        constexpr auto operator()(Format&& f) const {
-            return TimeSeries{std::forward<Format>(f)};
+        constexpr auto operator()(const Format& f) const {
+            return TimeSeries{f};
         }
     };
 
@@ -103,66 +105,90 @@ namespace Detail {
 
 
 template<> struct WriterFactory<FileFormat::VTI> {
-    static auto make(const FileFormat::VTI& format, const auto& grid) {
+    static auto make(const FileFormat::VTI& format,
+                     const Concepts::ImageGrid auto& grid) {
         return VTIWriter{grid, format.opts};
     }
-    static auto make(const FileFormat::VTI& format, const auto& grid, const auto& comm) {
+    static auto make(const FileFormat::VTI& format,
+                     const Concepts::ImageGrid auto& grid,
+                     const Concepts::Communicator auto& comm) {
         return PVTIWriter{grid, comm, format.opts};
     }
 };
 template<> struct WriterFactory<FileFormat::VTR> {
-    static auto make(const FileFormat::VTR& format, const auto& grid) {
+    static auto make(const FileFormat::VTR& format,
+                     const Concepts::RectilinearGrid auto& grid) {
         return VTRWriter{grid, format.opts};
     }
-    static auto make(const FileFormat::VTR& format, const auto& grid, const auto& comm) {
+    static auto make(const FileFormat::VTR& format,
+                     const Concepts::RectilinearGrid auto& grid,
+                     const Concepts::Communicator auto& comm) {
         return PVTRWriter{grid, comm, format.opts};
     }
 };
 template<> struct WriterFactory<FileFormat::VTS> {
-    static auto make(const FileFormat::VTS& format, const auto& grid) {
+    static auto make(const FileFormat::VTS& format,
+                     const Concepts::StructuredGrid auto& grid) {
         return VTSWriter{grid, format.opts};
     }
-    static auto make(const FileFormat::VTS& format, const auto& grid, const auto& comm) {
+    static auto make(const FileFormat::VTS& format,
+                     const Concepts::StructuredGrid auto& grid,
+                     const Concepts::Communicator auto& comm) {
         return PVTSWriter{grid, comm, format.opts};
     }
 };
 template<> struct WriterFactory<FileFormat::VTP> {
-    static auto make(const FileFormat::VTP& format, const auto& grid) {
+    static auto make(const FileFormat::VTP& format,
+                     const Concepts::UnstructuredGrid auto& grid) {
         return VTPWriter{grid, format.opts};
     }
-    static auto make(const FileFormat::VTP& format, const auto& grid, const auto& comm) {
+    static auto make(const FileFormat::VTP& format,
+                     const Concepts::UnstructuredGrid auto& grid,
+                     const Concepts::Communicator auto& comm) {
         return PVTPWriter{grid, comm, format.opts};
     }
 };
 template<> struct WriterFactory<FileFormat::VTU> {
-    static auto make(const FileFormat::VTU& format, const auto& grid) {
+    static auto make(const FileFormat::VTU& format,
+                     const Concepts::UnstructuredGrid auto& grid) {
         return VTUWriter{grid, format.opts};
     }
-    static auto make(const FileFormat::VTU& format, const auto& grid, const auto& comm) {
+    static auto make(const FileFormat::VTU& format,
+                     const Concepts::UnstructuredGrid auto& grid,
+                     const Concepts::Communicator auto& comm) {
         return PVTUWriter{grid, comm, format.opts};
     }
 };
 template<> struct WriterFactory<FileFormat::VTKHDFImage> {
-    static auto make(const FileFormat::VTKHDFImage&, const auto& grid) {
+    static auto make(const FileFormat::VTKHDFImage&,
+                     const Concepts::ImageGrid auto& grid) {
         return VTKHDFImageGridWriter{grid};
     }
-    static auto make(const FileFormat::VTKHDFImage&, const auto& grid, const auto& comm) {
+    static auto make(const FileFormat::VTKHDFImage&,
+                     const Concepts::ImageGrid auto& grid,
+                     const Concepts::Communicator auto& comm) {
         return VTKHDFImageGridWriter{grid, comm};
     }
 };
 template<> struct WriterFactory<FileFormat::VTKHDFUnstructured> {
-    static auto make(const FileFormat::VTKHDFUnstructured&, const auto& grid) {
+    static auto make(const FileFormat::VTKHDFUnstructured&,
+                     const Concepts::UnstructuredGrid auto& grid) {
         return VTKHDFUnstructuredGridWriter{grid};
     }
-    static auto make(const FileFormat::VTKHDFUnstructured&, const auto& grid, const auto& comm) {
+    static auto make(const FileFormat::VTKHDFUnstructured&,
+                     const Concepts::UnstructuredGrid auto& grid,
+                     const Concepts::Communicator auto& comm) {
         return VTKHDFUnstructuredGridWriter{grid, comm};
     }
 };
 template<> struct WriterFactory<FileFormat::VTKHDF> {
-    static auto make(const FileFormat::VTKHDF& format, const auto& grid) {
+    static auto make(const FileFormat::VTKHDF& format,
+                     const Concepts::Grid auto& grid) {
         return _make(format.from(grid), grid);
     }
-    static auto make(const FileFormat::VTKHDF& format, const auto& grid, const auto& comm) {
+    static auto make(const FileFormat::VTKHDF& format,
+                     const Concepts::Grid auto& grid,
+                     const Concepts::Communicator auto& comm) {
         return _make(format.from(grid), grid, comm);
     }
  private:
@@ -177,20 +203,22 @@ struct WriterFactory<FileFormat::PVD<F>> {
         return PVDWriter{WriterFactory<F>::make(format.piece_format, grid), base_filename};
     }
     static auto make(const FileFormat::PVD<F>& format,
-                     const auto& grid,
-                     const auto& comm,
+                     const Concepts::Grid auto& grid,
+                     const Concepts::Communicator auto& comm,
                      const std::string& base_filename) {
         return PVDWriter{WriterFactory<F>::make(format.piece_format, grid, comm), base_filename};
     }
 };
 template<typename F> requires(FileFormat::Detail::IsVTKFormat<F>::value)
 struct WriterFactory<FileFormat::TimeSeries<F>> {
-    static auto make(const FileFormat::TimeSeries<F>& format, const auto& grid, const std::string& base_filename) {
+    static auto make(const FileFormat::TimeSeries<F>& format,
+                     const Concepts::Grid auto& grid,
+                     const std::string& base_filename) {
         return VTKTimeSeriesWriter{WriterFactory<F>::make(format.piece_format, grid), base_filename};
     }
     static auto make(const FileFormat::TimeSeries<F>& format,
-                     const auto& grid,
-                     const auto& comm,
+                     const Concepts::Grid auto& grid,
+                     const Concepts::Communicator auto& comm,
                      const std::string& base_filename) {
         return VTKTimeSeriesWriter{WriterFactory<F>::make(format.piece_format, grid, comm), base_filename};
     }
