@@ -81,7 +81,7 @@ struct XMLOptions {
     XML::HeaderPrecision header_precision = _from_size_t();
 
  private:
-    static XML::HeaderPrecision _from_size_t() {
+    static constexpr XML::HeaderPrecision _from_size_t() {
         if constexpr(sizeof(std::size_t) == 8) return uint64;
         else return uint32;
     }
