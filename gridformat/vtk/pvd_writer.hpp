@@ -14,6 +14,7 @@
 #include <utility>
 #include <string>
 #include <ranges>
+#include <type_traits>
 
 #include <gridformat/xml/element.hpp>
 #include <gridformat/grid/writer.hpp>
@@ -21,26 +22,48 @@
 
 namespace GridFormat {
 
+#ifndef DOXYGEN
+namespace Detail {
+
+    template<typename W>
+    class WriterStorage {
+     public:
+        explicit WriterStorage(W&& w) : _w(std::move(w)) {}
+
+     protected:
+        W& _writer() { return _w; }
+        const W& _writer() const { return _w; }
+
+     private:
+        W _w;
+    };
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
 /*!
  * \ingroup VTK
  * \brief Writer for .pvd time-series file format
  */
 template<typename VTKWriter>
-class PVDWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
+class PVDWriter : public Detail::WriterStorage<VTKWriter>,
+                  public TimeSeriesGridWriter<typename VTKWriter::Grid> {
+    using Storage = Detail::WriterStorage<VTKWriter>;
     using ParentType = TimeSeriesGridWriter<typename VTKWriter::Grid>;
 
  public:
     explicit PVDWriter(VTKWriter&& writer, std::string base_filename)
-    : ParentType(writer.grid(), writer.writer_options())
-    , _vtk_writer{std::move(writer)}
+    : Storage(std::move(writer))
+    , ParentType(Storage::_writer().grid(), Storage::_writer().writer_options())
     , _base_filename{std::move(base_filename)}
     , _pvd_filename{_base_filename + ".pvd"}
     , _xml{"VTKFile"} {
         _xml.set_attribute("type", "Collection");
         _xml.set_attribute("version", "1.0");
         _xml.add_child("Collection");
-        _vtk_writer.clear();
+        this->_writer().clear();
     }
+
 
  private:
     std::string _write(double _time) override {
@@ -53,11 +76,11 @@ class PVDWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
     }
 
     std::string _write_time_step_file(const std::integral auto index) {
-        this->copy_fields(_vtk_writer);
-        const auto filename = _vtk_writer.write(
+        this->copy_fields(this->_writer());
+        const auto filename = this->_writer().write(
             _base_filename + "-" + _get_file_number_string(index)
         );
-        _vtk_writer.clear();
+        this->_writer().clear();
         return filename;
     }
 
@@ -77,11 +100,13 @@ class PVDWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
         return dataset;
     }
 
-    VTKWriter _vtk_writer;
     std::string _base_filename;
     std::string _pvd_filename;
     XMLElement _xml;
 };
+
+template<typename VTKWriter>
+PVDWriter(VTKWriter&&) -> PVDWriter<std::decay_t<VTKWriter>>;
 
 }  // namespace GridFormat
 
