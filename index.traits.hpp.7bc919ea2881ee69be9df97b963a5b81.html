@@ -26,7 +26,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2023-05-14 23:27:12</td>
+      <td>2023-05-16 20:23:20</td>
     </tr>
   </table>
 </div>
@@ -662,7 +662,7 @@
       <td class="lineno"><a id="l75" href="#l75">75</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">15</td>
+      <td class="linecount coveredLine">19</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">NullCommunicator</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
@@ -702,7 +702,7 @@
       <td class="lineno"><a id="l80" href="#l80">80</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">15</td>
+      <td class="linecount coveredLine">19</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">NullCommunicator</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
@@ -1350,7 +1350,7 @@
       <td class="lineno"><a id="l161" href="#l161">161</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">87788</td>
+      <td class="linecount coveredLine">88812</td>
       <td class="src coveredLine"><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">get_data_type</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1478,7 +1478,7 @@
       <td class="lineno"><a id="l177" href="#l177">177</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">60348</td>
+      <td class="linecount coveredLine">61260</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">MPI_UNSIGNED_LONG</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -1510,7 +1510,7 @@
       <td class="lineno"><a id="l181" href="#l181">181</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">27440</td>
+      <td class="linecount coveredLine">27552</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">MPI_DOUBLE</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -1574,7 +1574,7 @@
       <td class="lineno"><a id="l189" href="#l189">189</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">132</td>
+      <td class="linecount coveredLine">180</td>
       <td class="src coveredLine"><span class="kt">void</span><span class="w"> </span><span class="n">reduce</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_Op</span><span class="w"> </span><span class="n">operation</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root_rank</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1582,7 +1582,7 @@
       <td class="lineno"><a id="l190" href="#l190">190</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">132</td>
+      <td class="linecount coveredLine">180</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">MPI_Reduce</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">num_values</span><span class="p">,</span><span class="w"> </span><span class="n">MPIDetail</span><span class="o">::</span><span class="n">get_data_type</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(),</span><span class="w"> </span><span class="n">operation</span><span class="p">,</span><span class="w"> </span><span class="n">root_rank</span><span class="p">,</span><span class="w"> </span><span class="n">comm</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -1590,7 +1590,7 @@
       <td class="lineno"><a id="l191" href="#l191">191</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">132</td>
+      <td class="linecount coveredLine">180</td>
       <td class="src coveredLine"><span class="p">}</span><span class="w"></span></td>
     </tr>
 
@@ -1646,7 +1646,7 @@
       <td class="lineno"><a id="l198" href="#l198">198</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">56846</td>
+      <td class="linecount coveredLine">57194</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1664,12 +1664,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 56846 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 57194 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">56846</td>
+      <td class="linecount coveredLine">57194</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">MPI_Comm_size</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">s</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -1677,7 +1677,7 @@
       <td class="lineno"><a id="l201" href="#l201">201</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">56846</td>
+      <td class="linecount coveredLine">57194</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">s</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -1725,7 +1725,7 @@
       <td class="lineno"><a id="l207" href="#l207">207</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">29604</td>
+      <td class="linecount coveredLine">29928</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1743,12 +1743,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 29604 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 29928 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">29604</td>
+      <td class="linecount coveredLine">29928</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">MPI_Comm_rank</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">r</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -1756,7 +1756,7 @@
       <td class="lineno"><a id="l210" href="#l210">210</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">29604</td>
+      <td class="linecount coveredLine">29928</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">r</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -1804,7 +1804,7 @@
       <td class="lineno"><a id="l216" href="#l216">216</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10292</td>
+      <td class="linecount coveredLine">10372</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1812,7 +1812,7 @@
       <td class="lineno"><a id="l217" href="#l217">217</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10292</td>
+      <td class="linecount coveredLine">10372</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">MPI_Barrier</span><span class="p">(</span><span class="n">comm</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -2172,7 +2172,7 @@
       <td class="lineno"><a id="l262" href="#l262">262</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">132</td>
+      <td class="linecount coveredLine">180</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root_rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -2198,12 +2198,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 132 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 180 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">132</td>
+      <td class="linecount coveredLine">180</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">MPIDetail</span><span class="o">::</span><span class="n">reduce</span><span class="p">(</span><span class="o">&amp;</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_SUM</span><span class="p">,</span><span class="w"> </span><span class="n">num_values</span><span class="p">,</span><span class="w"> </span><span class="n">root_rank</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -2211,7 +2211,7 @@
       <td class="lineno"><a id="l266" href="#l266">266</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">132</td>
+      <td class="linecount coveredLine">180</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -2331,7 +2331,7 @@
       <td class="lineno"><a id="l281" href="#l281">281</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">132</td>
+      <td class="linecount coveredLine">180</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root_rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -2347,7 +2347,7 @@
       <td class="lineno"><a id="l283" href="#l283">283</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">132</td>
+      <td class="linecount coveredLine">180</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">T</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -2357,12 +2357,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 132 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 180 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">132</td>
+      <td class="linecount coveredLine">180</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">MPI_Bcast</span><span class="p">(</span><span class="w"></span></td>
     </tr>
 
@@ -2418,7 +2418,7 @@
       <td class="lineno"><a id="l291" href="#l291">291</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">132</td>
+      <td class="linecount coveredLine">180</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -2466,7 +2466,7 @@
       <td class="lineno"><a id="l297" href="#l297">297</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">188</td>
+      <td class="linecount coveredLine">204</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">R</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root_rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -2482,7 +2482,7 @@
       <td class="lineno"><a id="l299" href="#l299">299</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">188</td>
+      <td class="linecount coveredLine">204</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">num_values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">size</span><span class="p">(</span><span class="n">values</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -2492,12 +2492,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 4 taken 188 times.</div>
+          <div class="takenBranch">&check; Branch 4 taken 204 times.</div>
           <div class="notTakenBranch">&cross; Branch 5 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">188</td>
+      <td class="linecount coveredLine">204</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">values</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">values</span><span class="p">.</span><span class="n">end</span><span class="p">());</span><span class="w"></span></td>
     </tr>
 
@@ -2507,12 +2507,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 188 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 204 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">376</td>
+      <td class="linecount coveredLine">408</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">MPI_Bcast</span><span class="p">(</span><span class="w"></span></td>
     </tr>
 
@@ -2520,7 +2520,7 @@
       <td class="lineno"><a id="l302" href="#l302">302</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">188</td>
+      <td class="linecount coveredLine">204</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">result</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"></span></td>
     </tr>
 
@@ -2568,7 +2568,7 @@
       <td class="lineno"><a id="l308" href="#l308">308</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">188</td>
+      <td class="linecount coveredLine">204</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -2600,7 +2600,7 @@
       <td class="lineno"><a id="l312" href="#l312">312</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">15720</td>
+      <td class="linecount coveredLine">15784</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">R</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root_rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -2634,12 +2634,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 1596 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 1628 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">15720</td>
+      <td class="linecount coveredLine">15784</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">begin</span><span class="p">());</span><span class="w"></span></td>
     </tr>
 
@@ -2647,7 +2647,7 @@
       <td class="lineno"><a id="l317" href="#l317">317</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">15720</td>
+      <td class="linecount coveredLine">15784</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">MPI_Bcast</span><span class="p">(</span><span class="w"></span></td>
     </tr>
 
@@ -2657,12 +2657,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 1596 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 1628 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">15720</td>
+      <td class="linecount coveredLine">15784</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">result</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"></span></td>
     </tr>
 
@@ -2710,7 +2710,7 @@
       <td class="lineno"><a id="l324" href="#l324">324</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">15720</td>
+      <td class="linecount coveredLine">15784</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -2766,7 +2766,7 @@
       <td class="lineno"><a id="l331" href="#l331">331</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">320</td>
+      <td class="linecount coveredLine">384</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root_rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -2782,7 +2782,7 @@
       <td class="lineno"><a id="l333" href="#l333">333</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">320</td>
+      <td class="linecount coveredLine">384</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">this_rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rank</span><span class="o">&lt;</span><span class="n">MPI_Comm</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -2798,7 +2798,7 @@
       <td class="lineno"><a id="l335" href="#l335">335</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">320</td>
+      <td class="linecount coveredLine">384</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -2808,14 +2808,14 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 320 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 384 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-          <div class="takenBranch">&check; Branch 4 taken 320 times.</div>
+          <div class="takenBranch">&check; Branch 4 taken 384 times.</div>
           <div class="notTakenBranch">&cross; Branch 5 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">320</td>
+      <td class="linecount coveredLine">384</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">result</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">Size</span><span class="o">&lt;</span><span class="n">MPI_Comm</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">),</span><span class="w"> </span><span class="n">T</span><span class="p">{</span><span class="mi">0</span><span class="p">});</span><span class="w"></span></td>
     </tr>
 
@@ -2833,14 +2833,14 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">3/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 120 times.</div>
-          <div class="takenBranch">&check; Branch 2 taken 200 times.</div>
-          <div class="takenBranch">&check; Branch 5 taken 320 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 152 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 232 times.</div>
+          <div class="takenBranch">&check; Branch 5 taken 384 times.</div>
           <div class="notTakenBranch">&cross; Branch 6 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">440</td>
+      <td class="linecount coveredLine">536</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">MPI_Gather</span><span class="p">(</span><span class="w"></span></td>
     </tr>
 
@@ -2872,7 +2872,7 @@
       <td class="lineno"><a id="l342" href="#l342">342</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">120</td>
+      <td class="linecount coveredLine">152</td>
       <td class="src coveredLine"><span class="w">            </span><span class="p">(</span><span class="n">this_rank</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">root_rank</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">data</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nb">NULL</span><span class="p">),</span><span class="w"></span></td>
     </tr>
 
@@ -2920,7 +2920,7 @@
       <td class="lineno"><a id="l348" href="#l348">348</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">320</td>
+      <td class="linecount coveredLine">384</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -2952,7 +2952,7 @@
       <td class="lineno"><a id="l352" href="#l352">352</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">23424</td>
+      <td class="linecount coveredLine">23520</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">R</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root_rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -2984,7 +2984,7 @@
       <td class="lineno"><a id="l356" href="#l356">356</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">23424</td>
+      <td class="linecount coveredLine">23520</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">this_rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Rank</span><span class="o">&lt;</span><span class="n">MPI_Comm</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -2994,14 +2994,14 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 11712 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 11760 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
-          <div class="takenBranch">&check; Branch 5 taken 11712 times.</div>
+          <div class="takenBranch">&check; Branch 5 taken 11760 times.</div>
           <div class="notTakenBranch">&cross; Branch 6 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">23424</td>
+      <td class="linecount coveredLine">23520</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">Size</span><span class="o">&lt;</span><span class="n">MPI_Comm</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">)</span><span class="o">*</span><span class="n">num_values</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">{</span><span class="mi">0</span><span class="p">});</span><span class="w"></span></td>
     </tr>
 
@@ -3011,14 +3011,14 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">3/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 3900 times.</div>
-          <div class="takenBranch">&check; Branch 2 taken 7812 times.</div>
-          <div class="takenBranch">&check; Branch 5 taken 11712 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 3924 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 7836 times.</div>
+          <div class="takenBranch">&check; Branch 5 taken 11760 times.</div>
           <div class="notTakenBranch">&cross; Branch 6 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">54648</td>
+      <td class="linecount coveredLine">54888</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">MPI_Gather</span><span class="p">(</span><span class="w"></span></td>
     </tr>
 
@@ -3026,7 +3026,7 @@
       <td class="lineno"><a id="l359" href="#l359">359</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">23424</td>
+      <td class="linecount coveredLine">23520</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">cdata</span><span class="p">(</span><span class="n">values</span><span class="p">),</span><span class="w"></span></td>
     </tr>
 
@@ -3050,7 +3050,7 @@
       <td class="lineno"><a id="l362" href="#l362">362</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">7800</td>
+      <td class="linecount coveredLine">7848</td>
       <td class="src coveredLine"><span class="w">            </span><span class="p">(</span><span class="n">this_rank</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">root_rank</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">data</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nb">NULL</span><span class="p">),</span><span class="w"></span></td>
     </tr>
 
@@ -3098,7 +3098,7 @@
       <td class="lineno"><a id="l368" href="#l368">368</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">23424</td>
+      <td class="linecount coveredLine">23520</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -3170,7 +3170,7 @@
       <td class="lineno"><a id="l377" href="#l377">377</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">5988</td>
+      <td class="linecount coveredLine">6060</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">R</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root_rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -3186,7 +3186,7 @@
       <td class="lineno"><a id="l379" href="#l379">379</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">5988</td>
+      <td class="linecount coveredLine">6060</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">size</span><span class="p">(</span><span class="n">values</span><span class="p">));</span><span class="w"></span></td>
     </tr>
 
@@ -3194,7 +3194,7 @@
       <td class="lineno"><a id="l380" href="#l380">380</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">5988</td>
+      <td class="linecount coveredLine">6060</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Size</span><span class="o">&lt;</span><span class="n">MPI_Comm</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -3213,11 +3213,11 @@
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
           <div class="notTakenBranch">&cross; Branch 0 not taken.</div>
-          <div class="takenBranch">&check; Branch 1 taken 5988 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 6060 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">5988</td>
+      <td class="linecount coveredLine">6060</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">num_values</span><span class="o">%</span><span class="n">size</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
@@ -3243,12 +3243,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 5988 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 6060 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">5988</td>
+      <td class="linecount coveredLine">6060</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">(</span><span class="n">num_values</span><span class="o">/</span><span class="n">size</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -3258,12 +3258,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 3 taken 5988 times.</div>
+          <div class="takenBranch">&check; Branch 3 taken 6060 times.</div>
           <div class="notTakenBranch">&cross; Branch 4 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">17964</td>
+      <td class="linecount coveredLine">18180</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">MPI_Scatter</span><span class="p">(</span><span class="w"></span></td>
     </tr>
 
@@ -3271,7 +3271,7 @@
       <td class="lineno"><a id="l387" href="#l387">387</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">5988</td>
+      <td class="linecount coveredLine">6060</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">cdata</span><span class="p">(</span><span class="n">values</span><span class="p">),</span><span class="w"></span></td>
     </tr>
 
@@ -3295,7 +3295,7 @@
       <td class="lineno"><a id="l390" href="#l390">390</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">5988</td>
+      <td class="linecount coveredLine">6060</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">result</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"></span></td>
     </tr>
 
@@ -3343,7 +3343,7 @@
       <td class="lineno"><a id="l396" href="#l396">396</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">5988</td>
+      <td class="linecount coveredLine">6060</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
