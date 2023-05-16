@@ -18,6 +18,8 @@
 #pragma GCC diagnostic ignored "-Wuseless-cast"
 #pragma GCC diagnostic ignored "-Wcast-qual"
 #pragma GCC diagnostic ignored "-Wnull-dereference"
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
 #endif  // GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 
 #include <highfive/H5Easy.hpp>

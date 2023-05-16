@@ -210,7 +210,7 @@ def _test_vtk(filename: str, skip_metadata: bool, reference_function: Callable[[
         reader = vtk.vtkHDFReader()
         point_collector = _get_points_from_grid
     else:
-        raise NotImplementedError("Unsupported vtk extension")
+        raise NotImplementedError(f"Could not determine suitable reader {filename}")
     reader.AddObserver("ErrorEvent", e)
     reader.SetFileName(filename)
     reader.Update()

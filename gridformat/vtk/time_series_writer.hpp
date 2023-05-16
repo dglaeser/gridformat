@@ -26,20 +26,10 @@ class VTKTimeSeriesWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid
 
  public:
     explicit VTKTimeSeriesWriter(VTKWriter&& writer, std::string base_filename)
-    : ParentType(writer.grid(), writer.uses_structured_ordering())
+    : ParentType(writer.grid(), writer.writer_options())
     , _vtk_writer{std::move(writer)}
     , _base_filename{std::move(base_filename)}
     {}
-
-    template<typename T>
-    void set_meta_data(const std::string& name, T&& value) {
-        ParentType::set_meta_data(name, std::forward<T>(value));
-    }
-
-    void set_meta_data(const std::string& name, std::string text) {
-        text.push_back('\0');
-        ParentType::set_meta_data(name, std::move(text));
-    }
 
  private:
     std::string _write(double _time) override {

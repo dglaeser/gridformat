@@ -153,6 +153,20 @@ inline constexpr auto incremented(R&& r, const Increment& inc) {
 
 /*!
  * \ingroup Common
+ * \brief Return a range that contains the elements of the two given ranges.
+ */
+template<Concepts::StaticallySizedRange R1, Concepts::StaticallySizedRange R2>
+    requires(std::is_same_v<std::ranges::range_value_t<R1>, std::ranges::range_value_t<R2>>)
+inline constexpr auto merged(R1&& r1, R2&& r2) {
+    constexpr std::size_t merged_size = static_size<R1> + static_size<R2>;
+    auto result = filled_array<merged_size>(*std::ranges::begin(r1));
+    std::ranges::copy(r1, result.begin());
+    std::ranges::copy(r2, result.begin() + static_size<R1>);
+    return result;
+}
+
+/*!
+ * \ingroup Common
  * \brief Flatten the given 2d range into a 1d range.
  */
 template<Concepts::MDRange<2> R> requires(

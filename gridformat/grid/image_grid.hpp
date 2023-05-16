@@ -24,6 +24,8 @@
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/iterator_facades.hpp>
 #include <gridformat/common/flat_index_mapper.hpp>
+
+#include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
 
 namespace GridFormat {
@@ -114,8 +116,7 @@ namespace Detail {
  * \ingroup Grid
  * \brief TODO Doc me
  */
-template<std::size_t dim,
-         Concepts::Scalar CoordinateType>
+template<std::size_t dim, Concepts::Scalar CoordinateType>
 class ImageGrid {
     static_assert(dim > 0 && dim <= 3);
 
@@ -139,12 +140,27 @@ class ImageGrid {
     template<Concepts::StaticallySizedMDRange<1> Origin,
              Concepts::StaticallySizedMDRange<1> Size,
              Concepts::StaticallySizedMDRange<1> Cells>
-        requires(static_size<Origin> == dim
-                 and static_size<Size> == dim
-                 and static_size<Cells> == dim
-                 and std::integral<std::ranges::range_value_t<Cells>>)
+        requires(static_size<Origin> == dim and
+                 static_size<Size> == dim and
+                 static_size<Cells> == dim and
+                 std::integral<std::ranges::range_value_t<Cells>>)
     ImageGrid(Origin&& origin, Size&& size, Cells&& cells)
-    : _lower_right{Ranges::to_array<dim, CoordinateType>(origin)}
+    : ImageGrid(
+        Ranges::to_array<dim, CoordinateType>(origin),
+        Ranges::to_array<dim, CoordinateType>(size),
+        Ranges::to_array<dim, std::size_t>(cells)
+    )
+    {}
+
+    ImageGrid(std::array<CoordinateType, dim> size,
+              std::array<std::size_t, dim> cells)
+    : ImageGrid(Ranges::filled_array<dim>(CoordinateType{0}), std::move(size), std::move(cells))
+    {}
+
+    ImageGrid(std::array<CoordinateType, dim> origin,
+              std::array<CoordinateType, dim> size,
+              std::array<std::size_t, dim> cells)
+    : _lower_right{std::move(origin)}
     , _upper_right{Ranges::apply_pairwise<CoordinateType>(std::plus{}, _lower_right, size)}
     , _spacing{_compute_spacing(cells)}
     , _cell_index_tuples{cells}
