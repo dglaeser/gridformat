@@ -7,8 +7,8 @@ project(gridformat_examples)
 if (gridformat_ROOT)
     message(STATUS "Using local gridformat installation")
     find_package(gridformat REQUIRED)
-    # include gridformat module for gridformat_have_dependency
-    include(${gridformat_MODULE_DIR}/GridFormatHaveDependency.cmake)
+    # include gridformat module for gridformat_have_feature
+    include(${gridformat_MODULE_DIR}/GridFormatHaveFeature.cmake)
 else ()
     if (NOT GRIDFORMAT_FETCH_TREE)
         execute_process(
@@ -32,10 +32,10 @@ else ()
     )
     FetchContent_MakeAvailable(gridformat)
 
-    # include gridformat module for gridformat_have_dependency
+    # include gridformat module for gridformat_have_feature
     set(GRIDFORMAT_SRC_DIR "")
     FetchContent_GetProperties(gridformat SOURCE_DIR GRIDFORMAT_SRC_DIR)
-    include(${GRIDFORMAT_SRC_DIR}/cmake/modules/GridFormatHaveDependency.cmake)
+    include(${GRIDFORMAT_SRC_DIR}/cmake/modules/GridFormatHaveFeature.cmake)
 endif ()
 
 enable_testing()
@@ -49,9 +49,8 @@ endfunction()
 gridformat_add_example(example_unstructured example_unstructured.cpp)
 gridformat_add_example(example_triangular example_triangular.cpp)
 
-# HighFive is required for hdf output, which is installed automatically
-# if libhdf5 is found. Check if gridformat was installed with it to make sure
-gridformat_have_dependency(HIGH_FIVE)
-if (GRIDFORMAT_HAVE_HIGH_FIVE)
+set(GRIDFORMAT_HAVE_VTK_HDF)
+gridformat_have_feature(VTK_HDF GRIDFORMAT_HAVE_VTK_HDF)
+if (GRIDFORMAT_HAVE_VTK_HDF)
     gridformat_add_example(example_vtk_hdf example_vtk_hdf.cpp)
 endif ()

@@ -73,6 +73,10 @@ namespace Detail {
             f.opts = std::move(opts);
             return f;
         }
+
+        constexpr auto with(VTK::XMLOptions opts = {}) const {
+            return (*this)(std::move(opts));
+        }
     };
 
 }  // namespace Detail
@@ -90,7 +94,7 @@ struct VTKHDFUnstructured {};
 struct VTKHDF {
     template<typename Grid>
     static constexpr auto from(const Grid&) {
-        // TODO: Once the VTKHDFImageGridReader is stable, reduce image format for image grids
+        // TODO: Once the VTKHDFImageGridReader is stable, use image format for image grids
         return VTKHDFUnstructured{};
     }
 };
@@ -267,6 +271,15 @@ struct WriterFactory<FileFormat::TimeSeries<F>> {
     }
 };
 
+
+// We place the format instances in a separate namespace and
+// make it available in the GridFormat namespace. This allows
+// downstream projects to expose these in their own namespace.
+// We cannot just put the instances in the FileFormats because
+// then we would have to do using namespace FileFormats in the
+// GridFormat namespace. But, VTKHDF would lead to a name clash.
+namespace Formats {
+
 inline constexpr FileFormat::VTI vti;
 inline constexpr FileFormat::VTR vtr;
 inline constexpr FileFormat::VTS vts;
@@ -278,6 +291,30 @@ inline constexpr FileFormat::Detail::TimeSeriesClosure time_series;
 #if GRIDFORMAT_HAVE_HIGH_FIVE
 inline constexpr FileFormat::VTKHDF vtk_hdf;
 #endif
+
+template<Concepts::Grid G>
+constexpr auto default_for() {
+    if constexpr (Concepts::ImageGrid<G>)
+        return vti;
+    else if constexpr (Concepts::RectilinearGrid<G>)
+        return vtr;
+    else if constexpr (Concepts::StructuredGrid<G>)
+        return vts;
+    else if constexpr (Concepts::UnstructuredGrid<G>)
+        return vtu;
+    else
+        throw TypeError("Unsupported grid concept");
+}
+
+template<Concepts::Grid G>
+constexpr auto default_for(const G&) {
+    return default_for<G>();
+}
+
+}  // namespace Formats
+
+using namespace Formats;
+namespace FileFormat { using namespace Formats; }
 
 }  // namespace GridFormat
 
