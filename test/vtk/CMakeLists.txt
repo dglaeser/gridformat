@@ -16,7 +16,7 @@ gridformat_add_regression_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_unstructured_grid_writer
     test_vtk_hdf_unstructured_grid_writer.cpp
-    "vtk_*unstructured*hdf"
+    "vtk_hdf_unstructured*hdf"
 )
 
 gridformat_add_regression_test_if(
@@ -38,7 +38,7 @@ gridformat_add_regression_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_image_grid_writer
     test_vtk_hdf_image_grid_writer.cpp
-    "vtk_*image*hdf"
+    "vtk_*d_image*hdf"
     SCRIPT_ARGS "--skip-metadata"
 )
 

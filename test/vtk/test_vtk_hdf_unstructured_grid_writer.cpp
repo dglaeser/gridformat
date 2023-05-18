@@ -20,7 +20,7 @@ int main() {
         auto test_data = GridFormat::Test::make_test_data<2, double>(grid);
         GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
         GridFormat::Test::add_meta_data(writer);
-        std::cout << "Wrote '" << GridFormat::as_highlight(writer.write("vtk_2d_in_2d_unstructured")) << "'" << std::endl;
+        std::cout << "Wrote '" << GridFormat::as_highlight(writer.write("vtk_hdf_unstructured_2d_in_2d")) << "'" << std::endl;
     }
 
     {
@@ -29,7 +29,7 @@ int main() {
         auto test_data = GridFormat::Test::make_test_data<3, double>(grid);
         GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
         GridFormat::Test::add_meta_data(writer);
-        std::cout << "Wrote '" << GridFormat::as_highlight(writer.write("vtk_3d_in_3d_unstructured")) << "'" << std::endl;
+        std::cout << "Wrote '" << GridFormat::as_highlight(writer.write("vtk_hdf_3d_in_3d_unstructured")) << "'" << std::endl;
     }
 
     {  // unit-test the IOContext helper class
