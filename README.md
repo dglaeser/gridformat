@@ -58,7 +58,7 @@ int main () {
     // For this example we have no user-defined grid type. Let's just use a predefined one...
     GridFormat::ImageGrid<2, double> grid{
         {1.0, 1.0}, // domain size
-        {10, 12},   // number of cells (pixels) in each direction
+        {10, 12}    // number of cells (pixels) in each direction
     };
 
     // Let's write an analytical field into .vtu file format. Fields are attached to the
