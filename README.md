@@ -110,9 +110,9 @@ target_link_libraries(... gridformat::gridformat)
 ## Compatibility with user-defined grids
 
 `GridFormat` does not operate on a specific grid data structure, but instead, it can be made compatible with any user-defined
-grid types by implementing specializations of a few traits classes. For information on how to do this, please have a look at the
-[traits classes overview (coming soon)](https://github.com/dglaeser/gridformat/blob/main/docs/traits_overview.md)
-and the guide on [how to make your grid compatible with `GridFormat` (coming soon)](https://github.com/dglaeser/gridformat/blob/main/docs/how_to.md).
+grid types by implementing specializations for a few traits classes. For information on how to do this, please have a look at the
+[traits classes overview](https://github.com/dglaeser/gridformat/blob/main/docs/traits.md)
+and [the guide on grid traits specialization](https://github.com/dglaeser/gridformat/blob/main/docs/how_to.md).
 
 
 ## Contribution Guidelines
