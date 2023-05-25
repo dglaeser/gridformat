@@ -49,7 +49,7 @@ template<typename Grid, typename Point>
 struct PointId;
 
 //! Exposes the number of corners of a cell via a static function `get(const Grid&, const Cell&)` (optional trait)
-template<typename Grid>
+template<typename Grid, typename Cell>
 struct NumberOfCellCorners;
 
 //! \} group UnstructuredGrid

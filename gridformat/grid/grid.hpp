@@ -96,10 +96,10 @@ std::size_t number_of_points(const Grid& grid) {
 
 template<typename Grid> requires(
     GridDetail::ExposesNumberOfCellCorners<Grid> or
-    GridDetail::ExposesPointRange<Grid>)
+    GridDetail::ExposesCellPoints<Grid>)
 std::size_t number_of_points(const Grid& grid, const Cell<Grid>& cell) {
     if constexpr (GridDetail::ExposesNumberOfCellCorners<Grid>)
-        return Traits::NumberOfCellCorners<Grid>::get(grid, cell);
+        return Traits::NumberOfCellCorners<Grid, Cell<Grid>>::get(grid, cell);
     else
         return Ranges::size(points(grid, cell));
 }
