@@ -43,6 +43,9 @@ jobs:
         with:
           compiler: ${{ matrix.compiler_pkg }}
 
+      - name: check-documentation-code
+        run: python3 test/test_readme_quick_start.py -e "-DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12"
+
       - name: install-adapted-packages
         uses: ./.github/actions/install-adapted-packages
 
