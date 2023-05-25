@@ -119,7 +119,7 @@ struct NumberOfCells<Dune::GridView<Traits>> {
 };
 
 template<typename Traits>
-struct NumberOfCellCorners<Dune::GridView<Traits>, DuneDetail::Element<Dune::GridView<Traits>>> {
+struct NumberOfCellPoints<Dune::GridView<Traits>, DuneDetail::Element<Dune::GridView<Traits>>> {
     static auto get(const Dune::GridView<Traits>&,
                     const DuneDetail::Element<Dune::GridView<Traits>>& cell) {
         return cell.subEntities(Dune::GridView<Traits>::dimension);

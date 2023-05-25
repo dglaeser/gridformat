@@ -85,8 +85,8 @@ namespace GridFormat::GridDetail {
         };
 
     template<typename T>
-    concept ExposesNumberOfCellCorners = is_complete<Traits::NumberOfCellCorners<T, Cell<T>>> && requires(const T& grid, const Cell<T>& cell) {
-            { Traits::NumberOfCellCorners<T, Cell<T>>::get(grid, cell) } -> std::convertible_to<std::size_t>;
+    concept ExposesNumberOfCellPoints = is_complete<Traits::NumberOfCellPoints<T, Cell<T>>> && requires(const T& grid, const Cell<T>& cell) {
+            { Traits::NumberOfCellPoints<T, Cell<T>>::get(grid, cell) } -> std::convertible_to<std::size_t>;
         };
 
     template<typename T>
