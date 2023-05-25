@@ -5,7 +5,7 @@
 
 [![Coverage Report.](https://dglaeser.github.io/gridformat/coverage.svg)](https://dglaeser.github.io/gridformat)
 
-`GridFormat` is a header-only C++ library for writing data into mesh file formats that can be visualized with tools
+`GridFormat` is a header-only C++ library for writing data into grid file formats that can be visualized with tools
 such as [ParaView](https://www.paraview.org/). The typical use case for `GridFormat` is within codes for numerical simulations
 that want to export numerical results into visualizable file formats. A variety of simulation frameworks exist, such as
 [Dune](https://www.dune-project.org/), [DuMuX](https://dumux.org/), [Deal.II](https://www.dealii.org/) or [Fenics](https://fenicsproject.org/),
@@ -24,8 +24,11 @@ Prerequisites:
 - C++-compiler with C++-20-support (tests run with `gcc-12/13`)
 - `cmake` (tests run with cmake-3.26)
 
-The easiest way to integrate `GridFormat` is via the `FetchContent` module of `cmake`. A minimal example of a project using
-`GridFormat` to write a [VTU](https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid) file may look like this:
+It is easiest to integrate `GridFormat` either as a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
+or via `FetchContent` module of `cmake`. A minimal example (using `FetchContent`) of a project using `GridFormat` to write
+a [VTU](https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid) file may look like this:
+
+<details>
 
 ```cmake
 cmake_minimum_required(VERSION 3.26)
@@ -76,7 +79,9 @@ int main () {
 }
 ```
 
-Many more formats and options are available, see the overview over supported formats (coming soon).
+</details>
+
+Many more formats and options are available, see the [API documentation (coming soon)](https://github.com/dglaeser/gridformat).
 For more examples, have a look at the [examples folder](https://github.com/dglaeser/gridformat/tree/main/examples).
 
 
