@@ -335,38 +335,30 @@ struct Ordinates<ImageGrid<dim, CT>> {
 
 // required for structured grid concept
 template<std::size_t dim, typename CT>
-struct PointCoordinates<ImageGrid<dim, CT>,
-                        typename ImageGrid<dim, CT>::Point> {
-    static decltype(auto) get(const ImageGrid<dim, CT>& grid,
-                              const typename ImageGrid<dim, CT>::Point& p) {
+struct PointCoordinates<ImageGrid<dim, CT>, typename ImageGrid<dim, CT>::Point> {
+    static decltype(auto) get(const ImageGrid<dim, CT>& grid, const typename ImageGrid<dim, CT>::Point& p) {
         return grid.position(p);
     }
 };
 
 // register as unstructured grid as well
 template<std::size_t dim, typename CT>
-struct CellPoints<ImageGrid<dim, CT>,
-                  typename ImageGrid<dim, CT>::Cell> {
-    static auto get(const ImageGrid<dim, CT>& grid,
-                    const typename ImageGrid<dim, CT>::Cell& c) {
+struct CellPoints<ImageGrid<dim, CT>, typename ImageGrid<dim, CT>::Cell> {
+    static auto get(const ImageGrid<dim, CT>& grid, const typename ImageGrid<dim, CT>::Cell& c) {
         return points(grid, c);
     }
 };
 
 template<std::size_t dim, typename CT>
-struct PointId<ImageGrid<dim, CT>,
-               typename ImageGrid<dim, CT>::Point> {
-    static auto get(const ImageGrid<dim, CT>& grid,
-                    const typename ImageGrid<dim, CT>::Point& p) {
+struct PointId<ImageGrid<dim, CT>, typename ImageGrid<dim, CT>::Point> {
+    static auto get(const ImageGrid<dim, CT>& grid, const typename ImageGrid<dim, CT>::Point& p) {
         return grid.id(p);
     }
 };
 
 template<std::size_t dim, typename CT>
-struct CellType<ImageGrid<dim, CT>,
-                typename ImageGrid<dim, CT>::Cell> {
-    static auto get(const ImageGrid<dim, CT>&,
-                    const typename ImageGrid<dim, CT>::Cell&) {
+struct CellType<ImageGrid<dim, CT>, typename ImageGrid<dim, CT>::Cell> {
+    static auto get(const ImageGrid<dim, CT>&, const typename ImageGrid<dim, CT>::Cell&) {
         if constexpr (dim == 1)
             return GridFormat::CellType::segment;
         if constexpr (dim == 2)
