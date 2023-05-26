@@ -4,53 +4,5 @@
 cmake_minimum_required(VERSION 3.25)
 project(gridformat_examples)
 
-if (gridformat_ROOT)
-    message(STATUS "Using local gridformat installation")
-    find_package(gridformat REQUIRED)
-    # include gridformat module for gridformat_have_feature
-    include(${gridformat_MODULE_DIR}/GridFormatHaveFeature.cmake)
-else ()
-    if (NOT GRIDFORMAT_FETCH_TREE)
-        execute_process(
-            COMMAND git rev-parse HEAD
-            OUTPUT_VARIABLE GRIDFORMAT_FETCH_TREE
-        )
-        string(STRIP ${GRIDFORMAT_FETCH_TREE} GRIDFORMAT_FETCH_TREE)
-        if (NOT GRIDFORMAT_FETCH_TREE)
-            set(GRIDFORMAT_FETCH_TREE "main" CACHE STRING "gridformat tree to fetch" FORCE)
-        endif ()
-    endif ()
-    message(STATUS "Fetching gridformat at ${GRIDFORMAT_FETCH_TREE}")
-    include(FetchContent)
-    FetchContent_Declare(
-        gridformat
-        GIT_REPOSITORY https://github.com/dglaeser/gridformat
-        GIT_TAG ${GRIDFORMAT_FETCH_TREE}
-        GIT_PROGRESS true
-        GIT_SHALLOW true
-        GIT_SUBMODULES_RECURSE OFF
-    )
-    FetchContent_MakeAvailable(gridformat)
-
-    # include gridformat module for gridformat_have_feature
-    set(GRIDFORMAT_SRC_DIR "")
-    FetchContent_GetProperties(gridformat SOURCE_DIR GRIDFORMAT_SRC_DIR)
-    include(${GRIDFORMAT_SRC_DIR}/cmake/modules/GridFormatHaveFeature.cmake)
-endif ()
-
 enable_testing()
-function(gridformat_add_example NAME SOURCE)
-    add_executable(${NAME} ${SOURCE})
-    target_link_libraries(${NAME} PUBLIC gridformat::gridformat)
-    target_compile_options(${NAME} PRIVATE -fconcepts-diagnostics-depth=20)
-    add_test(NAME ${NAME} COMMAND ./${NAME})
-endfunction()
-
-gridformat_add_example(example_unstructured example_unstructured.cpp)
-gridformat_add_example(example_triangular example_triangular.cpp)
-
-set(GRIDFORMAT_HAVE_VTK_HDF)
-gridformat_have_feature(VTK_HDF GRIDFORMAT_HAVE_VTK_HDF)
-if (GRIDFORMAT_HAVE_VTK_HDF)
-    gridformat_add_example(example_vtk_hdf example_vtk_hdf.cpp)
-endif ()
+add_subdirectory(example1)
