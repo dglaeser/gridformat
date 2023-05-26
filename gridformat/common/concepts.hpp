@@ -23,9 +23,9 @@ namespace GridFormat::Concepts {
 
 template<typename T>
 concept StaticallySizedRange
-    = std::ranges::range<T> and
-    is_complete<StaticSize<T>> and
-    requires {{ static_size<T> } -> std::convertible_to<std::size_t>; };
+    = std::ranges::range<T> and has_static_size<T> and requires {
+        { static_size<T> } -> std::convertible_to<std::size_t>;
+    };
 
 template<typename T1, typename T2>
 concept Interoperable = std::is_convertible_v<T1, T2> || std::is_convertible_v<T2, T1>;

@@ -112,7 +112,7 @@ namespace Detail {
 
     template<Concepts::StaticallySizedRange R, typename Iterator>
     constexpr void set_sub_extents(Iterator it) {
-        *it = StaticSize<R>::value;
+        *it = static_size<R>;
         ++it;
         if constexpr (has_sub_range<R>)
             set_sub_extents<std::ranges::range_value_t<R>>(it);
@@ -131,7 +131,7 @@ constexpr MDLayout get_md_layout() {
         return MDLayout{};
     else {
         std::array<std::size_t, mdrange_dimension<T>> extents;
-        extents[0] = StaticSize<T>::value;
+        extents[0] = static_size<T>;
         if constexpr (mdrange_dimension<T> > 1)
             Detail::set_sub_extents<std::ranges::range_value_t<T>>(extents.begin() + 1);
         return MDLayout{extents};

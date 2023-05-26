@@ -345,6 +345,8 @@ concept HasStaticSizeMember = requires {
 }  // namespace Detail
 #endif  // DOXYGEN
 
+namespace Traits {
+
 template<typename T>
 struct StaticSize;
 template<typename T, std::size_t s>
@@ -370,11 +372,13 @@ struct StaticSize<T> {
 template<typename T> requires(is_complete<StaticSize<std::remove_const_t<T>>>)
 struct StaticSize<T&> : public StaticSize<std::remove_const_t<T>> {};
 
-template<typename T>
-inline constexpr std::size_t static_size = StaticSize<T>::value;
+}
 
 template<typename T>
-inline constexpr bool has_static_size = is_complete<StaticSize<T>>;
+inline constexpr std::size_t static_size = Traits::StaticSize<T>::value;
+
+template<typename T>
+inline constexpr bool has_static_size = is_complete<Traits::StaticSize<T>>;
 
 //! \} group Common
 
