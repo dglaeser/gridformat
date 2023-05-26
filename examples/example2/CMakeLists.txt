@@ -7,5 +7,5 @@ project(gridformat_example_1)
 include(../find_gridformat.cmake)
 
 add_executable(example2 example2.cpp)
-add_test(example2 COMMAND ./example2)
+add_test(NAME example2 COMMAND ./example2)
 target_link_libraries(example2 PRIVATE gridformat::gridformat)
