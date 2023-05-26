@@ -52,7 +52,7 @@ inline constexpr auto size(R&& r) {
  */
 template<Concepts::StaticallySizedRange R>
 inline constexpr auto size(R&&) {
-    return StaticSize<R>::value;
+    return static_size<R>;
 }
 
 /*!
