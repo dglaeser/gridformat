@@ -20,4 +20,5 @@ and then going into the `build` directory for compilation and execution:
 cd build && make && ./exampleN
 ```
 
-- [Example 1](Writing a custom image data structure into `.vti` files)
+- [Example 1](./example1): writing a custom image data structure into `.vti` files
+- [Example 2](./example2): writing a digital elevation model into a `.vts` file
