@@ -44,6 +44,16 @@ runs:
 
     - name: test-examples
       run: |
+        pushd examples
+          cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
+                -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
+                -Dgridformat_ROOT=$(pwd)/install \
+                -B build
+        pushd build && make && ctest --output-on-failure
+      shell: bash
+
+    - name: test-examples-with-fetch-content
+      run: |
         GFMT_TREE=$GITHUB_HEAD_REF
         if [[ -z "$GFMT_TREE" ]]; then
           GFMT_TREE=$GITHUB_SHA
