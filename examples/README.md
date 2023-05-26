@@ -18,3 +18,4 @@ cd build && make && ./exampleN
 ```
 
 - [Example 1](Writing a custom image data structure into `.vti` files)
+- [Example 2](Writing a digital elevation model into a `.vts` file)
