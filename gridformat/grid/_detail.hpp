@@ -11,6 +11,7 @@
 
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/concepts.hpp>
+#include <gridformat/common/precision.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
@@ -166,11 +167,14 @@ namespace GridFormat::GridDetail {
     template<typename Grid, std::invocable<CellReference<Grid>> T>
     using CellFunctionValueType = std::decay_t<std::invoke_result_t<T, CellReference<Grid>>>;
 
+    template<Concepts::Scalar T>
+    using EntityFunctionScalarType = std::conditional_t<std::is_same_v<T, bool>, typename UInt8::T, T>;
+
     template<typename Grid, std::invocable<PointReference<Grid>> T>
-    using PointFunctionScalarType = FieldScalar<PointFunctionValueType<Grid, T>>;
+    using PointFunctionScalarType = EntityFunctionScalarType<FieldScalar<PointFunctionValueType<Grid, T>>>;
 
     template<typename Grid, std::invocable<CellReference<Grid>> T>
-    using CellFunctionScalarType = FieldScalar<CellFunctionValueType<Grid, T>>;
+    using CellFunctionScalarType = EntityFunctionScalarType<FieldScalar<CellFunctionValueType<Grid, T>>>;
 
 }  // namespace GridFormat::GridDetail
 #endif // DOXYGEN
