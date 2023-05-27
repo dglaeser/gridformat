@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-# We want to allow examples to run with a local installation of GridFormat
+# We want to allow the examples to run with a local installation of GridFormat
 # or using the FetchContent module of cmake. In the CI, we want to be able
 # to test both methods. Therefore, we centralize the logic in this file.
 
