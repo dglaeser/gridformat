@@ -22,8 +22,8 @@ namespace GridFormat {
  * \ingroup Common
  * \brief Represents a precision known at compile-time
  */
-template<Concepts::Scalar T>
-struct Precision {};
+template<Concepts::Scalar _T>
+struct Precision { using T = _T; };
 
 using Float32 = Precision<float>;
 using Float64 = Precision<double>;
