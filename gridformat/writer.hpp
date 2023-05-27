@@ -135,10 +135,24 @@ class Writer {
         });
     }
 
+    template<typename Field, typename T>
+    void set_point_field(const std::string& name, Field&& field, const Precision<T>& prec) {
+        _visit_writer([&] (auto& writer) {
+            writer.set_point_field(name, std::forward<Field>(field), prec);
+        });
+    }
+
     template<typename Field>
     void set_cell_field(const std::string& name, Field&& field) {
         _visit_writer([&] (auto& writer) {
             writer.set_cell_field(name, std::forward<Field>(field));
+        });
+    }
+
+    template<typename Field, typename T>
+    void set_cell_field(const std::string& name, Field&& field, const Precision<T>& prec) {
+        _visit_writer([&] (auto& writer) {
+            writer.set_cell_field(name, std::forward<Field>(field), prec);
         });
     }
 
