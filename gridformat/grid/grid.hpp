@@ -151,6 +151,7 @@ Concepts::StaticallySizedRange decltype(auto) location(const Grid& grid, const C
 }
 
 template<GridDetail::ExposesPointLocation Grid>
+    requires(not std::same_as<Cell<Grid>, Point<Grid>>)  // avoid ambiguity if cell & point type are the same
 Concepts::StaticallySizedRange decltype(auto) location(const Grid& grid, const Point<Grid>& p) {
     return Traits::Location<Grid, Point<Grid>>::get(grid, p);
 }

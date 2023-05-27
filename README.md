@@ -25,8 +25,8 @@ Prerequisites:
 - `cmake` (tests run with cmake-3.26)
 
 It is easiest to integrate `GridFormat` either as a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
-or via `FetchContent` module of `cmake`. A minimal example (using `FetchContent`) of a project using `GridFormat` to write
-a [VTU](https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid) file may look like this:
+or via the `FetchContent` module of `cmake`. A minimal example (using `FetchContent`) of a project using `GridFormat` to
+write a [VTU](https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid) file may look like this:
 
 <details>
 
