@@ -115,6 +115,15 @@ grid types by implementing specializations for a few traits classes. For informa
 and [the guide on grid traits specialization](https://github.com/dglaeser/gridformat/blob/main/docs/how_to.md).
 
 
+## Supported frameworks
+
+`GridFormat` comes with predefined traits for
+[`Dune::GridView`](https://www.dune-project.org/doxygen/2.8.0/classDune_1_1GridView.html) (tested dune version: 2.8)
+and [`dealii::Triangulation`](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.4.0).
+Users of these frameworks can include these predefined traits and use `GridFormat` directly
+(see the [examples](https://github.com/dglaeser/gridformat/tree/main/examples)).
+
+
 ## Contribution Guidelines
 
 Coming soon...
