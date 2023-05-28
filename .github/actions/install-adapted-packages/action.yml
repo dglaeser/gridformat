@@ -6,6 +6,9 @@ inputs:
   dune_version:
     required: false
     default: 2.8
+  dealii_version:
+    required: false
+    default: 9.4.0
 runs:
   using: composite
   steps:
@@ -20,4 +23,12 @@ runs:
             sudo ./dune-common/bin/dunecontrol --opts=dune.opts make install
         popd && rm -rf dune_libs
         sudo ldconfig
+      shell: bash
+    - name: install-dealii
+      run: |
+        export REPO=ppa:ginggs/deal.ii-${{inputs.dealii_version}}-backports
+        sudo apt-get update
+        sudo apt-get install -y software-properties-common
+        sudo add-apt-repository $REPO
+        sudo apt-get install -y libdeal.ii-dev
       shell: bash
