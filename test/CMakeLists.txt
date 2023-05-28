@@ -34,6 +34,7 @@ function(gridformat_add_test_exe NAME SOURCE)
     # which we use for testing the predefined deal.ii adapters
     target_link_libraries(${NAME} gridformat::gridformat Boost::ut)
     target_compile_definitions(${NAME} PRIVATE GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS)
+    target_compile_options(${NAME} PRIVATE -Wall)
 
     # With ARGV2 callers can control if memcheck should be skipped
     if (VALGRIND_PATH AND ARGC LESS_EQUAL 2)
