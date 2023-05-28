@@ -1,6 +1,19 @@
 # SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+find_package(deal.II)
+gridformat_add_regression_test_if(deal.II_FOUND
+    test_dealii_sequential
+    test_dealii_sequential.cpp
+    "dealii_vtu*"
+)
+if (deal.II_FOUND)
+    deal_ii_initialize_cached_variables()
+    deal_ii_setup_target(test_dealii_sequential)
+    # two flags added by dealii produce (in our opinion) false positives with gcc (there are related open issues in gcc)
+    target_compile_options(test_dealii_sequential PRIVATE -Wno-overloaded-virtual -Wno-missing-braces)
+endif ()
+
 find_package(dune-common QUIET)
 find_package(dune-geometry QUIET)
 find_package(dune-grid QUIET)
