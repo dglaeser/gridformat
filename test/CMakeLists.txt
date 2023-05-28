@@ -30,7 +30,9 @@ add_custom_target(memcheck)
 find_program(VALGRIND_PATH valgrind)
 function(gridformat_add_test_exe NAME SOURCE)
     add_executable(${NAME} ${SOURCE})
-    target_link_libraries(${NAME} PRIVATE gridformat::gridformat Boost::ut)
+    # we omit the PRIVATE scope keyword to be compatible with dealii_setup_target()
+    # which we use for testing the predefined deal.ii adapters
+    target_link_libraries(${NAME} gridformat::gridformat Boost::ut)
     target_compile_definitions(${NAME} PRIVATE GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS)
 
     # With ARGV2 callers can control if memcheck should be skipped

@@ -57,7 +57,7 @@ if (${DUNE_FOUND})
             test_dune_yasp_parallel_rectilinear_grid
     )
     foreach (dune_target IN LISTS dune_targets)
-        target_link_libraries(${dune_target} PRIVATE dunecommon dunegeometry dunegrid)
+        target_link_libraries(${dune_target} dunecommon dunegeometry dunegrid)
 
         # the dune cmake setup seems to not properly set the include dirs via target_link_libraries
         # (in case it is installed in non-standard location)
