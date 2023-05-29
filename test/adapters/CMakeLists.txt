@@ -11,7 +11,7 @@ if (deal.II_FOUND)
     deal_ii_initialize_cached_variables()
     deal_ii_setup_target(test_dealii_sequential)
     # two flags added by dealii produce (in our opinion) false positives with gcc (there are related open issues in gcc)
-    target_compile_options(test_dealii_sequential PRIVATE -Wno-overloaded-virtual -Wno-missing-braces)
+    target_compile_options(test_dealii_sequential PRIVATE -Wno-overloaded-virtual -Wno-missing-braces -frounding-math)
 endif ()
 
 find_package(dune-common QUIET)
