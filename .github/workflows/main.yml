@@ -55,6 +55,7 @@ jobs:
           cmake -DCMAKE_C_COMPILER=${{matrix.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}} \
                 -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -B build
           pushd build && make build_tests && popd
@@ -87,6 +88,7 @@ jobs:
           cmake -DCMAKE_C_COMPILER=/usr/bin/$DEFAULT_C_COMPILER \
                 -DCMAKE_CXX_COMPILER=/usr/bin/$DEFAULT_CXX_COMPILER \
                 -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -B build
           cd build && make memcheck

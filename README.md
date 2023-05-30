@@ -122,7 +122,7 @@ and [the guide on grid traits specialization](https://github.com/dglaeser/gridfo
 [deal.ii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.4.0).
 and [cgal](https://www.cgal.org/) triangulations in
 [2d](https://doc.cgal.org/latest/Triangulation_2/index.html) and
-[3d](https://doc.cgal.org/latest/Triangulation_3/index.html).
+[3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 5.5.2).
 Users of these frameworks can include these predefined traits and use `GridFormat` directly
 (see the [examples](https://github.com/dglaeser/gridformat/tree/main/examples)).
 

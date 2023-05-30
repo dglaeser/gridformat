@@ -9,6 +9,9 @@ inputs:
   dealii_version:
     required: false
     default: 9.4.0
+  cgal_version:
+    required: false
+    default: 5.2.2
 runs:
   using: composite
   steps:
@@ -31,4 +34,12 @@ runs:
         sudo apt-get install -y software-properties-common
         sudo add-apt-repository $REPO
         sudo apt-get install -y libdeal.ii-dev
+      shell: bash
+    - name: install-cgal
+      run: |
+        git clone --branch=v${{inputs.cgal_version}} --depth=1 https://github.com/CGAL/cgal.git
+        pushd cgal
+          cmake -DCMAKE_INSTALL_PREFIX=/gridformat-manually-installed-deps/ -B build
+          sudo cmake --install build
+        popd && rm -rf cgal
       shell: bash
