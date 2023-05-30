@@ -58,7 +58,11 @@ jobs:
 
       - name: check-documentation-code
         run: |
-          python3 test/test_readme_quick_start.py -e "-DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12"
+          GFMT_TREE=$GITHUB_HEAD_REF
+          if [[ -z "$GFMT_TREE" ]]; then
+            GFMT_TREE=$GITHUB_SHA
+          fi
+          python3 test/test_readme_quick_start.py -b ${GFMT_TREE} -e "-DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12"
           python3 test/test_readme_tested_versions.py --cmake-log-file gfmt_cmake_log.txt
 
       - name: build-tests

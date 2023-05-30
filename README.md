@@ -31,7 +31,7 @@ write a [VTU](https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid) fi
 <details>
 
 ```cmake
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.22)
 project(some_app_using_gridformat)
 
 include(FetchContent)
