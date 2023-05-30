@@ -2,17 +2,32 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 find_package(deal.II)
+if (deal.II_FOUND)
+    deal_ii_initialize_cached_variables()
+    set(GRIDFORMAT_HAVE_PARALLEL_DEAL_II ${MPI_FOUND})
+endif()
+
+function (gridformat_setup_deal_ii_target TARGET)
+    if (deal.II_FOUND)
+        deal_ii_setup_target(${TARGET})
+        # two flags added by dealii produce (in our opinion) false positives with gcc (there are related open issues in gcc)
+        target_compile_options(${TARGET} PRIVATE -Wno-overloaded-virtual -Wno-missing-braces -frounding-math)
+    endif ()
+endfunction ()
+
 gridformat_add_regression_test_if(deal.II_FOUND
     test_dealii_sequential
     test_dealii_sequential.cpp
     "dealii_vtu*"
 )
-if (deal.II_FOUND)
-    deal_ii_initialize_cached_variables()
-    deal_ii_setup_target(test_dealii_sequential)
-    # two flags added by dealii produce (in our opinion) false positives with gcc (there are related open issues in gcc)
-    target_compile_options(test_dealii_sequential PRIVATE -Wno-overloaded-virtual -Wno-missing-braces -frounding-math)
-endif ()
+gridformat_add_parallel_regression_test_if(GRIDFORMAT_HAVE_PARALLEL_DEAL_II
+    test_dealii_parallel
+    test_dealii_parallel.cpp
+    2
+    "dealii_pvtu*.pvt*"
+)
+gridformat_setup_deal_ii_target(test_dealii_sequential)
+gridformat_setup_deal_ii_target(test_dealii_parallel)
 
 find_package(dune-common QUIET)
 find_package(dune-geometry QUIET)
