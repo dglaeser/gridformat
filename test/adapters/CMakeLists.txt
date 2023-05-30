@@ -1,6 +1,17 @@
 # SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+find_package(CGAL)
+gridformat_add_regression_test_if(CGAL_FOUND
+    test_cgal
+    test_cgal.cpp
+    "cgal_vtu*"
+)
+if (CGAL_FOUND)
+    target_link_libraries(test_cgal CGAL::CGAL)
+    target_compile_options(test_cgal PRIVATE -fconcepts-diagnostics-depth=20)
+endif ()
+
 find_package(deal.II)
 if (deal.II_FOUND)
     deal_ii_initialize_cached_variables()
