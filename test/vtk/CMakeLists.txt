@@ -39,7 +39,7 @@ gridformat_add_regression_test_if(
     test_vtk_hdf_image_grid_writer
     test_vtk_hdf_image_grid_writer.cpp
     "vtk_*image*hdf"
-    "--skip-metadata"
+    SCRIPT_ARGS "--skip-metadata"
 )
 
 set(RANKS 2;4)
@@ -62,6 +62,6 @@ foreach (NR IN LISTS RANKS)
         test_vtk_hdf_parallel_image_grid_writer.cpp
         ${NR}
         "pvtk_*image*nranks_${NR}*hdf"
-        "--skip-metadata"
+        SCRIPT_ARGS "--skip-metadata"
     )
 endforeach ()

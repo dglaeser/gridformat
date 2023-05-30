@@ -29,6 +29,7 @@ endfunction()
 add_custom_target(memcheck)
 find_program(VALGRIND_PATH valgrind)
 function(gridformat_add_test_exe NAME SOURCE)
+    cmake_parse_arguments(EXTRA_ARGS "SKIP_MEMCHECK" "" "" ${ARGN})
     add_executable(${NAME} ${SOURCE})
     # we omit the PRIVATE scope keyword to be compatible with dealii_setup_target()
     # which we use for testing the predefined deal.ii adapters
@@ -36,8 +37,7 @@ function(gridformat_add_test_exe NAME SOURCE)
     target_compile_definitions(${NAME} PRIVATE GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS)
     target_compile_options(${NAME} PRIVATE -Wall)
 
-    # With ARGV2 callers can control if memcheck should be skipped
-    if (VALGRIND_PATH AND ARGC LESS_EQUAL 2)
+    if (VALGRIND_PATH AND NOT EXTRA_ARGS_SKIP_MEMCHECK)
         set(MEMCHECK_TARGET ${NAME}_memcheck)
         add_custom_target(
             ${MEMCHECK_TARGET}
@@ -45,16 +45,14 @@ function(gridformat_add_test_exe NAME SOURCE)
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
         add_dependencies(memcheck ${MEMCHECK_TARGET})
+    elseif (VALGRIND_PATH AND EXTRA_ARGS_SKIP_MEMCHECK)
+        message(STATUS "Skipping memcheck target for '${NAME}'")
     endif ()
 endfunction()
 
 
 function(gridformat_add_test NAME SOURCE)
-    if (ARGC GREATER 2)
-        gridformat_add_test_exe(${NAME} ${SOURCE} SKIP_MEMCHECK)
-    else ()
-        gridformat_add_test_exe(${NAME} ${SOURCE})
-    endif ()
+    gridformat_add_test_exe(${NAME} ${SOURCE} ${ARGN})
     add_test(NAME ${NAME} COMMAND "./${NAME}")
     gridformat_set_test_props(${NAME})
 endfunction()
@@ -62,8 +60,9 @@ endfunction()
 
 function(gridformat_add_test_if CONDITION NAME SOURCE)
     if (${CONDITION})
-        gridformat_add_test(${NAME} ${SOURCE})
+        gridformat_add_test(${NAME} ${SOURCE} ${ARGN})
     else ()
+        message(STATUS "Skipping '${NAME}' because '${CONDITION}' evaluated to false")
         set(DUMMY_MAIN "${CMAKE_CURRENT_BINARY_DIR}/test_dummy_${NAME}.cpp")
         file(WRITE ${DUMMY_MAIN}
             "#include <iostream>\n\n"
@@ -73,24 +72,22 @@ function(gridformat_add_test_if CONDITION NAME SOURCE)
             "    return 255;\n"
             "}"
         )
-        gridformat_add_test(${NAME} ${DUMMY_MAIN} SKIP_MEMCHECK)
+        gridformat_add_test(${NAME} ${DUMMY_MAIN} ${ARGN} SKIP_MEMCHECK)
     endif ()
 endfunction()
 
 
 find_package(Python COMPONENTS Interpreter)
 function(gridformat_add_regression_test NAME SOURCE REGEX)
-    if (ARGC GREATER "3")
-        set(SCRIPT_ARGS ${ARGV3})
-    endif ()
+    cmake_parse_arguments(EXTRA_ARGS "" "SCRIPT_ARGS" "" "${ARGN}")
     if (NOT Python_Interpreter_FOUND OR GRIDFORMAT_SKIP_REGRESSION)
         message(STATUS "Skipping regression testing for '${NAME}'")
-        gridformat_add_test(${NAME} ${SOURCE})
+        gridformat_add_test(${NAME} ${SOURCE} ${ARGN})
     else ()
-        gridformat_add_test_exe(${NAME} ${SOURCE})
+        gridformat_add_test_exe(${NAME} ${SOURCE} ${ARGN})
         add_test(
             NAME ${NAME}
-            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py  -c "./${NAME}" -r ${REGEX} ${SCRIPT_ARGS}
+            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py  -c "./${NAME}" -r ${REGEX} ${EXTRA_ARGS_SCRIPT_ARGS}
         )
         gridformat_set_test_props(${NAME})
     endif ()
@@ -99,22 +96,20 @@ endfunction()
 
 find_package(MPI COMPONENTS CXX)
 function(gridformat_add_parallel_regression_test NAME SOURCE NPROC REGEX)
-    if (ARGC GREATER "4")
-        set(SCRIPT_ARGS ${ARGV4})
-    endif ()
+    cmake_parse_arguments(EXTRA_ARGS "" "SCRIPT_ARGS" "" "${ARGN}")
     if (NOT MPI_FOUND)
         message(STATUS "Skipping parallel test '${NAME}' because MPI was not found")
-        gridformat_add_test_if(MPI_FOUND ${NAME} ${SOURCE})
+        gridformat_add_test_if(MPI_FOUND ${NAME} ${SOURCE} ${ARGN})
     elseif (GRIDFORMAT_SKIP_REGRESSION)
-        message(STATUS "Skipping regression-testing '${NAME}'")
-        gridformat_add_test_exe(${NAME} ${SOURCE} SKIP_MEMCHECK)
+        message(STATUS "Skipping regression-testing '${NAME}' because it is globally deactivated")
+        gridformat_add_test_exe(${NAME} ${SOURCE} ${ARGN} SKIP_MEMCHECK)
         add_test(NAME ${NAME} COMMAND ${MPIEXEC} -n ${NPROC} --oversubscribe ${NAME})
         gridformat_set_test_props(${NAME})
     else ()
-        gridformat_add_test_exe(${NAME} ${SOURCE} SKIP_MEMCHECK)
+        gridformat_add_test_exe(${NAME} ${SOURCE} ${ARGN} SKIP_MEMCHECK)
         add_test(
             NAME ${NAME}
-            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c "${MPIEXEC} -n ${NPROC} --oversubscribe ${NAME}" -r ${REGEX} ${SCRIPT_ARGS}
+            COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_regression_test.py -c "${MPIEXEC} -n ${NPROC} --oversubscribe ${NAME}" -r ${REGEX} ${EXTRA_ARGS_SCRIPT_ARGS}
         )
         gridformat_set_test_props(${NAME})
     endif ()
@@ -122,25 +117,20 @@ endfunction()
 
 
 function(gridformat_add_regression_test_if CONDITION NAME SOURCE REGEX)
-    if (ARGC GREATER "4")
-        set(SCRIPT_ARGS ${ARGV4})
-    endif ()
     if (${CONDITION})
-        gridformat_add_regression_test(${NAME} ${SOURCE} ${REGEX} ${SCRIPT_ARGS})
+        gridformat_add_regression_test(${NAME} ${SOURCE} ${REGEX} ${ARGN})
     else ()
-        gridformat_add_test_if(${CONDITION} ${NAME} ${SOURCE})
+        gridformat_add_test_if(${CONDITION} ${NAME} ${SOURCE} ${ARGN})
     endif ()
 endfunction()
 
 
 function(gridformat_add_parallel_regression_test_if CONDITION NAME SOURCE NPROC REGEX)
-    if (ARGC GREATER "5")
-        set(SCRIPT_ARGS ${ARGV5})
-    endif ()
+    cmake_parse_arguments(EXTRA_ARGS "" "SCRIPT_ARGS;SKIP_MEMCHECK" "" "${ARGN}")
     if (${CONDITION})
-        gridformat_add_parallel_regression_test(${NAME} ${SOURCE} ${NPROC} ${REGEX} ${SCRIPT_ARGS})
+        gridformat_add_parallel_regression_test(${NAME} ${SOURCE} ${NPROC} ${REGEX} ${ARGN})
     else ()
-        gridformat_add_test_if(${CONDITION} ${NAME} ${SOURCE})
+        gridformat_add_test_if(${CONDITION} ${NAME} ${SOURCE} ${ARGN})
     endif ()
 endfunction()
 
