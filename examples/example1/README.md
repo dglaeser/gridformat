@@ -3,7 +3,7 @@
 
 # Example 1: writing voxel data to image grid formats
 
-<img alt="example2" src="https://github.com/dglaeser/gridformat/blob/feature/update-examples/examples/example1/img/result.png" width="50%"/>
+<img alt="example1" src="https://github.com/dglaeser/gridformat/blob/main/examples/example1/img/result.png" width="50%"/>
 
 This example illustrates how to write voxel data into the [.vti file format](https://examples.vtk.org/site/VTKFileFormats/#imagedata),
 which can be read, visualized and post-processed with [ParaView](https://www.paraview.org/) (see the image above).

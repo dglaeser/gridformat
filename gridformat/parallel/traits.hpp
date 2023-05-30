@@ -16,6 +16,7 @@
 
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/type_traits.hpp>
 
 namespace GridFormat::ParallelTraits {
 
@@ -120,7 +121,7 @@ struct BroadCast<NullCommunicator> {
 template<>
 struct Gather<NullCommunicator> {
     template<typename T>
-    static constexpr std::vector<T> get(const NullCommunicator&, const T&, [[maybe_unused]] int root_rank = 0) {
+    static constexpr std::vector<FieldScalar<T>> get(const NullCommunicator&, const T&, [[maybe_unused]] int root_rank = 0) {
         throw NotImplemented("Gather on null communicator");
     }
 };

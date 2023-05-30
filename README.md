@@ -31,7 +31,7 @@ write a [VTU](https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid) fi
 <details>
 
 ```cmake
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.22)
 project(some_app_using_gridformat)
 
 include(FetchContent)
@@ -115,9 +115,41 @@ grid types by implementing specializations for a few traits classes. For informa
 and [the guide on grid traits specialization](https://github.com/dglaeser/gridformat/blob/main/docs/how_to.md).
 
 
+## Predefined traits
+
+`GridFormat` comes with predefined traits for
+[dune grid views](https://www.dune-project.org/doxygen/2.8.0/classDune_1_1GridView.html) (tested dune version: 2.9),
+[deal.ii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.4.0).
+and [cgal](https://www.cgal.org/) triangulations in
+[2d](https://doc.cgal.org/latest/Triangulation_2/index.html) and
+[3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 5.5.2).
+Users of these frameworks can include these predefined traits and use `GridFormat` directly
+(see the [examples](https://github.com/dglaeser/gridformat/tree/main/examples)).
+
+
 ## Contribution Guidelines
 
 Coming soon...
+
+### Development and test suite
+
+In order to configure your local copy for testing, tell `cmake` to include the test suite:
+
+```bash
+# Note: you may have to set a compiler explicitly (see installation section)
+cmake -DGRIDFORMAT_BUILD_TESTS=ON -B build
+```
+
+Afterwards, you can build and run all tests with `ctest`:
+
+```bash
+# Note: use, e.g., ctest -j4 if you want to use 4 processors
+cd build
+make build_tests
+ctest
+```
+
+Note that an internet connection is required for the call to `cmake` as it pulls in [ut](https://github.com/boost-ext/ut) on-the-fly.
 
 ## License
 

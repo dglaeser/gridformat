@@ -5,8 +5,9 @@
 
 #include "dem.hpp"
 
+// Here we implement the traits required to fulfill the `StructuredGrid` concept
+// for the DEM data structure of this example.
 namespace GridFormat::Traits {
-
 
 template<>
 struct Cells<Example::DEM> {

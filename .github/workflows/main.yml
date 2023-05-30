@@ -43,21 +43,30 @@ jobs:
         with:
           compiler: ${{ matrix.compiler_pkg }}
 
-      - name: check-documentation-code
-        run: python3 test/test_readme_quick_start.py -e "-DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12"
-
       - name: install-adapted-packages
         uses: ./.github/actions/install-adapted-packages
 
-      - name: build-tests
+      - name: configure
         run: |
           rm -rf build
           cmake -DCMAKE_C_COMPILER=${{matrix.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}} \
                 -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
-                -B build
-          pushd build && make build_tests && popd
+                -B build | tee gfmt_cmake_log.txt
+
+      - name: check-documentation-code
+        run: |
+          GFMT_TREE=$GITHUB_HEAD_REF
+          if [[ -z "$GFMT_TREE" ]]; then
+            GFMT_TREE=$GITHUB_SHA
+          fi
+          python3 test/test_readme_quick_start.py -b ${GFMT_TREE} -e "-DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12"
+          python3 test/test_readme_tested_versions.py --cmake-log-file gfmt_cmake_log.txt
+
+      - name: build-tests
+        run: pushd build && make build_tests && popd
 
       - name: test
         run: |
@@ -87,6 +96,7 @@ jobs:
           cmake -DCMAKE_C_COMPILER=/usr/bin/$DEFAULT_C_COMPILER \
                 -DCMAKE_CXX_COMPILER=/usr/bin/$DEFAULT_CXX_COMPILER \
                 -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -B build
           cd build && make memcheck

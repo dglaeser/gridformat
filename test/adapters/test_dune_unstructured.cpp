@@ -9,6 +9,7 @@
 
 #include <gridformat/grid/adapters/dune.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
+#include <gridformat/vtk/vtp_writer.hpp>
 #include "../vtk/vtk_writer_tester.hpp"
 #include "../make_test_data.hpp"
 
@@ -29,6 +30,16 @@ int main(int argc, char** argv) {
         return GridFormat::Test::test_function<double>(element.geometry().center());
     });
     writer.write("dune_vtu_2d_in_2d");
+
+    GridFormat::VTPWriter poly_writer{grid_view};
+    GridFormat::Test::add_meta_data(poly_writer);
+    poly_writer.set_point_field("pfunc", [&] (const auto& vertex) {
+        return GridFormat::Test::test_function<double>(vertex.geometry().center());
+    });
+    poly_writer.set_cell_field("cfunc", [&] (const auto& element) {
+        return GridFormat::Test::test_function<double>(element.geometry().center());
+    });
+    poly_writer.write("dune_vtu_2d_in_2d_as_poly");
 
     return 0;
 }

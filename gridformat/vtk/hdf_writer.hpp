@@ -54,8 +54,8 @@ class VTKHDFWriter : public VTKHDFDetail::VTKHDFWriterSelector<Grid, Communicato
 template<typename Grid>
 VTKHDFWriter(const Grid&) -> VTKHDFWriter<Grid>;
 
-template<typename Grid>
-VTKHDFWriter(const Grid&, VTKHDFDetail::_MPICommunicator) -> VTKHDFWriter<Grid, VTKHDFDetail::_MPICommunicator>;
+template<typename Grid, Concepts::Communicator Comm>
+VTKHDFWriter(const Grid&, const Comm&) -> VTKHDFWriter<Grid, Comm>;
 
 }  // namespace GridFormat
 

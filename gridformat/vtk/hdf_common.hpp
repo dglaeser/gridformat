@@ -10,6 +10,8 @@
 #if GRIDFORMAT_HAVE_HIGH_FIVE
 
 #include <type_traits>
+#include <algorithm>
+#include <ranges>
 
 #ifdef GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 #pragma GCC diagnostic push
@@ -29,30 +31,20 @@
 #pragma GCC diagnostic pop
 #endif  // GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 
-#if GRIDFORMAT_HAVE_MPI
-#include <mpi.h>
-namespace GridFormat::VTKHDFDetail {
-    using _MPICommunicator = MPI_Comm;
-
-    template<typename T>
-    static constexpr bool is_mpi_comm = std::is_same_v<T, MPI_Comm>;
-}
-#else
-namespace GridFormat::VTKHDFDetail {
-    using _MPICommunicator = NullCommunicator;
-
-    template<typename T>
-    static constexpr bool is_mpi_comm = false;
-}
-#endif
-
 #include <gridformat/common/logging.hpp>
+#include <gridformat/common/string_conversion.hpp>
+#include <gridformat/parallel/communication.hpp>
 #include <gridformat/grid/grid.hpp>
 
 namespace GridFormat::VTKHDF {
 
+struct TransientOptions {
+    bool static_grid = false;
+    bool static_meta_data = false;
+};
+
 struct DataSetSlice {
-    std::vector<std::size_t> size;
+    std::vector<std::size_t> size;  // todo: is total size, actuall. rename?
     std::vector<std::size_t> offset;
     std::vector<std::size_t> count;
 };
@@ -147,32 +139,230 @@ struct AsciiString : public HighFive::DataType {
     }
 };
 
-template<Concepts::Communicator Communicator>
-auto open_file(const std::string& filename,
-               const Communicator& communicator,
-               const IOContext& context) { // TODO: avoid context...
-    if (!context.is_parallel)
-        return HighFive::File{filename, HighFive::File::Overwrite};
-
-    if constexpr (!VTKHDFDetail::is_mpi_comm<Communicator>)
-        throw TypeError("Only MPI_Comm can be used as communicator for parallel HDF5 I/O");
-    else {
-        HighFive::FileAccessProps fapl;
-        fapl.add(HighFive::MPIOFileAccess{communicator, MPI_INFO_NULL});
-        fapl.add(HighFive::MPIOCollectiveMetadata{});
-        return HighFive::File{filename, HighFive::File::Overwrite, fapl};
+namespace Detail {
+    HighFive::DataTransferProps parallel_transfer_props() {
+        HighFive::DataTransferProps xfer_props;
+#if GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+        xfer_props.add(HighFive::UseCollectiveIO{});
+#else
+        throw NotImplemented("Parallel HighFive required for parallel I/O");
+#endif
+        return xfer_props;
     }
-}
 
-void check_successful_collective_io(const HighFive::DataTransferProps& xfer_props) {
-    auto mnccp = HighFive::MpioNoCollectiveCause(xfer_props);
-    if (mnccp.getLocalCause() || mnccp.getGlobalCause())
-        log_warning(
-            std::string{"The operation was successful, but couldn't use collective MPI-IO. "}
-            + "Local cause: " + std::to_string(mnccp.getLocalCause()) + " "
-            + "Global cause:" + std::to_string(mnccp.getGlobalCause()) + "\n"
+    template<Concepts::Communicator Communicator>
+    auto parallel_file_access_props([[maybe_unused]] const Communicator& communicator) {
+        HighFive::FileAccessProps fapl;
+#if GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+        if constexpr (!std::is_same_v<Communicator, NullCommunicator>) {
+            fapl.add(HighFive::MPIOFileAccess{communicator, MPI_INFO_NULL});
+            fapl.add(HighFive::MPIOCollectiveMetadata{});
+        } else {
+            throw TypeError("Cannot establish parallel I/O with null communicator");
+        }
+#else
+        throw NotImplemented("Parallel HighFive required for parallel I/O");
+#endif
+        return fapl;
+    }
+
+    void check_successful_collective_io([[maybe_unused]] const HighFive::DataTransferProps& xfer_props) {
+#if GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+        auto mnccp = HighFive::MpioNoCollectiveCause(xfer_props);
+        if (mnccp.getLocalCause() || mnccp.getGlobalCause())
+            log_warning(
+                std::string{"The operation was successful, but couldn't use collective MPI-IO. "}
+                + "Local cause: " + std::to_string(mnccp.getLocalCause()) + " "
+                + "Global cause:" + std::to_string(mnccp.getGlobalCause()) + "\n"
+            );
+#else
+        throw NotImplemented("Parallel HighFive required for parallel I/O");
+#endif
+    }
+
+}  // namespace Detail
+
+template<Concepts::Communicator Communicator>
+class HDF5File {
+ public:
+    enum Mode { overwrite, append };
+
+    HDF5File(const std::string& filename, const Communicator& comm, Mode mode)
+    : _comm{comm}
+    , _mode{mode}
+    , _file{_open(filename)}
+    {}
+
+    static void clear(const std::string& filename, const Communicator& comm) {
+        if (Parallel::rank(comm) == 0)  // clear file by open it in overwrite mode
+            HighFive::File{filename, HighFive::File::Overwrite};
+        Parallel::barrier(comm);
+    }
+
+    template<typename Attribute>
+    void set_attribute(const std::string& name,
+                       const Attribute& attribute,
+                       const std::string& group_name) {
+        _clear_attribute(name, group_name);
+        _get_group(group_name).createAttribute(name, attribute);
+    }
+
+    template<std::size_t N>
+    void set_attribute(const std::string& name,
+                       const char (&attribute)[N],
+                       const std::string& group_name) {
+        _clear_attribute(name, group_name);
+        auto type_attr = _get_group(group_name).createAttribute(
+            name,
+            HighFive::DataSpace{1},
+            AsciiString::from(attribute)
         );
-}
+        type_attr.write(attribute);
+    }
+
+    template<typename Values>
+    std::size_t write(const Values& values, const DataSetPath& path) {
+        const auto space = HighFive::DataSpace::From(values);
+        auto group = _get_group(path.group_path);
+        auto [offset, dataset] = _prepare_dataset<FieldScalar<Values>>(group, path.dataset_name, space);
+
+        const std::vector<std::size_t> ds_size = space.getDimensions();
+        std::vector<std::size_t> ds_offset(ds_size.size(), 0);
+        ds_offset.at(0) += offset;
+        _write_to(dataset, values, DataSetSlice{
+            .size = std::vector<std::size_t>{},  // not used by _write_to
+            .offset = ds_offset,
+            .count = ds_size,
+        });
+        _file.flush();
+        return space.getDimensions()[0];
+    }
+
+    template<typename Values>
+    std::size_t write(const Values& values, const DataSetPath& path, DataSetSlice slice) {
+        const auto space = HighFive::DataSpace(slice.size);
+        auto group = _get_group(path.group_path);
+        auto [offset, dataset] = _prepare_dataset<FieldScalar<Values>>(group, path.dataset_name, space);
+
+        slice.offset[0] += offset;
+        if (Parallel::size(_comm) > 1) {
+            const auto props = Detail::parallel_transfer_props();
+            _write_to(dataset, values, slice, props);
+            Detail::check_successful_collective_io(props);
+        } else {
+            _write_to(dataset, values, slice);
+        }
+        _file.flush();
+        return space.getDimensions()[0];
+    }
+
+    template<Concepts::Scalar T>
+    T read(const DataSetPath& path, const DataSetSlice& slice) const {
+        T result;
+        if (_file.exist(path.group_path))
+            if (_file.getGroup(path.group_path).exist(path.dataset_name)) {
+                _file.getGroup(path.group_path).getDataSet(path.dataset_name).select(
+                    slice.offset, slice.count
+                ).read(result);
+                return result;
+            }
+        throw ValueError("Given group or dataset does not exist");
+    }
+
+    std::optional<std::vector<std::size_t>> get_dimensions(const DataSetPath& path) const {
+        if (_file.exist(path.group_path))
+            if (_file.getGroup(path.group_path).exist(path.dataset_name))
+                return _file.getGroup(path.group_path).getDataSet(path.dataset_name).getDimensions();
+        return {};
+    }
+
+ private:
+    HighFive::File _open(const std::string& filename) const {
+        auto open_mode = _mode == overwrite ? HighFive::File::Overwrite
+                                            : HighFive::File::ReadWrite;
+        if (Parallel::size(_comm) > 1)
+            return HighFive::File{filename, open_mode, Detail::parallel_file_access_props(_comm)};
+        else
+            return HighFive::File{filename, open_mode};
+    }
+
+    template<typename T>
+    auto _prepare_dataset(HighFive::Group& group,
+                          const std::string& name,
+                          const HighFive::DataSpace& space) {
+        if (_mode == overwrite) {
+            return std::make_pair(std::size_t{0}, group.createDataSet(name, space, HighFive::create_datatype<T>()));
+        } else if (_mode == append) {
+            if (group.exist(name)) {
+                auto dataset = group.getDataSet(name);
+                auto out_dimensions = dataset.getDimensions();
+                const auto in_dimensions = space.getDimensions();
+
+                if (out_dimensions.size() < 1 || in_dimensions.size() < 1)
+                    throw ValueError("Cannot extend scalar datasets");
+                if (
+                    !std::ranges::equal(
+                        std::ranges::subrange(out_dimensions.begin() + 1, out_dimensions.end()),
+                        std::ranges::subrange(in_dimensions.begin() + 1, in_dimensions.end())
+                    )
+                )
+                    throw ValueError("Dataset extension requires the sub-dimensions to be equal");
+
+                const std::size_t offset = out_dimensions[0];
+                out_dimensions[0] += in_dimensions[0];
+                dataset.resize(out_dimensions);
+                return std::make_pair(offset, std::move(dataset));
+            } else {
+                const auto init_dimensions = space.getDimensions();
+                if (init_dimensions.size() < 1)
+                    throw ValueError("Scalars cannot be written in appended mode. Wrap them in std::array{scalar}");
+
+                const auto chunk_dimensions = std::vector<hsize_t>{init_dimensions.begin(), init_dimensions.end()};
+                const auto max_dimensions = [&] () {
+                    auto tmp = init_dimensions;
+                    tmp[0] *= HighFive::DataSpace::UNLIMITED;
+                    return tmp;
+                } ();
+
+                HighFive::DataSpace out_space(init_dimensions, max_dimensions);
+                HighFive::DataSetCreateProps props;
+                props.add(HighFive::Chunking(chunk_dimensions));
+                return std::make_pair(
+                    std::size_t{0},
+                    group.createDataSet(name, out_space, HighFive::create_datatype<T>(), props)
+                );
+            }
+        }
+        throw NotImplemented("Dataset preparation for given mode");
+    }
+
+    template<typename Values>
+    void _write_to(HighFive::DataSet& dataset,
+                   const Values& values,
+                   const std::optional<DataSetSlice> slice = {},
+                   const std::optional<HighFive::DataTransferProps> props = {}) {
+        if (slice) {
+            props ? dataset.select(slice->offset, slice->count).write(values, *props)
+                  : dataset.select(slice->offset, slice->count).write(values);
+        } else {
+            props ? dataset.write(values, *props)
+                  : dataset.write(values);
+        }
+    }
+
+    HighFive::Group _get_group(const std::string& group_name) {
+        return _file.exist(group_name) ? _file.getGroup(group_name) : _file.createGroup(group_name);
+    }
+
+    void _clear_attribute(const std::string& name, const std::string& group) {
+        if (_get_group(group).hasAttribute(name))
+            _get_group(group).deleteAttribute(name);
+    }
+
+    Communicator _comm;
+    Mode _mode;
+    HighFive::File _file;
+};
 
 }  // namespace GridFormat::VTKHDF
 

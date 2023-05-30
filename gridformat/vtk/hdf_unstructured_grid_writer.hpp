@@ -35,8 +35,6 @@ template<Concepts::UnstructuredGrid G, Concepts::Communicator Communicator = Nul
 class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
     static constexpr int root_rank = 0;
     static constexpr std::size_t vtk_space_dim = 3;
-    static constexpr std::array<std::size_t, 2> version{1, 0};
-    static constexpr bool use_mpi = VTKHDFDetail::is_mpi_comm<Communicator>;
 
     using CT = CoordinateType<G>;
     template<typename T> using Vector = std::array<T, vtk_space_dim>;
@@ -45,6 +43,7 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
     using DataSetSlice = VTKHDF::DataSetSlice;
     using DataSetPath = VTKHDF::DataSetPath;
     using IOContext = VTKHDF::IOContext;
+    using HDF5File = VTKHDF::HDF5File<Communicator>;
 
     static constexpr WriterOptions writer_opts{
         .use_structured_grid_ordering = false,
@@ -72,16 +71,10 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
 
     virtual void _write(const std::string& filename_with_ext) const {
         const auto context = _context();
-        auto file = VTKHDF::open_file(filename_with_ext, _comm, context);
 
-        auto vtk_group = file.createGroup("VTKHDF");
-        vtk_group.createAttribute("Version", version);
-        auto type_attr = vtk_group.createAttribute(
-            "Type",
-            HighFive::DataSpace{1},
-            VTKHDF::AsciiString::from("UnstructuredGrid")
-        );
-        type_attr.write("UnstructuredGrid");
+        HDF5File file(filename_with_ext, _comm, HDF5File::overwrite);
+        file.set_attribute("Version", std::array<std::size_t, 2>{1, 0}, "VTKHDF");
+        file.set_attribute("Type", "UnstructuredGrid", "VTKHDF");
 
         _write_num_cells_and_points(file, context);
         _write_connectivity(file, context);
@@ -97,65 +90,62 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
         return IOContext::from(this->grid(), _comm, root_rank);
     }
 
-    void _write_num_cells_and_points(HighFive::File& file, const IOContext& context) const {
-        _write_values(file, "VTKHDF", "NumberOfPoints", std::vector{number_of_points(this->grid())}, context);
-        _write_values(file, "VTKHDF", "NumberOfCells", std::vector{number_of_cells(this->grid())}, context);
+    void _write_num_cells_and_points(HDF5File& file, const IOContext& context) const {
+        _write_values(file, {"VTKHDF", "NumberOfPoints"}, std::vector{number_of_points(this->grid())}, context);
+        _write_values(file, {"VTKHDF", "NumberOfCells"}, std::vector{number_of_cells(this->grid())}, context);
     }
 
-    void _write_connectivity(HighFive::File& file, const IOContext& context) const {
+    void _write_connectivity(HDF5File& file, const IOContext& context) const {
         const auto point_id_map = make_point_id_map(this->grid());
         const auto connectivity_field = VTK::make_connectivity_field(this->grid(), point_id_map);
         const auto num_entries = connectivity_field->layout().number_of_entries();
         const auto my_num_ids = std::vector{static_cast<long>(num_entries)};
         std::vector<long> connectivity(num_entries);
         connectivity_field->export_to(connectivity);
-        _write_values(file, "VTKHDF", "Connectivity", connectivity, context);
-        _write_values(file, "VTKHDF", "NumberOfConnectivityIds", my_num_ids, context);
+        _write_values(file, {"VTKHDF", "Connectivity"}, connectivity, context);
+        _write_values(file, {"VTKHDF", "NumberOfConnectivityIds"}, my_num_ids, context);
     }
 
-    void _write_offsets(HighFive::File& file, const IOContext& context) const {
+    void _write_offsets(HDF5File& file, const IOContext& context) const {
         const auto offsets_field = VTK::make_offsets_field(this->grid());
         const auto num_offset_entries = offsets_field->layout().number_of_entries() + 1;
         std::vector<long> offsets(num_offset_entries);
         offsets_field->export_to(std::ranges::subrange(std::next(offsets.begin()), offsets.end()));
         offsets[0] = long{0};
-        _write_values(file, "VTKHDF", "Offsets", offsets, context);
+        _write_values(file, {"VTKHDF", "Offsets"}, offsets, context);
     }
 
-    void _write_types(HighFive::File& file, const IOContext& context) const {
+    void _write_types(HDF5File& file, const IOContext& context) const {
         const auto types_field = VTK::make_cell_types_field(this->grid());
         std::vector<std::uint8_t> types(types_field->layout().number_of_entries());
         types_field->export_to(types);
-        _write_values(file, "VTKHDF", "Types", types, context);
+        _write_values(file, {"VTKHDF", "Types"}, types, context);
     }
 
-    void _write_coordinates(HighFive::File& file, const IOContext& context) const {
+    void _write_coordinates(HDF5File& file, const IOContext& context) const {
         const auto coords_field = VTK::make_coordinates_field<CT>(this->grid(), false);
         std::vector<std::array<CT, vtk_space_dim>> coords(number_of_points(this->grid()));
         coords_field->export_to(coords);
         _write_point_field(file, {"VTKHDF", "Points"}, coords, context);
     }
 
-    void _write_meta_data(HighFive::File& file) const {
-        auto group = file.createGroup("VTKHDF/FieldData");
+    void _write_meta_data(HDF5File& file) const {
         std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
             auto field_ptr = this->_get_meta_data_field_ptr(name);
             _visit_field_values(*field_ptr, [&] <typename T> (T&& values) {
-                group.createDataSet(name, values);
+                file.write(values, {"VTKHDF/FieldData", name});
             });
         });
     }
 
-    void _write_point_fields(HighFive::File& file, const IOContext& context) const {
-        file.createGroup("VTKHDF/PointData");
+    void _write_point_fields(HDF5File& file, const IOContext& context) const {
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             auto field_ptr = VTK::make_vtk_field(this->_get_point_field_ptr(name));
             _write_point_field(file, {"VTKHDF/PointData", name}, *field_ptr, context);
         });
     }
 
-    void _write_cell_fields(HighFive::File& file, const IOContext& context) const {
-        file.createGroup("VTKHDF/CellData");
+    void _write_cell_fields(HDF5File& file, const IOContext& context) const {
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
             auto field_ptr = VTK::make_vtk_field(this->_get_cell_field_ptr(name));
             _write_cell_field(file, {"VTKHDF/CellData", name}, *field_ptr, context);
@@ -163,9 +153,8 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
     }
 
     template<Concepts::Scalar T>
-    void _write_values(HighFive::File& file,
-                       const std::string& group_name,
-                       const std::string& dataset_name,
+    void _write_values(HDF5File& file,
+                       const DataSetPath& path,
                        const std::vector<T>& values,
                        const IOContext& context) const {
         if (context.is_parallel) {
@@ -178,14 +167,13 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
                 .offset = std::vector{my_offset},
                 .count = std::vector{num_values}
             };
-            auto group = file.getGroup(group_name);
-            _write_dataset_slice(file, group, values, dataset_name, slice);
+            file.write(values, path, slice);
         } else {
-            _dump_dataset(file, group_name, values, dataset_name);
+            file.write(values, path);
         }
     }
 
-    void _write_point_field(HighFive::File& file,
+    void _write_point_field(HDF5File& file,
                             const DataSetPath& path,
                             const Field& field,
                             const IOContext& context) const {
@@ -194,7 +182,7 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
         });
     }
 
-    void _write_cell_field(HighFive::File& file,
+    void _write_cell_field(HDF5File& file,
                            const DataSetPath& path,
                            const Field& field,
                            const IOContext& context) const {
@@ -204,7 +192,7 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
     }
 
     template<typename FieldValues>
-    void _write_point_field(HighFive::File& file,
+    void _write_point_field(HDF5File& file,
                             const DataSetPath& path,
                             const FieldValues& values,
                             const IOContext& context) const {
@@ -212,7 +200,7 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
     }
 
     template<typename FieldValues>
-    void _write_cell_field(HighFive::File& file,
+    void _write_cell_field(HDF5File& file,
                            const DataSetPath& path,
                            const FieldValues& values,
                            const IOContext& context) const {
@@ -220,7 +208,7 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
     }
 
     template<bool is_point_field, typename FieldValues>
-    void _write_field(HighFive::File& file,
+    void _write_field(HDF5File& file,
                       const DataSetPath& path,
                       const FieldValues& values,
                       const IOContext& context) const {
@@ -231,13 +219,16 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
 
             std::vector<std::size_t> size = count;
             std::vector<std::size_t> offset(layout.dimension(), 0);
-            offset[0] = is_point_field ? context.my_point_offset : context.my_cell_offset;
-            size[0] = is_point_field ? context.num_points_total : context.num_cells_total;
+            offset.at(0) = is_point_field ? context.my_point_offset : context.my_cell_offset;
+            size.at(0) = is_point_field ? context.num_points_total : context.num_cells_total;
 
-            auto group = file.getGroup(path.group_path);
-            _write_dataset_slice(file, group, values, path.dataset_name, {size, offset, count});
+            file.write(values, path, {
+                .size = size,
+                .offset = offset,
+                .count = count
+            });
         } else {
-            _dump_dataset(file, path.group_path, values, path.dataset_name);
+            file.write(values, path);
         }
     }
 
@@ -274,55 +265,6 @@ class VTKHDFUnstructuredGridWriter : public GridWriter<G> {
         if (my_offset.size() != 1)
             throw ValueError("Unexpected scatter result");
         return my_offset[0];
-    }
-
-    template<typename Data>
-    void _dump_dataset(HighFive::File& file,
-                       const std::string& groupPrefix,
-                       const Data& data,
-                       const std::string& name) const {
-        // TODO: make compression settable (default: off) & don't allow for parallel?
-        // TODO: compression with parallel I/O?
-        H5Easy::dump(file, groupPrefix + "/" + name, data, H5Easy::DumpOptions(H5Easy::Compression{true}));
-    }
-
-    template<std::ranges::range Data>
-    void _write_dataset_slice(HighFive::File& file,
-                              HighFive::Group& group,
-                              const Data& data,
-                              const std::string& name,
-                              const DataSetSlice& slice) const {
-        _write_dataset_slice_with<MDRangeValueType<Data>>(file, group, data, name, slice);
-    }
-
-    template<Concepts::Scalar Data>
-    void _write_dataset_slice(HighFive::File& file,
-                              HighFive::Group& group,
-                              const Data& data,
-                              const std::string& name,
-                              const DataSetSlice& slice) const {
-        _write_dataset_slice_with<Data>(file, group, data, name, slice);
-    }
-
-    template<typename T, typename Data>
-    void _write_dataset_slice_with(HighFive::File& file,
-                                   HighFive::Group& group,
-                                   const Data& data,
-                                   const std::string& name,
-                                   const DataSetSlice& slice) const {
-        if constexpr (use_mpi) {
-            auto xfer_props = HighFive::DataTransferProps{};
-            xfer_props.add(HighFive::UseCollectiveIO{});
-
-            HighFive::DataSet dataset = group.template createDataSet<T>(name, HighFive::DataSpace(slice.size));
-            dataset.select(slice.offset, slice.count).write(data, xfer_props);
-
-            VTKHDF::check_successful_collective_io(xfer_props);
-            file.flush();
-        }
-        else {
-            throw ValueError("Slices can only be written with MPI");
-        }
     }
 
     Communicator _comm;

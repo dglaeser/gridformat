@@ -99,7 +99,6 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
     static constexpr std::size_t dim = dimension<Grid>;
     static constexpr std::size_t vtk_space_dim = 3;
     static constexpr std::array<std::size_t, 2> version{1, 0};
-    static constexpr bool use_mpi = VTKHDFDetail::is_mpi_comm<Communicator>;
 
     using CT = CoordinateType<Grid>;
     template<typename T> using Vector = std::array<T, vtk_space_dim>;
@@ -108,6 +107,7 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
     using DataSetSlice = VTKHDF::DataSetSlice;
     using DataSetPath = VTKHDF::DataSetPath;
     using IOContext = VTKHDF::IOContext;
+    using HDF5File = VTKHDF::HDF5File<Communicator>;
 
     struct ImageSpecs {
         const std::array<CT, dim> origin;
@@ -145,7 +145,6 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
     }
 
     virtual void _write(const std::string& filename_with_ext) const {
-        auto file = open_file(filename_with_ext, _comm, IOContext::from(this->grid(), _comm, root_rank));
         const ImageSpecs my_specs{origin(this->grid()), spacing(this->grid()), extents(this->grid())};
         const auto [overall_specs, my_offset] = _get_image_specs(my_specs);
         const auto cell_slice_base = _make_slice(
@@ -159,53 +158,44 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
             my_offset
         );
 
-        auto vtk_group = file.createGroup("VTKHDF");
-        vtk_group.createAttribute("Version", std::array<std::size_t, 2>{1, 0});
-        vtk_group.createAttribute("Origin", Ranges::to_array<vtk_space_dim>(overall_specs.origin));
-        vtk_group.createAttribute("Spacing", Ranges::to_array<vtk_space_dim>(overall_specs.spacing));
-        vtk_group.createAttribute("WholeExtent", VTK::CommonDetail::get_extents(overall_specs.extents));
-        vtk_group.createAttribute("Direction", _get_direction());
-
-        auto type_attr = vtk_group.createAttribute(
-            "Type",
-            HighFive::DataSpace{1},
-            VTKHDF::AsciiString::from("ImageData")
-        );
-        type_attr.write("ImageData");
+        HDF5File file(filename_with_ext, _comm, HDF5File::overwrite);
+        file.set_attribute("Version", std::array<std::size_t, 2>{1, 0}, "VTKHDF");
+        file.set_attribute("Origin", Ranges::to_array<vtk_space_dim>(overall_specs.origin), "VTKHDF");
+        file.set_attribute("Spacing", Ranges::to_array<vtk_space_dim>(overall_specs.spacing), "VTKHDF");
+        file.set_attribute("WholeExtent", VTK::CommonDetail::get_extents(overall_specs.extents), "VTKHDF");
+        file.set_attribute("Direction", _get_direction(), "VTKHDF");
+        file.set_attribute("Type", "ImageData", "VTKHDF");
 
         // TODO: There seem to be issues with the vtkImageDataReader when parsing field data?
-        // auto fd_group = vtk_group.createGroup("FieldData");
         // std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
         //     auto field_ptr = this->_get_meta_data_field_ptr(name);
         //     _visit_meta_data_field_values(*field_ptr, [&] (const auto& values) {
-        //         fd_group.createDataSet(name, values);
+        //         file.write(values, {"VTKHDF/FieldData", name});
         //     });
         // });
 
-        auto pd_group = vtk_group.createGroup("PointData");
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             auto field_ptr = VTK::make_vtk_field(this->_get_point_field_ptr(name));
             _visit_field_values<true>(*field_ptr, [&] (const auto& values) {
-                _write_piece_values(file, pd_group, name, values, point_slice_base);
+                _write_piece_values(file, {"VTKHDF/PointData", name}, values, point_slice_base);
             });
         });
 
-        auto cd_group = vtk_group.createGroup("CellData");
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
             auto field_ptr = VTK::make_vtk_field(this->_get_cell_field_ptr(name));
             _visit_field_values<false>(*field_ptr, [&] (const auto& values) {
-                _write_piece_values(file, cd_group, name, values, cell_slice_base);
+                _write_piece_values(file, {"VTKHDF/CellData", name}, values, cell_slice_base);
             });
         });
     }
 
-    auto _get_image_specs(const ImageSpecs& specs) const {
-        using OffsetType = std::ranges::range_value_t<std::decay_t<decltype(specs.extents)>>;
-        if constexpr (use_mpi) {
+    auto _get_image_specs(const ImageSpecs& piece_specs) const {
+        using OffsetType = std::ranges::range_value_t<std::decay_t<decltype(piece_specs.extents)>>;
+        if (Parallel::size(_comm) > 1) {
             PVTK::StructuredParallelGridHelper helper{_comm};
-            const auto all_origins = Parallel::gather(_comm, specs.origin, root_rank);
-            const auto all_extents = Parallel::gather(_comm, specs.extents, root_rank);
-            const auto is_negative_axis = VTK::CommonDetail::structured_grid_axis_orientation(specs.spacing);
+            const auto all_origins = Parallel::gather(_comm, piece_specs.origin, root_rank);
+            const auto all_extents = Parallel::gather(_comm, piece_specs.extents, root_rank);
+            const auto is_negative_axis = VTK::CommonDetail::structured_grid_axis_orientation(piece_specs.spacing);
             const auto [exts_begin, exts_end, whole_extent, origin] = helper.compute_extents_and_origin(
                 all_origins,
                 all_extents,
@@ -217,13 +207,11 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
             const auto my_whole_origin = Parallel::broadcast(_comm, origin, root_rank);
             const auto my_extent_offset = Parallel::scatter(_comm, Ranges::flat(exts_begin), root_rank);
             return std::make_tuple(
-                ImageSpecs{my_whole_origin, specs.spacing, my_whole_extent},
+                ImageSpecs{my_whole_origin, piece_specs.spacing, my_whole_extent},
                 my_extent_offset
             );
         } else {
-            std::array<OffsetType, dim> offset;
-            std::ranges::fill(offset, 0);
-            return std::make_tuple(specs, offset);
+            return std::make_tuple(piece_specs, std::vector<OffsetType>(dim, 0));
         }
     }
 
@@ -312,23 +300,13 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
     }
 
     template<std::ranges::range Values>
-    void _write_piece_values(HighFive::File& file,
-                             HighFive::Group& group,
-                             const std::string& name,
+    void _write_piece_values(HDF5File& file,
+                             const DataSetPath& path,
                              const Values& values,
-                             [[maybe_unused]] const DataSetSlice& slice) const requires(!use_mpi) {
-        H5Easy::dump(file, group.getPath() + "/" + name, values);
-    }
-
-    template<std::ranges::range Values>
-    void _write_piece_values(HighFive::File& file,
-                             HighFive::Group& group,
-                             const std::string& name,
-                             const Values& values,
-                             const DataSetSlice& slice) const requires(use_mpi) {
-        std::vector<std::size_t> size{slice.size.begin(), slice.size.end()};
-        std::vector<std::size_t> count{slice.count.begin(), slice.count.end()};
-        std::vector<std::size_t> offset{slice.offset.begin(), slice.offset.end()};
+                             const DataSetSlice& base_slice) const {
+        std::vector<std::size_t> size{base_slice.size.begin(), base_slice.size.end()};
+        std::vector<std::size_t> count{base_slice.count.begin(), base_slice.count.end()};
+        std::vector<std::size_t> offset{base_slice.offset.begin(), base_slice.offset.end()};
 
         if constexpr (mdrange_dimension<Values> > 1) {
             using FieldType = MDRangeValueTypeAt<dim-1, Values>;
@@ -340,15 +318,11 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
             }
         }
 
-        auto xfer_props = HighFive::DataTransferProps{};
-        xfer_props.add(HighFive::UseCollectiveIO{});
-
-        using T = MDRangeScalar<Values>;
-        HighFive::DataSet dataset = group.template createDataSet<T>(name, HighFive::DataSpace(size));
-        dataset.select(offset, count).write(values, xfer_props);
-
-        VTKHDF::check_successful_collective_io(xfer_props);
-        file.flush();
+        file.write(values, path, {
+            .size = size,
+            .offset = offset,
+            .count = count
+        });
     }
 
     Communicator _comm;

@@ -1,6 +1,49 @@
 # SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+find_package(CGAL)
+gridformat_add_regression_test_if(CGAL_FOUND
+    test_cgal
+    test_cgal.cpp
+    "cgal_vtu*"
+    SKIP_MEMCHECK  # on the github runner memcheck fails with some error from cgal (could not be produced locally)
+)
+if (CGAL_FOUND)
+    message(STATUS "Testing CGAL traits with CGAL version ${CGAL_VERSION}")
+    target_link_libraries(test_cgal CGAL::CGAL)
+    target_compile_options(test_cgal PRIVATE -fconcepts-diagnostics-depth=20 -frounding-math)
+endif ()
+
+find_package(deal.II)
+if (deal.II_FOUND)
+    message(STATUS "Testing deal.ii traits with deal.ii version ${deal.II_VERSION}")
+    deal_ii_initialize_cached_variables()
+    set(GRIDFORMAT_HAVE_PARALLEL_DEAL_II ${MPI_FOUND})
+endif()
+
+function (gridformat_setup_deal_ii_target TARGET)
+    if (deal.II_FOUND)
+        deal_ii_setup_target(${TARGET})
+        # two flags added by dealii produce (in our opinion) false positives with gcc (there are related open issues in gcc)
+        target_compile_options(${TARGET} PRIVATE -Wno-overloaded-virtual -Wno-missing-braces -frounding-math)
+    endif ()
+endfunction ()
+
+gridformat_add_regression_test_if(deal.II_FOUND
+    test_dealii_sequential
+    test_dealii_sequential.cpp
+    "dealii_vtu*"
+    SKIP_MEMCHECK  # valgrind complains about something in deal.ii, which is unrelated to our traits.
+)
+gridformat_add_parallel_regression_test_if(GRIDFORMAT_HAVE_PARALLEL_DEAL_II
+    test_dealii_parallel
+    test_dealii_parallel.cpp
+    2
+    "dealii_pvtu*.pvt*"
+)
+gridformat_setup_deal_ii_target(test_dealii_sequential)
+gridformat_setup_deal_ii_target(test_dealii_parallel)
+
 find_package(dune-common QUIET)
 find_package(dune-geometry QUIET)
 find_package(dune-grid QUIET)
@@ -8,7 +51,12 @@ find_package(Threads)  # dune links against it but doesn't seem to check for it 
 find_package(TBB)  # dune links against it but doesn't seem to check for it itself
 
 if (dune-grid_FOUND AND dune-common_FOUND AND dune-geometry_FOUND)
-    message(STATUS "Found dune libraries")
+    message(STATUS
+        "Testing Dune traits with versions "
+        "${dune-common_VERSION} (dune-common), "
+        "${dune-grid_VERSION} (dune-grid), "
+        "${dune-geometry_VERSION} (dune-geometry)"
+    )
     set(DUNE_FOUND true)
 endif ()
 
@@ -57,7 +105,7 @@ if (${DUNE_FOUND})
             test_dune_yasp_parallel_rectilinear_grid
     )
     foreach (dune_target IN LISTS dune_targets)
-        target_link_libraries(${dune_target} PRIVATE dunecommon dunegeometry dunegrid)
+        target_link_libraries(${dune_target} dunecommon dunegeometry dunegrid)
 
         # the dune cmake setup seems to not properly set the include dirs via target_link_libraries
         # (in case it is installed in non-standard location)
