@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Adapters
- * \brief Traits specializations for [`dealii::Triangulation`](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html)
+ * \brief Traits specializations for [dealii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html)
  */
 #ifndef GRIDFORMAT_ADAPTERS_DEAL_II_HPP_
 #define GRIDFORMAT_ADAPTERS_DEAL_II_HPP_
@@ -14,7 +14,6 @@
 #include <array>
 #include <type_traits>
 
-#include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/filtered_range.hpp>
 
