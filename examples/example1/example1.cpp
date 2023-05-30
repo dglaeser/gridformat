@@ -71,7 +71,7 @@ template<>
 struct Points<VoxelData> {
     static std::ranges::empty_view<int> get(const VoxelData& voxel_data) {
         // For image grids, this point range is only needed if we want to write out
-        // field data defined on point. Our VoxelData does not really carry a notion
+        // field data defined on points. Our VoxelData does not really carry a notion
         // of points, so let us just throw an exception if someone tries to call this.
         // Note that we could easily implement this, for instance, by simply returning a
         // sequence of indices that represent our grid "points" (see comment in the
@@ -130,12 +130,12 @@ struct Location<VoxelData, typename VoxelData::Voxel> {
 // to be called. Note that we must specify a return type that fulfills the requirements of Location,
 // that is, it must be a statically sized range with size equal to the grid dimensions.
 //
-// If we had return a range of indices for the points as written in the comments of the `Points` trait,
+// If we had returned a range of indices for the points as written in the comments of the `Points` trait,
 // we would have to identify the location of a point, given its index (similar to the code in voxel_data.center()).
 template<>
 struct Location<VoxelData, int> {
     static std::array<std::size_t, 3> get(const VoxelData&, int) {
-        throw std::runtime_error("VoxelData does not implement points");
+        throw std::runtime_error("VoxelData does not implement Location");
     }
 };
 
