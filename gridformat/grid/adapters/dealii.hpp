@@ -12,19 +12,35 @@
 #include <ranges>
 #include <vector>
 #include <array>
+#include <type_traits>
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/filtered_range.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
 
-// forward declaration of the triangulation class
-// users of the adapter are expected to include the actual header
+// forward declaration of the triangulation classes
+// users are expected to include the headers of the actually used classes
 namespace dealii {
 
 template<int dim, int spacedim>
 class Triangulation;
+
+namespace parallel::distributed {
+
+template<int dim, int spacedim>
+class Triangulation;
+
+}  // namespace parallel::distributed
+
+namespace parallel::fullydistributed {
+
+template<int dim, int spacedim>
+class Triangulation;
+
+}  // namespace parallel::fullydistributed
 
 }  // namespace dealii
 
@@ -32,6 +48,22 @@ class Triangulation;
 namespace GridFormat {
 
 namespace DealII {
+
+template<int dim, int space_dim> using Tria = dealii::Triangulation<dim, space_dim>;
+template<int dim, int space_dim> using DTria = dealii::parallel::distributed::Triangulation<dim, space_dim>;
+template<int dim, int space_dim> using FDTria = dealii::parallel::fullydistributed::Triangulation<dim, space_dim>;
+
+template<typename T> struct IsTriangulation : public std::false_type {};
+template<typename T> struct IsParallelTriangulation : public std::false_type {};
+
+template<int d, int sd> struct IsTriangulation<Tria<d, sd>> : public std::true_type {};
+template<int d, int sd> struct IsTriangulation<DTria<d, sd>> : public std::true_type {};
+template<int d, int sd> struct IsTriangulation<FDTria<d, sd>> : public std::true_type {};
+template<int d, int sd> struct IsParallelTriangulation<DTria<d, sd>> : public std::true_type {};
+template<int d, int sd> struct IsParallelTriangulation<FDTria<d, sd>> : public std::true_type {};
+
+template<typename T> inline constexpr bool is_triangulation = IsTriangulation<T>::value;
+template<typename T> inline constexpr bool is_parallel_triangulation = IsParallelTriangulation<T>::value;
 
 // We need to wrap the deal.ii iterators because they do not fulfill the
 // requirements for the std::ranges concepts. The issue comes from the
@@ -86,11 +118,11 @@ class ForwardIteratorWrapper
 template<typename It>
 ForwardIteratorWrapper(It&& it) -> ForwardIteratorWrapper<std::remove_cvref_t<It>>;
 
-template<typename Triangulation>
-using Cell = typename Triangulation::active_cell_iterator::AccessorType;
+template<typename T> requires(is_triangulation<T>)
+using Cell = typename T::active_cell_iterator::AccessorType;
 
-template<typename Triangulation>
-using Point = typename Triangulation::active_vertex_iterator::AccessorType;
+template<typename T> requires(is_triangulation<T>)
+using Point = typename T::active_vertex_iterator::AccessorType;
 
 const std::vector<int>& cell_corners_in_gridformat_order(unsigned int cell_dimension,
                                                          unsigned int number_of_cell_corners) {
@@ -103,15 +135,21 @@ const std::vector<int>& cell_corners_in_gridformat_order(unsigned int cell_dimen
         static const std::vector<int> corners{0, 1};
         return corners;
     } else if (cell_dimension == 2) {
-        // deal.ii currently only implements quads
-        assert(number_of_cell_corners == 4);
-        static const std::vector<int> corners{0, 1, 3, 2};
-        return corners;
+        if (number_of_cell_corners == 3) {  // triangles
+            static const std::vector<int> corners{0, 1, 2};
+            return corners;
+        } else if (number_of_cell_corners == 4) {  // quads
+            static const std::vector<int> corners{0, 1, 3, 2};
+            return corners;
+        }
     } else if (cell_dimension == 3) {
-        // deal.ii currently only implements hexes
-        assert(number_of_cell_corners == 8);
-        static const std::vector<int> corners{0, 1, 3, 2, 4, 5, 7, 6};
-        return corners;
+        if (number_of_cell_corners == 4) {  // tets
+            static const std::vector<int> corners{0, 1, 2, 3};
+            return corners;
+        } else if (number_of_cell_corners == 8) {  // hexes
+            static const std::vector<int> corners{0, 1, 3, 2, 4, 5, 7, 6};
+            return corners;
+        }
     }
 
     throw NotImplemented(
@@ -129,9 +167,9 @@ const std::vector<int>& cell_corners_in_gridformat_order(unsigned int cell_dimen
 // Specializations of the traits required for the `UnstructuredGrid` concept for dealii triangulations
 namespace Traits {
 
-template<int dim, int spacedim>
-struct Points<dealii::Triangulation<dim, spacedim>> {
-    static std::ranges::range decltype(auto) get(const dealii::Triangulation<dim, spacedim>& grid) {
+template<typename T> requires(DealII::is_triangulation<T>)
+struct Points<T> {
+    static std::ranges::range decltype(auto) get(const T& grid) {
         return std::ranges::subrange(
             DealII::ForwardIteratorWrapper{grid.begin_active_vertex()},
             DealII::ForwardIteratorWrapper{grid.end_vertex()}
@@ -139,20 +177,28 @@ struct Points<dealii::Triangulation<dim, spacedim>> {
     }
 };
 
-template<int dim, int spacedim>
-struct Cells<dealii::Triangulation<dim, spacedim>> {
-    static std::ranges::range decltype(auto) get(const dealii::Triangulation<dim, spacedim>& grid) {
-        return std::ranges::subrange(
-            DealII::ForwardIteratorWrapper{grid.begin_active()},
-            DealII::ForwardIteratorWrapper{grid.end()}
-        );
+template<typename T> requires(DealII::is_triangulation<T>)
+struct Cells<T> {
+    static std::ranges::range auto get(const T& grid) {
+        if constexpr (DealII::is_parallel_triangulation<T>)
+            return Ranges::filter_by(
+                [] (const auto& cell) { return cell.is_locally_owned(); },
+                std::ranges::subrange(
+                    DealII::ForwardIteratorWrapper{grid.begin_active()},
+                    DealII::ForwardIteratorWrapper{grid.end()}
+                )
+            );
+        else
+            return std::ranges::subrange(
+                DealII::ForwardIteratorWrapper{grid.begin_active()},
+                DealII::ForwardIteratorWrapper{grid.end()}
+            );
     }
 };
 
-template<int dim, int spacedim>
-struct CellType<dealii::Triangulation<dim, spacedim>, DealII::Cell<dealii::Triangulation<dim, spacedim>>> {
-    static GridFormat::CellType get(const dealii::Triangulation<dim, spacedim>&,
-                                    const DealII::Cell<dealii::Triangulation<dim, spacedim>>& cell) {
+template<typename T> requires(DealII::is_triangulation<T>)
+struct CellType<T, DealII::Cell<T>> {
+    static GridFormat::CellType get(const T&, const DealII::Cell<T>& cell) {
         using CT = GridFormat::CellType;
         static constexpr std::array cubes{CT::vertex, CT::segment, CT::quadrilateral, CT::hexahedron};
         static constexpr std::array simplices{CT::vertex, CT::segment, CT::triangle, CT::tetrahedron};
@@ -165,49 +211,49 @@ struct CellType<dealii::Triangulation<dim, spacedim>, DealII::Cell<dealii::Trian
     }
 };
 
-template<int dim, int spacedim>
-struct CellPoints<dealii::Triangulation<dim, spacedim>, DealII::Cell<dealii::Triangulation<dim, spacedim>>> {
-    static std::ranges::range decltype(auto) get(const dealii::Triangulation<dim, spacedim>&,
-                                                 const DealII::Cell<dealii::Triangulation<dim, spacedim>>& cell) {
+template<typename T> requires(DealII::is_triangulation<T>)
+struct CellPoints<T, DealII::Cell<T>> {
+    static std::ranges::range decltype(auto) get(const T&, const DealII::Cell<T>& cell) {
         return DealII::cell_corners_in_gridformat_order(cell.reference_cell().get_dimension(), cell.n_vertices())
             | std::views::transform([&] (int i) { return *cell.vertex_iterator(i); });
     }
 };
 
-template<int dim, int spacedim>
-struct PointId<dealii::Triangulation<dim, spacedim>, DealII::Point<dealii::Triangulation<dim, spacedim>>> {
-    static auto get(const dealii::Triangulation<dim, spacedim>&,
-                    const DealII::Point<dealii::Triangulation<dim, spacedim>>& point) {
+template<typename T> requires(DealII::is_triangulation<T>)
+struct PointId<T, DealII::Point<T>> {
+    static auto get(const T&, const DealII::Point<T>& point) {
         return point.index();
     }
 };
 
-template<int dim, int spacedim>
-struct PointCoordinates<dealii::Triangulation<dim, spacedim>, DealII::Point<dealii::Triangulation<dim, spacedim>>> {
-    static std::ranges::range decltype(auto) get(const dealii::Triangulation<dim, spacedim>&,
-                                                 const DealII::Point<dealii::Triangulation<dim, spacedim>>& point) {
-        static_assert(dim >= 1 && dim <= 3);
+template<typename T> requires(DealII::is_triangulation<T>)
+struct PointCoordinates<T, DealII::Point<T>> {
+    static std::ranges::range decltype(auto) get(const T&, const DealII::Point<T>& point) {
+        static_assert(T::dimension >= 1 && T::dimension <= 3);
         const auto& center = point.center();
-        if constexpr (dim == 1)
+        if constexpr (T::dimension == 1)
             return std::array{center[0]};
-        else if constexpr (dim == 2)
+        else if constexpr (T::dimension == 2)
             return std::array{center[0], center[1]};
-        else if constexpr (dim == 3)
+        else if constexpr (T::dimension == 3)
             return std::array{center[0], center[1], center[2]};
     }
 };
 
-template<int dim, int spacedim>
-struct NumberOfPoints<dealii::Triangulation<dim, spacedim>> {
-    static std::integral auto get(const dealii::Triangulation<dim, spacedim>& grid) {
+template<typename T> requires(DealII::is_triangulation<T>)
+struct NumberOfPoints<T> {
+    static std::integral auto get(const T& grid) {
         return grid.n_used_vertices();
     }
 };
 
-template<int dim, int spacedim>
-struct NumberOfCells<dealii::Triangulation<dim, spacedim>> {
-    static std::integral auto get(const dealii::Triangulation<dim, spacedim>& grid) {
-        return grid.n_active_cells();
+template<typename T> requires(DealII::is_triangulation<T>)
+struct NumberOfCells<T> {
+    static std::integral auto get(const T& grid) {
+        if constexpr (DealII::is_parallel_triangulation<T>)
+            return grid.n_locally_owned_active_cells();
+        else
+            return grid.n_active_cells();
     }
 };
 
