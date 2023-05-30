@@ -96,6 +96,8 @@ class WriterTester {
 #if GRIDFORMAT_HAVE_ZLIB
         _xml_options.push_back({.encoder = raw, .compressor = zlib.with({.block_size = block_size}), .data_format = appended});
         _xml_options.push_back({.encoder = base64, .compressor = zlib, .data_format = appended});
+        // this should raise a warning but still work
+        _xml_options.push_back({.encoder = ascii, .compressor = zlib, .data_format = inlined});
 #endif
     }
 
