@@ -5,7 +5,7 @@ name: install-adapted-packages
 inputs:
   dune_version:
     required: false
-    default: 2.8
+    default: 2.9
   dealii_version:
     required: false
     default: 9.4.0
