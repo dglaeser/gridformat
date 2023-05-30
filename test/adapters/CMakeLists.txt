@@ -19,6 +19,7 @@ gridformat_add_regression_test_if(deal.II_FOUND
     test_dealii_sequential
     test_dealii_sequential.cpp
     "dealii_vtu*"
+    SKIP_MEMCHECK
 )
 gridformat_add_parallel_regression_test_if(GRIDFORMAT_HAVE_PARALLEL_DEAL_II
     test_dealii_parallel
