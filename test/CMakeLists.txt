@@ -35,7 +35,7 @@ function(gridformat_add_test_exe NAME SOURCE)
     # which we use for testing the predefined deal.ii adapters
     target_link_libraries(${NAME} gridformat::gridformat Boost::ut)
     target_compile_definitions(${NAME} PRIVATE GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS)
-    target_compile_options(${NAME} PRIVATE -Wall)
+    target_compile_options(${NAME} PRIVATE -Wall -Wextra -Wpedantic)
 
     if (VALGRIND_PATH AND NOT EXTRA_ARGS_SKIP_MEMCHECK)
         set(MEMCHECK_TARGET ${NAME}_memcheck)
