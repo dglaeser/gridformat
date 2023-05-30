@@ -131,6 +131,26 @@ Users of these frameworks can include these predefined traits and use `GridForma
 
 Coming soon...
 
+### Development and test suite
+
+In order to configure your local copy for testing, tell `cmake` to include the test suite:
+
+```bash
+# Note: you may have to set a compiler explicitly (see installation section)
+cmake -DGRIDFORMAT_BUILD_TESTS=ON -B build
+```
+
+Afterwards, you can build and run all tests with `ctest`:
+
+```bash
+# Note: use, e.g., ctest -j4 if you want to use 4 processors
+cd build
+make build_tests
+ctest
+```
+
+Note that an internet connection is required for the call to `cmake` as it pulls in [ut](https://github.com/boost-ext/ut) on-the-fly.
+
 ## License
 
 `GridFormat` is licensed under the terms and conditions of the GNU General Public License (GPL) version 3 or - at your option -
