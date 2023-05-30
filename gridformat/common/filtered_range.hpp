@@ -12,6 +12,7 @@
 #include <cassert>
 #include <utility>
 #include <concepts>
+#include <iterator>
 
 #include <gridformat/common/iterator_facades.hpp>
 
@@ -45,20 +46,31 @@ template<std::ranges::forward_range R,
 requires(std::convertible_to<bool, FilteredRangeDetail::PredicateResult<R, Predicate>>)
 class FilteredRange {
 
-    template<typename _Range>
+    template<typename _It, typename _Sentinel>
     class Iterator
-    : public ForwardIteratorFacade<Iterator<_Range>,
-                                   std::ranges::range_value_t<_Range>,
-                                   std::ranges::range_reference_t<_Range>> {
+    : public ForwardIteratorFacade<Iterator<_It, _Sentinel>,
+                                   typename std::iterator_traits<_It>::value_type,
+                                   typename std::iterator_traits<_It>::reference> {
      public:
         Iterator() = default;
-        explicit Iterator(_Range& range, const Predicate& pred, bool is_end = false)
-        : _range{&range}
-        , _pred(&pred)
-        , _it{is_end ? std::ranges::end(*_range) : std::ranges::begin(*_range)}
-        , _end_it{std::ranges::end(*_range)} {
+        explicit Iterator(_It it, _Sentinel sentinel, const Predicate& pred)
+        : _it{it}
+        , _end_it{sentinel}
+        , _pred(&pred) {
             if (_should_increment())
                 _increment();
+        }
+
+        bool operator==(const Iterator<_Sentinel, _Sentinel>& other) const {
+            return _is_end() && _end_it == other.sentinel();
+        }
+
+        bool operator!=(const Iterator<_Sentinel, _Sentinel>& other) const {
+            return !_is_end() && _end_it == other.sentinel();
+        }
+
+        const _Sentinel sentinel() const {
+            return _end_it;
         }
 
      private:
@@ -76,10 +88,6 @@ class FilteredRange {
         }
 
         bool _is_equal(const Iterator& other) const {
-            if (_range != other._range)
-                return false;
-            if (_pred != other._pred)
-                return false;
             return _it == other._it;
         }
 
@@ -95,12 +103,11 @@ class FilteredRange {
             if (!_is_end())
                 return !_current_true();
             return false;
-         }
+        }
 
-        _Range* _range{nullptr};
+        _It _it;
+        _Sentinel _end_it;
         const Predicate* _pred{nullptr};
-        std::ranges::iterator_t<_Range> _it;
-        std::ranges::iterator_t<_Range> _end_it;
     };
 
  public:
@@ -110,8 +117,8 @@ class FilteredRange {
     , _pred{std::move(pred)}
     {}
 
-    auto begin() const { return Iterator{_range, _pred}; }
-    auto end() const { return Iterator{_range, _pred, true}; }
+    auto begin() const { return Iterator{std::ranges::begin(_range), std::ranges::end(_range), _pred}; }
+    auto end() const { return Iterator{std::ranges::end(_range), std::ranges::end(_range), _pred}; }
 
  private:
     R _range;
