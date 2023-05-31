@@ -223,7 +223,7 @@ def _test_vtk(filename: str, skip_metadata: bool, reference_function: Callable[[
 
 def test(filename: str, skip_metadata: bool = False) -> int | None:
     if not HAVE_VTK:
-        return 255
+        return 42
 
     ext = splitext(filename)[1]
     if ext == ".pvd":
