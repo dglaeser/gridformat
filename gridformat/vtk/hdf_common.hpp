@@ -71,14 +71,14 @@ struct IOContext {
     , rank_points{std::move(_rank_points)}
     , num_cells_total{_accumulate(rank_cells)}
     , num_points_total{_accumulate(rank_points)}
-    , my_cell_offset{_accumulate(rank_cells.begin(), std::next(rank_cells.begin(), my_rank))}
-    , my_point_offset{_accumulate(rank_points.begin(), std::next(rank_points.begin(), my_rank))} {
+    , my_cell_offset{_accumulate_rank_offset(rank_cells)}
+    , my_point_offset{_accumulate_rank_offset(rank_points)} {
         if (my_rank >= num_ranks)
-            throw ValueError("Given rank is not within communicator size");
+            throw ValueError(as_error("Given rank is not within communicator size"));
         if (num_ranks != static_cast<int>(rank_cells.size()))
-            throw ValueError("Cells vector does not match communicator size");
+            throw ValueError(as_error("Cells vector does not match communicator size"));
         if (num_ranks != static_cast<int>(rank_points.size()))
-            throw ValueError("Points vector does not match communicator size");
+            throw ValueError(as_error("Points vector does not match communicator size"));
     }
 
     template<Concepts::Grid Grid, Concepts::Communicator Communicator>
@@ -99,12 +99,13 @@ struct IOContext {
 
  private:
     std::size_t _accumulate(const std::vector<std::size_t>& in) const {
-        return _accumulate(in.begin(), in.end());
+        return std::accumulate(in.begin(), in.end(), std::size_t{0});
     }
 
-    template<typename I>
-    std::size_t _accumulate(I begin, I end) const {
-        return std::accumulate(begin, end, std::size_t{0});
+    std::size_t _accumulate_rank_offset(const std::vector<std::size_t>& in) const {
+        if (in.size() <= static_cast<std::size_t>(my_rank))
+            throw ValueError("Rank-vector length must be equal to number of ranks");
+        return std::accumulate(in.begin(), std::next(in.begin(), my_rank), std::size_t{0});
     }
 };
 
