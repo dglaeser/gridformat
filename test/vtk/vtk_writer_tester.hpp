@@ -84,17 +84,16 @@ class WriterTester {
         _xml_options.push_back({.encoder = raw, .compressor = none, .data_format = appended});
 
         // for compressors, use small block size such that multiple blocks are compressed/written
-        static constexpr std::size_t block_size = 100;
 #if GRIDFORMAT_HAVE_LZ4
-        _xml_options.push_back({.encoder = raw, .compressor = lz4.with({.block_size = block_size}), .data_format = appended});
+        _xml_options.push_back({.encoder = raw, .compressor = lz4.with({.block_size = 100}), .data_format = appended});
         _xml_options.push_back({.encoder = base64, .compressor = lz4, .data_format = appended});
 #endif
 #if GRIDFORMAT_HAVE_LZMA
-        _xml_options.push_back({.encoder = raw, .compressor = lzma.with({.block_size = block_size}), .data_format = appended});
+        _xml_options.push_back({.encoder = raw, .compressor = lzma.with({.block_size = 100}), .data_format = appended});
         _xml_options.push_back({.encoder = base64, .compressor = lzma, .data_format = appended});
 #endif
 #if GRIDFORMAT_HAVE_ZLIB
-        _xml_options.push_back({.encoder = raw, .compressor = zlib.with({.block_size = block_size}), .data_format = appended});
+        _xml_options.push_back({.encoder = raw, .compressor = zlib.with({.block_size = 100}), .data_format = appended});
         _xml_options.push_back({.encoder = base64, .compressor = zlib, .data_format = appended});
         // this should raise a warning but still work
         _xml_options.push_back({.encoder = ascii, .compressor = zlib, .data_format = inlined});
@@ -185,9 +184,9 @@ class WriterTester {
         catch (const GridFormat::ValueError& e) {}
 
         GridFormat::VTK::XMLOptions raw_inline;
-        ascii_appended.encoder = Encoding::raw;
-        ascii_appended.data_format = GridFormat::VTK::DataFormat::inlined;
-        try { w.with(ascii_appended).write("should_fail"); }
+        raw_inline.encoder = Encoding::raw;
+        raw_inline.data_format = GridFormat::VTK::DataFormat::inlined;
+        try { w.with(raw_inline).write("should_fail"); }
         catch (const GridFormat::ValueError& e) {}
     }
 
