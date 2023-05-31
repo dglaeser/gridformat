@@ -157,7 +157,7 @@ const std::vector<int>& cell_corners_in_gridformat_order(unsigned int cell_dimen
         " and " + std::to_string(number_of_cell_corners) + " corners"
     );
     // In order to make compilers happy
-    static constexpr std::vector<int> v{};
+    static const std::vector<int> v{};
     return v;
 }
 
