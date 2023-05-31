@@ -169,14 +169,14 @@ using MDRangeValueTypeAt = typename Detail::MDRangeValueTypeAt<0, depth, R>::typ
 namespace Detail {
 
     template<typename T, std::size_t s = sizeof(T)>
-    std::false_type isIncomplete(T*);
-    std::true_type isIncomplete(...);
+    std::false_type is_incomplete(T*);
+    std::true_type is_incomplete(...);
 
 }  // end namespace Detail
 #endif  // DOXYGEN
 
 template<typename T>
-inline constexpr bool is_incomplete = decltype(Detail::isIncomplete(std::declval<T*>()))::value;
+inline constexpr bool is_incomplete = decltype(Detail::is_incomplete(std::declval<T*>()))::value;
 
 template<typename T>
 inline constexpr bool is_complete = !is_incomplete<T>;
@@ -372,7 +372,7 @@ struct StaticSize<T> {
 template<typename T> requires(is_complete<StaticSize<std::remove_const_t<T>>>)
 struct StaticSize<T&> : public StaticSize<std::remove_const_t<T>> {};
 
-}
+}  // namespace Traits
 
 template<typename T>
 inline constexpr std::size_t static_size = Traits::StaticSize<T>::value;
