@@ -54,7 +54,7 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
         );
     }
 
-    virtual void _write(const std::string& filename_with_ext) const {
+    virtual void _write(const std::string& filename_with_ext) const override {
         _write_piece(filename_with_ext);
         Parallel::barrier(_comm);  // ensure all pieces finished successfully
         if (Parallel::rank(_comm) == 0)
