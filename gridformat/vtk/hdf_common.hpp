@@ -38,11 +38,6 @@
 
 namespace GridFormat::VTKHDF {
 
-struct TransientOptions {
-    bool static_grid = false;
-    bool static_meta_data = false;
-};
-
 struct DataSetSlice {
     std::vector<std::size_t> size;  // todo: is total size, actuall. rename?
     std::vector<std::size_t> offset;
@@ -76,14 +71,14 @@ struct IOContext {
     , rank_points{std::move(_rank_points)}
     , num_cells_total{_accumulate(rank_cells)}
     , num_points_total{_accumulate(rank_points)}
-    , my_cell_offset{_accumulate(rank_cells.begin(), std::next(rank_cells.begin(), my_rank))}
-    , my_point_offset{_accumulate(rank_points.begin(), std::next(rank_points.begin(), my_rank))} {
+    , my_cell_offset{_accumulate_rank_offset(rank_cells)}
+    , my_point_offset{_accumulate_rank_offset(rank_points)} {
         if (my_rank >= num_ranks)
-            throw ValueError("Given rank is not within communicator size");
+            throw ValueError(as_error("Given rank is not within communicator size"));
         if (num_ranks != static_cast<int>(rank_cells.size()))
-            throw ValueError("Cells vector does not match communicator size");
+            throw ValueError(as_error("Cells vector does not match communicator size"));
         if (num_ranks != static_cast<int>(rank_points.size()))
-            throw ValueError("Points vector does not match communicator size");
+            throw ValueError(as_error("Points vector does not match communicator size"));
     }
 
     template<Concepts::Grid Grid, Concepts::Communicator Communicator>
@@ -104,12 +99,13 @@ struct IOContext {
 
  private:
     std::size_t _accumulate(const std::vector<std::size_t>& in) const {
-        return _accumulate(in.begin(), in.end());
+        return std::accumulate(in.begin(), in.end(), std::size_t{0});
     }
 
-    template<typename I>
-    std::size_t _accumulate(I begin, I end) const {
-        return std::accumulate(begin, end, std::size_t{0});
+    std::size_t _accumulate_rank_offset(const std::vector<std::size_t>& in) const {
+        if (in.size() <= static_cast<std::size_t>(my_rank))
+            throw ValueError("Rank-vector length must be equal to number of ranks");
+        return std::accumulate(in.begin(), std::next(in.begin(), my_rank), std::size_t{0});
     }
 };
 
@@ -290,49 +286,8 @@ class HDF5File {
     auto _prepare_dataset(HighFive::Group& group,
                           const std::string& name,
                           const HighFive::DataSpace& space) {
-        if (_mode == overwrite) {
+        if (_mode == overwrite)
             return std::make_pair(std::size_t{0}, group.createDataSet(name, space, HighFive::create_datatype<T>()));
-        } else if (_mode == append) {
-            if (group.exist(name)) {
-                auto dataset = group.getDataSet(name);
-                auto out_dimensions = dataset.getDimensions();
-                const auto in_dimensions = space.getDimensions();
-
-                if (out_dimensions.size() < 1 || in_dimensions.size() < 1)
-                    throw ValueError("Cannot extend scalar datasets");
-                if (
-                    !std::ranges::equal(
-                        std::ranges::subrange(out_dimensions.begin() + 1, out_dimensions.end()),
-                        std::ranges::subrange(in_dimensions.begin() + 1, in_dimensions.end())
-                    )
-                )
-                    throw ValueError("Dataset extension requires the sub-dimensions to be equal");
-
-                const std::size_t offset = out_dimensions[0];
-                out_dimensions[0] += in_dimensions[0];
-                dataset.resize(out_dimensions);
-                return std::make_pair(offset, std::move(dataset));
-            } else {
-                const auto init_dimensions = space.getDimensions();
-                if (init_dimensions.size() < 1)
-                    throw ValueError("Scalars cannot be written in appended mode. Wrap them in std::array{scalar}");
-
-                const auto chunk_dimensions = std::vector<hsize_t>{init_dimensions.begin(), init_dimensions.end()};
-                const auto max_dimensions = [&] () {
-                    auto tmp = init_dimensions;
-                    tmp[0] *= HighFive::DataSpace::UNLIMITED;
-                    return tmp;
-                } ();
-
-                HighFive::DataSpace out_space(init_dimensions, max_dimensions);
-                HighFive::DataSetCreateProps props;
-                props.add(HighFive::Chunking(chunk_dimensions));
-                return std::make_pair(
-                    std::size_t{0},
-                    group.createDataSet(name, out_space, HighFive::create_datatype<T>(), props)
-                );
-            }
-        }
         throw NotImplemented("Dataset preparation for given mode");
     }
 

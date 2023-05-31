@@ -4,8 +4,8 @@
  * \file
  * \ingroup Adapters
  * \brief Traits specializations for cgal triangulations in
- *        [2d](https://doc.cgal.org/latest/Triangulation_2/index.html) and
- *        [3d](https://doc.cgal.org/latest/Triangulation_3/index.html).
+ *        <a href="https://doc.cgal.org/latest/Triangulation_2/index.html">2D</a>
+ *        <a href="https://doc.cgal.org/latest/Triangulation_3/index.html">3D</a>.
  */
 #ifndef GRIDFORMAT_ADAPTERS_CGAL_HPP_
 #define GRIDFORMAT_ADAPTERS_CGAL_HPP_

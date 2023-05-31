@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Adapters
- * \brief Traits specializations for [`Dune::GridView`](https://gitlab.dune-project.org/core/dune-grid)
+ * \brief Traits specializations for <a href="https://gitlab.dune-project.org/core/dune-grid">dune grid views</a>
  */
 #ifndef GRIDFORMAT_ADAPTERS_DUNE_HPP_
 #define GRIDFORMAT_ADAPTERS_DUNE_HPP_

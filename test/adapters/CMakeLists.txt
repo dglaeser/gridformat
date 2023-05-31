@@ -11,7 +11,7 @@ gridformat_add_regression_test_if(CGAL_FOUND
 if (CGAL_FOUND)
     message(STATUS "Testing CGAL traits with CGAL version ${CGAL_VERSION}")
     target_link_libraries(test_cgal CGAL::CGAL)
-    target_compile_options(test_cgal PRIVATE -fconcepts-diagnostics-depth=20 -frounding-math)
+    target_compile_options(test_cgal PRIVATE -frounding-math)
 endif ()
 
 find_package(deal.II)
@@ -26,6 +26,10 @@ function (gridformat_setup_deal_ii_target TARGET)
         deal_ii_setup_target(${TARGET})
         # two flags added by dealii produce (in our opinion) false positives with gcc (there are related open issues in gcc)
         target_compile_options(${TARGET} PRIVATE -Wno-overloaded-virtual -Wno-missing-braces -frounding-math)
+        target_compile_definitions(${TARGET} PRIVATE
+            MESH_FILE_2D="${CMAKE_CURRENT_SOURCE_DIR}/simplices_2d.msh"
+            MESH_FILE_3D="${CMAKE_CURRENT_SOURCE_DIR}/simplices_3d.msh"
+        )
     endif ()
 endfunction ()
 
