@@ -165,6 +165,7 @@ class ImageGrid {
     , _spacing{_compute_spacing(cells)}
     , _cell_index_tuples{cells}
     , _point_index_tuples{Ranges::incremented(cells, 1)}
+    , _cell_point_offsets{Ranges::filled_array<dim, std::size_t>(2)}
     , _point_mapper{Ranges::incremented(cells, 1)} {
         if (std::ranges::any_of(cells, [] (const std::integral auto i) { return i == 0; }))
             throw ValueError("Number of cells in each direction must be > 0");
@@ -204,7 +205,7 @@ class ImageGrid {
     auto center(const Cell& c) const {
         unsigned corner_count = 0;
         auto result = Ranges::filled_array<dim>(CoordinateType{0});
-        for (const auto& p : points(*this, c)) {
+        for (const auto& p : points(c)) {
             corner_count++;
             const auto ppos = position(p);
             for (unsigned i = 0; i < dim; ++i)
@@ -218,19 +219,16 @@ class ImageGrid {
         return _point_mapper.map(p.location);
     }
 
-    friend std::ranges::range auto cells(const ImageGrid& grid) {
-        auto indices = grid._cell_index_tuples;
-        return std::move(indices) | std::views::transform([] (const auto& indices) { return Cell{indices}; });
+    std::ranges::range auto cells() const {
+        return _cell_index_tuples | std::views::transform([] (const auto& indices) { return Cell{indices}; });
     }
 
-    friend std::ranges::range auto points(const ImageGrid& grid) {
-        auto indices = grid._point_index_tuples;
-        return std::move(indices) | std::views::transform([] (const auto& indices) { return Point{indices}; });
+    std::ranges::range auto points() const {
+        return _point_index_tuples | std::views::transform([] (const auto& indices) { return Point{indices}; });
     }
 
-    friend std::ranges::range auto points(const ImageGrid&, const Cell& cell) {
-        Detail::MDIndexRange<dim> offsets{Ranges::filled_array<dim, std::size_t>(2)};
-        return std::move(offsets)
+    std::ranges::range auto points(const Cell& cell) const {
+        return _cell_point_offsets
             | std::views::transform([loc = cell.location] (const auto& offset) {
                 auto point_loc = loc;
                 std::transform(
@@ -270,6 +268,7 @@ class ImageGrid {
     std::array<CoordinateType, dim> _spacing;
     Detail::MDIndexRange<dim> _cell_index_tuples;
     Detail::MDIndexRange<dim> _point_index_tuples;
+    Detail::MDIndexRange<dim> _cell_point_offsets;
     FlatIndexMapper<dim> _point_mapper;
 };
 
@@ -283,14 +282,14 @@ namespace Traits {
 template<std::size_t dim, typename CT>
 struct Points<ImageGrid<dim, CT>> {
     static std::ranges::range auto get(const ImageGrid<dim, CT>& grid) {
-        return points(grid);
+        return grid.points();
     }
 };
 
 template<std::size_t dim, typename CT>
 struct Cells<ImageGrid<dim, CT>> {
     static std::ranges::range auto get(const ImageGrid<dim, CT>& grid) {
-        return cells(grid);
+        return grid.cells();
     }
 };
 
@@ -345,7 +344,7 @@ struct PointCoordinates<ImageGrid<dim, CT>, typename ImageGrid<dim, CT>::Point> 
 template<std::size_t dim, typename CT>
 struct CellPoints<ImageGrid<dim, CT>, typename ImageGrid<dim, CT>::Cell> {
     static auto get(const ImageGrid<dim, CT>& grid, const typename ImageGrid<dim, CT>::Cell& c) {
-        return points(grid, c);
+        return grid.points(c);
     }
 };
 
