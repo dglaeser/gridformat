@@ -225,7 +225,7 @@ struct Max<MPI_Comm> {
     static T get(MPI_Comm comm, const T& value, int root_rank = 0) {
         static constexpr int num_values = 1;
         T result;
-        MPIDetail::reduce(&value, &result, comm, MPI_MAX, 1, root_rank);
+        MPIDetail::reduce(&value, &result, comm, MPI_MAX, num_values, root_rank);
         return result;
     }
 
@@ -244,7 +244,7 @@ struct Min<MPI_Comm> {
     static T get(MPI_Comm comm, const T& value, int root_rank = 0) {
         static constexpr int num_values = 1;
         T result;
-        MPIDetail::reduce(&value, &result, comm, MPI_MIN, 1, root_rank);
+        MPIDetail::reduce(&value, &result, comm, MPI_MIN, num_values, root_rank);
         return result;
     }
 
