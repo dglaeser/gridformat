@@ -10,7 +10,16 @@ runs:
   steps:
     - name: install-dependencies
       run: |
-        sudo apt install ${{ inputs.compiler }} \
+        # install latest clang from script
+        COMPILER=${{ inputs.compiler }}
+        if [[ "${COMPILER}" =~ .*"clang".* ]]; then
+            VERSION="${COMPILER##*-}"
+            echo "Installing clang version ${VERSION} from online script"
+            sudo apt install wget software-properties-common
+            wget https://apt.llvm.org/llvm.sh
+            sudo /bin/bash llvm.sh ${VERSION}
+        fi
+        sudo apt install ${COMPILER} \
                          mpi-default-bin mpi-default-dev \
                          libhdf5-mpi-dev
         python3 -m pip install vtk

@@ -21,7 +21,7 @@ and traits classes, `GridFormat` fully operates on the user-given data structure
 
 Prerequisites:
 
-- C++-compiler with C++-20-support (tests run with `gcc-12/13`)
+- C++-compiler with C++-20-support (tests run with `gcc-12/13`, `clang++-16`)
 - `cmake` (tests run with cmake-3.26)
 
 It is easiest to integrate `GridFormat` either as a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
