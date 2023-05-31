@@ -27,28 +27,9 @@ namespace FilteredRangeDetail {
         std::ranges::range_reference_t<Range>
     >;
 
-}  // namespace FilteredRangeDetail
-#endif  // DOXYGEN
-
-/*!
- * \ingroup Common
- * \brief Filters a range by a given predicate and
- *        only yields those elements that fulfill it.
- * \note We need this because `std::views::filter` yields a view that
- *       exposes `begin()` and `end()` only as non-const (because the
- *       filtered begin iterator is cached in the first call to `begin()`).
- *       However, we need to be able to use const filtered ranges in several contexts,
- *       at the cost of finding the beginning of the range every time the filtered
- *       range is traversed.
- */
-template<std::ranges::forward_range R,
-         std::invocable<std::ranges::range_reference_t<R>> Predicate>
-requires(std::convertible_to<bool, FilteredRangeDetail::PredicateResult<R, Predicate>>)
-class FilteredRange {
-
-    template<typename _It, typename _Sentinel>
+    template<typename _It, typename _Sentinel, typename Predicate>
     class Iterator
-    : public ForwardIteratorFacade<Iterator<_It, _Sentinel>,
+    : public ForwardIteratorFacade<Iterator<_It, _Sentinel, Predicate>,
                                    typename std::iterator_traits<_It>::value_type,
                                    typename std::iterator_traits<_It>::reference> {
      public:
@@ -61,20 +42,23 @@ class FilteredRange {
                 _increment();
         }
 
-        bool operator==(const Iterator<_Sentinel, _Sentinel>& other) const {
-            return _is_end() && _end_it == other.sentinel();
+        // required for comparison iterator == sentinel
+        bool operator==(const Iterator<_Sentinel, _Sentinel, Predicate>& other) const {
+            return _is_end() && _end_it == other._sentinel();
         }
 
-        bool operator!=(const Iterator<_Sentinel, _Sentinel>& other) const {
-            return !_is_end() && _end_it == other.sentinel();
+        // required for comparison sentinel == iterator
+        template<typename I> requires(!std::same_as<I, _Sentinel>)
+        bool operator==(const Iterator<I, _Sentinel, Predicate>& other) const {
+            return &_pred == &other._predicate() && _it == other._current();
         }
 
-        const _Sentinel sentinel() const {
-            return _end_it;
-        }
+        const _It& _current() const { return _it; }
+        const _Sentinel& _sentinel() const { return _end_it; }
+        const Predicate& _predicate() const { return _predicate; }
 
      private:
-        friend class IteratorAccess;
+        friend IteratorAccess;
 
         decltype(auto) _dereference() const {
             assert(!_is_end());
@@ -110,6 +94,27 @@ class FilteredRange {
         const Predicate* _pred{nullptr};
     };
 
+    template<typename I, typename S, typename P>
+    Iterator(I&&, S&&, const P&) -> Iterator<std::remove_cvref_t<I>, std::remove_cvref_t<S>, P>;
+
+}  // namespace FilteredRangeDetail
+#endif  // DOXYGEN
+
+/*!
+ * \ingroup Common
+ * \brief Filters a range by a given predicate and
+ *        only yields those elements that fulfill it.
+ * \note We need this because `std::views::filter` yields a view that
+ *       exposes `begin()` and `end()` only as non-const (because the
+ *       filtered begin iterator is cached in the first call to `begin()`).
+ *       However, we need to be able to use const filtered ranges in several contexts,
+ *       at the cost of finding the beginning of the range every time the filtered
+ *       range is traversed.
+ */
+template<std::ranges::forward_range R,
+         std::invocable<std::ranges::range_reference_t<R>> Predicate>
+requires(std::convertible_to<bool, FilteredRangeDetail::PredicateResult<R, Predicate>>)
+class FilteredRange {
  public:
     template<typename _R> requires(std::convertible_to<_R, R>)
     explicit FilteredRange(_R&& range, Predicate&& pred)
@@ -117,8 +122,21 @@ class FilteredRange {
     , _pred{std::move(pred)}
     {}
 
-    auto begin() const { return Iterator{std::ranges::begin(_range), std::ranges::end(_range), _pred}; }
-    auto end() const { return Iterator{std::ranges::end(_range), std::ranges::end(_range), _pred}; }
+    auto begin() const {
+        return FilteredRangeDetail::Iterator{
+            std::ranges::begin(_range),
+            std::ranges::end(_range),
+            _pred
+        };
+    }
+
+    auto end() const {
+        return FilteredRangeDetail::Iterator{
+            std::ranges::end(_range),
+            std::ranges::end(_range),
+            _pred
+        };
+    }
 
  private:
     R _range;
