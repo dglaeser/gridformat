@@ -38,11 +38,6 @@
 
 namespace GridFormat::VTKHDF {
 
-struct TransientOptions {
-    bool static_grid = false;
-    bool static_meta_data = false;
-};
-
 struct DataSetSlice {
     std::vector<std::size_t> size;  // todo: is total size, actuall. rename?
     std::vector<std::size_t> offset;
