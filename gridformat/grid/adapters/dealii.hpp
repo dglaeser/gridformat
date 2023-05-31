@@ -3,7 +3,8 @@
 /*!
  * \file
  * \ingroup Adapters
- * \brief Traits specializations for [dealii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html)
+ * \brief Traits specializations for
+ *        <a href="https://www.dealii.org/current/doxygen/deal.II/group__grid.html">dealii triangulations</a>
  */
 #ifndef GRIDFORMAT_ADAPTERS_DEAL_II_HPP_
 #define GRIDFORMAT_ADAPTERS_DEAL_II_HPP_
