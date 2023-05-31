@@ -26,6 +26,10 @@ function (gridformat_setup_deal_ii_target TARGET)
         deal_ii_setup_target(${TARGET})
         # two flags added by dealii produce (in our opinion) false positives with gcc (there are related open issues in gcc)
         target_compile_options(${TARGET} PRIVATE -Wno-overloaded-virtual -Wno-missing-braces -frounding-math)
+        target_compile_definitions(${TARGET} PRIVATE
+            MESH_FILE_2D="${CMAKE_CURRENT_SOURCE_DIR}/simplices_2d.msh"
+            MESH_FILE_3D="${CMAKE_CURRENT_SOURCE_DIR}/simplices_3d.msh"
+        )
     endif ()
 endfunction ()
 
