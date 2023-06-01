@@ -126,7 +126,7 @@ namespace Detail {
  * \brief Get the layout of a range (or a scalar) whose size is known at compile-time
  */
 template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
-constexpr MDLayout get_md_layout() {
+MDLayout get_md_layout() {
     if constexpr (Concepts::Scalar<T>)
         return MDLayout{};
     else {
@@ -144,7 +144,7 @@ constexpr MDLayout get_md_layout() {
  *        given as template argument, whose size is known at compile-time.
  */
 template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
-constexpr MDLayout get_md_layout(std::size_t n) {
+MDLayout get_md_layout(std::size_t n) {
     if constexpr (Concepts::Scalar<T>)
         return MDLayout{{n}};
     else {
@@ -160,7 +160,7 @@ constexpr MDLayout get_md_layout(std::size_t n) {
  * \brief Get the multi-dimensional layout for the given range
  */
 template<std::ranges::range R>
-constexpr MDLayout get_md_layout(R&& r) {
+MDLayout get_md_layout(R&& r) {
     return get_md_layout<std::ranges::range_value_t<R>>(Ranges::size(r));
 }
 
@@ -169,7 +169,7 @@ constexpr MDLayout get_md_layout(R&& r) {
  * \brief Overload for scalars
  */
 template<Concepts::Scalar T>
-constexpr MDLayout get_md_layout(const T&) {
+MDLayout get_md_layout(const T&) {
     return MDLayout{};
 }
 
