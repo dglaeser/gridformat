@@ -15,6 +15,7 @@
 #include <cstdint>
 
 #include <gridformat/common/output_stream.hpp>
+#include <gridformat/common/reserved_string.hpp>
 
 namespace GridFormat {
 
@@ -35,14 +36,14 @@ namespace Encoding::Detail {
 #endif  // DOXYGEN
 
 struct AsciiFormatOptions {
-    std::string delimiter = "";
-    std::string line_prefix = "";
+    ReservedString<30> delimiter{""};
+    ReservedString<30> line_prefix{""};
     std::size_t entries_per_line = std::numeric_limits<std::size_t>::max();
 
-    bool operator==(const AsciiFormatOptions& other) const {
-        return delimiter == other.delimiter
-            && line_prefix == other.line_prefix
-            && entries_per_line == other.entries_per_line;
+    friend bool operator==(const AsciiFormatOptions& a, const AsciiFormatOptions& b) {
+        return a.delimiter == b.delimiter
+            && a.line_prefix == b.line_prefix
+            && a.entries_per_line == b.entries_per_line;
     }
 };
 
