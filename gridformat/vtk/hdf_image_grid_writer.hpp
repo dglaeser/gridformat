@@ -253,17 +253,17 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
             const auto size = is_point_field ? Ranges::incremented(extents(this->grid()), 1)
                                              : extents(this->grid());
             if (layout.dimension() == 1) {
-                typename Helper::type<T> data;
+                typename Helper::template type<T> data;
                 Helper::resize(data, size);
                 field.export_to(data | Views::flat);
                 visitor(data);
             } else if (layout.dimension() == 2) {
-                typename Helper::type<Vector<T>> data;
+                typename Helper::template type<Vector<T>> data;
                 Helper::resize(data, size);
                 field.export_to(data | Views::flat);
                 visitor(data);
             } else if (layout.dimension() == 3) {
-                typename Helper::type<Tensor<T>> data;
+                typename Helper::template type<Tensor<T>> data;
                 Helper::resize(data, size);
                 field.export_to(data | Views::flat);
                 visitor(data);

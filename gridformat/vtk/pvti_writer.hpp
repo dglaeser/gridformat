@@ -65,7 +65,7 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         );
     }
 
-    virtual void _write(const std::string& filename_with_ext) const {
+    virtual void _write(const std::string& filename_with_ext) const override {
         const auto& local_origin = origin(this->grid());
         const auto& local_extents = extents(this->grid());
 

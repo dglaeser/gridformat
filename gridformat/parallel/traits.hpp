@@ -128,17 +128,19 @@ struct Gather<NullCommunicator> {
 
 template<>
 struct Scatter<NullCommunicator> {
-    template<std::ranges::contiguous_range R> requires(!Concepts::StaticallySizedRange<R>)
-    static constexpr std::vector<std::ranges::range_value_t<R>> get(const NullCommunicator&,
-                                                                    const R&,
-                                                                    [[maybe_unused]] int root_rank = 0) {
-        throw NotImplemented("Scatter on null communicator");
-    }
+ private:
+    template<std::ranges::range R>
+    struct Return;
+    template<Concepts::StaticallySizedRange R>
+    struct Return<R> { using type = std::array<FieldScalar<R>, static_size<R>>; };
+    template<std::ranges::range R> requires(!Concepts::StaticallySizedRange<R>)
+    struct Return<R> { using type = std::vector<FieldScalar<R>>; };
 
-    template<std::ranges::contiguous_range R> requires(Concepts::StaticallySizedRange<R>)
-    static constexpr std::array<std::ranges::range_value_t<R>, static_size<R>> get(const NullCommunicator&,
-                                                                                   const R&,
-                                                                                   [[maybe_unused]] int root_rank = 0) {
+ public:
+    template<std::ranges::contiguous_range R>
+    static constexpr typename Return<R>::type get(const NullCommunicator&,
+                                                  const R&,
+                                                  [[maybe_unused]] int root_rank = 0) {
         throw NotImplemented("Scatter on null communicator");
     }
 };
@@ -225,7 +227,7 @@ struct Max<MPI_Comm> {
     static T get(MPI_Comm comm, const T& value, int root_rank = 0) {
         static constexpr int num_values = 1;
         T result;
-        MPIDetail::reduce(&value, &result, comm, MPI_MAX, 1, root_rank);
+        MPIDetail::reduce(&value, &result, comm, MPI_MAX, num_values, root_rank);
         return result;
     }
 
@@ -244,7 +246,7 @@ struct Min<MPI_Comm> {
     static T get(MPI_Comm comm, const T& value, int root_rank = 0) {
         static constexpr int num_values = 1;
         T result;
-        MPIDetail::reduce(&value, &result, comm, MPI_MIN, 1, root_rank);
+        MPIDetail::reduce(&value, &result, comm, MPI_MIN, num_values, root_rank);
         return result;
     }
 

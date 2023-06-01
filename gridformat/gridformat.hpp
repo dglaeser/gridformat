@@ -8,6 +8,8 @@
 #ifndef GRIDFORMAT_GRIDFORMAT_HPP_
 #define GRIDFORMAT_GRIDFORMAT_HPP_
 
+#include <type_traits>
+
 #include <gridformat/writer.hpp>
 #include <gridformat/grid/image_grid.hpp>
 
@@ -112,8 +114,8 @@ namespace Detail {
 
     struct PVDClosure {
         template<typename Format>
-        constexpr auto operator()(Format&& f) const {
-            return PVD{std::forward<Format>(f)};
+        constexpr auto operator()(const Format& f) const {
+            return PVD<Format>{f};
         }
     };
 
@@ -133,7 +135,7 @@ namespace Detail {
     struct TimeSeriesClosure {
         template<typename Format> requires(IsVTKFormat<Format>::value)
         constexpr auto operator()(const Format& f) const {
-            return TimeSeries{f};
+            return TimeSeries<Format>{f};
         }
     };
 

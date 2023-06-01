@@ -15,6 +15,7 @@
 #include <type_traits>
 #include <functional>
 #include <optional>
+#include <iterator>
 
 #include <gridformat/common/detail/crtp.hpp>
 #include <gridformat/common/callable_overload_set.hpp>
@@ -156,7 +157,7 @@ namespace XMLDetail {
 template<Concepts::Grid G, typename Impl>
 class XMLWriterBase
 : public GridWriter<G>
-, public Detail::CRTPBase<Impl> {
+, public GridFormat::Detail::CRTPBase<Impl> {
     using ParentType = GridWriter<G>;
     using GridCoordinateType = CoordinateType<G>;
 
@@ -339,12 +340,13 @@ class XMLWriterBase
 
     std::vector<std::string> _get_element_names(std::string_view elements) const {
         std::vector<std::string> result;
-        std::ranges::copy(
-            std::views::split(elements, std::string_view{"."})
-                | std::views::transform([] (const auto& word) {
-                    return std::string{word.begin(), word.end()};
-                }),
-            std::back_inserter(result)
+        std::ranges::for_each(
+            std::views::split(elements, '.'),
+            [&] (const std::ranges::range auto& word) {
+                std::string word_str;
+                std::ranges::copy(word, std::back_inserter(word_str));
+                result.push_back(word_str);
+            }
         );
         return result;
     }

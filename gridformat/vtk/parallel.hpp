@@ -197,9 +197,10 @@ class StructuredGridMapperHelper {
 
     void _sort_ordinates(std::vector<T>& ordinates, const T& eps, bool reverse) const {
         if (ordinates.size() > 1) {
-            auto [it, _] = Ranges::sort_and_unique(
-                ordinates, {}, [&] (T a, T b) { return abs(a - b) < eps; }
-            );
+            auto [it, _] = Ranges::sort_and_unique(ordinates, {}, [&] (T a, T b) {
+                using std::abs;
+                return abs(a - b) < eps;
+            });
             ordinates.erase(it, ordinates.end());
             if (reverse)
                 std::ranges::reverse(ordinates);

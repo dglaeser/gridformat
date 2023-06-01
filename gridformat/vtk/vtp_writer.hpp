@@ -25,6 +25,29 @@
 
 namespace GridFormat {
 
+#ifndef DOXYGEN
+namespace Detail {
+
+    template<typename Grid, std::size_t size>
+    struct CellTypesPredicate {
+        std::reference_wrapper<const Grid> grid;
+        std::array<CellType, size> cell_types;
+
+        bool operator()(const Cell<Grid>& cell) const {
+            return std::ranges::any_of(cell_types, [&] (const CellType& _ct) {
+                return _ct == type(grid.get(), cell);
+            });
+        }
+    };
+
+    template<typename G, std::size_t s>
+    CellTypesPredicate(G&&, std::array<CellType, s>&&) -> CellTypesPredicate<std::remove_cvref_t<G>, s>;
+    template<typename G, std::size_t s>
+    CellTypesPredicate(G&&, const std::array<CellType, s>&) -> CellTypesPredicate<std::remove_cvref_t<G>, s>;
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
 /*!
  * \ingroup VTK
  * \brief Writer for .vtu file format
@@ -42,18 +65,6 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
         CellType::triangle
     };
 
-    template<std::size_t size>
-    struct CellTypesPredicate {
-        std::reference_wrapper<const Grid> grid;
-        std::array<CellType, size> cell_types;
-
-        bool operator()(const Cell<Grid>& cell) const {
-            return std::ranges::any_of(cell_types, [&] (const CellType& _ct) {
-                return _ct == type(grid.get(), cell);
-            });
-        }
-    };
-
  public:
     explicit VTPWriter(const Grid& grid,
                        VTK::XMLOptions xml_opts = {})
@@ -66,11 +77,11 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
     }
 
     void _write(std::ostream& s) const override {
-        auto verts_range = _get_cell_range(CellTypesPredicate{this->grid(), zero_d_types});
-        auto lines_range = _get_cell_range(CellTypesPredicate{this->grid(), one_d_types});
-        auto polys_range = _get_cell_range(CellTypesPredicate{this->grid(), two_d_types});
+        auto verts_range = _get_cell_range(Detail::CellTypesPredicate{this->grid(), zero_d_types});
+        auto lines_range = _get_cell_range(Detail::CellTypesPredicate{this->grid(), one_d_types});
+        auto polys_range = _get_cell_range(Detail::CellTypesPredicate{this->grid(), two_d_types});
         auto unsupported_range = _get_cell_range(
-            [p=CellTypesPredicate{
+            [p=Detail::CellTypesPredicate{
                 this->grid(), Ranges::merged(Ranges::merged(zero_d_types, one_d_types), two_d_types)
             }] (const Cell<Grid>& cell) {
                 return !p(cell);

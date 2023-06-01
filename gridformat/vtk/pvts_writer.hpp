@@ -66,7 +66,7 @@ class PVTSWriter : public VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator
         );
     }
 
-    virtual void _write(const std::string& filename_with_ext) const {
+    virtual void _write(const std::string& filename_with_ext) const override {
         const auto& local_extents = extents(this->grid());
         const auto [origin, is_negative_axis] = _get_origin_and_orientations();
 

@@ -65,7 +65,7 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
         );
     }
 
-    virtual void _write(const std::string& filename_with_ext) const {
+    virtual void _write(const std::string& filename_with_ext) const override {
         const auto& local_extents = extents(this->grid());
         const auto [origin, is_negative_axis] = _get_origin_and_orientations();
 
@@ -92,8 +92,9 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
         std::array<CT, dim> origin;
         std::array<bool, dim> is_negative_axis;
         for (unsigned dir = 0; dir < dim; ++dir) {
-            std::array<CT, 2> ordinates_01;
-            std::ranges::copy(std::views::take(ordinates(this->grid(), dir), 2), ordinates_01.begin());
+            std::array<CT, 2> ordinates_01{0, 0};
+            const auto& dir_ordinates = ordinates(this->grid(), dir);
+            std::ranges::copy(std::views::take(dir_ordinates, 2), ordinates_01.begin());
             origin[dir] = ordinates_01[0];
             is_negative_axis[dir] = ordinates_01[1] - ordinates_01[0] < CT{0};
         }

@@ -21,8 +21,8 @@ runs:
               -DGRIDFORMAT_BUILD_TESTS=OFF \
               -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
               -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
-              -B build && \
-        cmake --build build && \
+              -B build
+        cmake --build build
         cmake --install build
       shell: bash
 
@@ -41,6 +41,10 @@ runs:
                 -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
                 -DCMAKE_BUILD_TYPE=Release \
                 -B build
+          if [[ ${{ github.ref_name }} != "main" ]]; then
+            echo "Regression-testing sample files only for branch ${{ github.ref_name }}"
+            export GRIDFORMAT_REGRESSION_SAMPLES_ONLY=true
+          fi
           pushd build && make build_tests && ctest --output-on-failure && popd
       shell: bash
 

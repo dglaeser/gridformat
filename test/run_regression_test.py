@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from argparse import ArgumentParser
-from os import listdir
+from os import listdir, getenv
 from os.path import abspath, dirname, join, exists, isfile
 from subprocess import run, CalledProcessError
 from fnmatch import fnmatch
@@ -24,6 +24,8 @@ if __name__ == "__main__":
     run(args["command"].split(" "), check=True)
 
     ret_code = 0
+    env_variable_control_name = "GRIDFORMAT_REGRESSION_SAMPLES_ONLY"
+    take_single_sample = True if getenv(env_variable_control_name, "false").lower() in ["true", "1"] else False
     for _file in filter(lambda _f: isfile(_f), listdir(".")):
         if fnmatch(_file, f"{args['regex']}"):
             print(f"Regression testing '{_file}'")
@@ -36,4 +38,8 @@ if __name__ == "__main__":
                 )
             except CalledProcessError as e:
                 ret_code = max(ret_code, e.returncode)
+
+            if take_single_sample:
+                print(f"Stopping after first file because '{env_variable_control_name}' was set")
+                break;
     exit(ret_code)
