@@ -161,6 +161,7 @@ std::unordered_map<std::size_t, std::size_t> make_point_id_map(const Grid& grid)
     std::size_t i = 0;
     std::unordered_map<std::size_t, std::size_t> point_id_to_running_idx;
     for (const auto& p : points(grid)) {
+        assert(id(grid, p) >= 0);
         point_id_to_running_idx[id(grid, p)] = i++;
     }
     return point_id_to_running_idx;
