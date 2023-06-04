@@ -19,13 +19,13 @@ gridformat_add_parallel_regression_test_if(DOLFINX_FOUND
     test_dolfinx
     test_dolfinx.cpp
     2
-    "dolfinx_*"
+    "dolfinx_*nranks_2*"
 )
 gridformat_add_parallel_regression_test_if(DOLFINX_FOUND
     test_dolfinx_sequential
     test_dolfinx.cpp
     1
-    "dolfinx_*sequential*"
+    "dolfinx_*nranks_1*"
 )
 if (DOLFINX_FOUND)
     message(STATUS "Testing dolfinx traits with version ${DOLFINX_VERSION}")

@@ -165,7 +165,8 @@ bool is_sequential() {
 
 std::string get_filename(dolfinx::mesh::CellType ct, const std::string& suffix = "") {
     return "dolfinx_vtu" + (suffix.empty() ? "" : "_" + suffix) + "_"
-        + dolfinx::mesh::to_string(ct) + "_"
+        + dolfinx::mesh::to_string(ct) + "_nranks_"
+        + std::to_string(GridFormat::Parallel::size(MPI_COMM_WORLD)) + "_"
         + std::to_string(dolfinx::mesh::cell_dim(ct)) + "d_in_3d";
 }
 
@@ -266,6 +267,40 @@ void write() {
     }
 }
 
+auto make_hex_function_space(std::shared_ptr<dolfinx::mesh::Mesh> mesh, int order, int block_size) {
+    return std::make_shared<const dolfinx::fem::FunctionSpace>(dolfinx::fem::create_functionspace(
+        mesh,
+        basix::create_element(
+            basix::element::family::P,
+            dolfinx::mesh::cell_type_to_basix_type(dolfinx::mesh::CellType::hexahedron),
+            order,
+            basix::element::lagrange_variant::unset,
+            basix::element::dpc_variant::unset,
+            (order == 0 ? true : false) // discontinuous?
+        ),
+        block_size
+    ));
+}
+
+auto make_function(std::shared_ptr<const dolfinx::fem::FunctionSpace> space) {
+    dolfinx::fem::Function<double> function{space};
+    function.interpolate([&] (auto x) {
+        const auto n_points = x.extent(1);
+        const auto block_size = space->element()->block_size();
+        std::vector<double> data(n_points*block_size, 0.0);
+        for (int c = 0; c < block_size; ++c) {
+            for (unsigned int i = 0; i < n_points; ++i)
+                data[n_points*c + i] = GridFormat::Test::test_function<double>(
+                    std::array{x(0, i), x(1, i), x(2, i)}
+                );
+        }
+        const auto shape = block_size > 1 ? std::vector<std::size_t>{static_cast<std::size_t>(block_size), n_points}
+                                          : std::vector{n_points};
+        return std::make_pair(data, shape);
+    });
+    return function;
+}
+
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
     dolfinx::init_logging(argc, argv);
@@ -274,7 +309,32 @@ int main(int argc, char** argv) {
     write<2>();
     write<3>();
 
-    MPI_Finalize();
+    // test writing from a higher-order functions
+    const auto mesh = std::make_shared<dolfinx::mesh::Mesh>(dolfinx::mesh::create_box(
+        MPI_COMM_WORLD,
+        {
+            std::array{0.0, 0.0, 0.0},
+            std::array{1.0, 1.0, 1.0}
+        },
+        {4, 4, 4},
+        dolfinx::mesh::CellType::hexahedron
+    ));
+    const auto scalar_nodal_function = make_function(make_hex_function_space(mesh, 2, 1));
+    const auto vector_nodal_function = make_function(make_hex_function_space(mesh, 2, 3));
+    const auto scalar_cell_function = make_function(make_hex_function_space(mesh, 0, 1));
+    const auto vector_cell_function = make_function(make_hex_function_space(mesh, 0, 3));
 
+    const auto out_mesh = GridFormat::DolfinX::Mesh::from(*scalar_nodal_function.function_space());
+    GridFormat::PVTUWriter writer{out_mesh, MPI_COMM_WORLD};
+    GridFormat::Test::add_meta_data(writer);
+    writer.set_point_field("pfunc", [&] (const auto& p) { return out_mesh.evaluate(scalar_nodal_function, p); });
+    writer.set_point_field("pfunc_vec", [&] (const auto& p) { return out_mesh.evaluate<1>(vector_nodal_function, p); });
+    writer.set_cell_field("cfunc", [&] (const auto& p) { return out_mesh.evaluate(scalar_cell_function, p); });
+    writer.set_cell_field("cfunc_vec", [&] (const auto& p) { return out_mesh.evaluate<1>(vector_cell_function, p); });
+    const auto filename = writer.write(get_filename(mesh->topology().cell_type(), "from_space"));
+    if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
+        std::cout << "Wrote '" << filename << "'" << std::endl;
+
+    MPI_Finalize();
     return 0;
 }
