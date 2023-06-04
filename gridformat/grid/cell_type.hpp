@@ -9,7 +9,6 @@
 #define GRIDFORMAT_GRID_CELL_TYPE_HPP_
 
 #include <gridformat/common/exceptions.hpp>
-#include <gridformat/common/logging.hpp>
 
 namespace GridFormat {
 
