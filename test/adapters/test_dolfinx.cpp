@@ -302,47 +302,48 @@ auto make_function(std::shared_ptr<const dolfinx::fem::FunctionSpace> space) {
 }
 
 int main(int argc, char** argv) {
-    MPI_Init(&argc, &argv);
-    dolfinx::init_logging(argc, argv);
-
+    PetscInitialize(&argc, &argv, nullptr, nullptr);
     write<1>();
     write<2>();
     write<3>();
 
-    // test writing from a higher-order functions
-    const auto mesh = std::make_shared<dolfinx::mesh::Mesh>(dolfinx::mesh::create_box(
-        MPI_COMM_WORLD,
-        {
-            std::array{0.0, 0.0, 0.0},
-            std::array{1.0, 1.0, 1.0}
-        },
-        {4, 4, 4},
-        dolfinx::mesh::CellType::hexahedron
-    ));
-    const auto scalar_nodal_function = make_function(make_hex_function_space(mesh, 2, 1));
-    const auto vector_nodal_function = make_function(make_hex_function_space(mesh, 2, 3));
-    const auto scalar_cell_function = make_function(make_hex_function_space(mesh, 0, 1));
-    const auto vector_cell_function = make_function(make_hex_function_space(mesh, 0, 3));
+    {
+        // test writing from a higher-order functions
+        // we need the braces so that everything goes out of scope before we call finalize
+        const auto mesh = std::make_shared<dolfinx::mesh::Mesh>(dolfinx::mesh::create_box(
+            MPI_COMM_WORLD,
+            {
+                std::array{0.0, 0.0, 0.0},
+                std::array{1.0, 1.0, 1.0}
+            },
+            {4, 4, 4},
+            dolfinx::mesh::CellType::hexahedron
+        ));
+        const auto scalar_nodal_function = make_function(make_hex_function_space(mesh, 2, 1));
+        const auto vector_nodal_function = make_function(make_hex_function_space(mesh, 2, 3));
+        const auto scalar_cell_function = make_function(make_hex_function_space(mesh, 0, 1));
+        const auto vector_cell_function = make_function(make_hex_function_space(mesh, 0, 3));
 
-    const auto out_mesh = GridFormat::DolfinX::Mesh::from(*scalar_nodal_function.function_space());
-    GridFormat::PVTUWriter writer{out_mesh, MPI_COMM_WORLD};
-    GridFormat::Test::add_meta_data(writer);
-    writer.set_point_field("pfunc", [&] (const auto& p) { return out_mesh.evaluate(scalar_nodal_function, p); });
-    writer.set_point_field("pfunc_vec", [&] (const auto& p) { return out_mesh.evaluate<1>(vector_nodal_function, p); });
-    writer.set_cell_field("cfunc", [&] (const auto& p) { return out_mesh.evaluate(scalar_cell_function, p); });
-    writer.set_cell_field("cfunc_vec", [&] (const auto& p) { return out_mesh.evaluate<1>(vector_cell_function, p); });
-    GridFormat::DolfinX::set_point_field(scalar_nodal_function, writer, "pfunc_via_freefunction");
-    GridFormat::DolfinX::set_point_field(vector_nodal_function, writer, "pfunc_vec_via_freefunction");
-    GridFormat::DolfinX::set_cell_field(scalar_cell_function, writer, "cfunc_via_freefunction");
-    GridFormat::DolfinX::set_cell_field(vector_cell_function, writer, "cfunc_vec_via_freefunction");
-    GridFormat::DolfinX::set_field(scalar_nodal_function, writer, "pfunc_via_auto_freefunction");
-    GridFormat::DolfinX::set_field(vector_nodal_function, writer, "pfunc_vec_via_auto_freefunction");
-    GridFormat::DolfinX::set_field(scalar_cell_function, writer, "cfunc_via_auto_freefunction");
-    GridFormat::DolfinX::set_field(vector_cell_function, writer, "cfunc_vec_via_auto_freefunction");
-    const auto filename = writer.write(get_filename(mesh->topology().cell_type(), "from_space"));
-    if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
-        std::cout << "Wrote '" << filename << "'" << std::endl;
+        const auto out_mesh = GridFormat::DolfinX::Mesh::from(*scalar_nodal_function.function_space());
+        GridFormat::PVTUWriter writer{out_mesh, MPI_COMM_WORLD};
+        GridFormat::Test::add_meta_data(writer);
+        writer.set_point_field("pfunc", [&] (const auto& p) { return out_mesh.evaluate(scalar_nodal_function, p); });
+        writer.set_point_field("pfunc_vec", [&] (const auto& p) { return out_mesh.evaluate<1>(vector_nodal_function, p); });
+        writer.set_cell_field("cfunc", [&] (const auto& p) { return out_mesh.evaluate(scalar_cell_function, p); });
+        writer.set_cell_field("cfunc_vec", [&] (const auto& p) { return out_mesh.evaluate<1>(vector_cell_function, p); });
+        GridFormat::DolfinX::set_point_field(scalar_nodal_function, writer, "pfunc_via_freefunction");
+        GridFormat::DolfinX::set_point_field(vector_nodal_function, writer, "pfunc_vec_via_freefunction");
+        GridFormat::DolfinX::set_cell_field(scalar_cell_function, writer, "cfunc_via_freefunction");
+        GridFormat::DolfinX::set_cell_field(vector_cell_function, writer, "cfunc_vec_via_freefunction");
+        GridFormat::DolfinX::set_field(scalar_nodal_function, writer, "pfunc_via_auto_freefunction");
+        GridFormat::DolfinX::set_field(vector_nodal_function, writer, "pfunc_vec_via_auto_freefunction");
+        GridFormat::DolfinX::set_field(scalar_cell_function, writer, "cfunc_via_auto_freefunction");
+        GridFormat::DolfinX::set_field(vector_cell_function, writer, "cfunc_vec_via_auto_freefunction");
+        const auto filename = writer.write(get_filename(mesh->topology().cell_type(), "from_space"));
+        if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
+            std::cout << "Wrote '" << filename << "'" << std::endl;
+    }
 
-    MPI_Finalize();
+    PetscFinalize();
     return 0;
 }
