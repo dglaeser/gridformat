@@ -266,10 +266,8 @@ class Mesh {
 
     template<int rank = 0, int dim = 3, Concepts::Scalar T>
     auto _evaluate(const dolfinx::fem::Function<T>& f, const std::integral auto i) const {
-        const auto f_rank = f.function_space()->element()->value_shape().size();
         const auto f_components = f.function_space()->element()->block_size();
-
-        assert(f_rank == rank);
+        assert(f.function_space()->element()->value_shape().size() == rank);
         assert(f.x()->array().size() >= static_cast<std::size_t>(i*f_components + f_components));
 
         if constexpr (rank == 0)
