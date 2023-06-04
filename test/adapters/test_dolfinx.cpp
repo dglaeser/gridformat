@@ -331,6 +331,14 @@ int main(int argc, char** argv) {
     writer.set_point_field("pfunc_vec", [&] (const auto& p) { return out_mesh.evaluate<1>(vector_nodal_function, p); });
     writer.set_cell_field("cfunc", [&] (const auto& p) { return out_mesh.evaluate(scalar_cell_function, p); });
     writer.set_cell_field("cfunc_vec", [&] (const auto& p) { return out_mesh.evaluate<1>(vector_cell_function, p); });
+    GridFormat::DolfinX::set_point_field(scalar_nodal_function, writer, "pfunc_via_freefunction");
+    GridFormat::DolfinX::set_point_field(vector_nodal_function, writer, "pfunc_vec_via_freefunction");
+    GridFormat::DolfinX::set_cell_field(scalar_cell_function, writer, "cfunc_via_freefunction");
+    GridFormat::DolfinX::set_cell_field(vector_cell_function, writer, "cfunc_vec_via_freefunction");
+    GridFormat::DolfinX::set_field(scalar_nodal_function, writer, "pfunc_via_auto_freefunction");
+    GridFormat::DolfinX::set_field(vector_nodal_function, writer, "pfunc_vec_via_auto_freefunction");
+    GridFormat::DolfinX::set_field(scalar_cell_function, writer, "cfunc_via_auto_freefunction");
+    GridFormat::DolfinX::set_field(vector_cell_function, writer, "cfunc_vec_via_auto_freefunction");
     const auto filename = writer.write(get_filename(mesh->topology().cell_type(), "from_space"));
     if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
         std::cout << "Wrote '" << filename << "'" << std::endl;

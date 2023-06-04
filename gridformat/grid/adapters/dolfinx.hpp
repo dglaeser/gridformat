@@ -21,6 +21,7 @@
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
+#include <gridformat/grid/writer.hpp>
 
 // Important: the dolfinx headers must be included before this one!
 
@@ -46,6 +47,16 @@ namespace Detail {
             case dolfinx::mesh::CellType::hexahedron: return GridFormat::CellType::lagrange_hexahedron;
         }
         throw NotImplemented("Support for dolfinx cell type '" + dolfinx::mesh::to_string(ct) + "'");
+    }
+
+    bool is_cellwise_constant(const dolfinx::fem::FunctionSpace& space) {
+        return space.dofmap()->element_dof_layout().num_dofs() == 1;
+    }
+
+    template<typename T>
+    bool is_cellwise_constant(const dolfinx::fem::Function<T>& f) {
+        assert(f.function_space());
+        return is_cellwise_constant(*f.function_space());
     }
 }  // namespace Detail
 #endif  // DOXYGEN
@@ -221,20 +232,30 @@ class Mesh {
 
     template<int rank = 0, int dim = 3, Concepts::Scalar T>
     auto evaluate(const dolfinx::fem::Function<T>& f, const Cell& c) const {
-        assert(_is_cellwise_constant(*f.function_space()));
+        assert(is_compatible(f));
         return _evaluate<rank, dim>(f, c.index);
     }
 
     template<int rank = 0, int dim = 3, Concepts::Scalar T>
     auto evaluate(const dolfinx::fem::Function<T>& f, const Point& p) const {
-        assert(_element);
-        assert(!_is_cellwise_constant(*f.function_space()));
-        assert(*f.function_space()->element() == *_element);
+        assert(is_compatible(f));
         return _evaluate<rank, dim>(f, p.index);
     }
 
     auto cell_type() const {
         return _cell_type;
+    }
+
+    template<Concepts::Scalar T>
+    bool is_compatible(const dolfinx::fem::Function<T>& f) const {
+        if (!_set) return false;
+        if (!f.function_space()->mesh()) return false;
+        if (f.function_space()->mesh() != _mesh) return false;
+        if (!Detail::is_cellwise_constant(f)) {
+            if (!f.function_space()->element()) return false;
+            if (*f.function_space()->element() != *_element) return false;
+        }
+        return true;
     }
 
  private:
@@ -243,23 +264,17 @@ class Mesh {
             throw InvalidState("Mesh has not been built");
     }
 
-    bool _is_cellwise_constant(const dolfinx::fem::FunctionSpace& space) const {
-        assert(space.element());
-        return space.dofmap()->element_dof_layout().num_dofs() == 1;
-    }
-
     template<int rank = 0, int dim = 3, Concepts::Scalar T>
     auto _evaluate(const dolfinx::fem::Function<T>& f, const std::integral auto i) const {
-        assert(f.function_space()->mesh());
-        assert(f.function_space()->mesh() == _mesh);
         const auto f_rank = f.function_space()->element()->value_shape().size();
         const auto f_components = f.function_space()->element()->block_size();
 
         assert(f_rank == rank);
         assert(f.x()->array().size() >= static_cast<std::size_t>(i*f_components + f_components));
+
         if constexpr (rank == 0)
             return f.x()->array()[i*f_components];
-        if constexpr (rank == 1) {
+        else if constexpr (rank == 1) {
             auto result = Ranges::filled_array<dim>(T{0});
             std::copy_n(
                 f.x()->array().data() + i*f_components,
@@ -267,8 +282,10 @@ class Mesh {
                 result.begin()
             );
             return result;
+        } else {
+            throw NotImplemented("Tensor evaluation");
+            return std::array<std::array<T, dim>, dim>{};  // for return type deduction
         }
-        throw NotImplemented("Tensor evaluation");
     }
 
     dolfinx::mesh::CellType _cell_type;
@@ -282,6 +299,53 @@ class Mesh {
     std::array<std::size_t, 2> _cells_shape;
     bool _set = false;
 };
+
+template<typename Writer, Concepts::Scalar T>
+    requires(std::derived_from<Writer, GridWriterBase<typename Writer::Grid>>)
+void set_point_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
+    if (!writer.grid().is_compatible(f))
+        throw ValueError("Grid passed to writer is incompatible with the given function");
+    if (Detail::is_cellwise_constant(f))
+        throw ValueError("Given function is not node-based");
+    if (name.empty())
+        name = f.name;
+    const auto block_size = f.function_space()->element()->block_size();
+    const auto dim = f.function_space()->mesh()->geometry().dim();
+    if (block_size == 1)
+        writer.set_point_field(name, [&] (const auto p) { return writer.grid().template evaluate<0>(f, p); });
+    else if (dim >= block_size)
+        writer.set_point_field(name, [&] (const auto p) { return writer.grid().template evaluate<1>(f, p); });
+    else
+        writer.set_point_field(name, [&] (const auto p) { return writer.grid().template evaluate<2>(f, p); });
+}
+
+template<typename Writer, Concepts::Scalar T>
+    requires(std::derived_from<Writer, GridWriterBase<typename Writer::Grid>>)
+void set_cell_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
+    if (!writer.grid().is_compatible(f))
+        throw ValueError("Grid passed to writer is incompatible with the given function");
+    if (!Detail::is_cellwise_constant(f))
+        throw ValueError("Given function is not constant per grid cell");
+    if (name.empty())
+        name = f.name;
+    const auto block_size = f.function_space()->element()->block_size();
+    const auto dim = f.function_space()->mesh()->geometry().dim();
+    if (block_size == 1)
+        writer.set_cell_field(name, [&] (const auto p) { return writer.grid().template evaluate<0>(f, p); });
+    else if (dim >= block_size)
+        writer.set_cell_field(name, [&] (const auto p) { return writer.grid().template evaluate<1>(f, p); });
+    else
+        writer.set_cell_field(name, [&] (const auto p) { return writer.grid().template evaluate<2>(f, p); });
+}
+
+template<typename Writer, Concepts::Scalar T>
+    requires(std::derived_from<Writer, GridWriterBase<typename Writer::Grid>>)
+void set_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
+    if (Detail::is_cellwise_constant(f))
+        set_cell_field(f, writer, name);
+    else
+        set_point_field(f, writer, name);
+}
 
 }  // namespace DolfinX
 
