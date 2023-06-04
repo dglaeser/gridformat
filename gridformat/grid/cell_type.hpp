@@ -19,14 +19,22 @@ namespace GridFormat {
  */
 enum class CellType {
     vertex,
+
     segment,
     triangle,
     pixel,
     quadrilateral,
     polygon,
+
     tetrahedron,
     hexahedron,
-    voxel
+    voxel,
+
+    lagrange_segment,
+    lagrange_triangle,
+    lagrange_quadrilateral,
+    lagrange_tetrahedron,
+    lagrange_hexahedron
 };
 
 }  // namespace GridFormat

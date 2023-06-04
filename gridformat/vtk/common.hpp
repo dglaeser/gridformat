@@ -79,6 +79,11 @@ inline constexpr std::uint8_t cell_type_number(CellType t) {
         case (CellType::tetrahedron): return 10;
         case (CellType::hexahedron): return 12;
         case (CellType::voxel): return 11;
+        case (CellType::lagrange_segment): return 68;
+        case (CellType::lagrange_triangle): return 69;
+        case (CellType::lagrange_quadrilateral): return 70;
+        case (CellType::lagrange_tetrahedron): return 71;
+        case (CellType::lagrange_hexahedron): return 72;
     }
 
     throw NotImplemented("VTK cell type number for the given cell type");
