@@ -228,7 +228,7 @@ class XMLWriterBase
             return std::visit([&] (const auto& header_precision) {
                 XMLElement xml("VTKFile");
                 xml.set_attribute("type", vtk_grid_type);
-                xml.set_attribute("version", "2.0");
+                xml.set_attribute("version", "2.2");
                 xml.set_attribute("byte_order", attribute_name(std::endian::native));
                 xml.set_attribute("header_type", attribute_name(DynamicPrecision{header_precision}));
                 if constexpr (!is_none<std::decay_t<decltype(compressor)>>)

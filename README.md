@@ -120,9 +120,10 @@ and [the guide on grid traits specialization](https://github.com/dglaeser/gridfo
 `GridFormat` comes with predefined traits for
 [dune grid views](https://www.dune-project.org/doxygen/2.8.0/classDune_1_1GridView.html) (tested dune version: 2.9),
 [deal.ii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.4.0).
-and [cgal](https://www.cgal.org/) triangulations in
+, [cgal](https://www.cgal.org/) triangulations in
 [2d](https://doc.cgal.org/latest/Triangulation_2/index.html) and
-[3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 5.5.2).
+[3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 5.5.2),
+and [dolfinx](https://github.com/FEniCS/dolfinx) meshes and function spaces (tested dolfinx version: 0.6.0).
 Users of these frameworks can include these predefined traits and use `GridFormat` directly
 (see the [examples](https://github.com/dglaeser/gridformat/tree/main/examples)).
 

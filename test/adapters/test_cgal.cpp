@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <vector>
 #include <utility>
 
 #pragma GCC diagnostic push
@@ -170,6 +169,8 @@ int main() {
     write(CGAL::Triangulation_2<ExactKernel, TDS2D<ExactKernel>>{}, "exact");
     write(CGAL::Delaunay_triangulation_2<Kernel, TDS2D<Kernel>>{}, "delaunay");
     write(CGAL::Delaunay_triangulation_2<ExactKernel, TDS2D<ExactKernel>>{}, "delaunay_exact");
+
+    write<GridFormat::VTPWriter>(CGAL::Delaunay_triangulation_2<ExactKernel, TDS2D<ExactKernel>>{}, "delaunay_exact_as_poly");
 
     write(RegularTriangulation2D<Kernel>{}, "regular");
     write(RegularTriangulation2D<ExactKernel>{}, "regular_exact");

@@ -14,6 +14,25 @@ if (CGAL_FOUND)
     target_compile_options(test_cgal PRIVATE -frounding-math)
 endif ()
 
+find_package(DOLFINX)
+gridformat_add_parallel_regression_test_if(DOLFINX_FOUND
+    test_dolfinx
+    test_dolfinx.cpp
+    2
+    "dolfinx_*nranks_2*"
+)
+gridformat_add_parallel_regression_test_if(DOLFINX_FOUND
+    test_dolfinx_sequential
+    test_dolfinx.cpp
+    1
+    "dolfinx_*nranks_1*"
+)
+if (DOLFINX_FOUND)
+    message(STATUS "Testing dolfinx traits with version ${DOLFINX_VERSION}")
+    target_link_libraries(test_dolfinx dolfinx)
+    target_link_libraries(test_dolfinx_sequential dolfinx)
+endif ()
+
 find_package(deal.II)
 if (deal.II_FOUND)
     message(STATUS "Testing deal.ii traits with deal.ii version ${deal.II_VERSION}")

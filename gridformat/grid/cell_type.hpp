@@ -9,7 +9,6 @@
 #define GRIDFORMAT_GRID_CELL_TYPE_HPP_
 
 #include <gridformat/common/exceptions.hpp>
-#include <gridformat/common/logging.hpp>
 
 namespace GridFormat {
 
@@ -19,14 +18,22 @@ namespace GridFormat {
  */
 enum class CellType {
     vertex,
+
     segment,
     triangle,
     pixel,
     quadrilateral,
     polygon,
+
     tetrahedron,
     hexahedron,
-    voxel
+    voxel,
+
+    lagrange_segment,
+    lagrange_triangle,
+    lagrange_quadrilateral,
+    lagrange_tetrahedron,
+    lagrange_hexahedron
 };
 
 }  // namespace GridFormat

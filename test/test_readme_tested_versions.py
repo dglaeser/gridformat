@@ -15,6 +15,7 @@ def _get_pkg_versions_from_readme(readme_path: str) -> dict:
     result["dune"] = _split_version("dune")
     result["dealii"] = _split_version("deal.ii")
     result["cgal"] = _split_version("cgal")
+    result["dolfinx"] = _split_version("dolfinx")
     return result;
 
 
@@ -35,6 +36,7 @@ def _get_pkg_versions_from_cmake_log(cmake_log: str) -> dict:
     result["dune"] = _split_dune_version()
     result["dealii"] = _split_version("deal.ii")
     result["cgal"] = _split_version("CGAL")
+    result["dolfinx"] = _split_version("dolfinx")
     return result;
 
 
