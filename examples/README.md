@@ -23,3 +23,4 @@ cd build && make && ./exampleN
 - [Example 1](./example1): register a custom data structure as `ImageGrid`
 - [Example 2](./example2): register a custom data structure as `StructuredGrid`
 - [Example 3](./example2): using the predefined traits for [CGAL](https://www.cgal.org/).
+- [Example 4](./example2): using the predefined traits for [Dune::GridView](https://dune-project.org/).
