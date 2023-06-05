@@ -18,6 +18,7 @@ What you can see in this example is:
 - how to statically check if your traits implementation is correct
 - how to use the `GridFormat` API for writing grid files (i.e. using `GridFormat::Writer`)
 - how to select the file format into which to write the grid
+- how to add point fields, cell fields and metadata to a grid file
 - how to choose options exposed by a particular file format (in this case the `.vti` file format)
     - select the encoder to be used
     - deactivate compression

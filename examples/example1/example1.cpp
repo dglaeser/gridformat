@@ -162,6 +162,10 @@ int main() {
     // we will write a bunch of files. This is a convenience function
     // to add a cell field to a writer and write the file.
     const auto add_data_and_write = [&] (auto& writer, const std::string& filename) {
+        // Most file formats allow to attach meta data. You can attach metadata via
+        // the `set_meta_data` function, which takes a name and the data to be written.
+        // This can be arrays of any sort, including strings.
+        writer.set_meta_data("SomeMetadata", "I am metadata");
         writer.set_cell_field("indicator", [&] (const auto& voxel) {
             return indicator_function(voxel);
         });
