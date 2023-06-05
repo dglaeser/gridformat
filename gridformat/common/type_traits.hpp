@@ -44,6 +44,10 @@ inline constexpr bool is_scalar = IsScalar<T>::value;
 
 
 template<typename T>
+using LVReferenceOrValue = std::conditional_t<std::is_lvalue_reference_v<T>, T&, std::remove_cvref_t<T>>;
+
+
+template<typename T>
 struct DefaultValue;
 
 template<typename T> requires(is_scalar<T>)

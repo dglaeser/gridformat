@@ -152,8 +152,8 @@ requires(std::is_lvalue_reference_v<PointMap>)
         }
 
         const Grid& _grid;
-        std::conditional_t<std::is_lvalue_reference_v<Cells>, Cells&, std::decay_t<Cells>> _cells;
-        std::conditional_t<std::is_lvalue_reference_v<PointMap>, PointMap&, std::decay_t<PointMap>> _point_map;
+        LVReferenceOrValue<Cells> _cells;
+        LVReferenceOrValue<PointMap> _point_map;
         HeaderType _num_values;
     } _field{grid, std::forward<Cells>(cells), std::forward<PointMap>(map)};
 
@@ -197,7 +197,7 @@ auto make_offsets_field(const Grid& grid, Cells&& cells) {
         }
 
         const Grid& _grid;
-        std::conditional_t<std::is_lvalue_reference_v<Cells>, Cells&, std::decay_t<Cells>> _cells;
+        LVReferenceOrValue<Cells> _cells;
         HeaderType _num_cells;
     } _field{grid, std::forward<Cells>(cells)};
 
