@@ -113,7 +113,7 @@ namespace FilteredRangeDetail {
  */
 template<std::ranges::forward_range R,
          std::invocable<std::ranges::range_reference_t<R>> Predicate>
-requires(std::convertible_to<bool, FilteredRangeDetail::PredicateResult<R, Predicate>>)
+    requires(std::convertible_to<bool, FilteredRangeDetail::PredicateResult<R, Predicate>>)
 class FilteredRange {
  public:
     template<typename _R> requires(std::convertible_to<_R, R>)

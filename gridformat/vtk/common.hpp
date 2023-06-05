@@ -96,7 +96,8 @@ FieldPtr make_vtk_field(FieldPtr field) {
     return field;
 }
 
-template<std::derived_from<Field> F> requires (!std::is_lvalue_reference_v<F>)
+template<std::derived_from<Field> F>
+    requires(!std::is_lvalue_reference_v<F>)
 FieldPtr make_vtk_field(F&& field) {
     return make_vtk_field(make_field_ptr(std::forward<F>(field)));
 }
@@ -115,11 +116,10 @@ template<typename HeaderType = std::size_t,
          Concepts::UnstructuredGrid Grid,
          std::ranges::forward_range Cells,
          typename PointMap>
+    requires(std::is_lvalue_reference_v<PointMap>)
 auto make_connectivity_field(const Grid& grid,
                              Cells&& cells,
-                             PointMap&& map)
-requires(std::is_lvalue_reference_v<PointMap>)
-{
+                             PointMap&& map) {
     class ConnectivityField : public Field {
      public:
         explicit ConnectivityField(const Grid& g,

@@ -315,7 +315,8 @@ class XMLWriterBase
         }, _xml_settings.encoder);
     }
 
-    template<typename DataFormat, typename Appendix, typename Content> requires(!std::is_lvalue_reference_v<Content>)
+    template<typename DataFormat, typename Appendix, typename Content>
+        requires(!std::is_lvalue_reference_v<Content>)
     void _set_data_array_content(const DataFormat&,
                                  XMLElement& e,
                                  Appendix& app,

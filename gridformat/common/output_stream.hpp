@@ -30,7 +30,7 @@ class OutputStream {
     {}
 
     template<Concepts::StreamableWith<std::ostream> T>
-    requires(not Concepts::Scalar<T>)
+        requires(not Concepts::Scalar<T>)
     OutputStream& operator<<(const T& t) {
         _stream << t;
         return *this;

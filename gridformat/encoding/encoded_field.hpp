@@ -27,7 +27,8 @@ namespace GridFormat {
 template<std::derived_from<Field> F, Concepts::Encoder<std::ostream> Encoder>
 class EncodedField {
  public:
-    template<std::convertible_to<const F&> _F> requires(std::is_lvalue_reference_v<_F>)
+    template<std::convertible_to<const F&> _F>
+        requires(std::is_lvalue_reference_v<_F>)
     EncodedField(_F&& field, Encoder enc)
     : _field(field)
     , _encoder(std::move(enc))

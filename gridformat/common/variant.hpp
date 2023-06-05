@@ -63,9 +63,9 @@ constexpr auto without(const std::variant<Ts...>& v) {
     return result;
 }
 
-template<typename Remove, typename... Ts, typename Replacement> requires(
-    !std::same_as<Remove, std::remove_cvref_t<Replacement>> &&
-    std::assignable_from<ReducedVariant<std::variant<Ts...>, Remove>&, Replacement>)
+template<typename Remove, typename... Ts, typename Replacement>
+    requires(!std::same_as<Remove, std::remove_cvref_t<Replacement>> &&
+             std::assignable_from<ReducedVariant<std::variant<Ts...>, Remove>&, Replacement>)
 constexpr auto replace(const std::variant<Ts...>& v, Replacement&& replacement) {
     ReducedVariant<std::variant<Ts...>, Remove> result;
     const auto replace_callback = [&] (const Remove&) { result = std::forward<Replacement>(replacement); };
@@ -78,7 +78,8 @@ constexpr T unwrap(const std::variant<T>& v) {
     return std::visit([] (const T& value) { return value; }, v);
 }
 
-template<typename To, typename... Ts> requires(std::conjunction_v<std::is_assignable<To, const Ts&>...>)
+template<typename To, typename... Ts>
+    requires(std::conjunction_v<std::is_assignable<To, const Ts&>...>)
 constexpr void unwrap_to(To& to, const std::variant<Ts...>& v) {
     std::visit([&] (const auto& value) { to = value; }, v);
 }

@@ -23,26 +23,28 @@ namespace GridTypeTraitsDetail {
     template<typename T>
     struct CoordinateType;
 
-    template<GridDetail::ExposesPointCoordinates T> requires(
-        not GridDetail::ExposesSpacing<T> and
-        not GridDetail::ExposesOrigin<T>)
+    template<GridDetail::ExposesPointCoordinates T>
+        requires(not GridDetail::ExposesSpacing<T> and
+                 not GridDetail::ExposesOrigin<T>)
     struct CoordinateType<T> {
         using type = std::ranges::range_value_t<GridDetail::PointCoordinates<T>>;
     };
 
-    template<GridDetail::ExposesSpacing T> requires(not GridDetail::ExposesOrigin<T>)
+    template<GridDetail::ExposesSpacing T>
+        requires(not GridDetail::ExposesOrigin<T>)
     struct CoordinateType<T> {
         using type = std::ranges::range_value_t<GridDetail::Spacing<T>>;
     };
 
-    template<GridDetail::ExposesOrigin T> requires(not GridDetail::ExposesSpacing<T>)
+    template<GridDetail::ExposesOrigin T>
+        requires(not GridDetail::ExposesSpacing<T>)
     struct CoordinateType<T> {
         using type = std::ranges::range_value_t<GridDetail::Origin<T>>;
     };
 
-    template<typename T> requires(
-        GridDetail::ExposesSpacing<T> and
-        GridDetail::ExposesOrigin<T>)
+    template<typename T>
+        requires(GridDetail::ExposesSpacing<T> and
+                 GridDetail::ExposesOrigin<T>)
     struct CoordinateType<T> {
         using type = std::common_type_t<
             std::ranges::range_value_t<GridDetail::Spacing<T>>,
@@ -53,10 +55,10 @@ namespace GridTypeTraitsDetail {
     template<typename T>
     struct Dimension;
 
-    template<typename T> requires(
-        GridDetail::ExposesSpacing<T> or
-        GridDetail::ExposesOrigin<T> or
-        GridDetail::ExposesExtents<T>)
+    template<typename T>
+        requires(GridDetail::ExposesSpacing<T> or
+                 GridDetail::ExposesOrigin<T> or
+                 GridDetail::ExposesExtents<T>)
     struct Dimension<T> {
      private:
         static constexpr std::size_t _dimension() {

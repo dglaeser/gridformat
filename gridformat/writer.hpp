@@ -94,12 +94,14 @@ class Writer {
     : Writer(WriterFactory<FileFormat>::make(f, grid, comm, base_filename))
     {}
 
-    template<std::derived_from<GridWriter<Grid>> W> requires(!std::is_lvalue_reference_v<W>)
+    template<std::derived_from<GridWriter<Grid>> W>
+        requires(!std::is_lvalue_reference_v<W>)
     explicit Writer(W&& writer)
     : _writer(std::make_unique<W>(std::move(writer)))
     {}
 
-    template<std::derived_from<TimeSeriesGridWriter<Grid>> W> requires(!std::is_lvalue_reference_v<W>)
+    template<std::derived_from<TimeSeriesGridWriter<Grid>> W>
+        requires(!std::is_lvalue_reference_v<W>)
     explicit Writer(W&& writer)
     : _time_series_writer(std::make_unique<W>(std::move(writer)))
     {}

@@ -241,9 +241,9 @@ struct Origin<Dune::GridView<Traits>> {
     }
 };
 
-template<typename Traits> requires(
-    DuneDetail::is_yasp_grid_view<Dune::GridView<Traits>> and
-    !DuneDetail::uses_tensor_product_coords<Dune::GridView<Traits>>) // spacing not uniquely defined for tpcoords
+template<typename Traits>
+    requires(DuneDetail::is_yasp_grid_view<Dune::GridView<Traits>> and
+             !DuneDetail::uses_tensor_product_coords<Dune::GridView<Traits>>) // spacing not uniquely defined for tpcoords
 struct Spacing<Dune::GridView<Traits>> {
     static auto get(const Dune::GridView<Traits>& grid_view) {
         const auto level = std::ranges::begin(Cells<Dune::GridView<Traits>>::get(grid_view))->level();
