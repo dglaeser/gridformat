@@ -5,8 +5,10 @@
 
 <img alt="example1" src="https://github.com/dglaeser/gridformat/blob/main/examples/example1/img/result.png" width="50%"/>
 
-This example illustrates how to write voxel data into the [.vti file format](https://examples.vtk.org/site/VTKFileFormats/#imagedata),
-which can be read, visualized and post-processed with [ParaView](https://www.paraview.org/) (see the image above).
+This example illustrates how to register a custom data structure as
+[`ImageGrid`](https://github.com/dglaeser/gridformat/blob/main/docs/grid_kinds.md#image-grid) and export the data into the
+[.vti file format](https://examples.vtk.org/site/VTKFileFormats/#imagedata), which can be read, visualized and post-processed
+with [ParaView](https://www.paraview.org/) (see the image above).
 The example considers a simple data structure to represent data on 3d voxels, for which we specialize the
 [traits required for image grids](../../docs/traits.md#traits-for-image-grids).
 
