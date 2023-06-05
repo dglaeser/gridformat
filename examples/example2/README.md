@@ -1,7 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 
-# Example 2: writing a digital elevation model into .vts file format
+# Example 2: writing a digital elevation model into `.vts` file format
 
 <img alt="example2" src="https://github.com/dglaeser/gridformat/blob/main/examples/example2/img/result.png" width="80%"/>
 
@@ -11,7 +11,9 @@ a digital elevation model (DEM), given as a raster of discrete elevation data ov
 be visualized in relation to the spheroid on which the DEM is defined.
 
 A data structure for digital elevation models is defined in the header [`dem.hpp`](./dem.hpp), and the traits specializations can be
-found in [`traits.hpp`](./traits.hpp). What you can learn from this example is:
+found in [`traits.hpp`](./traits.hpp).
+
+This example shows:
 
 - how to implement the traits required for the `StructuredGrid` concept
 - how to tell `GridFormat` to write fields with a custom precision (e.g. to save space)

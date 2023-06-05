@@ -299,7 +299,6 @@ class Mesh {
 };
 
 template<typename Writer, Concepts::Scalar T>
-    requires(std::derived_from<Writer, GridWriterBase<typename Writer::Grid>>)
 void set_point_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
     if (!writer.grid().is_compatible(f))
         throw ValueError("Grid passed to writer is incompatible with the given function");
@@ -318,7 +317,6 @@ void set_point_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::st
 }
 
 template<typename Writer, Concepts::Scalar T>
-    requires(std::derived_from<Writer, GridWriterBase<typename Writer::Grid>>)
 void set_cell_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
     if (!writer.grid().is_compatible(f))
         throw ValueError("Grid passed to writer is incompatible with the given function");
@@ -337,7 +335,6 @@ void set_cell_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::str
 }
 
 template<typename Writer, Concepts::Scalar T>
-    requires(std::derived_from<Writer, GridWriterBase<typename Writer::Grid>>)
 void set_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
     if (Detail::is_cellwise_constant(f))
         set_cell_field(f, writer, name);

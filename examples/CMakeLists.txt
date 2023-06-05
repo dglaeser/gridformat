@@ -7,3 +7,28 @@ project(gridformat_examples)
 enable_testing()
 add_subdirectory(example1)
 add_subdirectory(example2)
+
+find_package(CGAL)
+if (CGAL_FOUND)
+    add_subdirectory(example3)
+else ()
+    message(STATUS "Skipping example 3 because CGAL was not found")
+endif ()
+
+find_package(dune-grid)
+if (dune-grid_FOUND)
+    # unfortunately we have to repeat those here :/
+    # see CMakeLists.txt of example4 for more details
+    find_package(Threads)
+    find_package(TBB)
+    add_subdirectory(example4)
+else ()
+    message(STATUS "Skipping example 4 because Dune was not found")
+endif ()
+
+find_package(DOLFINX)
+if (DOLFINX_FOUND)
+    add_subdirectory(example5)
+else ()
+    message(STATUS "Skipping example 5 because dolfinx was not found")
+endif ()

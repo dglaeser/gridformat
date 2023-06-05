@@ -3,7 +3,9 @@
 
 # GridFormat
 
+[![Pages](https://github.com/dglaeser/gridformat/actions/workflows/pages.yml/badge.svg)](https://dglaeser.github.io/gridformat)
 [![Coverage Report.](https://dglaeser.github.io/gridformat/coverage.svg)](https://dglaeser.github.io/gridformat)
+[![Test suite](https://github.com/dglaeser/gridformat/actions/workflows/main.yml/badge.svg)](https://github.com/dglaeser/gridformat/actions?query=branch%3Amain+)
 
 `GridFormat` is a header-only C++ library for writing data into grid file formats that can be visualized with tools
 such as [ParaView](https://www.paraview.org/). The typical use case for `GridFormat` is within codes for numerical simulations
@@ -87,7 +89,9 @@ For more examples, have a look at the [examples folder](https://github.com/dglae
 
 ## Installation
 
-To install `GridFormat` into a custom location, clone the repository, enter the folder and type
+The recommended way of using `GridFormat` is to include it via cmake's `FetchContent` module (see quickstart).
+However, if you want to install `GridFormat` locally into a custom location, clone the repository, enter the
+folder and type
 
 ```bash
 cmake -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
@@ -106,6 +110,19 @@ find_package(gridformat)
 target_link_libraries(... gridformat::gridformat)
 ```
 
+### Dependencies
+
+`GridFormat` has no required dependencies, however, some features are only available if certain dependencies are present. For
+instance, the [VTK-HDF file formats](https://examples.vtk.org/site/VTKFileFormats/#hdf-file-formats) is only available if
+[`HighFive`](https://github.com/BlueBrain/HighFive) is found, which itself requires `libhdf5-dev`. If the latter is found on
+your system, including `GridFormat` via cmake's `FetchContent` (see quickstart) automatically brings in `HighFive`, as it is
+included in `GridFormat` as a git submodule. However, when installing `GridFormat` from the cloned sources (as described above),
+make sure to use `git clone --recursive` in case you want to use the HDF file formats.
+
+The availability of some specific features of a file format may also depend on the availability of certain dependencies. For
+instance, compression of data (e.g. for the VTK-XML file formats) can only be used if the respective compression libraries are
+found on the system. Dependencies of those features are stated in the [API documentation (coming soon)](https://github.com/dglaeser/gridformat).
+
 
 ## Compatibility with user-defined grids
 
@@ -119,8 +136,8 @@ and [the guide on grid traits specialization](https://github.com/dglaeser/gridfo
 
 `GridFormat` comes with predefined traits for
 [dune grid views](https://www.dune-project.org/doxygen/2.8.0/classDune_1_1GridView.html) (tested dune version: 2.9),
-[deal.ii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.4.0).
-, [cgal](https://www.cgal.org/) triangulations in
+[deal.ii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.4.0),
+[cgal](https://www.cgal.org/) triangulations in
 [2d](https://doc.cgal.org/latest/Triangulation_2/index.html) and
 [3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 5.5.2),
 and [dolfinx](https://github.com/FEniCS/dolfinx) meshes and function spaces (tested dolfinx version: 0.6.0).

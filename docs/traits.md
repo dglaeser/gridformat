@@ -72,7 +72,7 @@ struct Cells<MyLibrary::Grid> {
 </details>
 
 As discussed in our
-[overview over supported kinds of grids](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md),
+[overview over supported kinds of grids](https://github.com/dglaeser/gridformat/blob/main/docs/grid_kinds.md),
 `GridFormat` understands the notion of unstructured, structured, rectilinear or image grids. The reason for this is that some
 file formats are designed for specific kinds of grids and can store the information on their topology in a space-efficient manner.
 To see which format assumes which kind of grid, see the [API documentation (coming soon)](https://github.com/dglaeser/gridformat).

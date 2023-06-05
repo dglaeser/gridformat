@@ -20,5 +20,8 @@ and then going into the `build` directory for compilation and execution:
 cd build && make && ./exampleN
 ```
 
-- [Example 1](./example1): writing a custom voxel data structure into `.vti` files
-- [Example 2](./example2): writing a digital elevation model into a `.vts` file
+- [Example 1](./example1): register a custom data structure as `ImageGrid`
+- [Example 2](./example2): register a custom data structure as `StructuredGrid`
+- [Example 3](./example3): using the predefined traits for [CGAL](https://www.cgal.org/).
+- [Example 4](./example4): using the predefined traits for [Dune::GridView](https://dune-project.org/).
+- [Example 5](./example5): using the predefined traits for [dolfinx](https://github.com/FEniCS/dolfinx).
