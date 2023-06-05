@@ -56,7 +56,7 @@ class VTKTimeSeriesWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid
 };
 
 template<typename VTKWriter>
-VTKTimeSeriesWriter(VTKWriter&&) -> VTKTimeSeriesWriter<std::decay_t<VTKWriter>>;
+VTKTimeSeriesWriter(VTKWriter&&) -> VTKTimeSeriesWriter<std::remove_cvref_t<VTKWriter>>;
 
 }  // namespace GridFormat
 

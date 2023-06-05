@@ -64,7 +64,7 @@ constexpr auto without(const std::variant<Ts...>& v) {
 }
 
 template<typename Remove, typename... Ts, typename Replacement> requires(
-    !std::same_as<Remove, std::decay_t<Replacement>> &&
+    !std::same_as<Remove, std::remove_cvref_t<Replacement>> &&
     std::assignable_from<ReducedVariant<std::variant<Ts...>, Remove>&, Replacement>)
 constexpr auto replace(const std::variant<Ts...>& v, Replacement&& replacement) {
     ReducedVariant<std::variant<Ts...>, Remove> result;

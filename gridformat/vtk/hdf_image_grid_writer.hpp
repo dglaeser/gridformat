@@ -190,7 +190,7 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
     }
 
     auto _get_image_specs(const ImageSpecs& piece_specs) const {
-        using OffsetType = std::ranges::range_value_t<std::decay_t<decltype(piece_specs.extents)>>;
+        using OffsetType = std::ranges::range_value_t<decltype(piece_specs.extents)>;
         if (Parallel::size(_comm) > 1) {
             PVTK::StructuredParallelGridHelper helper{_comm};
             const auto all_origins = Parallel::gather(_comm, piece_specs.origin, root_rank);
@@ -231,7 +231,7 @@ class VTKHDFImageGridWriter : public GridWriter<Grid> {
     }
 
     auto _get_direction() const {
-        using T = MDRangeScalar<std::decay_t<decltype(basis(this->grid()))>>;
+        using T = MDRangeScalar<decltype(basis(this->grid()))>;
         std::array<T, vtk_space_dim*vtk_space_dim> coefficients;
         std::ranges::fill(coefficients, T{0});
         std::ranges::for_each(

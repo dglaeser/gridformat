@@ -128,7 +128,7 @@ namespace Detail {
  */
 template<auto n = automatic, typename T = Automatic, std::ranges::range R>
 inline constexpr auto to_array(const R& r) {
-    using N = std::decay_t<decltype(n)>;
+    using N = std::remove_cvref_t<decltype(n)>;
     static_assert(std::integral<N> || std::same_as<N, Automatic>);
     static_assert(Concepts::StaticallySizedRange<R> || !std::same_as<N, Automatic>);
     constexpr std::size_t result_size = Detail::ResultArraySize<n, R>::value;

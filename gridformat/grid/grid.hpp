@@ -135,7 +135,7 @@ template<Concepts::StructuredEntitySet Grid>
 Concepts::StaticallySizedMDRange<2> decltype(auto) basis(const Grid& grid) {
     static constexpr std::size_t dim = dimension<Grid>;
     if constexpr (GridDetail::ExposesBasis<Grid>) {
-        using ResultType = std::decay_t<decltype(Traits::Basis<Grid>::get(grid))>;
+        using ResultType = std::remove_cvref_t<decltype(Traits::Basis<Grid>::get(grid))>;
         static_assert(static_size<ResultType> == dim);
         static_assert(static_size<std::ranges::range_value_t<ResultType>> == dim);
         return Traits::Basis<Grid>::get(grid);

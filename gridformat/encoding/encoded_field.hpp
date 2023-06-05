@@ -47,7 +47,7 @@ class EncodedField {
 };
 
 template<typename F, typename Enc>
-EncodedField(F&&, Enc&&) -> EncodedField<std::decay_t<F>, std::decay_t<Enc>>;
+EncodedField(F&&, Enc&&) -> EncodedField<std::remove_cvref_t<F>, std::remove_cvref_t<Enc>>;
 
 }  // namespace GridFormat
 

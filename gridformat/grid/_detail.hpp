@@ -30,7 +30,7 @@ namespace GridFormat::GridDetail {
     using EntityReference = std::ranges::range_reference_t<decltype(Range::get(std::declval<const Grid&>()))>;
 
     template<typename Grid, EntityRange<Grid> Range>
-    using Entity = std::decay_t<EntityReference<Grid, Range>>;
+    using Entity = std::remove_cvref_t<EntityReference<Grid, Range>>;
 
     template<typename T>
     concept ExposesPointRange = is_complete<Traits::Points<T>> && EntityRange<Traits::Points<T>, T>;
@@ -56,7 +56,7 @@ namespace GridFormat::GridDetail {
     };
 
     template<ExposesPointCoordinates T>
-    using PointCoordinates = std::decay_t<decltype(
+    using PointCoordinates = std::remove_cvref_t<decltype(
         Traits::PointCoordinates<T, Point<T>>::get(std::declval<const T&>(), std::declval<const Point<T>&>())
     )>;
 
@@ -118,7 +118,7 @@ namespace GridFormat::GridDetail {
     concept ExposesOrdinates = is_complete<Traits::Ordinates<T>> && requires(const T& grid) {
         { Traits::Ordinates<T>::get(grid, unsigned{}) } -> Concepts::MDRange<1>;
         requires Concepts::Scalar<
-            MDRangeValueType<std::decay_t<decltype(Traits::Ordinates<T>::get(grid, unsigned{}))>>
+            MDRangeValueType<std::remove_cvref_t<decltype(Traits::Ordinates<T>::get(grid, unsigned{}))>>
         >;
     };
 
@@ -141,31 +141,31 @@ namespace GridFormat::GridDetail {
     };
 
     template<ExposesSpacing T>
-    using Spacing = std::decay_t<decltype(Traits::Spacing<T>::get(std::declval<const T&>()))>;
+    using Spacing = std::remove_cvref_t<decltype(Traits::Spacing<T>::get(std::declval<const T&>()))>;
 
     template<ExposesOrigin T>
-    using Origin = std::decay_t<decltype(Traits::Origin<T>::get(std::declval<const T&>()))>;
+    using Origin = std::remove_cvref_t<decltype(Traits::Origin<T>::get(std::declval<const T&>()))>;
 
     template<ExposesOrdinates T>
-    using Ordinates = std::decay_t<decltype(Traits::Ordinates<T>::get(std::declval<const T&>(), unsigned{}))>;
+    using Ordinates = std::remove_cvref_t<decltype(Traits::Ordinates<T>::get(std::declval<const T&>(), unsigned{}))>;
 
     template<ExposesExtents T>
-    using Extents = std::decay_t<decltype(Traits::Extents<T>::get(std::declval<const T&>()))>;
+    using Extents = std::remove_cvref_t<decltype(Traits::Extents<T>::get(std::declval<const T&>()))>;
 
     template<ExposesBasis T>
-    using Basis = std::decay_t<decltype(Traits::Basis<T>::get(std::declval<const T&>()))>;
+    using Basis = std::remove_cvref_t<decltype(Traits::Basis<T>::get(std::declval<const T&>()))>;
 
     template<ExposesCellLocation T>
-    using CellLocation = std::decay_t<decltype(Traits::Location<T, Cell<T>>::get(std::declval<const T&>(), std::declval<const Cell<T>>()))>;
+    using CellLocation = std::remove_cvref_t<decltype(Traits::Location<T, Cell<T>>::get(std::declval<const T&>(), std::declval<const Cell<T>>()))>;
 
     template<ExposesPointLocation T>
-    using PointLocation = std::decay_t<decltype(Traits::Location<T, Point<T>>::get(std::declval<const T&>(), std::declval<const Point<T>>()))>;
+    using PointLocation = std::remove_cvref_t<decltype(Traits::Location<T, Point<T>>::get(std::declval<const T&>(), std::declval<const Point<T>>()))>;
 
     template<typename Grid, std::invocable<PointReference<Grid>> T>
-    using PointFunctionValueType = std::decay_t<std::invoke_result_t<T, PointReference<Grid>>>;
+    using PointFunctionValueType = std::remove_cvref_t<std::invoke_result_t<T, PointReference<Grid>>>;
 
     template<typename Grid, std::invocable<CellReference<Grid>> T>
-    using CellFunctionValueType = std::decay_t<std::invoke_result_t<T, CellReference<Grid>>>;
+    using CellFunctionValueType = std::remove_cvref_t<std::invoke_result_t<T, CellReference<Grid>>>;
 
     template<Concepts::Scalar T>
     using EntityFunctionScalarType = std::conditional_t<std::is_same_v<T, bool>, typename UInt8::T, T>;

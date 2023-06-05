@@ -112,7 +112,7 @@ class Field {
 using FieldPtr = std::shared_ptr<const Field>;
 
 template<typename F> requires(
-    std::derived_from<std::decay_t<F>, Field> and
+    std::derived_from<std::remove_cvref_t<F>, Field> and
     !std::is_lvalue_reference_v<F>)
 FieldPtr make_field_ptr(F&& f) {
     return std::make_shared<std::add_const_t<F>>(std::forward<F>(f));
