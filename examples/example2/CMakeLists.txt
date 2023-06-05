@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 cmake_minimum_required(VERSION 3.18)
-project(gridformat_example_1)
+project(gridformat_example_2)
 
 include(../find_gridformat.cmake)
 
