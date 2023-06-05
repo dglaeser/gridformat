@@ -9,7 +9,7 @@ formats that are able to store the information more efficiently in case the grid
 
 ## Unstructured Grid
 
-<img alt="unstructured grid" src="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/img/grid_unstructured.svg" width="70%"/>
+<img alt="unstructured grid" src="https://github.com/dglaeser/gridformat/blob/main/docs/img/grid_unstructured.svg" width="70%"/>
 
 This is the most general type of grid representation. It consists of a list of points and an arbitrary number of cells of
 possibly different geometry types, which are arbitrarly arranged. Therefore, one has to explicitly define the geometry type of
@@ -19,7 +19,7 @@ use the [VTK ordering (scroll down to figures 2/3)](https://examples.vtk.org/sit
 
 ## Structured Grid
 
-<img alt="structured grid" src="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/img/grid_structured.svg" width="40%"/>
+<img alt="structured grid" src="https://github.com/dglaeser/gridformat/blob/main/docs/img/grid_structured.svg" width="40%"/>
 
 In a structured grid, all cells are of the same geometry type, namely line segments in 1D, quadrilaterals in 2D and hexahedra in 3D.
 A structured grid can be described as a set of $(N_x \times N_y \times N_z )$ cells and $(N_x + 1 \times N_y + 1 \times N_z + 1 )$
@@ -30,7 +30,7 @@ valid, non self-intersecting hexahedra (or quadrilaterals in 2D; segments in 1D)
 
 ## Rectilinear Grid
 
-<img alt="rectilinear grid" src="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/img/grid_rectilinear.svg" width="35%"/>
+<img alt="rectilinear grid" src="https://github.com/dglaeser/gridformat/blob/main/docs/img/grid_rectilinear.svg" width="35%"/>
 
 A rectilinear grid has the same arrangement of cells as a structured grid, but it additionally assumes that the faces of the cells
 are aligned with the coordinate axes. That is, the grid consists of line segments in 1D, axis-aligned rectangles in 2D and
@@ -41,7 +41,7 @@ to specify only the coordinates along the axes.
 
 ## Image Grid
 
-<img alt="image grid" src="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/img/grid_image.svg" width="38%"/>
+<img alt="image grid" src="https://github.com/dglaeser/gridformat/blob/main/docs/img/grid_image.svg" width="38%"/>
 
 An image grid has again the same arrangement of cells as the structured and rectilinear grids, yet it additionally assumes that the
 size of the cells does not change along a coordinate direction. Thus, in this case it suffices to store the size of the domain in each coordinate direction and the number of cells used per direction to discretize the domain. From these numbers the topology of
