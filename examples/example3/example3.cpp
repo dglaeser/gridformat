@@ -57,11 +57,11 @@ int main() {
     add_points(triangulation);
     set_vertex_indices(triangulation);
 
-    GridFormat::VTPWriter{triangulation}
-        .with_data_format(GridFormat::VTK::DataFormat::appended)
-        .with_encoding(GridFormat::Encoding::base64)
-        .with_compression(GridFormat::none)
-        .write("cgal_triangulation");
-
+    const auto filename = GridFormat::VTPWriter{triangulation}
+                            .with_data_format(GridFormat::VTK::DataFormat::appended)
+                            .with_encoding(GridFormat::Encoding::base64)
+                            .with_compression(GridFormat::none)
+                            .write("cgal_triangulation");
+    std::cout << "Wrote '" << filename << "'" << std::endl;
     return 0;
 }
