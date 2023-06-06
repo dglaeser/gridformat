@@ -333,6 +333,12 @@ class DiscontinuousGrid {
     const Grid& _grid;
 };
 
+template<typename Grid>
+    requires(std::is_lvalue_reference_v<Grid>)
+auto make_discontinuous(Grid&& grid) {
+    return DiscontinuousGrid<std::remove_cvref_t<Grid>>{grid};
+}
+
 namespace Traits {
 
 template<typename G>
