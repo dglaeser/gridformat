@@ -80,9 +80,10 @@ int main() {
     discontinuous_writer.set_point_field("cell_index_at_points", [&] (const auto& p) {
         // what we receive here is a point that provides access to the cell it is embedded in
         // as well as the cell-local index of the point
+        [[maybe_unused]] const auto& host_point = p.host_point();
         const auto& element = p.host_cell();
-        const auto element_index = small_grid_view.indexSet().index(element);
         const auto local_index = p.index_in_host();
+        const auto element_index = small_grid_view.indexSet().index(element);
         return discontinuous_solution[element_index][local_index];
     });
 
