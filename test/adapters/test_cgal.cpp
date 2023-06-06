@@ -22,6 +22,7 @@
 #pragma GCC diagnostic pop
 
 #include <gridformat/grid/adapters/cgal.hpp>
+#include <gridformat/grid/discontinuous.hpp>
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
 #include <gridformat/vtk/vtp_writer.hpp>
@@ -156,9 +157,15 @@ void write(Grid grid, std::string prefix_addition = "") {
     });
 
     prefix_addition = prefix_addition.empty() ? "" : "_" + prefix_addition;
-    std::cout << "Wrote '" << GridFormat::as_highlight(writer.write(
-        "cgal_vtu" + prefix_addition + "_" + std::to_string(dim) + "d_in_" + std::to_string(dim) + "d"
-    )) << "'" << std::endl;
+    const auto filename = "cgal_vtu" + prefix_addition + "_" + std::to_string(dim) + "d_in_" + std::to_string(dim) + "d";
+    std::cout << "Wrote '" << GridFormat::as_highlight(writer.write(filename)) << "'" << std::endl;
+
+    // write a discontinuous file to make sure the discontinuous grid wrapper works with CGAL grids
+    GridFormat::DiscontinuousGrid discontinuous{grid};
+    Writer discontinuous_writer{discontinuous};
+    GridFormat::Test::add_meta_data(discontinuous_writer);
+    GridFormat::Test::add_discontinuous_point_field(discontinuous_writer);
+    discontinuous_writer.write(filename + "_discontinuous");
 }
 
 int main() {

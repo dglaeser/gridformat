@@ -9,6 +9,7 @@
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/grid/concepts.hpp>
 #include <gridformat/grid/image_grid.hpp>
+#include <gridformat/grid/discontinuous.hpp>
 
 // In the GitHub action runner we run into a compiler warning when
 // using release flags. Locally, this could not be reproduced. For
@@ -26,6 +27,11 @@
 #include "../make_test_data.hpp"
 
 
+template<std::size_t dim>
+std::string make_filename(const std::string& prefix) {
+    return prefix + "_image_grid_test_" + std::to_string(dim) + "d_in_" + std::to_string(dim) + "d";
+}
+
 template<typename Writer, std::size_t dim, typename CT>
 void write_test_file(Writer&& w,
                      const GridFormat::ImageGrid<dim, CT>& grid,
@@ -37,9 +43,7 @@ void write_test_file(Writer&& w,
     w.set_cell_field("cfunc", [&] (const auto& c) {
         return GridFormat::Test::test_function<double>(grid.center(c));
     });
-    std::cout << "Wrote '" << GridFormat::as_highlight(
-        w.write(prefix + "_image_grid_test_" + std::to_string(dim) + "d_in_" + std::to_string(dim) + "d")
-    ) << "'" << std::endl;
+    std::cout << "Wrote '" << GridFormat::as_highlight(w.write(make_filename<dim>(prefix))) << "'" << std::endl;
 }
 
 int main() {
@@ -116,6 +120,13 @@ int main() {
     write_test_file(GridFormat::VTSWriter{grid_3d}, grid_3d, "vts");
     write_test_file(GridFormat::VTPWriter{grid_3d}, grid_3d, "vtp");
     write_test_file(GridFormat::VTUWriter{grid_3d}, grid_3d, "vtu");
+
+    // write the a discontinuous file
+    GridFormat::DiscontinuousGrid discontinuous_grid{grid_3d};
+    GridFormat::VTUWriter writer{discontinuous_grid};
+    GridFormat::Test::add_meta_data(writer);
+    GridFormat::Test::add_discontinuous_point_field(writer);
+    writer.write(make_filename<3>("vtu_discontinuous"));
 
     return 0;
 }
