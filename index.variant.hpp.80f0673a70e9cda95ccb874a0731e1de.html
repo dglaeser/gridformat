@@ -26,7 +26,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2023-06-05 18:25:01</td>
+      <td>2023-06-06 07:35:06</td>
     </tr>
   </table>
 </div>
@@ -605,7 +605,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Remove</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Ts</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Replacement</span><span class="o">&gt;</span><span class="w"> </span><span class="k">requires</span><span class="p">(</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Remove</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Ts</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Replacement</span><span class="o">&gt;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -613,7 +613,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="o">!</span><span class="n">std</span><span class="o">::</span><span class="n">same_as</span><span class="o">&lt;</span><span class="n">Remove</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">decay_t</span><span class="o">&lt;</span><span class="n">Replacement</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="k">requires</span><span class="p">(</span><span class="o">!</span><span class="n">std</span><span class="o">::</span><span class="n">same_as</span><span class="o">&lt;</span><span class="n">Remove</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">Replacement</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -621,7 +621,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">assignable_from</span><span class="o">&lt;</span><span class="n">ReducedVariant</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="n">Ts</span><span class="p">...</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Remove</span><span class="o">&gt;&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">Replacement</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
+      <td class="src "><span class="w">             </span><span class="n">std</span><span class="o">::</span><span class="n">assignable_from</span><span class="o">&lt;</span><span class="n">ReducedVariant</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="n">Ts</span><span class="p">...</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Remove</span><span class="o">&gt;&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">Replacement</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -725,11 +725,19 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">To</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Ts</span><span class="o">&gt;</span><span class="w"> </span><span class="k">requires</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">conjunction_v</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">is_assignable</span><span class="o">&lt;</span><span class="n">To</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Ts</span><span class="o">&amp;&gt;</span><span class="p">...</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">To</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Ts</span><span class="o">&gt;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l82" href="#l82">82</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="k">requires</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">conjunction_v</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">is_assignable</span><span class="o">&lt;</span><span class="n">To</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Ts</span><span class="o">&amp;&gt;</span><span class="p">...</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l83" href="#l83">83</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">28844</td>
@@ -737,7 +745,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l83" href="#l83">83</a></td>
+      <td class="lineno"><a id="l84" href="#l84">84</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
@@ -752,7 +760,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l84" href="#l84">84</a></td>
+      <td class="lineno"><a id="l85" href="#l85">85</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">28842</td>
@@ -760,19 +768,11 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l85" href="#l85">85</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
-    </tr>
-
-    <tr class="source-line">
       <td class="lineno"><a id="l86" href="#l86">86</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="c1">//! \} group Common</span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -780,7 +780,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="c1">//! \} group Common</span></td>
     </tr>
 
     <tr class="source-line">
@@ -788,7 +788,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// end namespace GridFormat::Variant</span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -796,7 +796,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// end namespace GridFormat::Variant</span></td>
     </tr>
 
     <tr class="source-line">
@@ -804,11 +804,19 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">#endif  </span><span class="c1">// GRIDFORMAT_COMMON_VARIANT_HPP_</span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l91" href="#l91">91</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cp">#endif  </span><span class="c1">// GRIDFORMAT_COMMON_VARIANT_HPP_</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l92" href="#l92">92</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
