@@ -10,6 +10,7 @@ Each of the examples can be run by heading into the respective subfolder, config
 # if your default compiler is compatible, you don't need to set the paths
 cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
       -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \
+      -DCMAKE_BUILD_TYPE=Release \
       -B build
 ```
 
@@ -19,6 +20,10 @@ and then going into the `build` directory for compilation and execution:
 # N should be substituted with 1, 2, ..., depending on the example you want to run
 cd build && make && ./exampleN
 ```
+
+The examples include how to use some of the predefined traits for various frameworks. Even if you don't plan to use
+those frameworks, you may still want to have a quick look at those examples as they may demonstrate features you'd
+be interested in.
 
 - [Example 1](./example1): register a custom data structure as `ImageGrid`
 - [Example 2](./example2): register a custom data structure as `StructuredGrid`

@@ -16,3 +16,4 @@ In this example you can see:
 - how to use the predefined traits for `Dune::GridView`
 - how to let `GridFormat` select a suitable file format for your `GridView`
 - a possible way how to write out discrete numerical data from simulations
+- write discontinuous output by using the provided `DiscontinuousGrid` wrapper
