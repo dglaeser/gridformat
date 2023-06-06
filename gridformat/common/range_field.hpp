@@ -69,9 +69,9 @@ template<std::ranges::range R, Concepts::Scalar T> requires(std::is_lvalue_refer
 RangeField(R&&, const Precision<T>&) -> RangeField<std::add_const_t<R>, T>;
 
 template<std::ranges::range R> requires(!std::is_lvalue_reference_v<R>)
-RangeField(R&&) -> RangeField<std::decay_t<R>>;
+RangeField(R&&) -> RangeField<std::remove_cvref_t<R>>;
 template<std::ranges::range R, Concepts::Scalar T> requires(!std::is_lvalue_reference_v<R>)
-RangeField(R&&, const Precision<T>&) -> RangeField<std::decay_t<R>, T>;
+RangeField(R&&, const Precision<T>&) -> RangeField<std::remove_cvref_t<R>, T>;
 
 }  // namespace GridFormat
 

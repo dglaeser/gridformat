@@ -29,7 +29,8 @@ namespace GridFormat::Ranges {
  * \ingroup Common
  * \brief Return the size of a range
  */
-template<std::ranges::sized_range R> requires(!Concepts::StaticallySizedRange<R>)
+template<std::ranges::sized_range R>
+    requires(!Concepts::StaticallySizedRange<R>)
 inline constexpr auto size(R&& r) {
     return std::ranges::size(r);
 }
@@ -39,9 +40,9 @@ inline constexpr auto size(R&& r) {
  * \brief Return the size of a range
  * \note This has complexitx O(N), but we also want to support user-given non-sized ranges.
  */
-template<std::ranges::range R> requires(
-    !std::ranges::sized_range<R> and
-    !Concepts::StaticallySizedRange<R>)
+template<std::ranges::range R>
+    requires(!std::ranges::sized_range<R> and
+             !Concepts::StaticallySizedRange<R>)
 inline constexpr auto size(R&& r) {
     return std::ranges::distance(r);
 }
@@ -128,7 +129,7 @@ namespace Detail {
  */
 template<auto n = automatic, typename T = Automatic, std::ranges::range R>
 inline constexpr auto to_array(const R& r) {
-    using N = std::decay_t<decltype(n)>;
+    using N = std::remove_cvref_t<decltype(n)>;
     static_assert(std::integral<N> || std::same_as<N, Automatic>);
     static_assert(Concepts::StaticallySizedRange<R> || !std::same_as<N, Automatic>);
     constexpr std::size_t result_size = Detail::ResultArraySize<n, R>::value;
@@ -169,8 +170,8 @@ inline constexpr auto merged(R1&& r1, R2&& r2) {
  * \ingroup Common
  * \brief Flatten the given 2d range into a 1d range.
  */
-template<Concepts::MDRange<2> R> requires(
-    Concepts::StaticallySizedMDRange<std::ranges::range_value_t<R>, 1>)
+template<Concepts::MDRange<2> R>
+    requires(Concepts::StaticallySizedMDRange<std::ranges::range_value_t<R>, 1>)
 inline constexpr auto flat(const R& r) {
     if constexpr (Concepts::StaticallySizedRange<R>) {
         constexpr std::size_t element_size = static_size<std::ranges::range_value_t<R>>;

@@ -106,7 +106,7 @@ class PVDWriter : public Detail::WriterStorage<VTKWriter>,
 };
 
 template<typename VTKWriter>
-PVDWriter(VTKWriter&&) -> PVDWriter<std::decay_t<VTKWriter>>;
+PVDWriter(VTKWriter&&) -> PVDWriter<std::remove_cvref_t<VTKWriter>>;
 
 }  // namespace GridFormat
 

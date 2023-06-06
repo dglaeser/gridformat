@@ -231,7 +231,7 @@ class XMLWriterBase
                 xml.set_attribute("version", "2.2");
                 xml.set_attribute("byte_order", attribute_name(std::endian::native));
                 xml.set_attribute("header_type", attribute_name(DynamicPrecision{header_precision}));
-                if constexpr (!is_none<std::decay_t<decltype(compressor)>>)
+                if constexpr (!is_none<decltype(compressor)>)
                     xml.set_attribute("compressor", attribute_name(compressor));
 
                 xml.add_child(vtk_grid_type).add_child("FieldData");
@@ -315,7 +315,8 @@ class XMLWriterBase
         }, _xml_settings.encoder);
     }
 
-    template<typename DataFormat, typename Appendix, typename Content> requires(!std::is_lvalue_reference_v<Content>)
+    template<typename DataFormat, typename Appendix, typename Content>
+        requires(!std::is_lvalue_reference_v<Content>)
     void _set_data_array_content(const DataFormat&,
                                  XMLElement& e,
                                  Appendix& app,

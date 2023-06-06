@@ -180,7 +180,7 @@ namespace XML::Detail {
     }
 
     template<typename Context, typename Encoder>
-    requires(!std::is_const_v<std::remove_reference_t<Context>>)
+        requires(!std::is_const_v<std::remove_reference_t<Context>>)
     inline void write_with_appendix(Context&& context,
                                     std::ostream& s,
                                     const Encoder& encoder,

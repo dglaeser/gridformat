@@ -16,6 +16,7 @@
 #include <gridformat/vtk/pvtu_writer.hpp>
 
 #include "../make_test_data.hpp"
+#include "../testing.hpp"
 
 
 template<int dim>
@@ -319,12 +320,12 @@ int main(int argc, char** argv) {
             {4, 4, 4},
             dolfinx::mesh::CellType::hexahedron
         ));
-        const auto scalar_nodal_function = make_function(make_hex_function_space(mesh, 2, 1));
-        const auto vector_nodal_function = make_function(make_hex_function_space(mesh, 2, 3));
-        const auto scalar_cell_function = make_function(make_hex_function_space(mesh, 0, 1));
-        const auto vector_cell_function = make_function(make_hex_function_space(mesh, 0, 3));
+        auto scalar_nodal_function = make_function(make_hex_function_space(mesh, 2, 1));
+        auto vector_nodal_function = make_function(make_hex_function_space(mesh, 2, 3));
+        auto scalar_cell_function = make_function(make_hex_function_space(mesh, 0, 1));
+        auto vector_cell_function = make_function(make_hex_function_space(mesh, 0, 3));
 
-        const auto out_mesh = GridFormat::DolfinX::Mesh::from(*scalar_nodal_function.function_space());
+        auto out_mesh = GridFormat::DolfinX::Mesh::from(*scalar_nodal_function.function_space());
         GridFormat::PVTUWriter writer{out_mesh, MPI_COMM_WORLD};
         GridFormat::Test::add_meta_data(writer);
         writer.set_point_field("pfunc", [&] (const auto& p) { return out_mesh.evaluate(scalar_nodal_function, p); });
@@ -342,6 +343,79 @@ int main(int argc, char** argv) {
         const auto filename = writer.write(get_filename(mesh->topology().cell_type(), "from_space"));
         if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
             std::cout << "Wrote '" << filename << "'" << std::endl;
+
+        // A bunch of unit tests ...
+        using GridFormat::Testing::operator""_test;
+        using GridFormat::Testing::expect;
+        using GridFormat::Testing::throws;
+
+        // test name deduction from field
+        vector_nodal_function.name = "from_point_vector_function_name";
+        scalar_nodal_function.name = "from_point_function_name";
+        scalar_cell_function.name = "from_cell_function_name";
+        "field_setter_name_from_function"_test = [&] () {
+            GridFormat::DolfinX::set_point_field(scalar_nodal_function, writer);
+            GridFormat::DolfinX::set_cell_field(scalar_cell_function, writer);
+            GridFormat::DolfinX::set_field(vector_nodal_function, writer);
+            expect(std::ranges::any_of(point_fields(writer), [] (const auto& pair) {
+                return pair.first == "from_point_function_name";
+            }));
+            expect(std::ranges::any_of(point_fields(writer), [] (const auto& pair) {
+                return pair.first == "from_point_vector_function_name";
+            }));
+            expect(std::ranges::any_of(cell_fields(writer), [] (const auto& pair) {
+                return pair.first == "from_cell_function_name";
+            }));
+        };
+
+        "adapter_clear"_test = [&] () {
+            out_mesh.clear();
+            expect(throws<GridFormat::InvalidState>([&] () { out_mesh.cells(); }));
+            expect(throws<GridFormat::InvalidState>([&] () { out_mesh.points(); }));
+        };
+
+        "adapter_update"_test = [&] () {
+            out_mesh.update(*scalar_nodal_function.function_space());
+            out_mesh.cells();
+            out_mesh.points();
+        };
+
+        const auto different_mesh = std::make_shared<dolfinx::mesh::Mesh>(dolfinx::mesh::create_box(
+            MPI_COMM_WORLD,
+            {
+                std::array{0.0, 0.0, 0.0},
+                std::array{1.0, 1.0, 1.0}
+            },
+            {5, 4, 4},
+            dolfinx::mesh::CellType::hexahedron
+        ));
+        const auto nodal_function_different_mesh = make_function(make_hex_function_space(different_mesh, 2, 1));
+        const auto cell_function_different_mesh = make_function(make_hex_function_space(different_mesh, 0, 1));
+
+        "field_setter_throws_with_different_mesh"_test = [&] () {
+            expect(throws<GridFormat::ValueError>([&] () {
+                GridFormat::DolfinX::set_point_field(nodal_function_different_mesh, writer);
+            }));
+            expect(throws<GridFormat::ValueError>([&] () {
+                GridFormat::DolfinX::set_cell_field(cell_function_different_mesh, writer);
+            }));
+            expect(throws<GridFormat::ValueError>([&] () {
+                GridFormat::DolfinX::set_field(cell_function_different_mesh, writer);
+            }));
+        };
+
+        "field_setter_throws_for_nonmatching_space"_test = [&] () {
+            expect(throws<GridFormat::ValueError>([&] () {
+                GridFormat::DolfinX::set_point_field(scalar_cell_function, writer);
+            }));
+            expect(throws<GridFormat::ValueError>([&] () {
+                GridFormat::DolfinX::set_cell_field(scalar_nodal_function, writer);
+            }));
+        };
+
+        "dolfinx_adapter_fails_to_construct_from_p0_space"_test = [&] () {
+            expect(throws([&] () { GridFormat::DolfinX::Mesh::from(*scalar_cell_function.function_space()); }));
+        };
     }
 
     PetscFinalize();

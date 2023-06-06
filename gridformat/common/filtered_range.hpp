@@ -113,7 +113,7 @@ namespace FilteredRangeDetail {
  */
 template<std::ranges::forward_range R,
          std::invocable<std::ranges::range_reference_t<R>> Predicate>
-requires(std::convertible_to<bool, FilteredRangeDetail::PredicateResult<R, Predicate>>)
+    requires(std::convertible_to<bool, FilteredRangeDetail::PredicateResult<R, Predicate>>)
 class FilteredRange {
  public:
     template<typename _R> requires(std::convertible_to<_R, R>)
@@ -140,13 +140,13 @@ class FilteredRange {
 
  private:
     R _range;
-    std::decay_t<Predicate> _pred;
+    std::remove_cvref_t<Predicate> _pred;
 };
 
 template<std::ranges::range R, typename P> requires(!std::is_lvalue_reference_v<R>)
-FilteredRange(R&&, P&&) -> FilteredRange<std::decay_t<R>, std::decay_t<P>>;
+FilteredRange(R&&, P&&) -> FilteredRange<std::remove_cvref_t<R>, std::remove_cvref_t<P>>;
 template<std::ranges::range R, typename P> requires(std::is_lvalue_reference_v<R>)
-FilteredRange(R&&, P&&) -> FilteredRange<std::remove_reference_t<R>&, std::decay_t<P>>;
+FilteredRange(R&&, P&&) -> FilteredRange<std::remove_reference_t<R>&, std::remove_cvref_t<P>>;
 
 namespace Ranges {
 

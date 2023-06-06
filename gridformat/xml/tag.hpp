@@ -72,8 +72,8 @@ class XMLTag {
         return std::erase_if(_attributes, Detail::_attr_find_lambda<Attribute>(attr_name));
     }
 
-    template<std::ranges::input_range R> requires(
-        std::convertible_to<std::ranges::range_value_t<R>, std::string_view>)
+    template<std::ranges::input_range R>
+        requires(std::convertible_to<std::ranges::range_value_t<R>, std::string_view>)
     std::size_t remove_attributes(R&& attrs_to_remove) {
         return std::erase_if(_attributes,
             [&] (const Attribute& attr) {

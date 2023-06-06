@@ -74,9 +74,9 @@ CellType type(const Grid& grid, const Cell<Grid>& cell) {
     return Traits::CellType<Grid, Cell<Grid>>::get(grid, cell);
 }
 
-template<typename Grid> requires(
-    GridDetail::ExposesNumberOfCells<Grid> or
-    GridDetail::ExposesCellRange<Grid>)
+template<typename Grid>
+    requires(GridDetail::ExposesNumberOfCells<Grid> or
+             GridDetail::ExposesCellRange<Grid>)
 std::size_t number_of_cells(const Grid& grid) {
     if constexpr (GridDetail::ExposesNumberOfCells<Grid>)
         return Traits::NumberOfCells<Grid>::get(grid);
@@ -84,9 +84,9 @@ std::size_t number_of_cells(const Grid& grid) {
         return Ranges::size(cells(grid));
 }
 
-template<typename Grid> requires(
-    GridDetail::ExposesNumberOfPoints<Grid> or
-    GridDetail::ExposesPointRange<Grid>)
+template<typename Grid>
+    requires(GridDetail::ExposesNumberOfPoints<Grid> or
+             GridDetail::ExposesPointRange<Grid>)
 std::size_t number_of_points(const Grid& grid) {
     if constexpr (GridDetail::ExposesNumberOfPoints<Grid>)
         return Traits::NumberOfPoints<Grid>::get(grid);
@@ -94,9 +94,9 @@ std::size_t number_of_points(const Grid& grid) {
         return Ranges::size(points(grid));
 }
 
-template<typename Grid> requires(
-    GridDetail::ExposesNumberOfCellPoints<Grid> or
-    GridDetail::ExposesCellPoints<Grid>)
+template<typename Grid>
+    requires(GridDetail::ExposesNumberOfCellPoints<Grid> or
+             GridDetail::ExposesCellPoints<Grid>)
 std::size_t number_of_points(const Grid& grid, const Cell<Grid>& cell) {
     if constexpr (GridDetail::ExposesNumberOfCellPoints<Grid>)
         return Traits::NumberOfCellPoints<Grid, Cell<Grid>>::get(grid, cell);
@@ -135,7 +135,7 @@ template<Concepts::StructuredEntitySet Grid>
 Concepts::StaticallySizedMDRange<2> decltype(auto) basis(const Grid& grid) {
     static constexpr std::size_t dim = dimension<Grid>;
     if constexpr (GridDetail::ExposesBasis<Grid>) {
-        using ResultType = std::decay_t<decltype(Traits::Basis<Grid>::get(grid))>;
+        using ResultType = std::remove_cvref_t<decltype(Traits::Basis<Grid>::get(grid))>;
         static_assert(static_size<ResultType> == dim);
         static_assert(static_size<std::ranges::range_value_t<ResultType>> == dim);
         return Traits::Basis<Grid>::get(grid);

@@ -30,7 +30,7 @@ inline constexpr bool is_automatic = std::is_same_v<T, Automatic>;
 struct None {};
 inline constexpr None none;
 template<typename T>
-inline constexpr bool is_none = std::is_same_v<T, None>;
+inline constexpr bool is_none = std::is_same_v<std::remove_cvref_t<T>, None>;
 
 template<typename T>
 struct IsScalar : public std::false_type {};
@@ -41,6 +41,10 @@ struct IsScalar<T> : public std::true_type {};
 
 template<typename T>
 inline constexpr bool is_scalar = IsScalar<T>::value;
+
+
+template<typename T>
+using LVReferenceOrValue = std::conditional_t<std::is_lvalue_reference_v<T>, T&, std::remove_cvref_t<T>>;
 
 
 template<typename T>
