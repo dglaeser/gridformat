@@ -172,6 +172,13 @@ void add_meta_data(Writer& w) {
     w.set_meta_data("numbers", RangeField{std::vector<int>{1, 2, 3, 4}});
 }
 
+template<typename Writer>
+void add_discontinuous_point_field(Writer& w) {
+    w.set_point_field("cell_index", [] (const auto& p) {
+        return p.cell().index();
+    });
+}
+
 }  // namespace GridFormat::Test
 
 #endif  // GRIDFORMAT_TEST_MAKE_TEST_DATA_HPP_

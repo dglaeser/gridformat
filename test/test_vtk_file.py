@@ -87,7 +87,8 @@ def _check_vtk_file(vtk_reader,
                     points,
                     space_dim,
                     reference_function: Callable[[list], float],
-                    skip_metadata: bool) -> None:
+                    skip_metadata: bool,
+                    is_discontinuous: bool = False) -> None:
     rel_tol = 1e-5
     abs_tol = 1e-3
 
@@ -139,8 +140,18 @@ def _check_vtk_file(vtk_reader,
         name = point_data.GetArrayName(i)
         arr = point_data.GetArray(i)
         print(f"Comparing point array '{name}'")
-        for i in range(arr.GetNumberOfTuples()):
-            _compare_data_array(arr, lambda i: points[i])
+        if is_discontinuous:
+            # each point of the cell should have the embedding cell index as value
+            point_id = 0
+            for cell_id in range(num_cells):
+                ids = vtk.vtkIdList()
+                output.GetCellPoints(cell_id, ids)
+                for _ in range(ids.GetNumberOfIds()):
+                    assert isclose(arr.GetTuple(point_id)[0], float(cell_id))
+                    point_id += 1
+        else:
+            for i in range(arr.GetNumberOfTuples()):
+                _compare_data_array(arr, lambda i: points[i])
 
     cell_data = output.GetCellData()
     for i in range(cell_data.GetNumberOfArrays()):
@@ -218,7 +229,8 @@ def _test_vtk(filename: str, skip_metadata: bool, reference_function: Callable[[
         raise IOError(f"Error reading VTK file '{filename}': {e.ErrorMessage()}")
 
     _, space_dim = _get_grid_and_space_dimension(filename)
-    _check_vtk_file(reader, point_collector(reader), space_dim, reference_function, skip_metadata)
+    is_discontinuous = "discontinuous" in filename
+    _check_vtk_file(reader, point_collector(reader), space_dim, reference_function, skip_metadata, is_discontinuous)
 
 
 def test(filename: str, skip_metadata: bool = False) -> int | None:
