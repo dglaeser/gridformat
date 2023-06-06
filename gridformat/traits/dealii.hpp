@@ -257,6 +257,13 @@ struct NumberOfCells<T> {
     }
 };
 
+template<typename T> requires(DealII::is_triangulation<T>)
+struct NumberOfCellPoints<T, DealII::Cell<T>> {
+    static std::integral auto get(const T&, const DealII::Cell<T>& cell) {
+        return cell.n_vertices();
+    }
+};
+
 }  // namespace Traits
 }  // namespace GridFormat
 

@@ -163,6 +163,33 @@ struct CellType<Grid, GridFormat::CGAL::Cell<Grid>> {
     }
 };
 
+template<Concepts::CGALGrid Grid>
+struct NumberOfPoints<Grid> {
+    static std::integral auto get(const Grid& grid) {
+        return grid.number_of_vertices();
+    }
+};
+
+template<Concepts::CGALGrid Grid>
+struct NumberOfCells<Grid> {
+    static std::integral auto get(const Grid& grid) {
+        if constexpr (Concepts::CGALGrid2D<Grid>)
+            return grid.number_of_faces();
+        else
+            return grid.number_of_finite_cells();
+    }
+};
+
+template<Concepts::CGALGrid Grid>
+struct NumberOfCellPoints<Grid, GridFormat::CGAL::Cell<Grid>> {
+    static constexpr unsigned int get(const Grid&, const GridFormat::CGAL::Cell<Grid>&) {
+        if constexpr (Concepts::CGALGrid2D<Grid>)
+            return 3;
+        else
+            return 4;
+    }
+};
+
 }  // namespace Traits
 }  // namespace GridFormat
 
