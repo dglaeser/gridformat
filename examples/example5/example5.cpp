@@ -8,7 +8,7 @@
 #include <mpi.h>
 #include <dolfinx.h>
 
-#include <gridformat/grid/adapters/dolfinx.hpp>
+#include <gridformat/traits/dolfinx.hpp>
 #include <gridformat/gridformat.hpp>
 
 using dolfinx::mesh::Mesh;

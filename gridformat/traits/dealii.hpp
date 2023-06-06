@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup Adapters
+ * \ingroup PredefinedTraits
  * \brief Traits specializations for
  *        <a href="https://www.dealii.org/current/doxygen/deal.II/group__grid.html">dealii triangulations</a>
  */
-#ifndef GRIDFORMAT_ADAPTERS_DEAL_II_HPP_
-#define GRIDFORMAT_ADAPTERS_DEAL_II_HPP_
+#ifndef GRIDFORMAT_TRAITS_DEAL_II_HPP_
+#define GRIDFORMAT_TRAITS_DEAL_II_HPP_
 
 #include <cassert>
 #include <ranges>
@@ -260,4 +260,4 @@ struct NumberOfCells<T> {
 }  // namespace Traits
 }  // namespace GridFormat
 
-#endif  // GRIDFORMAT_ADAPTERS_DEAL_II_HPP_
+#endif  // GRIDFORMAT_TRAITS_DEAL_II_HPP_

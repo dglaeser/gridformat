@@ -10,7 +10,7 @@
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/tria_description.h>
 
-#include <gridformat/grid/adapters/dealii.hpp>
+#include <gridformat/traits/dealii.hpp>
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/pvtu_writer.hpp>
 #include <gridformat/vtk/pvtp_writer.hpp>

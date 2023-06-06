@@ -6,7 +6,7 @@
 
 #include <dune/grid/yaspgrid.hh>
 
-#include <gridformat/grid/adapters/dune.hpp>
+#include <gridformat/traits/dune.hpp>
 #include <gridformat/grid/discontinuous.hpp>
 #include <gridformat/gridformat.hpp>
 

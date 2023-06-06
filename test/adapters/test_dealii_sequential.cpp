@@ -8,7 +8,7 @@
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/grid_in.h>
 
-#include <gridformat/grid/adapters/dealii.hpp>
+#include <gridformat/traits/dealii.hpp>
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
 

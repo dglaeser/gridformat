@@ -21,7 +21,7 @@
 #include <CGAL/barycenter.h>
 #pragma GCC diagnostic pop
 
-#include <gridformat/grid/adapters/cgal.hpp>
+#include <gridformat/traits/cgal.hpp>
 #include <gridformat/grid/discontinuous.hpp>
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>

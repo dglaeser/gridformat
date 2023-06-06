@@ -7,7 +7,7 @@
 #include <dune/grid/yaspgrid.hh>
 #pragma GCC diagnostic pop
 
-#include <gridformat/grid/adapters/dune.hpp>
+#include <gridformat/traits/dune.hpp>
 #include <gridformat/grid/discontinuous.hpp>
 
 #include <gridformat/vtk/vtu_writer.hpp>
