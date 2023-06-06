@@ -7,10 +7,40 @@
 #include <dune/grid/yaspgrid.hh>
 #pragma GCC diagnostic pop
 
-#include <gridformat/grid/adapters/dune.hpp>
+#include <gridformat/traits/dune.hpp>
 #include <gridformat/vtk/pvtu_writer.hpp>
 #include "../vtk/vtk_writer_tester.hpp"
 #include "../make_test_data.hpp"
+#include "../testing.hpp"
+
+
+template<typename Grid>
+void run_unit_tests(const Grid& grid) {
+    // Run a bunch of unit tests with the given grid
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::eq;
+
+    "number_of_cells"_test = [&] () {
+        expect(eq(
+            static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::cells(grid))),
+            GridFormat::Traits::NumberOfCells<Grid>::get(grid)
+        ));
+    };
+    "number_of_vertices"_test = [&] () {
+        expect(eq(
+            static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::points(grid))),
+            GridFormat::Traits::NumberOfPoints<Grid>::get(grid)
+        ));
+    };
+    "number_of_cell_points"_test = [&] () {
+        for (const auto& c : GridFormat::cells(grid))
+            expect(eq(
+                static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::points(grid, c))),
+                GridFormat::Traits::NumberOfCellPoints<Grid, std::decay_t<decltype(c)>>::get(grid, c)
+            ));
+    };
+}
 
 int main(int argc, char** argv) {
     const auto& mpi_helper = Dune::MPIHelper::instance(argc, argv);
@@ -33,6 +63,8 @@ int main(int argc, char** argv) {
         return GridFormat::Test::test_function<double>(element.geometry().center());
     });
     writer.write("dune_pvtu_2d_in_2d");
+
+    run_unit_tests(grid_view);
 
     return 0;
 }

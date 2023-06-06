@@ -8,7 +8,7 @@
 
 #include <dolfinx.h>
 
-#include <gridformat/grid/adapters/dolfinx.hpp>
+#include <gridformat/traits/dolfinx.hpp>
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/grid/grid.hpp>
 
@@ -193,6 +193,34 @@ void write_with(Writer writer, const std::string& filename) {
     const auto written_filename = writer.write(filename);
     if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
         std::cout << "Wrote '" << written_filename << "'" << std::endl;
+
+    // Run a bunch of unit tests with the given grid
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::eq;
+
+    const auto& grid = writer.grid();
+    using Grid = std::decay_t<decltype(grid)>;
+
+    "number_of_cells"_test = [&] () {
+        expect(eq(
+            static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::cells(grid))),
+            static_cast<std::size_t>(GridFormat::Traits::NumberOfCells<Grid>::get(grid))
+        ));
+    };
+    "number_of_vertices"_test = [&] () {
+        expect(eq(
+            static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::points(grid))),
+            static_cast<std::size_t>(GridFormat::Traits::NumberOfPoints<Grid>::get(grid))
+        ));
+    };
+    "number_of_cell_points"_test = [&] () {
+        for (const auto& c : GridFormat::cells(grid))
+            expect(eq(
+                static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::points(grid, c))),
+                static_cast<std::size_t>(GridFormat::Traits::NumberOfCellPoints<Grid, std::decay_t<decltype(c)>>::get(grid, c))
+            ));
+    };
 }
 
 void write(const dolfinx::mesh::Mesh& mesh, std::string suffix = "") {

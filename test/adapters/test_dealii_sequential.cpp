@@ -8,11 +8,12 @@
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/grid_in.h>
 
-#include <gridformat/grid/adapters/dealii.hpp>
+#include <gridformat/traits/dealii.hpp>
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
 
 #include "../make_test_data.hpp"
+#include "../testing.hpp"
 
 template<int dim, typename T>
 auto as_array(const dealii::Point<dim, T>& p) {
@@ -37,6 +38,31 @@ void write(const Grid& grid, const std::string& suffix = "") {
                       + std::to_string(dim) + "d_in_"
                       + std::to_string(space_dim) + "d"
     )) << "'" << std::endl;
+
+    // Run a bunch of unit tests with the given grid
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::eq;
+
+    "number_of_cells"_test = [&] () {
+        expect(eq(
+            static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::cells(grid))),
+            GridFormat::Traits::NumberOfCells<Grid>::get(grid)
+        ));
+    };
+    "number_of_vertices"_test = [&] () {
+        expect(eq(
+            static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::points(grid))),
+            GridFormat::Traits::NumberOfPoints<Grid>::get(grid)
+        ));
+    };
+    "number_of_cell_points"_test = [&] () {
+        for (const auto& c : GridFormat::cells(grid))
+            expect(eq(
+                static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::points(grid, c))),
+                GridFormat::Traits::NumberOfCellPoints<Grid, std::decay_t<decltype(c)>>::get(grid, c)
+            ));
+    };
 }
 
 template<int dim, int space_dim>

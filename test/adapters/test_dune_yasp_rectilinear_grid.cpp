@@ -8,7 +8,7 @@
 #include <dune/grid/yaspgrid.hh>
 #pragma GCC diagnostic pop
 
-#include <gridformat/grid/adapters/dune.hpp>
+#include <gridformat/traits/dune.hpp>
 #include <gridformat/grid/concepts.hpp>
 #include <gridformat/grid/grid.hpp>
 

@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup Adapters
+ * \ingroup PredefinedTraits
  * \brief Traits specializations for <a href="https://docs.fenicsproject.org/dolfinx/v0.6.0/cpp/">dolfinx meshes</a>
  */
-#ifndef GRIDFORMAT_ADAPTERS_DOLFINX_HPP_
-#define GRIDFORMAT_ADAPTERS_DOLFINX_HPP_
+#ifndef GRIDFORMAT_TRAITS_DOLFINX_HPP_
+#define GRIDFORMAT_TRAITS_DOLFINX_HPP_
 
 #include <array>
 #include <ranges>
@@ -412,4 +412,4 @@ struct NumberOfCellPoints<DolfinX::Mesh, DolfinX::Cell> {
 }  // namespace Traits
 }  // namespace GridFormat
 
-#endif  // GRIDFORMAT_ADAPTERS_DUNE_HPP_
+#endif  // GRIDFORMAT_TRAITS_DOLFINX_HPP_

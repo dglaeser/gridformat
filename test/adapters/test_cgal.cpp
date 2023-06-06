@@ -21,13 +21,17 @@
 #include <CGAL/barycenter.h>
 #pragma GCC diagnostic pop
 
-#include <gridformat/grid/adapters/cgal.hpp>
+#include <gridformat/traits/cgal.hpp>
+
+#include <gridformat/common/ranges.hpp>
 #include <gridformat/grid/discontinuous.hpp>
 #include <gridformat/grid/grid.hpp>
+
 #include <gridformat/vtk/vtu_writer.hpp>
 #include <gridformat/vtk/vtp_writer.hpp>
 
 #include "../make_test_data.hpp"
+#include "../testing.hpp"
 
 
 // register the missing trait - cgal does not have a standard way of retrieving vertex indices
@@ -166,6 +170,31 @@ void write(Grid grid, std::string prefix_addition = "") {
     GridFormat::Test::add_meta_data(discontinuous_writer);
     GridFormat::Test::add_discontinuous_point_field(discontinuous_writer);
     discontinuous_writer.write(filename + "_discontinuous");
+
+    // Run a bunch of unit tests with the given grid
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::eq;
+
+    "number_of_cells"_test = [&] () {
+        expect(eq(
+            static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::cells(grid))),
+            GridFormat::Traits::NumberOfCells<Grid>::get(grid)
+        ));
+    };
+    "number_of_vertices"_test = [&] () {
+        expect(eq(
+            static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::points(grid))),
+            GridFormat::Traits::NumberOfPoints<Grid>::get(grid)
+        ));
+    };
+    "number_of_cell_points"_test = [&] () {
+        for (const auto& c : GridFormat::cells(grid))
+            expect(eq(
+                static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::points(grid, c))),
+                GridFormat::Traits::NumberOfCellPoints<Grid, std::decay_t<decltype(c)>>::get(grid, c)
+            ));
+    };
 }
 
 int main() {

@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup Adapters
+ * \ingroup PredefinedTraits
  * \brief Traits specializations for cgal triangulations in
  *        <a href="https://doc.cgal.org/latest/Triangulation_2/index.html">2D</a>
  *        <a href="https://doc.cgal.org/latest/Triangulation_3/index.html">3D</a>.
  */
-#ifndef GRIDFORMAT_ADAPTERS_CGAL_HPP_
-#define GRIDFORMAT_ADAPTERS_CGAL_HPP_
+#ifndef GRIDFORMAT_TRAITS_CGAL_HPP_
+#define GRIDFORMAT_TRAITS_CGAL_HPP_
 
 #include <cassert>
 #include <ranges>
@@ -163,7 +163,34 @@ struct CellType<Grid, GridFormat::CGAL::Cell<Grid>> {
     }
 };
 
+template<Concepts::CGALGrid Grid>
+struct NumberOfPoints<Grid> {
+    static std::integral auto get(const Grid& grid) {
+        return grid.number_of_vertices();
+    }
+};
+
+template<Concepts::CGALGrid Grid>
+struct NumberOfCells<Grid> {
+    static std::integral auto get(const Grid& grid) {
+        if constexpr (Concepts::CGALGrid2D<Grid>)
+            return grid.number_of_faces();
+        else
+            return grid.number_of_finite_cells();
+    }
+};
+
+template<Concepts::CGALGrid Grid>
+struct NumberOfCellPoints<Grid, GridFormat::CGAL::Cell<Grid>> {
+    static constexpr unsigned int get(const Grid&, const GridFormat::CGAL::Cell<Grid>&) {
+        if constexpr (Concepts::CGALGrid2D<Grid>)
+            return 3;
+        else
+            return 4;
+    }
+};
+
 }  // namespace Traits
 }  // namespace GridFormat
 
-#endif  // GRIDFORMAT_ADAPTERS_CGAL_HPP_
+#endif  // GRIDFORMAT_TRAITS_CGAL_HPP_

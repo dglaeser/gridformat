@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*!
  * \file
- * \ingroup Adapters
+ * \ingroup PredefinedTraits
  * \brief Traits specializations for <a href="https://gitlab.dune-project.org/core/dune-grid">dune grid views</a>
  */
-#ifndef GRIDFORMAT_ADAPTERS_DUNE_HPP_
-#define GRIDFORMAT_ADAPTERS_DUNE_HPP_
+#ifndef GRIDFORMAT_TRAITS_DUNE_HPP_
+#define GRIDFORMAT_TRAITS_DUNE_HPP_
 
 #include <ranges>
 #include <cassert>
@@ -275,4 +275,4 @@ struct Ordinates<Dune::GridView<Traits>> {
 
 }  // namespace GridFormat::Traits
 
-#endif  // GRIDFORMAT_ADAPTERS_DUNE_HPP_
+#endif  // GRIDFORMAT_TRAITS_DUNE_HPP_

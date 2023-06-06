@@ -7,7 +7,7 @@
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
 #include <CGAL/Triangulation_2.h>
 
-#include <gridformat/grid/adapters/cgal.hpp>
+#include <gridformat/traits/cgal.hpp>
 #include <gridformat/vtk/vtp_writer.hpp>
 
 // CGAL triangulations do not have a standard way of associating indices
