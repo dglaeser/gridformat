@@ -56,7 +56,6 @@ namespace XMLDetail {
     using LZ4Compressor = std::conditional_t<Compression::Detail::_have_lz4, Compression::LZ4, None>;
     using Compressor = UniqueVariant<LZ4Compressor, ZLIBCompressor, LZMACompressor>;
 }  // namespace XMLDetail
-#endif  // DOXYGEN
 
 namespace XML {
 
@@ -68,8 +67,31 @@ using DataFormat = std::variant<VTK::DataFormat::Inlined, VTK::DataFormat::Appen
 using DefaultCompressor = std::variant_alternative_t<0, XMLDetail::Compressor>;
 
 }  // namespace XML
+#endif  // DOXYGEN
 
-//! Options for VTK-XML files
+/*!
+ * \ingroup VTK
+ * \brief Options for VTK-XML files for setting the desired encoding, data format and compression.
+ * \details The data format can be
+ *          - GridFormat::VTK::DataFormat::inlined
+ *          - GridFormat::VTK::DataFormat::appended
+ *
+ *          For encoding one can choose between
+ *          - GridFormat::Encoding::ascii
+ *          - GridFormat::Encoding::base64
+ *          - GridFormat::Encoding::raw
+ *
+ *          Note, however, that ascii encoding only works with inlined data, and raw binary encoding only
+ *          works with appended data. Finally, one can choose between three different compressors or
+ *          GridFormat::none:
+ *          - GridFormat::Compression::zlib
+ *          - GridFormat::Compression::lz4
+ *          - GridFormat::Compression::lzma
+ *
+ *          Note that these compressors are only available if the respective libraries were found.
+ *          All options can also be set to GridFormat::automatic, in which case a suitable option
+ *          is chosen.
+ */
 struct XMLOptions {
     using EncoderOption = ExtendedVariant<XML::Encoder, Automatic>;
     using CompressorOption = ExtendedVariant<XML::Compressor, Automatic>;
@@ -152,7 +174,7 @@ namespace XMLDetail {
 
 /*!
  * \ingroup VTK
- * \brief TODO: Doc me
+ * \brief Base class for VTK-XML Writer implementations
  */
 template<Concepts::Grid G, typename Impl>
 class XMLWriterBase

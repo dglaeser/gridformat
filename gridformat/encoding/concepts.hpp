@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Encoding
- * \brief Concepts related to data encoding
+ * \brief Concepts related to data encoding.
  */
 #ifndef GRIDFORMAT_ENCODING_CONCEPTS_HPP_
 #define GRIDFORMAT_ENCODING_CONCEPTS_HPP_
@@ -15,17 +15,15 @@
 
 namespace GridFormat::Concepts {
 
-//! \addtogroup Encoding
-//! \{
-
-//! Encoders allow wrapping of an output stream, yielding
-//! a stream that allows writing spans of data to it
+/*!
+ * \ingroup Encoding
+ * \brief Encoders allow wrapping of an output stream, yielding
+ *        a stream that allows writing spans of data to it.
+ */
 template<typename T, typename S>
 concept Encoder = requires(const T& encoder, S& stream) {
     { encoder(stream) } -> WriterFor<std::span<const std::byte>>;
 };
-
-//! \} group Encoding
 
 }  // namespace GridFormat::Concepts
 

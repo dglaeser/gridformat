@@ -15,6 +15,7 @@ namespace GridFormat {
 //! \addtogroup Encoding
 //! \{
 
+//! Wrapper around a given stream to write raw binary data
 template<typename OStream>
 class RawBinaryStream : public OutputStreamWrapperBase<OStream> {
     using Byte = std::byte;
@@ -31,6 +32,7 @@ class RawBinaryStream : public OutputStreamWrapperBase<OStream> {
 
 namespace Encoding {
 
+//! Raw binary encoder
 struct RawBinary {
     template<typename S>
     constexpr auto operator()(S& s) const noexcept {
@@ -38,7 +40,7 @@ struct RawBinary {
     }
 };
 
-inline constexpr RawBinary raw;
+inline constexpr RawBinary raw;  //!< Instance of the raw binary encoder
 
 }  // namespace Encoding
 

@@ -13,5 +13,4 @@ we use the common way of attaching an `Info` object to vertices, in which we sto
 This examples shows:
 
 - how to specialize the `PointId` trait
-- how to use a specialized writer (here: `VTPWriter`) directly instead of the generic writer API
-- use chaining (via the `with` function) to conveniently construct a `VTPWriter` with specified options (all VTK-XML writers support this)
+- use chaining (via the `with_*` syntax) to conveniently set the options on a file format (all VTK-XML formats support this)

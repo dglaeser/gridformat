@@ -24,7 +24,7 @@ jobs:
       - name: install-adapted-packages
         uses: ./.github/actions/install-adapted-packages
 
-      - name: run-coverage
+      - name: configure
         run: |
           sudo apt install gcovr
           rm -rf build
@@ -34,10 +34,19 @@ jobs:
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -DGRIDFORMAT_DO_COVERAGE=ON \
+                -DGRIDFORMAT_BUILD_DOCS=ON \
                 -DGCOV_PATH=/usr/bin/gcov-12 \
                 -B build
+
+      - name: build-doxygen-documentation
+        run: |
+          cd build && make doc_doxygen
+          mkdir -p public && cp -r docs/doxygen/html/* public
+
+      - name: run-coverage
+        run: |
           cd build && make test_coverage
-          mkdir -p public && cp -r test_coverage/* public
+          mkdir -p public && cp -r test_coverage public
 
       - name: make-coverage-badge
         run: |

@@ -1,11 +1,10 @@
 <!-- SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 
-# GridFormat
-
 [![Pages](https://github.com/dglaeser/gridformat/actions/workflows/pages.yml/badge.svg)](https://dglaeser.github.io/gridformat)
 [![Coverage Report.](https://dglaeser.github.io/gridformat/coverage.svg)](https://dglaeser.github.io/gridformat)
 [![Test suite](https://github.com/dglaeser/gridformat/actions/workflows/main.yml/badge.svg)](https://github.com/dglaeser/gridformat/actions?query=branch%3Amain+)
+[![REUSE status](https://api.reuse.software/badge/git.fsfe.org/reuse/api)](https://api.reuse.software/info/git.fsfe.org/reuse/api)
 
 `GridFormat` is a header-only C++ library for writing data into grid file formats that can be visualized with tools
 such as [ParaView](https://www.paraview.org/). The typical use case for `GridFormat` is within codes for numerical simulations
@@ -83,8 +82,8 @@ int main () {
 
 </details>
 
-Many more formats and options are available, see the [API documentation (coming soon)](https://github.com/dglaeser/gridformat).
-For more examples, have a look at the [examples folder](https://github.com/dglaeser/gridformat/tree/main/examples).
+Many more formats and options are available, see the [API documentation (coming soon)](https://github.com/dglaeser/gridformat)
+or have a look at the [examples](./examples).
 
 
 ## Installation
@@ -128,8 +127,10 @@ found on the system. Dependencies of those features are stated in the [API docum
 
 `GridFormat` does not operate on a specific grid data structure, but instead, it can be made compatible with any user-defined
 grid types by implementing specializations for a few traits classes. For information on how to do this, please have a look at the
-[traits classes overview](https://github.com/dglaeser/gridformat/blob/main/docs/traits.md)
-and [the guide on grid traits specialization](https://github.com/dglaeser/gridformat/blob/main/docs/how_to.md).
+[traits classes overview](docs/pages/traits.md),
+the [examples](./examples),
+the predefined [image grid implementation](https://github.com/dglaeser/gridformat/blob/main/gridformat/grid/image_grid.hpp)
+or the predefined [traits for several frameworks](https://github.com/dglaeser/gridformat/blob/main/gridformat/traits).
 
 
 ## Predefined traits

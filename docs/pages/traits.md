@@ -37,8 +37,8 @@ void do_something_on_a_grid(const Grid& grid) {
 
 The code now expects that there exist a specialization of the `Cells` trait for the given grid. This allows users to specialize
 that trait for their grid data structure, thereby making it compatible with `GridFormat`. See the code below for an idea about how
-the traits specialization may look. For more details on this, please have a look at the
-[guide on grid traits specialization](https://github.com/dglaeser/gridformat/blob/main/docs/how_to.md).
+the traits specialization may look. For more details on this, please have a look at the resources referenced in the
+[main readme](https://github.com/dglaeser/gridformat/blob/main).
 
 <details>
 
@@ -72,7 +72,7 @@ struct Cells<MyLibrary::Grid> {
 </details>
 
 As discussed in our
-[overview over supported kinds of grids](https://github.com/dglaeser/gridformat/blob/main/docs/grid_kinds.md),
+[overview over supported kinds of grids](./grid_concepts.md),
 `GridFormat` understands the notion of unstructured, structured, rectilinear or image grids. The reason for this is that some
 file formats are designed for specific kinds of grids and can store the information on their topology in a space-efficient manner.
 To see which format assumes which kind of grid, see the [API documentation (coming soon)](https://github.com/dglaeser/gridformat).
@@ -236,10 +236,13 @@ trait that expects you to return a statically sized range.
 In order to use `GridFormat` to write grid files from parallel computations using [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface),
 make sure that you implement the above traits such that they __only__ return information on one __partition__. Moreover,
 `GridFormat` currently does not provide any means to flag cells/points as ghost or overlap entities, and therefore, it is
-expectet that you only provide information on the collection of interior entities. In other words, the partitions are expected
+expected that you only provide information on the collection of interior entities, that is, the partitions are expected
 to be disjoint. To be more concrete, it is expected that
 
-- The `Cells` and `Points` traits provide ranges over the interior entities of a partition, only.
+- The `Cells` trait provides a range over the interior cells of a partition, only.
+- The `Points` trait provides a range over only those points that are connected to interior cells (otherwise there will be unconnected points in the output, however, it should still work).
 - The `Extents` trait provides the number of cells of the partition, __not__ counting any ghosts or overlap cells.
-- The `Ordinates` trait provides the ordinates of the partition, __not__ including ghost points.
-- The `Origin` trait returns the lower-left corner of the partition, __not__ including ghost points.
+- The `Ordinates` trait provides the ordinates of the partition, __only__ including points that are connected to interior cells.
+- The `Origin` trait returns the lower-left corner of the partition __without__ ghost cells.
+
+If you include ghost entities in your traits, output should still work, but there will be overlapping cells.

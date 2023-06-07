@@ -30,11 +30,13 @@ namespace GridFormat::Compression {
 //! \addtogroup Compression
 //! @{
 
+//! Options for the zlib compressor
 struct ZLIBOptions {
     std::size_t block_size = default_block_size;
     int compression_level = Z_DEFAULT_COMPRESSION;
 };
 
+//! Compressor using the zlib library
 class ZLIB {
     using ZLIBByte = unsigned char;
 
@@ -113,8 +115,11 @@ class ZLIB {
     Options _opts;
 };
 
-inline constexpr ZLIB zlib;
+inline constexpr ZLIB zlib;  //!< Instance of the zlib compressor
+
+#ifndef DOXYGEN
 namespace Detail { inline constexpr bool _have_zlib = true; }
+#endif  // DOXYGEN
 
 //! @} group Compression
 

@@ -1,0 +1,88 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Doxyfile 1.9.7
+# This file describes the settings to be used by the documentation system
+# doxygen (www.doxygen.org) for a project.
+#
+# All text after a double hash (##) is considered a comment and is placed in
+# front of the TAG it is preceding.
+#
+# All text after a single hash (#) is considered a comment and will be ignored.
+# The format is:
+# TAG = value [value, ...]
+# For lists, items can also be appended using:
+# TAG += value [value, ...]
+# Values that contain spaces should be placed between quotes (\" \").
+#
+# Note:
+#
+# Use doxygen to compare the used configuration file with the template
+# configuration file:
+# doxygen -x [configFile]
+# Use doxygen to compare the used configuration file with the template
+# configuration file without replacing the environment variables or CMake type
+# replacement variables:
+# doxygen -x_noenv [configFile]
+
+#---------------------------------------------------------------------------
+# Project related configuration options
+#---------------------------------------------------------------------------
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = GridFormat
+PROJECT_NUMBER         = @gridformat_VERSION@
+INPUT                 += @CMAKE_SOURCE_DIR@/README.md \
+                         @CMAKE_SOURCE_DIR@/docs/pages \
+                         @DOXYGEN_SOURCE_DIR@/groups.md \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/gridformat.hpp \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/writer.hpp \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/image_grid.hpp \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/concepts.hpp \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/writer.hpp \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/vtk/ \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/encoding/ \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/compression/ \
+PROJECT_BRIEF          = "I/O-Library for grid-like data structures"
+PROJECT_LOGO           =
+OUTPUT_DIRECTORY       =
+IMAGE_PATH             = @CMAKE_SOURCE_DIR@/docs/img
+USE_MDFILE_AS_MAINPAGE = @CMAKE_SOURCE_DIR@/README.md
+TOC_INCLUDE_HEADINGS   = 4
+FILTER_PATTERNS        = *.md="python3 @DOXYGEN_SOURCE_DIR@/markdown_filter.py"
+FILE_PATTERNS          = *.md,*.hpp
+EXTRA_PACKAGES        += amsmath,amssymb,units
+ENABLE_PREPROCESSING   = YES
+PREDEFINED             = DOXYGEN \
+                         GRIDFORMAT_HAVE_LZ4 \
+                         GRIDFORMAT_HAVE_LZMA \
+                         GRIDFORMAT_HAVE_ZLIB \
+                         GRIDFORMAT_HAVE_HIGH_FIVE
+LAYOUT_FILE            = @DOXYGEN_SOURCE_DIR@/DoxygenLayout.xml
+HTML_HEADER            = @DOXYGEN_SOURCE_DIR@/header.html
+HTML_FOOTER            = @DOXYGEN_SOURCE_DIR@/footer.html
+HTML_EXTRA_FILES       = @DOXYGEN_SOURCE_DIR@/doxygen-awesome-darkmode-toggle.js \
+                         @DOXYGEN_SOURCE_DIR@/doxygen-awesome-interactive-toc.js \
+                         @DOXYGEN_SOURCE_DIR@/doxygen-awesome-paragraph-link.js \
+                         @DOXYGEN_SOURCE_DIR@/doxygen-awesome-fragment-copy-button.js
+HTML_EXTRA_STYLESHEET  = @DOXYGEN_SOURCE_DIR@/doxygen-awesome.css \
+                         @DOXYGEN_SOURCE_DIR@/doxygen-awesome-sidebar-only.css \
+                         @DOXYGEN_SOURCE_DIR@/doxygen-awesome-sidebar-only-darkmode-toggle.css
+HTML_FILE_EXTENSION    = .html
+USE_MATHJAX            = YES
+GENERATE_TODOLIST      = NO
+SEARCHENGINE           = YES
+SERVER_BASED_SEARCH    = NO
+CITE_BIB_FILES         =
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+DOT_GRAPH_MAX_NODES    = 100
+DOT_IMAGE_FORMAT       = svg
+SHORT_NAMES            = NO
+GENERATE_TREEVIEW      = YES
+TREEVIEW_WIDTH         = 320
+DISABLE_INDEX          = NO
+FULL_SIDEBAR           = NO
+HTML_COLORSTYLE        = LIGHT # required with Doxygen >= 1.9.5
+REPEAT_BRIEF           = NO
+BRIEF_MEMBER_DESC      = YES
+ALWAYS_DETAILED_SEC    = NO

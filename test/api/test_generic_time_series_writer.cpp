@@ -36,9 +36,5 @@ int main() {
     write(GridFormat::Writer{GridFormat::pvd(GridFormat::vtr), grid, "generic_time_series_2d_in_2d_vtr"});
     write(GridFormat::Writer{GridFormat::pvd(GridFormat::vts({.encoder = GridFormat::Encoding::ascii})), grid, "generic_time_series_2d_in_2d_vts"});
 
-#if GRIDFORMAT_HAVE_HIGH_FIVE
-    write(GridFormat::Writer{GridFormat::pvd(GridFormat::vtk_hdf), grid, "generic_time_series_2d_in_2d_unstructured_vtk_hdf"});
-#endif
-
     return 0;
 }

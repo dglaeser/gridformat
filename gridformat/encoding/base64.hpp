@@ -19,6 +19,7 @@ namespace GridFormat {
 //! \addtogroup Encoding
 //! \{
 
+//! Wrapper around a given stream to write output encoded with base64
 template<typename OStream>
 class Base64Stream : public OutputStreamWrapperBase<OStream> {
     using Byte = char;
@@ -116,14 +117,16 @@ class Base64Stream : public OutputStreamWrapperBase<OStream> {
 
 namespace Encoding {
 
+//! Base64 encoder
 struct Base64 {
+    //! Return a base64 stream
     template<typename Stream>
     constexpr auto operator()(Stream& s) const noexcept {
         return Base64Stream{s};
     }
 };
 
-inline constexpr Base64 base64;
+inline constexpr Base64 base64;  //!< Instance of the base64 encoder
 
 }  // namespace Encoding
 

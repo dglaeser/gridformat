@@ -35,6 +35,7 @@ namespace Encoding::Detail {
 }  // namespace Encoding::Detail
 #endif  // DOXYGEN
 
+//! Options for fomatted output of ranges with ascii encoding
 struct AsciiFormatOptions {
     ReservedString<30> delimiter{""};
     ReservedString<30> line_prefix{""};
@@ -47,6 +48,7 @@ struct AsciiFormatOptions {
     }
 };
 
+//! Wrapper around a given stream to write formatted ascii output
 template<typename OStream>
 class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
  public:
@@ -83,21 +85,25 @@ class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
 
 namespace Encoding {
 
+//! Ascii encoder
 struct Ascii {
     constexpr Ascii() = default;
     constexpr explicit Ascii(AsciiFormatOptions opts)
     : _opts{std::move(opts)}
     {}
 
+    //! Create an ascii stream with the defined options
     template<typename S>
     constexpr auto operator()(S& s) const noexcept {
         return AsciiOutputStream{s, options()};
     }
 
+    //! Return a new instance with different options
     static constexpr auto with(AsciiFormatOptions opts) {
         return Ascii{std::move(opts)};
     }
 
+    //! Return the current options
     constexpr AsciiFormatOptions options() const {
         return _opts.value_or(AsciiFormatOptions{});
     }
@@ -108,7 +114,7 @@ struct Ascii {
     std::optional<AsciiFormatOptions> _opts = {};
 };
 
-inline constexpr Ascii ascii;
+inline constexpr Ascii ascii;  //!< Instance of the ascii encoder
 
 }  // namespace Encoding
 
