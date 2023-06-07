@@ -9,7 +9,7 @@ else()
   set(GRIDFORMAT_SUBPROJECT ON)
 endif()
 
-project(gridformat VERSION 1.0.0)
+project(gridformat VERSION 0.1.0)
 set(GRIDFORMAT_NAMESPACE "gridformat")
 
 include(GNUInstallDirs)
@@ -76,3 +76,9 @@ if (GRIDFORMAT_BUILD_TESTS)
     enable_testing()
     add_subdirectory(test)
 endif ()
+
+option(GRIDFORMAT_BUILD_DOCS "whether or not the documentation should be built" OFF)
+if (GRIDFORMAT_BUILD_DOCS)
+    message(STATUS "Including documentation targets")
+    add_subdirectory(docs)
+endif()
