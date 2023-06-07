@@ -5,7 +5,7 @@ name: pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ feature/api-docs ]
 
 jobs:
   coverage-and-deploy:
@@ -21,8 +21,8 @@ jobs:
         with:
           compiler: g++-12
 
-      - name: install-adapted-packages
-        uses: ./.github/actions/install-adapted-packages
+      # - name: install-adapted-packages
+      #   uses: ./.github/actions/install-adapted-packages
 
       - name: configure
         run: |
@@ -58,7 +58,13 @@ jobs:
           python3 _script.py
           cp coverage.svg build/public
 
-      - name: deploy-pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
         with:
-          folder: build/public
+          name: public
+          path: build/public
+          retention-days: 1
+      # - name: deploy-pages
+      #   uses: JamesIves/github-pages-deploy-action@v4
+      #   with:
+      #     folder: build/public
