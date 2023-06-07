@@ -37,8 +37,8 @@ void do_something_on_a_grid(const Grid& grid) {
 
 The code now expects that there exist a specialization of the `Cells` trait for the given grid. This allows users to specialize
 that trait for their grid data structure, thereby making it compatible with `GridFormat`. See the code below for an idea about how
-the traits specialization may look. For more details on this, please have a look at the
-[guide on grid traits specialization](https://github.com/dglaeser/gridformat/blob/main/docs/how_to.md).
+the traits specialization may look. For more details on this, please have a look at the resources referenced in the
+[main readme](https://github.com/dglaeser/gridformat/blob/main).
 
 <details>
 
