@@ -8,7 +8,7 @@
 #include <CGAL/Triangulation_2.h>
 
 #include <gridformat/traits/cgal.hpp>
-#include <gridformat/vtk/vtp_writer.hpp>
+#include <gridformat/gridformat.hpp>
 
 // CGAL triangulations do not have a standard way of associating indices
 // with grid vertices. One approach is to use the vertex type with an info
@@ -57,11 +57,12 @@ int main() {
     add_points(triangulation);
     set_vertex_indices(triangulation);
 
-    const auto filename = GridFormat::VTPWriter{triangulation}
-                            .with_data_format(GridFormat::VTK::DataFormat::appended)
-                            .with_encoding(GridFormat::Encoding::base64)
-                            .with_compression(GridFormat::none)
-                            .write("cgal_triangulation");
+    // We've seen in the previous examples how to select options on a file format
+    // The VTK-XML formats provide another convenient way to select those options:
+    const auto format = GridFormat::vtp.with_encoding(GridFormat::Encoding::base64)
+                                       .with_data_format(GridFormat::VTK::DataFormat::appended)
+                                       .with_compression(GridFormat::none);
+    const auto filename = GridFormat::Writer{format, triangulation}.write("cgal_triangulation");
     std::cout << "Wrote '" << filename << "'" << std::endl;
     return 0;
 }
