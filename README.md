@@ -128,8 +128,10 @@ found on the system. Dependencies of those features are stated in the [API docum
 
 `GridFormat` does not operate on a specific grid data structure, but instead, it can be made compatible with any user-defined
 grid types by implementing specializations for a few traits classes. For information on how to do this, please have a look at the
-[traits classes overview](https://github.com/dglaeser/gridformat/blob/main/docs/traits.md)
-and [the guide on grid traits specialization](https://github.com/dglaeser/gridformat/blob/main/docs/how_to.md).
+[traits classes overview](https://github.com/dglaeser/gridformat/blob/main/docs/traits.md),
+the [examples](https://github.com/dglaeser/gridformat/blob/main/examples),
+the predefined [image grid implementation](https://github.com/dglaeser/gridformat/blob/main/gridformat/grid/image_grid.hpp)
+or the predefined [traits for several frameworks](https://github.com/dglaeser/gridformat/blob/main/gridformat/traits).
 
 
 ## Predefined traits
