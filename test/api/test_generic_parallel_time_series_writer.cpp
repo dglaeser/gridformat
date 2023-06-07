@@ -93,17 +93,6 @@ int main(int argc, char** argv) {
         },
         MPI_COMM_WORLD
     );
-#if GRIDFORMAT_HAVE_HIGH_FIVE
-    write(
-        GridFormat::Writer{
-            GridFormat::time_series(GridFormat::vtk_hdf),
-            grid,
-            MPI_COMM_WORLD,
-            "generic_parallel_time_series_2d_in_2d_vtkhdf_unstructured_pvd"
-        },
-        MPI_COMM_WORLD
-    );
-#endif
 
     MPI_Finalize();
     return 0;
