@@ -73,8 +73,31 @@ namespace Detail {
             return f;
         }
 
-        constexpr auto with(VTK::XMLOptions opts = {}) const {
+        constexpr auto with(VTK::XMLOptions opts) const {
             return (*this)(std::move(opts));
+        }
+
+        constexpr auto with_encoding(VTK::XML::Encoder e) const {
+            auto opts = _cur_opts();
+            Variant::unwrap_to(opts.encoder, e);
+            return (*this)(std::move(opts));
+        }
+
+        constexpr auto with_data_format(VTK::XML::DataFormat f) const {
+            auto opts = _cur_opts();
+            Variant::unwrap_to(opts.data_format, f);
+            return (*this)(std::move(opts));
+        }
+
+        constexpr auto with_compression(VTK::XML::Compressor c) const {
+            auto opts = _cur_opts();
+            Variant::unwrap_to(opts.compressor, c);
+            return (*this)(std::move(opts));
+        }
+
+     private:
+        VTK::XMLOptions _cur_opts() const {
+            return static_cast<const VTKFormat&>(*this).opts;
         }
     };
 
