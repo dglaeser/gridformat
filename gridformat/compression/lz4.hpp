@@ -30,11 +30,13 @@ namespace GridFormat::Compression {
 //! \addtogroup Compression
 //! @{
 
+//! Options for the lz4 compressor
 struct LZ4Options {
     std::size_t block_size = default_block_size;
     int acceleration_factor = 1;  // LZ4_ACCELERATION_DEFAULT
 };
 
+//! Compressor using the lz4 compression library
 class LZ4 {
     using LZ4Byte = char;
 
@@ -116,8 +118,11 @@ class LZ4 {
     Options _opts;
 };
 
-inline constexpr LZ4 lz4;
+inline constexpr LZ4 lz4;  //!< Instance of the lz4 compressor
+
+#ifndef DOXYGEN
 namespace Detail { inline constexpr bool _have_lz4 = true; }
+#endif  // DOXYGEN
 
 //! @} group Compression
 

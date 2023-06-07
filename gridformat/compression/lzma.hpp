@@ -31,11 +31,13 @@ namespace GridFormat::Compression {
 //! \addtogroup Compression
 //! @{
 
+//! Options for the lzma compressor
 struct LZMAOptions {
     std::size_t block_size = default_block_size;
     std::uint32_t compression_level = LZMA_PRESET_DEFAULT;
 };
 
+//! Compressor using the lzma library
 class LZMA {
     using LZMAByte = std::uint8_t;
 
@@ -116,8 +118,11 @@ class LZMA {
     Options _opts;
 };
 
-inline constexpr LZMA lzma;
+inline constexpr LZMA lzma;  //!< Instance of the lzma compressor
+
+#ifndef DOXYGEN
 namespace Detail { inline constexpr bool _have_lzma = true; }
+#endif  // DOXYGEN
 
 //! @} group Compression
 

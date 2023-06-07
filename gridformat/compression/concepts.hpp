@@ -33,6 +33,7 @@ namespace CompressionDetail {
 }  // namespace CompressionDetail
 #endif  // DOXYGEN
 
+//! Concept that compressors must fulfill
 template<typename T>
 concept Compressor = requires(const T& t, Serialization& s) {
     { t.compress(s) } -> CompressionDetail::ValidCompressionResult;

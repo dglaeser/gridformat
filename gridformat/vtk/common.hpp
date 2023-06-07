@@ -31,9 +31,9 @@
 #include <gridformat/grid/_detail.hpp>
 #include <gridformat/grid/grid.hpp>
 
-// forward declarations
+#ifndef DOXYGEN
 namespace GridFormat::Encoding { struct Ascii; struct Base64; struct RawBinary; }
-// end forward declarations
+#endif  // DOXYGEN
 
 namespace GridFormat::VTK {
 
@@ -42,14 +42,15 @@ namespace GridFormat::VTK {
 
 namespace DataFormat {
 
-struct Inlined {};
-struct Appended {};
+struct Inlined {};  //!< Inline data format (inside xml elements)
+struct Appended {};  //!< Appended data format (all data is appended at the end of the xml file)
 
-inline constexpr Inlined inlined;
-inline constexpr Appended appended;
+inline constexpr Inlined inlined;  //!< Instance of the inline data format
+inline constexpr Appended appended;  //!< Instance of the appended data format
 
 }  // namespace DataFormat
 
+#ifndef DOXYGEN
 namespace Traits {
 
 template<typename T> struct ProducesValidXML;
@@ -220,7 +221,6 @@ auto make_cell_types_field(const Grid& grid) {
     });
 }
 
-#ifndef DOXYGEN
 namespace CommonDetail {
 
     template<Concepts::StaticallySizedRange R>

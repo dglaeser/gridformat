@@ -68,104 +68,110 @@ template<typename FileFormat> struct WriterFactory;
 
 namespace FileFormat {
 
-#ifndef DOXYGEN
-namespace Detail {
+//! Base class for VTK-XML formats
+template<typename VTKFormat>
+struct VTKXMLFormatBase {
+    //! Construct a new instance of this format with the given options
+    constexpr auto operator()(VTK::XMLOptions opts) const {
+        auto f = VTKFormat{};
+        f.opts = std::move(opts);
+        return f;
+    }
 
-    template<typename VTKFormat>
-    struct VTKXMLFormatBase {
-        constexpr auto operator()(VTK::XMLOptions opts = {}) const {
-            auto f = VTKFormat{};
-            f.opts = std::move(opts);
-            return f;
-        }
+    //! Construct a new instance of this format with the given options
+    constexpr auto with(VTK::XMLOptions opts) const {
+        return (*this)(std::move(opts));
+    }
 
-        constexpr auto with(VTK::XMLOptions opts) const {
-            return (*this)(std::move(opts));
-        }
+    //! Construct a new instance of this format with modified encoding option
+    constexpr auto with_encoding(VTK::XML::Encoder e) const {
+        auto opts = _cur_opts();
+        Variant::unwrap_to(opts.encoder, e);
+        return (*this)(std::move(opts));
+    }
 
-        constexpr auto with_encoding(VTK::XML::Encoder e) const {
-            auto opts = _cur_opts();
-            Variant::unwrap_to(opts.encoder, e);
-            return (*this)(std::move(opts));
-        }
+    //! Construct a new instance of this format with modified data format option
+    constexpr auto with_data_format(VTK::XML::DataFormat f) const {
+        auto opts = _cur_opts();
+        Variant::unwrap_to(opts.data_format, f);
+        return (*this)(std::move(opts));
+    }
 
-        constexpr auto with_data_format(VTK::XML::DataFormat f) const {
-            auto opts = _cur_opts();
-            Variant::unwrap_to(opts.data_format, f);
-            return (*this)(std::move(opts));
-        }
+    //! Construct a new instance of this format with modified compression option
+    constexpr auto with_compression(VTK::XML::Compressor c) const {
+        auto opts = _cur_opts();
+        Variant::unwrap_to(opts.compressor, c);
+        return (*this)(std::move(opts));
+    }
 
-        constexpr auto with_compression(VTK::XML::Compressor c) const {
-            auto opts = _cur_opts();
-            Variant::unwrap_to(opts.compressor, c);
-            return (*this)(std::move(opts));
-        }
+ private:
+    VTK::XMLOptions _cur_opts() const {
+        return static_cast<const VTKFormat&>(*this).opts;
+    }
+};
 
-     private:
-        VTK::XMLOptions _cur_opts() const {
-            return static_cast<const VTKFormat&>(*this).opts;
-        }
-    };
-
-}  // namespace Detail
-#endif  // DOXYGEN
-
-
-/*!
- * \ingroup API
- * \brief Selector for the .vti/.pvti file format for image grids.
- *        See <a href="https://examples.vtk.org/site/VTKFileFormats/#imagedata">here</a>
- *        or <a href="https://examples.vtk.org/site/VTKFileFormats/#pimagedata">here</a>
- *        for the parallel variant.
- * \note The parallel variant (.pvtu) is only available if MPI is found on the system.
- */
-struct VTI : Detail::VTKXMLFormatBase<VTI> { VTK::XMLOptions opts = {}; };
 
 /*!
  * \ingroup API
- * \brief Selector for the .vtr/.pvtr file format for rectilinear grids.
- *        See <a href="https://examples.vtk.org/site/VTKFileFormats/#rectilineargrid">here</a>
- *        or <a href="https://examples.vtk.org/site/VTKFileFormats/#prectilineargrid">here</a>
- *        for the parallel variant.
- * \note The parallel variant (.pvtu) is only available if MPI is found on the system.
+ * \brief Selector for the .vti/.pvti image grid file format to be passed to the Writer.
+ * \details For more details on the file format, see
+ *          <a href="https://examples.vtk.org/site/VTKFileFormats/#imagedata">here</a>
+ *          or <a href="https://examples.vtk.org/site/VTKFileFormats/#pimagedata">here</a>
+ *          for the parallel variant.
+ * \note The parallel variant (.pvti) is only available if MPI is found on the system.
  */
-struct VTR : Detail::VTKXMLFormatBase<VTR> { VTK::XMLOptions opts = {}; };
+struct VTI : VTKXMLFormatBase<VTI> { VTK::XMLOptions opts = {}; };
 
 /*!
  * \ingroup API
- * \brief Selector for the .vts/.pvts file format for structured grids.
- *        See <a href="https://examples.vtk.org/site/VTKFileFormats/#structuredgrid">here</a>
- *        or <a href="https://examples.vtk.org/site/VTKFileFormats/#pstructuredgrid">here</a>
- *        for the parallel variant.
- * \note The parallel variant (.pvtu) is only available if MPI is found on the system.
+ * \brief Selector for the .vtr/.pvtr rectilinear grid file format to be passed to the Writer.
+ * \details For more details on the file format, see
+ *          <a href="https://examples.vtk.org/site/VTKFileFormats/#rectilineargrid">here</a> or
+ *          <a href="https://examples.vtk.org/site/VTKFileFormats/#prectilineargrid">here</a>
+ *          for the parallel variant.
+ * \note The parallel variant (.pvtr) is only available if MPI is found on the system.
  */
-struct VTS : Detail::VTKXMLFormatBase<VTS> { VTK::XMLOptions opts = {}; };
+struct VTR : VTKXMLFormatBase<VTR> { VTK::XMLOptions opts = {}; };
+
+/*!
+ * \ingroup API
+ * \brief Selector for the .vts/.pvts structured grid file format to be passed to the Writer.
+ * \details For more details on the file format, see
+ *          <a href="https://examples.vtk.org/site/VTKFileFormats/#structuredgrid">here</a> or
+ *          <a href="https://examples.vtk.org/site/VTKFileFormats/#pstructuredgrid">here</a>
+ *          for the parallel variant.
+ * \note The parallel variant (.pvts) is only available if MPI is found on the system.
+ */
+struct VTS : VTKXMLFormatBase<VTS> { VTK::XMLOptions opts = {}; };
 
 /*!
  * \ingroup API
  * \brief Selector for the .vtp/.pvtp file format for two-dimensional unstructured grids.
- *        See <a href="https://examples.vtk.org/site/VTKFileFormats/#polydata">here</a>
- *        or <a href="https://examples.vtk.org/site/VTKFileFormats/#ppolydata">here</a>
- *        for the parallel variant.
- * \note The parallel variant (.pvtu) is only available if MPI is found on the system.
+ * \details For more details on the file format, see
+ *          <a href="https://examples.vtk.org/site/VTKFileFormats/#polydata">here</a> or
+ *          <a href="https://examples.vtk.org/site/VTKFileFormats/#ppolydata">here</a>
+ *          for the parallel variant.
+ * \note The parallel variant (.pvtp) is only available if MPI is found on the system.
  */
-struct VTP : Detail::VTKXMLFormatBase<VTP> { VTK::XMLOptions opts = {}; };
+struct VTP : VTKXMLFormatBase<VTP> { VTK::XMLOptions opts = {}; };
 
 /*!
  * \ingroup API
  * \brief Selector for the .vtu/.pvtu file format for general unstructured grids.
- *        See <a href="https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid">here</a>
- *        or <a href="https://examples.vtk.org/site/VTKFileFormats/#punstructuredgrid">here</a>
- *        for the parallel variant.
+ * \details For more details on the file format, see
+ *          <a href="https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid">here</a> or
+ *          <a href="https://examples.vtk.org/site/VTKFileFormats/#punstructuredgrid">here</a>
+ *          for the parallel variant.
  * \note The parallel variant (.pvtu) is only available if MPI is found on the system.
  */
-struct VTU : Detail::VTKXMLFormatBase<VTU> { VTK::XMLOptions opts = {}; };
+struct VTU : VTKXMLFormatBase<VTU> { VTK::XMLOptions opts = {}; };
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE
 /*!
  * \ingroup API
  * \brief Selector for the vtk-hdf file format for image grids.
- *        For more information, see <a href="https://examples.vtk.org/site/VTKFileFormats/#image-data">here</a>.
+ *        For more information, see
+ *        <a href="https://examples.vtk.org/site/VTKFileFormats/#image-data">here</a>.
  * \note This file format is only available if HighFive is found on the system. If libhdf5 is found on the system,
  *       Highfive is automatically included when pulling the repository recursively, or, when using cmake's
  *       FetchContent mechanism.
@@ -175,7 +181,8 @@ struct VTKHDFImage {};
 /*!
  * \ingroup API
  * \brief Selector for the vtk-hdf file format for unstructured grids.
- *        For more information, see <a href="https://examples.vtk.org/site/VTKFileFormats/#unstructured-grid">here</a>.
+ *        For more information, see
+ *        <a href="https://examples.vtk.org/site/VTKFileFormats/#unstructured-grid">here</a>.
  * \note This file format is only available if HighFive is found on the system. If libhdf5 is found on the system,
  *       Highfive is automatically included when pulling the repository recursively, or, when using cmake's
  *       FetchContent mechanism.

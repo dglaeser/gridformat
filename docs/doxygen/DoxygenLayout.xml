@@ -10,7 +10,7 @@
     <!-- We manually create the navigation hierarchy of the pages -->
     <tab type="user" url="@ref grid-traits" visible="yes" title="Grid Traits" intro=""/>
     <tab type="user" url="@ref grid-concepts" visible="yes" title="Grid Concepts" intro=""/>
-    <!-- <tab type="modules" visible="yes" title="" intro=""/> -->
+    <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">
       <tab type="namespacelist" visible="yes" title="" intro=""/>
       <tab type="namespacemembers" visible="yes" title="" intro=""/>

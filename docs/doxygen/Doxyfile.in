@@ -33,11 +33,15 @@ PROJECT_NAME           = GridFormat
 PROJECT_NUMBER         = @gridformat_VERSION@
 INPUT                 += @CMAKE_SOURCE_DIR@/README.md \
                          @CMAKE_SOURCE_DIR@/docs/pages \
+                         @DOXYGEN_SOURCE_DIR@/groups.md \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/gridformat.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/writer.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/image_grid.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/concepts.hpp \
-                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/writer.hpp
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/writer.hpp \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/vtk/ \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/encoding/ \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/compression/ \
 PROJECT_BRIEF          = "I/O-Library for grid-like data structures"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       =
@@ -48,7 +52,11 @@ FILTER_PATTERNS        = *.md="python3 @DOXYGEN_SOURCE_DIR@/markdown_filter.py"
 FILE_PATTERNS          = *.md,*.hpp
 EXTRA_PACKAGES        += amsmath,amssymb,units
 ENABLE_PREPROCESSING   = YES
-PREDEFINED             = DOXYGEN
+PREDEFINED             = DOXYGEN \
+                         GRIDFORMAT_HAVE_LZ4 \
+                         GRIDFORMAT_HAVE_LZMA \
+                         GRIDFORMAT_HAVE_ZLIB \
+                         GRIDFORMAT_HAVE_HIGH_FIVE
 LAYOUT_FILE            = @DOXYGEN_SOURCE_DIR@/DoxygenLayout.xml
 HTML_HEADER            = @DOXYGEN_SOURCE_DIR@/header.html
 HTML_FOOTER            = @DOXYGEN_SOURCE_DIR@/footer.html
