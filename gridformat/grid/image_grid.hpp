@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Grid
- * \copydoc GridFormat::ImageGrid
+ * \brief Predefined image grid implementation.
  */
 #ifndef GRIDFORMAT_GRID_IMAGE_GRID_HPP_
 #define GRIDFORMAT_GRID_IMAGE_GRID_HPP_
@@ -112,9 +112,12 @@ namespace Detail {
 }  // namespace Detail
 #endif  // DOXYGEN
 
+
 /*!
  * \ingroup Grid
- * \brief TODO Doc me
+ * \brief Predefined grid implementation that represents a structured, equispaced grid.
+ * \tparam dim The dimension of the grid (1 <= dim <= 3)
+ * \tparam CoordinateType The type used to represent coordinates (e.g. `double`)
  */
 template<std::size_t dim, Concepts::Scalar CoordinateType>
 class ImageGrid {
@@ -124,9 +127,10 @@ class ImageGrid {
     struct Entity { std::array<std::size_t, dim> location; };
 
  public:
-    using Cell = Entity<0>;
-    using Point = Entity<dim>;
+    using Cell = Entity<0>;  //!< The type used for grid cells
+    using Point = Entity<dim>;  //!< The type used for grid points
 
+    //! Constructor overload for general range types
     template<Concepts::StaticallySizedMDRange<1> Size,
              Concepts::StaticallySizedMDRange<1> Cells>
     ImageGrid(Size&& size, Cells&& cells)
@@ -137,6 +141,7 @@ class ImageGrid {
     )
     {}
 
+    //! Constructor overload for general range types
     template<Concepts::StaticallySizedMDRange<1> Origin,
              Concepts::StaticallySizedMDRange<1> Size,
              Concepts::StaticallySizedMDRange<1> Cells>
@@ -152,11 +157,22 @@ class ImageGrid {
     )
     {}
 
+    /*!
+     * \brief Construct a grid with the given size and discretization.
+     * \param size The size of the grid
+     * \param cells The number of cells in all directions
+     */
     ImageGrid(std::array<CoordinateType, dim> size,
               std::array<std::size_t, dim> cells)
     : ImageGrid(Ranges::filled_array<dim>(CoordinateType{0}), std::move(size), std::move(cells))
     {}
 
+    /*!
+     * \brief Construct a grid with the given size and discretization.
+     * \param origin The origin of the grid (e.g. the lower-left corner in 2d)
+     * \param size The size of the grid
+     * \param cells The number of cells in all directions
+     */
     ImageGrid(std::array<CoordinateType, dim> origin,
               std::array<CoordinateType, dim> size,
               std::array<std::size_t, dim> cells)
@@ -175,9 +191,10 @@ class ImageGrid {
     std::size_t number_of_points() const { return _point_index_tuples.size(); }
     std::size_t number_of_cells(unsigned int direction) const { return _cell_index_tuples.size(direction); }
     std::size_t number_of_points(unsigned int direction) const { return _point_index_tuples.size(direction); }
-
     const auto& origin() const { return _lower_right; }
     const auto& spacing() const { return _spacing; }
+
+    //! Return an array containing the number of cells in all directions
     auto extents() const {
         return Ranges::to_array<dim, std::size_t>(
             std::views::iota(std::size_t{0}, dim) | std::views::transform([&] (std::size_t i) {
@@ -186,6 +203,7 @@ class ImageGrid {
         );
     }
 
+    //! Return the ordinates of the grid along the given direction
     auto ordinates(int direction) const {
         std::vector<CoordinateType> result(number_of_points(direction));
         for (unsigned int i = 0; i < result.size(); ++i)
@@ -193,6 +211,7 @@ class ImageGrid {
         return result;
     }
 
+    //! Return the physical position of the given grid point
     auto position(const Point& p) const {
         return Ranges::to_array<dim, CoordinateType>(
             std::views::iota(std::size_t{0}, dim)
@@ -202,6 +221,7 @@ class ImageGrid {
         );
     }
 
+    //! Return the physical center position of the given grid cell
     auto center(const Cell& c) const {
         unsigned corner_count = 0;
         auto result = Ranges::filled_array<dim>(CoordinateType{0});
@@ -215,18 +235,22 @@ class ImageGrid {
         return result;
     }
 
+    //! Return a unique id for the given point
     std::size_t id(const Point& p) const {
         return _point_mapper.map(p.location);
     }
 
+    //! Return a range over all cells of the grid
     std::ranges::range auto cells() const {
         return _cell_index_tuples | std::views::transform([] (const auto& indices) { return Cell{indices}; });
     }
 
+    //! Return a range over all points of the grid
     std::ranges::range auto points() const {
         return _point_index_tuples | std::views::transform([] (const auto& indices) { return Point{indices}; });
     }
 
+    //! Return a range over all points in the given grid cell
     std::ranges::range auto points(const Cell& cell) const {
         return _cell_point_offsets
             | std::views::transform([loc = cell.location] (const auto& offset) {
@@ -277,6 +301,7 @@ template<Concepts::StaticallySizedMDRange<1> S, Concepts::StaticallySizedMDRange
 ImageGrid(S&&, C&&) -> ImageGrid<static_size<S>, std::ranges::range_value_t<S>>;
 
 
+#ifndef DOXYGEN
 namespace Traits {
 
 template<std::size_t dim, typename CT>
@@ -368,6 +393,8 @@ struct CellType<ImageGrid<dim, CT>, typename ImageGrid<dim, CT>::Cell> {
 };
 
 }  // namespace Traits
+#endif  // DOXYGEN
+
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_GRID_IMAGE_GRID_HPP_

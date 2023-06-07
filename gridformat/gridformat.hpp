@@ -3,7 +3,13 @@
 /*!
  * \file
  * \ingroup API
- * \brief The API exposes all provided writers through a unified interface.
+ * \brief This file is the entrypoint to the high-level API exposing all provided
+ *        writers through a unified interface.
+ *
+ *        The individual writer can also be used directly, for instance, if one
+ *        wants to minimize compile times. All available writers can be seen in
+ *        the lists of includes of this file. For instructions on how to use the
+ *        API, have a look at the readme or the provided examples.
  */
 #ifndef GRIDFORMAT_GRIDFORMAT_HPP_
 #define GRIDFORMAT_GRIDFORMAT_HPP_
