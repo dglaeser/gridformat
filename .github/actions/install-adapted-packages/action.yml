@@ -12,6 +12,9 @@ inputs:
   cgal_version:
     required: false
     default: 5.2.2
+  dolfinx_version:
+    required: false
+    default: 0.6.0
 runs:
   using: composite
   steps:
@@ -52,16 +55,16 @@ runs:
                              libboost-timer-dev \
                              libboost-filesystem-dev \
                              petsc-dev
-        pip install fenics-ffcx pybind11
+        pip install fenics-ffcx==${{inputs.dolfinx_version}} pybind11
 
-        git clone --depth=1 --branch=v0.6.0 https://github.com/FEniCS/basix.git
+        git clone --depth=1 --branch=v${{inputs.dolfinx_version}} https://github.com/FEniCS/basix.git
         pushd basix
             cmake -DCMAKE_INSTALL_PREFIX=/gridformat-manually-installed-deps/ -B build
             cmake --build build && sudo cmake --install build
         popd
         rm -rf basix
 
-        git clone --depth=1 --branch=v0.6.0 https://github.com/FEniCS/dolfinx.git
+        git clone --depth=1 --branch=v${{inputs.dolfinx_version}} https://github.com/FEniCS/dolfinx.git
         pushd dolfinx/cpp
             cmake -DCMAKE_INSTALL_PREFIX=/gridformat-manually-installed-deps/ -B build
             cmake --build build && sudo cmake --install build
