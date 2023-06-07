@@ -26,7 +26,7 @@ jobs:
 
       - name: configure
         run: |
-          sudo apt install gcovr
+          sudo apt install gcovr doxygen
           rm -rf build
           cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
                 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \

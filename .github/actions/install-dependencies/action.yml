@@ -21,7 +21,6 @@ runs:
         fi
         sudo apt install ${COMPILER} \
                          mpi-default-bin mpi-default-dev \
-                         libhdf5-mpi-dev \
-                         doxygen
+                         libhdf5-mpi-dev
         python3 -m pip install vtk
       shell: bash
