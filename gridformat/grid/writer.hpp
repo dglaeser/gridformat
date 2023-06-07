@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Grid
- * \brief Base classes for grid data writers
+ * \brief Base classes for grid data writers.
  */
 #ifndef GRIDFORMAT_GRID_WRITER_HPP_
 #define GRIDFORMAT_GRID_WRITER_HPP_
@@ -32,6 +32,7 @@ namespace GridFormat {
 //! \addtogroup Grid
 //! \{
 
+//! Options that writer implementations can pass to the base class.
 struct WriterOptions {
     bool use_structured_grid_ordering;
     bool append_null_terminator_to_strings;
@@ -42,7 +43,7 @@ struct WriterOptions {
     }
 };
 
-//! Base class for grid data writers, exposing the interfaces to add fields
+//! Base class for all writer implementations.
 template<typename Grid>
 class GridWriterBase {
  public:
@@ -233,7 +234,7 @@ class GridWriterBase {
     std::optional<WriterOptions> _opts;
 };
 
-//! Abstract base class for writers of grid files
+//! Abstract base class for grid file writers.
 template<typename Grid>
 class GridWriter : public GridWriterBase<Grid> {
  public:
@@ -264,7 +265,7 @@ class GridWriter : public GridWriterBase<Grid> {
     virtual void _write(std::ostream&) const = 0;
 };
 
-//! Abstract base class for writers of time series
+//! Abstract base class for time series file writers.
 template<typename Grid>
 class TimeSeriesGridWriter : public GridWriterBase<Grid> {
  public:
