@@ -1,0 +1,43 @@
+digraph "/home/runner/work/gridformat/gridformat/gridformat/vtk/data_array.hpp"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/data_array.hpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Wraps a field and exposes it as VTK data array. Essentially, this implements the operator<< to stream..."];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/appendix.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$appendix_8hpp.html",tooltip="Helper classes for writing VTK appendices of xml formats."];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/xml.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$xml_8hpp.html",tooltip="Base class for VTK XML-type file format writers."];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/vti_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$vti__writer_8hpp.html",tooltip="Writer for .vti file format."];
+  Node4 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="/home/runner/work/gridformat\l/gridformat/gridformat/gridformat.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$gridformat_8hpp.html",tooltip="This file is the entrypoint to the high-level API exposing all provided writers through a unified int..."];
+  Node4 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/pvti_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pvti__writer_8hpp.html",tooltip="Writer for parallel .pvti files."];
+  Node6 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/vtp_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$vtp__writer_8hpp.html",tooltip="Writer for .vtu file format."];
+  Node7 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/pvtp_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pvtp__writer_8hpp.html",tooltip="Writer for parallel .pvtu files."];
+  Node8 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/vtr_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$vtr__writer_8hpp.html",tooltip="Writer for .vtr file format."];
+  Node9 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/pvtr_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pvtr__writer_8hpp.html",tooltip="Writer for parallel .pvtr files."];
+  Node10 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/vts_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$vts__writer_8hpp.html",tooltip="Writer for .vts file format."];
+  Node11 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/pvts_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pvts__writer_8hpp.html",tooltip="Writer for parallel .pvts files."];
+  Node12 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/vtu_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$vtu__writer_8hpp.html",tooltip="Writer for .vtu file format."];
+  Node13 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/pvtu_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pvtu__writer_8hpp.html",tooltip="Writer for parallel .pvtu files."];
+  Node14 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

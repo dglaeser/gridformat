@@ -1,0 +1,9 @@
+digraph "GridFormat::VTK::XMLWriterBase&lt; G, Impl &gt;::WriteContext"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="GridFormat::VTK::XMLWriter\lBase\< G, Impl \>::WriteContext",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" appendix" ,fontname="Helvetica"];
+  Node2 [label="GridFormat::VTK::Appendix",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1VTK_1_1Appendix.html",tooltip="Stores vtk data arrays to be exported as vtk-xml appendix."];
+}

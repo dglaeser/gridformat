@@ -1,0 +1,8 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="GridFormat::WriterFactory\l\< FileFormat::PVD\< F \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1WriterFactory_3_01FileFormat_1_1PVD_3_01F_01_4_01_4.html",tooltip="Specialization of the WriterFactory for the .pvd time series format."];
+}

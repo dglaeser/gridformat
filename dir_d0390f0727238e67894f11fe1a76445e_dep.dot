@@ -1,0 +1,15 @@
+digraph "/home/runner/work/gridformat/gridformat/gridformat/vtk" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_e7c175008ea20c864d9ef3009d7f4301 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="gridformat" fontname="Helvetica", fontsize="10", URL="dir_e7c175008ea20c864d9ef3009d7f4301.html"]
+  dir_0ff2e0e61e3af8ee34dddebe9f0268dc [shape=box label="compression" URL="dir_0ff2e0e61e3af8ee34dddebe9f0268dc.html"];
+  dir_ccba52d8fa730bec2eeb71410e3b9ab7 [shape=box label="grid" URL="dir_ccba52d8fa730bec2eeb71410e3b9ab7.html"];
+  dir_ccfa84e27b2c4c552e7baede3d3b9943 [shape=box label="encoding" URL="dir_ccfa84e27b2c4c552e7baede3d3b9943.html"];
+  dir_d0390f0727238e67894f11fe1a76445e [shape=box, label="vtk", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_d0390f0727238e67894f11fe1a76445e.html"];
+  }
+  dir_d0390f0727238e67894f11fe1a76445e->dir_0ff2e0e61e3af8ee34dddebe9f0268dc [headlabel="4", labeldistance=1.5 headhref="dir_000007_000004.html"];
+  dir_d0390f0727238e67894f11fe1a76445e->dir_ccba52d8fa730bec2eeb71410e3b9ab7 [headlabel="10", labeldistance=1.5 headhref="dir_000007_000006.html"];
+  dir_d0390f0727238e67894f11fe1a76445e->dir_ccfa84e27b2c4c552e7baede3d3b9943 [headlabel="6", labeldistance=1.5 headhref="dir_000007_000005.html"];
+}

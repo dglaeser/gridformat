@@ -1,0 +1,94 @@
+var annotated_dup =
+[
+    [ "GridFormat", null, [
+      [ "Compression", null, [
+        [ "Blocks", "structGridFormat_1_1Compression_1_1Blocks.html", "structGridFormat_1_1Compression_1_1Blocks" ],
+        [ "CompressedBlocks", "structGridFormat_1_1Compression_1_1CompressedBlocks.html", "structGridFormat_1_1Compression_1_1CompressedBlocks" ],
+        [ "LZ4Options", "structGridFormat_1_1Compression_1_1LZ4Options.html", "structGridFormat_1_1Compression_1_1LZ4Options" ],
+        [ "LZ4", "classGridFormat_1_1Compression_1_1LZ4.html", "classGridFormat_1_1Compression_1_1LZ4" ],
+        [ "LZMAOptions", "structGridFormat_1_1Compression_1_1LZMAOptions.html", "structGridFormat_1_1Compression_1_1LZMAOptions" ],
+        [ "LZMA", "classGridFormat_1_1Compression_1_1LZMA.html", "classGridFormat_1_1Compression_1_1LZMA" ],
+        [ "ZLIBOptions", "structGridFormat_1_1Compression_1_1ZLIBOptions.html", "structGridFormat_1_1Compression_1_1ZLIBOptions" ],
+        [ "ZLIB", "classGridFormat_1_1Compression_1_1ZLIB.html", "classGridFormat_1_1Compression_1_1ZLIB" ]
+      ] ],
+      [ "Encoding", null, [
+        [ "Ascii", "structGridFormat_1_1Encoding_1_1Ascii.html", "structGridFormat_1_1Encoding_1_1Ascii" ],
+        [ "Base64", "structGridFormat_1_1Encoding_1_1Base64.html", "structGridFormat_1_1Encoding_1_1Base64" ],
+        [ "RawBinary", "structGridFormat_1_1Encoding_1_1RawBinary.html", "structGridFormat_1_1Encoding_1_1RawBinary" ]
+      ] ],
+      [ "FileFormat", null, [
+        [ "VTKXMLFormatBase", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase" ],
+        [ "VTI", "structGridFormat_1_1FileFormat_1_1VTI.html", "structGridFormat_1_1FileFormat_1_1VTI" ],
+        [ "VTR", "structGridFormat_1_1FileFormat_1_1VTR.html", "structGridFormat_1_1FileFormat_1_1VTR" ],
+        [ "VTS", "structGridFormat_1_1FileFormat_1_1VTS.html", "structGridFormat_1_1FileFormat_1_1VTS" ],
+        [ "VTP", "structGridFormat_1_1FileFormat_1_1VTP.html", "structGridFormat_1_1FileFormat_1_1VTP" ],
+        [ "VTU", "structGridFormat_1_1FileFormat_1_1VTU.html", "structGridFormat_1_1FileFormat_1_1VTU" ],
+        [ "VTKHDFImage", "structGridFormat_1_1FileFormat_1_1VTKHDFImage.html", null ],
+        [ "VTKHDFUnstructured", "structGridFormat_1_1FileFormat_1_1VTKHDFUnstructured.html", null ],
+        [ "VTKHDF", "structGridFormat_1_1FileFormat_1_1VTKHDF.html", null ],
+        [ "PVD", "structGridFormat_1_1FileFormat_1_1PVD.html", "structGridFormat_1_1FileFormat_1_1PVD" ],
+        [ "TimeSeries", "structGridFormat_1_1FileFormat_1_1TimeSeries.html", "structGridFormat_1_1FileFormat_1_1TimeSeries" ]
+      ] ],
+      [ "PVTK", null, [
+        [ "PDataArrayHelper", "classGridFormat_1_1PVTK_1_1PDataArrayHelper.html", "classGridFormat_1_1PVTK_1_1PDataArrayHelper" ],
+        [ "StructuredGridMapper", "classGridFormat_1_1PVTK_1_1StructuredGridMapper.html", "classGridFormat_1_1PVTK_1_1StructuredGridMapper" ],
+        [ "StructuredGridMapperHelper", "classGridFormat_1_1PVTK_1_1StructuredGridMapperHelper.html", "classGridFormat_1_1PVTK_1_1StructuredGridMapperHelper" ],
+        [ "StructuredParallelGridHelper", "classGridFormat_1_1PVTK_1_1StructuredParallelGridHelper.html", "classGridFormat_1_1PVTK_1_1StructuredParallelGridHelper" ]
+      ] ],
+      [ "VTK", null, [
+        [ "DataFormat", null, [
+          [ "Inlined", "structGridFormat_1_1VTK_1_1DataFormat_1_1Inlined.html", null ],
+          [ "Appended", "structGridFormat_1_1VTK_1_1DataFormat_1_1Appended.html", null ]
+        ] ],
+        [ "AppendixStreamObserver", "classGridFormat_1_1VTK_1_1AppendixStreamObserver.html", "classGridFormat_1_1VTK_1_1AppendixStreamObserver" ],
+        [ "Appendix", "classGridFormat_1_1VTK_1_1Appendix.html", "classGridFormat_1_1VTK_1_1Appendix" ],
+        [ "DataArray", "classGridFormat_1_1VTK_1_1DataArray.html", "classGridFormat_1_1VTK_1_1DataArray" ],
+        [ "XMLOptions", "structGridFormat_1_1VTK_1_1XMLOptions.html", "structGridFormat_1_1VTK_1_1XMLOptions" ],
+        [ "XMLWriterBase", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", "classGridFormat_1_1VTK_1_1XMLWriterBase" ]
+      ] ],
+      [ "VTKHDF", null, [
+        [ "DataSetSlice", "structGridFormat_1_1VTKHDF_1_1DataSetSlice.html", "structGridFormat_1_1VTKHDF_1_1DataSetSlice" ],
+        [ "DataSetPath", "structGridFormat_1_1VTKHDF_1_1DataSetPath.html", "structGridFormat_1_1VTKHDF_1_1DataSetPath" ],
+        [ "IOContext", "structGridFormat_1_1VTKHDF_1_1IOContext.html", "structGridFormat_1_1VTKHDF_1_1IOContext" ],
+        [ "AsciiString", "structGridFormat_1_1VTKHDF_1_1AsciiString.html", "structGridFormat_1_1VTKHDF_1_1AsciiString" ],
+        [ "HDF5File", "classGridFormat_1_1VTKHDF_1_1HDF5File.html", "classGridFormat_1_1VTKHDF_1_1HDF5File" ]
+      ] ],
+      [ "WriterFactory", "structGridFormat_1_1WriterFactory.html", null ],
+      [ "WriterFactory< FileFormat::VTI >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTI_01_4.html", null ],
+      [ "WriterFactory< FileFormat::VTR >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTR_01_4.html", null ],
+      [ "WriterFactory< FileFormat::VTS >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTS_01_4.html", null ],
+      [ "WriterFactory< FileFormat::VTP >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTP_01_4.html", null ],
+      [ "WriterFactory< FileFormat::VTU >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTU_01_4.html", null ],
+      [ "WriterFactory< FileFormat::VTKHDFImage >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFImage_01_4.html", null ],
+      [ "WriterFactory< FileFormat::VTKHDFUnstructured >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFUnstructured_01_4.html", null ],
+      [ "WriterFactory< FileFormat::VTKHDF >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDF_01_4.html", null ],
+      [ "WriterFactory< FileFormat::PVD< F > >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1PVD_3_01F_01_4_01_4.html", null ],
+      [ "WriterFactory< FileFormat::TimeSeries< F > >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1TimeSeries_3_01F_01_4_01_4.html", null ],
+      [ "Writer", "classGridFormat_1_1Writer.html", "classGridFormat_1_1Writer" ],
+      [ "ImageGrid", "classGridFormat_1_1ImageGrid.html", "classGridFormat_1_1ImageGrid" ],
+      [ "WriterOptions", "structGridFormat_1_1WriterOptions.html", "structGridFormat_1_1WriterOptions" ],
+      [ "GridWriterBase", "classGridFormat_1_1GridWriterBase.html", "classGridFormat_1_1GridWriterBase" ],
+      [ "GridWriter", "classGridFormat_1_1GridWriter.html", "classGridFormat_1_1GridWriter" ],
+      [ "TimeSeriesGridWriter", "classGridFormat_1_1TimeSeriesGridWriter.html", "classGridFormat_1_1TimeSeriesGridWriter" ],
+      [ "VTKHDFImageGridWriter", "classGridFormat_1_1VTKHDFImageGridWriter.html", "classGridFormat_1_1VTKHDFImageGridWriter" ],
+      [ "VTKHDFUnstructuredGridWriter", "classGridFormat_1_1VTKHDFUnstructuredGridWriter.html", "classGridFormat_1_1VTKHDFUnstructuredGridWriter" ],
+      [ "VTKHDFWriter", "classGridFormat_1_1VTKHDFWriter.html", null ],
+      [ "PVDWriter", "classGridFormat_1_1PVDWriter.html", "classGridFormat_1_1PVDWriter" ],
+      [ "PVTIWriter", "classGridFormat_1_1PVTIWriter.html", "classGridFormat_1_1PVTIWriter" ],
+      [ "PVTPWriter", "classGridFormat_1_1PVTPWriter.html", "classGridFormat_1_1PVTPWriter" ],
+      [ "PVTRWriter", "classGridFormat_1_1PVTRWriter.html", "classGridFormat_1_1PVTRWriter" ],
+      [ "PVTSWriter", "classGridFormat_1_1PVTSWriter.html", "classGridFormat_1_1PVTSWriter" ],
+      [ "PVTUWriter", "classGridFormat_1_1PVTUWriter.html", "classGridFormat_1_1PVTUWriter" ],
+      [ "VTKTimeSeriesWriter", "classGridFormat_1_1VTKTimeSeriesWriter.html", "classGridFormat_1_1VTKTimeSeriesWriter" ],
+      [ "VTIWriter", "classGridFormat_1_1VTIWriter.html", "classGridFormat_1_1VTIWriter" ],
+      [ "VTPWriter", "classGridFormat_1_1VTPWriter.html", "classGridFormat_1_1VTPWriter" ],
+      [ "VTRWriter", "classGridFormat_1_1VTRWriter.html", "classGridFormat_1_1VTRWriter" ],
+      [ "VTSWriter", "classGridFormat_1_1VTSWriter.html", "classGridFormat_1_1VTSWriter" ],
+      [ "VTUWriter", "classGridFormat_1_1VTUWriter.html", "classGridFormat_1_1VTUWriter" ],
+      [ "AsciiFormatOptions", "structGridFormat_1_1AsciiFormatOptions.html", "structGridFormat_1_1AsciiFormatOptions" ],
+      [ "AsciiOutputStream", "classGridFormat_1_1AsciiOutputStream.html", "classGridFormat_1_1AsciiOutputStream" ],
+      [ "Base64Stream", "classGridFormat_1_1Base64Stream.html", "classGridFormat_1_1Base64Stream" ],
+      [ "EncodedField", "classGridFormat_1_1EncodedField.html", "classGridFormat_1_1EncodedField" ],
+      [ "RawBinaryStream", "classGridFormat_1_1RawBinaryStream.html", "classGridFormat_1_1RawBinaryStream" ]
+    ] ]
+];
