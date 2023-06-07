@@ -236,10 +236,13 @@ trait that expects you to return a statically sized range.
 In order to use `GridFormat` to write grid files from parallel computations using [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface),
 make sure that you implement the above traits such that they __only__ return information on one __partition__. Moreover,
 `GridFormat` currently does not provide any means to flag cells/points as ghost or overlap entities, and therefore, it is
-expectet that you only provide information on the collection of interior entities. In other words, the partitions are expected
+expected that you only provide information on the collection of interior entities, that is, the partitions are expected
 to be disjoint. To be more concrete, it is expected that
 
-- The `Cells` and `Points` traits provide ranges over the interior entities of a partition, only.
+- The `Cells` trait provides a range over the interior cells of a partition, only.
+- The `Points` trait provides a range over only those points that are connected to interior cells (otherwise there will be unconnected points in the output, however, it should still work).
 - The `Extents` trait provides the number of cells of the partition, __not__ counting any ghosts or overlap cells.
-- The `Ordinates` trait provides the ordinates of the partition, __not__ including ghost points.
-- The `Origin` trait returns the lower-left corner of the partition, __not__ including ghost points.
+- The `Ordinates` trait provides the ordinates of the partition, __only__ including points that are connected to interior cells.
+- The `Origin` trait returns the lower-left corner of the partition __without__ ghost cells.
+
+If you include ghost entities in your traits, output should still work, but there will be overlapping cells.
