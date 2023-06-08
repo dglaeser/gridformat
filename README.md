@@ -2,8 +2,9 @@
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 
 [![Pages](https://github.com/dglaeser/gridformat/actions/workflows/pages.yml/badge.svg)](https://dglaeser.github.io/gridformat)
-[![Coverage Report.](https://dglaeser.github.io/gridformat/coverage.svg)](https://dglaeser.github.io/gridformat)
 [![Test suite](https://github.com/dglaeser/gridformat/actions/workflows/main.yml/badge.svg)](https://github.com/dglaeser/gridformat/actions?query=branch%3Amain+)
+[![Coverage Report](https://dglaeser.github.io/gridformat/coverage.svg)](https://dglaeser.github.io/gridformat/test_coverage)
+[![API Documentation](https://img.shields.io/badge/doc-API-ff69b4)](https://dglaeser.github.io/gridformat)
 [![REUSE status](https://api.reuse.software/badge/git.fsfe.org/reuse/api)](https://api.reuse.software/info/git.fsfe.org/reuse/api)
 
 `GridFormat` is a header-only C++ library for writing data into grid file formats that can be visualized with tools
