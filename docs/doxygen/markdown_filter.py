@@ -18,7 +18,7 @@ def _filter_characters(text: str) -> str:
 
 
 def _add_header_label(line: str) -> str:
-    if not line.startswith("#"):
+    if not line.startswith("#") or line.startswith("#include"):
         return line
     line = line.rstrip("\n")
     label = _filter_characters(line)
