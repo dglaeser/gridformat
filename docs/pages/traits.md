@@ -40,8 +40,6 @@ that trait for their grid data structure, thereby making it compatible with `Gri
 the traits specialization may look. For more details on this, please have a look at the resources referenced in the
 [main readme](https://github.com/dglaeser/gridformat/blob/main).
 
-<details>
-
 ```cpp
 #include <gridformat/grid/traits.hpp>
 
@@ -68,8 +66,6 @@ struct Cells<MyLibrary::Grid> {
 
 }  // namespace GridFormat::Traits
 ```
-
-</details>
 
 As discussed in our
 [overview over supported kinds of grids](./grid_concepts.md),
