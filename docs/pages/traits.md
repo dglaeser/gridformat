@@ -75,7 +75,7 @@ As discussed in our
 [overview over supported kinds of grids](./grid_concepts.md),
 `GridFormat` understands the notion of unstructured, structured, rectilinear or image grids. The reason for this is that some
 file formats are designed for specific kinds of grids and can store the information on their topology in a space-efficient manner.
-To see which format assumes which kind of grid, see the [API documentation (coming soon)](https://github.com/dglaeser/gridformat).
+To see which format assumes which kind of grid, see the [API documentation](https://dglaeser.github.io/gridformat/).
 In the code, there exist [concepts](https://en.cppreference.com/w/cpp/language/constraints) for each of these kinds of grids,
 which essentially check if the required traits are correctly implemented. The remainder of this page discusses the different
 traits used by `GridFormat`, and which ones need to be specialized in order to model a particular kind of grid. In case you want to use `GridFormat` in parallel computations, please also make sure to read the related section at the end of this page.

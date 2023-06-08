@@ -83,7 +83,7 @@ int main () {
 
 </details>
 
-Many more formats and options are available, see the [API documentation (coming soon)](https://github.com/dglaeser/gridformat)
+Many more formats and options are available, see the [API documentation](https://dglaeser.github.io/gridformat/)
 or have a look at the [examples](./examples).
 
 
