@@ -84,12 +84,12 @@ Note that all traits presented in the following are declared in the `namespace G
 
 ### Mandatory Traits
 
-#### `template<typename Grid> struct Cells;`
+- `template<typename Grid> struct Cells;`
 
 This trait exposes how one can iterate over the cells of a grid. Specializations must provide a static function `get(const Grid&)`
 that returns a [forward range](https://en.cppreference.com/w/cpp/ranges/forward_range) of cells.
 
-#### `template<typename Grid> struct Points;`
+- `template<typename Grid> struct Points;`
 
 This trait exposes how one can iterate over the points of a grid. Specializations must provide a static function `get(const Grid&)`
 that returns a [forward range](https://en.cppreference.com/w/cpp/ranges/forward_range) of points.
@@ -97,25 +97,25 @@ that returns a [forward range](https://en.cppreference.com/w/cpp/ranges/forward_
 
 ### Traits for Unstructured Grids
 
-#### `template<typename Grid, typename Cell> struct CellPoints;`
+- `template<typename Grid, typename Cell> struct CellPoints;`
 
 This trait exposes how one can iterate over the points of an individual grid cell. Specializations must provide a static function
 `get(const Grid&, const Cell&)` that returns a [range](https://en.cppreference.com/w/cpp/ranges/range) of points that
 make up the boundary of the given cell.
 
-#### `template<typename Grid, typename Cell> struct CellType;`
+- `template<typename Grid, typename Cell> struct CellType;`
 
 This trait exposes the geometry type of an individual grid cell. Specializations must provide a static function
 `get(const Grid&, const Cell&)` that returns an instance of the
 [CellType enum](https://github.com/dglaeser/gridformat/blob/main/gridformat/grid/cell_type.hpp).
 
-#### `template<typename Grid, typename Point> struct PointCoordinates;`
+- `template<typename Grid, typename Point> struct PointCoordinates;`
 
 This trait exposes the coordinates of a grid point. Specializations must provide a static function `get(const Grid&, const Point&)`
 that returns the coordinates of the given point as a
-[statically sized range](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize) (see section on `StaticSize` below).
+[statically sized range](#optional-traits).
 
-#### `template<typename Grid, typename Point> struct PointId;`
+- `template<typename Grid, typename Point> struct PointId;`
 
 This trait exposes a unique id for individual points of a grid. Specializations must provide a static function
 `get(const Grid&, const Point&)` that returns a unique id (as integer value, e.g. `std::size_t`) for the given point.
@@ -126,20 +126,20 @@ This trait exposes a unique id for individual points of a grid. Specializations 
 In addition to the traits below, the `StructuredGrid` concept also requires that the `PointCoordinates` trait is implemented
 (see above).
 
-#### `template<typename Grid> struct Extents;`
+- `template<typename Grid> struct Extents;`
 
 This trait exposes the number of cells of the structured grid in each coordinate direction. Specializations must provide
 a static function `get(const Grid&)` that returns a
-[statically sized range](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize), whose size is equal to the dimension of the grid.
+[statically sized range](#optional-traits), whose size is equal to the dimension of the grid.
 
-#### `template<typename Grid, typename Entity> struct Location;`
+- `template<typename Grid, typename Entity> struct Location;`
 
 This trait exposes the index tuple of a given entity within the structured grid. For a visualization and the assumptions on the
 orientation, see the
 [overview over supported kinds of grids](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md).
 This trait must be specialized for both cells and points (i.e. for two types of `Entity`), and they must provide a static function
 `get(const Grid&, const Entity&)` that returns a
-[statically sized range](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize)
+[statically sized range](#optional-traits)
 whose elements are integer values (the indices of the entity) and whose size is equal to the dimension of the grid.
 
 
@@ -148,7 +148,7 @@ whose elements are integer values (the indices of the entity) and whose size is 
 In addition to the `Ordinates` trait below, the `RectilinearGrid` concept also requires that the `Extents` and `Location` traits
 are implemented (see above).
 
-#### `template<typename Grid> struct Ordinates;`
+- `template<typename Grid> struct Ordinates;`
 
 This trait exposes the ordinates of a `RectilinearGrid` grid along the coordinate axes.
 Specializations must provide a static function `get(const Grid&, unsigned int direction)` that returns a
@@ -161,46 +161,46 @@ direction.
 In addition to the traits below, the `ImageGrid` concept also requires that the `Extents` and `Location` traits are
 implemented (see above).
 
-#### `template<typename Grid> struct Origin;`
+- `template<typename Grid> struct Origin;`
 
 This trait exposes the position of the lower-left corner of the grid, that
 is, the position of the point at index $(0, 0, 0)$ (for a visualization see
 [here](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md)).
 Specializations must provide a static function `get(const Grid&)` that returns a
-[statically sized range](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize),
+[statically sized range](#optional-traits),
 whose size is equal to the dimension of the grid.
 
-#### `template<typename Grid> struct Spacing;`
+- `template<typename Grid> struct Spacing;`
 
 This trait exposes the spacing between grid points along the axes (in other words, the size of the cells in each coordinate
 direction). Specializations must provide a static function `get(const Grid&)` that returns a
-[statically sized range](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize), whose size is equal to the dimension of the grid.
+[statically sized range](#optional-traits), whose size is equal to the dimension of the grid.
 
 
 ### Optional Traits
 
-#### `template<typename Grid> struct NumberOfPoints;`
+- `template<typename Grid> struct NumberOfPoints;`
 
 This trait exposes the number of points of a grid, and if not specialized, the number of points is deduced from the size of the
 range obtained from `Points`. If your point range is not a [sized range](https://en.cppreference.com/w/cpp/ranges/sized_range),
 however, specializing this trait can lead to an improved efficiency. Specializations must provide a static function
 `get(const Grid&)` that returns the number of points as an integral value.
 
-#### `template<typename Grid> struct NumberOfCells;`
+- `template<typename Grid> struct NumberOfCells;`
 
 This trait exposes the number of cells of a grid, and if not specialized, the number of cells is deduced from the size of the
 range obtained from `Cells`. If your cell range is not a [sized range](https://en.cppreference.com/w/cpp/ranges/sized_range),
 however, specializing this trait can lead to an improved efficiency. Specializations must provide a static function
 `get(const Grid&)` that returns the number of cells as an integral value.
 
-#### `template<typename Grid, typename Cell> struct NumberOfCellPoints;`
+- `template<typename Grid, typename Cell> struct NumberOfCellPoints;`
 
 This trait exposes the number of points in a grid cell, and if not specialized, the number of points is deduced from the size of the
 range obtained from `CellsPoints`. If that range is not a [sized range](https://en.cppreference.com/w/cpp/ranges/sized_range),
 however, specializing this trait can lead to an improved efficiency. Specializations must provide a static function
 `get(const Grid&, const Cell&)` that returns the number of points in the cell as an integral value.
 
-#### `template<typename Grid> struct Basis;`
+- `template<typename Grid> struct Basis;`
 
 This trait can be specified for image grids in order to specify their orientation. Per default, an image grid is assumed to be
 axis-aligned, that is, the default basis (in 3D) is
@@ -215,11 +215,11 @@ const auto default_basis = std::array{
 
 Specializing the `Basis` trait, you can implement the static function `get(const Grid&)` and return a custom basis. It is expected
 that the return type from this function is a two-dimensional,
-[statically-sized range](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize),
+[statically-sized range](#optional-traits),
 with the outer and inner dimensions being equal to the grid dimension.
 
 
-#### `template<typename T> struct StaticSize;`
+- `template<typename T> struct StaticSize;`
 
 `GridFormat` requires that the types returned from some traits model the [`StaticallySizedRange` concept](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/gridformat/common/concepts.hpp#L25).
 Statically sized means that the size of the [range](https://en.cppreference.com/w/cpp/ranges/range) is known at compile time.
