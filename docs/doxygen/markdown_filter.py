@@ -3,6 +3,7 @@
 
 import sys
 import string
+import subprocess
 from os.path import abspath, dirname, join, exists
 
 
@@ -41,7 +42,11 @@ def _remove_leading_comments_and_empty_lines(lines: list) -> list:
 
 assert len(sys.argv[1]) > 1
 filepath = abspath(sys.argv[1])
-content = open(filepath, "r").read()
+content = subprocess.run(
+    ["perl", "-0777", "-p", join(THIS_DIR, "markdown_math_filter.pl"), filepath],
+    capture_output=True,
+    text=True
+).stdout
 
 if filepath == MAIN_README:
     content = f"# Introduction\n\n{content}"
