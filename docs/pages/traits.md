@@ -81,6 +81,7 @@ which essentially check if the required traits are correctly implemented. The re
 traits used by `GridFormat`, and which ones need to be specialized in order to model a particular kind of grid. In case you want to use `GridFormat` in parallel computations, please also make sure to read the related section at the end of this page.
 Note that all traits presented in the following are declared in the `namespace GridFormat::Traits`.
 
+<!-- DOXYGEN_ONLY [TOC] -->
 
 ### Mandatory Traits
 

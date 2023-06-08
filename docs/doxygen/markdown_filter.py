@@ -27,6 +27,13 @@ def _add_header_label(line: str) -> str:
     return f"{line} {{#{label}}}\n"
 
 
+def _process_line(line: str) -> str:
+    hint_key = "<!-- DOXYGEN_ONLY"
+    if hint_key in line:
+        return line.replace(hint_key, "").replace("-->", "").strip()
+    else:
+        return _add_header_label(line)
+
 def _is_comment(line):
     return line.startswith("<!--")
 
@@ -52,6 +59,6 @@ if filepath == MAIN_README:
     content = f"# Introduction\n\n{content}"
 
 print("\n".join([
-    _add_header_label(line)
+    _process_line(line)
     for line in _remove_leading_comments_and_empty_lines(content.split("\n"))
 ]))

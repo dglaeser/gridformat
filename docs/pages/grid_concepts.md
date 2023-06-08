@@ -48,3 +48,5 @@ to specify only the coordinates along the axes.
 An image grid has again the same arrangement of cells as the structured and rectilinear grids, yet it additionally assumes that the
 size of the cells does not change along a coordinate direction. Thus, in this case it suffices to store the size of the domain in each coordinate direction and the number of cells used per direction to discretize the domain. From these numbers the topology of
 the entire grid can be reconstructed.
+
+<!-- DOXYGEN_ONLY [TOC] -->
