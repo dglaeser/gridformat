@@ -30,8 +30,6 @@ It is easiest to integrate `GridFormat` either as a [git submodule](https://git-
 or via the `FetchContent` module of `cmake`. A minimal example (using `FetchContent`) of a project using `GridFormat` to
 write a [VTU](https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid) file may look like this:
 
-<details>
-
 ```cmake
 cmake_minimum_required(VERSION 3.22)
 project(some_app_using_gridformat)
@@ -55,9 +53,7 @@ target_link_libraries(my_app PRIVATE gridformat::gridformat)
 #include <array>
 #include <gridformat/gridformat.hpp>
 
-double analytical_function(const std::array<double, 2>& position) {
-    return position[0]*position[1];
-}
+double f(const std::array<double, 2>& x) { return x[0]*x[1]; }
 
 int main () {
     // For this example we have no user-defined grid type. Let's just use a predefined one...
@@ -69,19 +65,13 @@ int main () {
     // Let's write an analytical field into .vtu file format. Fields are attached to the
     // writer via lambdas that return the discrete values at points or cells.
     GridFormat::Writer writer{GridFormat::vtu, grid};
-    writer.set_point_field("point_field", [&] (const auto& point) {
-        return analytical_function(grid.position(point));
-    });
-    writer.set_cell_field("cell_field", [&] (const auto& cell) {
-        return analytical_function(grid.center(cell));
-    });
+    writer.set_point_field("point_field", [&] (const auto& point) { return f(grid.position(point)); });
+    writer.set_cell_field("cell_field", [&] (const auto& cell) { return f(grid.center(cell)); });
     writer.write("my_test_file");  // the file extension will be appended by the writer
 
     return 0;
 }
 ```
-
-</details>
 
 Many more formats and options are available, see the [API documentation](https://dglaeser.github.io/gridformat/)
 or have a look at the [examples](./examples).
