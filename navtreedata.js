@@ -37,6 +37,7 @@ var NAVTREE =
       ] ],
       [ "License", "index.html#license", null ]
     ] ],
+    [ "API", "group__API.html", null ],
     [ "Grid Traits", "grid-traits.html", null ],
     [ "Grid Concepts", "grid-concepts.html", null ],
     [ "Modules", "modules.html", "modules" ],
@@ -59,7 +60,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"encoding_2concepts_8hpp_source.html"
+"encoding_2concepts_8hpp_source.html",
+"zlib_8hpp_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

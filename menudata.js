@@ -24,6 +24,7 @@
 */
 var menudata={children:[
 {text:"Main Page",url:"index.html"},
+{text:"API",url:"group__API.html"},
 {text:"Grid Traits",url:"grid-traits.html"},
 {text:"Grid Concepts",url:"grid-concepts.html"},
 {text:"Modules",url:"modules.html"},

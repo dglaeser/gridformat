@@ -49,6 +49,7 @@
   <td id="projectalign">
    <div id="projectname">GridFormat<span id="projectnumber">&#160;0.1.0</span>
    </div>
+   <div id="projectbrief">I/O-Library for grid-like data structures</div>
   </td>
  </tr>
    <!--BEGIN FULL_SIDEBAR-->
@@ -135,7 +136,6 @@ Quick Start</h1>
 <li><code>cmake</code> (tests run with cmake-3.26)</li>
 </ul>
 <p>It is easiest to integrate <code>GridFormat</code> either as a <a href="https://git-scm.com/book/en/v2/Git-Tools-Submodules">git submodule</a> or via the <code>FetchContent</code> module of <code>cmake</code>. A minimal example (using <code>FetchContent</code>) of a project using <code>GridFormat</code> to write a <a href="https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid">VTU</a> file may look like this:</p>
-<p>&lt;details&gt;</p>
 <div class="fragment"><div class="line">cmake_minimum_required(VERSION 3.22)</div>
 <div class="line">project(some_app_using_gridformat)</div>
 <div class="line"> </div>
@@ -152,14 +152,10 @@ Quick Start</h1>
 <div class="line"> </div>
 <div class="line">add_executable(my_app my_app.cpp)</div>
 <div class="line">target_link_libraries(my_app PRIVATE gridformat::gridformat)</div>
-</div><!-- fragment --><div class="fragment"><div class="line"><span class="preprocessor">#include &lt;array&gt;</span> {#include-array}</div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="gridformat_8hpp.html">gridformat/gridformat.hpp</a>&gt;</span></div>
 <div class="line"> </div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="gridformat_8hpp.html">gridformat/gridformat.hpp</a>&gt;</span> {#include-gridformatgridformathpp}</div>
-<div class="line"> </div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">double</span> analytical_function(<span class="keyword">const</span> std::array&lt;double, 2&gt;&amp; position) {</div>
-<div class="line">    <span class="keywordflow">return</span> position[0]*position[1];</div>
-<div class="line">}</div>
+<div class="line"><span class="keywordtype">double</span> f(<span class="keyword">const</span> std::array&lt;double, 2&gt;&amp; x) { <span class="keywordflow">return</span> x[0]*x[1]; }</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main () {</div>
 <div class="line">    <span class="comment">// For this example we have no user-defined grid type. Let&#39;s just use a predefined one...</span></div>
@@ -171,21 +167,16 @@ Quick Start</h1>
 <div class="line">    <span class="comment">// Let&#39;s write an analytical field into .vtu file format. Fields are attached to the</span></div>
 <div class="line">    <span class="comment">// writer via lambdas that return the discrete values at points or cells.</span></div>
 <div class="line">    <a class="code" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{GridFormat::vtu, grid};</div>
-<div class="line">    writer.set_point_field(<span class="stringliteral">&quot;point_field&quot;</span>, [&amp;] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; point) {</div>
-<div class="line">        <span class="keywordflow">return</span> analytical_function(grid.position(point));</div>
-<div class="line">    });</div>
-<div class="line">    writer.set_cell_field(<span class="stringliteral">&quot;cell_field&quot;</span>, [&amp;] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; cell) {</div>
-<div class="line">        <span class="keywordflow">return</span> analytical_function(grid.center(cell));</div>
-<div class="line">    });</div>
+<div class="line">    writer.set_point_field(<span class="stringliteral">&quot;point_field&quot;</span>, [&amp;] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; point) { <span class="keywordflow">return</span> f(grid.position(point)); });</div>
+<div class="line">    writer.set_cell_field(<span class="stringliteral">&quot;cell_field&quot;</span>, [&amp;] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; cell) { <span class="keywordflow">return</span> f(grid.center(cell)); });</div>
 <div class="line">    writer.write(<span class="stringliteral">&quot;my_test_file&quot;</span>);  <span class="comment">// the file extension will be appended by the writer</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 <div class="ttc" id="aclassGridFormat_1_1ImageGrid_html"><div class="ttname"><a href="classGridFormat_1_1ImageGrid.html">GridFormat::ImageGrid</a></div><div class="ttdoc">Predefined grid implementation that represents a structured, equispaced grid.</div><div class="ttdef"><b>Definition:</b> image_grid.hpp:123</div></div>
-<div class="ttc" id="aclassGridFormat_1_1Writer_html"><div class="ttname"><a href="classGridFormat_1_1Writer.html">GridFormat::Writer</a></div><div class="ttdoc">Interface to the writers for all supported file formats. Depending on the chosen format,...</div><div class="ttdef"><b>Definition:</b> writer.hpp:84</div></div>
+<div class="ttc" id="aclassGridFormat_1_1Writer_html"><div class="ttname"><a href="classGridFormat_1_1Writer.html">GridFormat::Writer</a></div><div class="ttdoc">Interface to the writers for all supported file formats. Depending on the chosen format,...</div><div class="ttdef"><b>Definition:</b> writer.hpp:90</div></div>
 <div class="ttc" id="agridformat_8hpp_html"><div class="ttname"><a href="gridformat_8hpp.html">gridformat.hpp</a></div><div class="ttdoc">This file is the entrypoint to the high-level API exposing all provided writers through a unified int...</div></div>
-</div><!-- fragment --><p>&lt;/details&gt;</p>
-<p>Many more formats and options are available, see the <a href="https://github.com/dglaeser/gridformat">API documentation (coming soon)</a> or have a look at the <a href="./examples">examples</a>.</p>
+</div><!-- fragment --><p>Many more formats and options are available, see the <a href="https://dglaeser.github.io/gridformat/">API documentation</a> or have a look at the <a href="./examples">examples</a>.</p>
 <h1><a class="anchor" id="installation"></a>
 Installation</h1>
 <p>The recommended way of using <code>GridFormat</code> is to include it via cmake's <code>FetchContent</code> module (see quickstart). However, if you want to install <code>GridFormat</code> locally into a custom location, clone the repository, enter the folder and type</p>

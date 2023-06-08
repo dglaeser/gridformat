@@ -49,6 +49,7 @@
   <td id="projectalign">
    <div id="projectname">GridFormat<span id="projectnumber">&#160;0.1.0</span>
    </div>
+   <div id="projectbrief">I/O-Library for grid-like data structures</div>
   </td>
  </tr>
    <!--BEGIN FULL_SIDEBAR-->
@@ -133,28 +134,22 @@ $(document).ready(function(){initNavTree('classGridFormat_1_1Writer.html',''); i
  <a href="classGridFormat_1_1Writer.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="writer_8hpp_source.html">writer.hpp</a>&gt;</code></p>
-<div class="dynheader">
-Collaboration diagram for GridFormat::Writer&lt; Grid &gt;:</div>
-<div class="dyncontent">
-<div class="center"><!-- SVG 0 -->
-</div>
-<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad8e5f13d9249a4a3a6e67d3a620f9731"><td class="memTemplParams" colspan="2">template&lt;typename FileFormat &gt; </td></tr>
-<tr class="memitem:ad8e5f13d9249a4a3a6e67d3a620f9731"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#ad8e5f13d9249a4a3a6e67d3a620f9731">requires</a> (Detail::has_sequential_factory&lt; FileFormat, Grid &gt;) <a class="el" href="classGridFormat_1_1Writer.html">Writer</a>(const FileFormat &amp;f</td></tr>
-<tr class="memdesc:ad8e5f13d9249a4a3a6e67d3a620f9731"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a sequential grid file writer.  <a href="classGridFormat_1_1Writer.html#ad8e5f13d9249a4a3a6e67d3a620f9731">More...</a><br /></td></tr>
-<tr class="separator:ad8e5f13d9249a4a3a6e67d3a620f9731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ca0765c3f8cd7eb0150aa3bdbe0272c"><td class="memTemplParams" colspan="2">template&lt;typename FileFormat , Detail::Compatible&lt; Grid &gt; _Grid&gt; </td></tr>
+<tr class="memitem:a1ca0765c3f8cd7eb0150aa3bdbe0272c"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a1ca0765c3f8cd7eb0150aa3bdbe0272c">requires</a> (Detail::has_sequential_factory&lt; FileFormat, Grid &gt;) <a class="el" href="classGridFormat_1_1Writer.html">Writer</a>(const FileFormat &amp;f</td></tr>
+<tr class="memdesc:a1ca0765c3f8cd7eb0150aa3bdbe0272c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a sequential grid file writer.  <a href="classGridFormat_1_1Writer.html#a1ca0765c3f8cd7eb0150aa3bdbe0272c">More...</a><br /></td></tr>
+<tr class="separator:a1ca0765c3f8cd7eb0150aa3bdbe0272c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a7d2e794e5a9c9f931e421ec80215ee57"><td class="memItemLeft" align="right" valign="top"><a id="a7d2e794e5a9c9f931e421ec80215ee57"></a>
-const Grid &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>grid</b>: <a class="el" href="classGridFormat_1_1Writer.html">Writer</a>(<a class="el" href="structGridFormat_1_1WriterFactory.html">WriterFactory</a>&lt;FileFormat&gt;::make(f</td></tr>
-<tr class="separator:a7d2e794e5a9c9f931e421ec80215ee57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac53ddb263f6bf5d6a8a96fc4c9372703"><td class="memItemLeft" align="right" valign="top"><a id="ac53ddb263f6bf5d6a8a96fc4c9372703"></a>
-const Grid&#160;</td><td class="memItemRight" valign="bottom"><b>grid</b></td></tr>
-<tr class="separator:ac53ddb263f6bf5d6a8a96fc4c9372703"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63478dabf27c1784b2c0468b317c0d41"><td class="memItemLeft" align="right" valign="top"><a id="a63478dabf27c1784b2c0468b317c0d41"></a>
+_Grid &amp;&amp;&#160;</td><td class="memItemRight" valign="bottom"><b>grid</b>: <a class="el" href="classGridFormat_1_1Writer.html">Writer</a>(<a class="el" href="structGridFormat_1_1WriterFactory.html">WriterFactory</a>&lt;FileFormat&gt;::make(f</td></tr>
+<tr class="separator:a63478dabf27c1784b2c0468b317c0d41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a264e9d211a53ca773e62578fba7ac0df"><td class="memItemLeft" align="right" valign="top"><a id="a264e9d211a53ca773e62578fba7ac0df"></a>
+_Grid&#160;</td><td class="memItemRight" valign="bottom"><b>grid</b></td></tr>
+<tr class="separator:a264e9d211a53ca773e62578fba7ac0df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a768ed858e9238ddb8b8d81c7659833d2"><td class="memItemLeft" align="right" valign="top"><a id="a768ed858e9238ddb8b8d81c7659833d2"></a>
 std::unique_ptr&lt; <a class="el" href="classGridFormat_1_1TimeSeriesGridWriter.html">TimeSeriesGridWriter</a>&lt; Grid &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_time_series_writer</b> {nullptr}</td></tr>
 <tr class="separator:a768ed858e9238ddb8b8d81c7659833d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -164,23 +159,24 @@ std::unique_ptr&lt; <a class="el" href="classGridFormat_1_1TimeSeriesGridWriter.
 class GridFormat::Writer&lt; Grid &gt;</h3>
 
 <p>Typically you would construct this class with one of the predefined file format instances. For example, with the .vtu file format: </p><div class="fragment"><div class="line"><a class="code" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{GridFormat::vtu, grid};</div>
-<div class="ttc" id="aclassGridFormat_1_1Writer_html"><div class="ttname"><a href="classGridFormat_1_1Writer.html">GridFormat::Writer</a></div><div class="ttdoc">Interface to the writers for all supported file formats. Depending on the chosen format,...</div><div class="ttdef"><b>Definition:</b> writer.hpp:84</div></div>
-</div><!-- fragment --> <dl class="tparams"><dt>Template Parameters</dt><dd>
+<div class="ttc" id="aclassGridFormat_1_1Writer_html"><div class="ttname"><a href="classGridFormat_1_1Writer.html">GridFormat::Writer</a></div><div class="ttdoc">Interface to the writers for all supported file formats. Depending on the chosen format,...</div><div class="ttdef"><b>Definition:</b> writer.hpp:90</div></div>
+</div><!-- fragment --> <dl class="section note"><dt>Note</dt><dd>The constructor checks that the grid you are passing in is actually an lvalue-reference. If not, compilation will fail. This is because all writers take the grid per reference and their lifetime is bound to the lifetime of the given grid. </dd></dl>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">The</td><td>type of grid which should be written out. </td></tr>
+    <tr><td class="paramname">Grid</td><td>The type of grid which should be written out. </td></tr>
   </table>
   </dd>
 </dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad8e5f13d9249a4a3a6e67d3a620f9731"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad8e5f13d9249a4a3a6e67d3a620f9731">&#9670;&nbsp;</a></span>requires()</h2>
+<a id="a1ca0765c3f8cd7eb0150aa3bdbe0272c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ca0765c3f8cd7eb0150aa3bdbe0272c">&#9670;&nbsp;</a></span>requires()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;Concepts::Grid Grid&gt; </div>
 <div class="memtemplate">
-template&lt;typename FileFormat &gt; </div>
+template&lt;typename FileFormat , Detail::Compatible&lt; Grid &gt; _Grid&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a>&lt; Grid &gt;::requires </td>

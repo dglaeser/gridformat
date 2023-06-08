@@ -49,6 +49,7 @@
   <td id="projectalign">
    <div id="projectname">GridFormat<span id="projectnumber">&#160;0.1.0</span>
    </div>
+   <div id="projectbrief">I/O-Library for grid-like data structures</div>
   </td>
  </tr>
    <!--BEGIN FULL_SIDEBAR-->
@@ -124,6 +125,13 @@ $(document).ready(function(){initNavTree('grid-concepts.html',''); initResizable
 <div class="title">Grid Concepts </div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="toc"><h3>Table of Contents</h3>
+<ul><li class="level1"><a href="#unstructured-grid">Unstructured Grid</a></li>
+<li class="level1"><a href="#structured-grid">Structured Grid</a></li>
+<li class="level1"><a href="#rectilinear-grid">Rectilinear Grid</a></li>
+<li class="level1"><a href="#image-grid">Image Grid</a></li>
+</ul>
+</div>
 <div class="textblock"><p><a class="anchor" id="md__home_runner_work_gridformat_gridformat_docs_pages_grid_concepts"></a></p>
 <p>This document is meant to give an overview over the kinds of grids that are supported in <code>GridFormat</code>. The distinctions used here are inspired by the different <a href="https://examples.vtk.org/site/VTKFileFormats/#serial-xml-file-formats">VTK-XML formats</a> and the kinds of grids they assume. Any grid can, in principle, be represented as an unstructured grid, but there exist file formats that are able to store the information more efficiently in case the grid has certain characteristics.</p>
 <h1><a class="anchor" id="unstructured-grid"></a>
@@ -133,7 +141,7 @@ Unstructured Grid</h1>
 <h1><a class="anchor" id="structured-grid"></a>
 Structured Grid</h1>
 <p><img src="https://raw.githubusercontent.com/dglaeser/gridformat/main/docs/img/grid_structured.svg" alt="structured grid" style="pointer-events: none;" width="40%" class="inline"/></p>
-<p>In a structured grid, all cells are of the same geometry type, namely line segments in 1D, quadrilaterals in 2D and hexahedra in 3D. A structured grid can be described as a set of $(N_x \times N_y \times N_z )$ cells and $(N_x + 1 \times N_y + 1 \times N_z + 1 )$ points (in 3D), and one can associate an index tuple $(i_x, i_y, i_z)$ to each point or cell, which describes its location within the index space of the grid. The actual coordinates of the points can be chosen arbitrarily to the extent that they still describe valid, non self-intersecting hexahedra (or quadrilaterals in 2D; segments in 1D).</p>
+<p>In a structured grid, all cells are of the same geometry type, namely line segments in 1D, quadrilaterals in 2D and hexahedra in 3D. A structured grid can be described as a set of \((N_x \times N_y \times N_z )\) cells and \((N_x + 1 \times N_y + 1 \times N_z + 1 )\) points (in 3D), and one can associate an index tuple \((i_x, i_y, i_z)\) to each point or cell, which describes its location within the index space of the grid. The actual coordinates of the points can be chosen arbitrarily to the extent that they still describe valid, non self-intersecting hexahedra (or quadrilaterals in 2D; segments in 1D).</p>
 <h1><a class="anchor" id="rectilinear-grid"></a>
 Rectilinear Grid</h1>
 <p><img src="https://raw.githubusercontent.com/dglaeser/gridformat/main/docs/img/grid_rectilinear.svg" alt="rectilinear grid" style="pointer-events: none;" width="35%" class="inline"/></p>

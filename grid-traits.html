@@ -49,6 +49,7 @@
   <td id="projectalign">
    <div id="projectname">GridFormat<span id="projectnumber">&#160;0.1.0</span>
    </div>
+   <div id="projectbrief">I/O-Library for grid-like data structures</div>
   </td>
  </tr>
    <!--BEGIN FULL_SIDEBAR-->
@@ -124,6 +125,17 @@ $(document).ready(function(){initNavTree('grid-traits.html',''); initResizable()
 <div class="title">Grid Traits </div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="toc"><h3>Table of Contents</h3>
+<ul><ul><li class="level2"><a href="#mandatory-traits">Mandatory Traits</a></li>
+<li class="level2"><a href="#traits-for-unstructured-grids">Traits for Unstructured Grids</a></li>
+<li class="level2"><a href="#traits-for-structured-grids">Traits for Structured Grids</a></li>
+<li class="level2"><a href="#traits-for-rectilinear-grids">Traits for Rectilinear Grids</a></li>
+<li class="level2"><a href="#traits-for-image-grids">Traits for Image Grids</a></li>
+<li class="level2"><a href="#optional-traits">Optional Traits</a></li>
+<li class="level2"><a href="#notes-for-parallel-grids">Notes for Parallel Grids</a></li>
+</ul>
+</ul>
+</div>
 <div class="textblock"><p><a class="anchor" id="md__home_runner_work_gridformat_gridformat_docs_pages_traits"></a></p>
 <p><code>GridFormat</code> uses a traits (or meta-function) mechanism to operate on user-given grid types. As a motivating example, consider this piece of code:</p>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Gr<span class="keywordtype">id</span>&gt;</div>
@@ -146,8 +158,7 @@ $(document).ready(function(){initNavTree('grid-traits.html',''); initResizable()
 <div class="line">}</div>
 </div><!-- fragment --><p>The code now expects that there exist a specialization of the <code>Cells</code> trait for the given grid. This allows users to specialize that trait for their grid data structure, thereby making it compatible with <code>GridFormat</code>. See the code below for an idea about how the traits specialization may look. For more details on this, please have a look at the resources referenced in the <a href="https://github.com/dglaeser/gridformat/blob/main">main readme</a>.</p>
 <p>&lt;details&gt;</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;gridformat/grid/traits.hpp&gt;</span> {#include-gridformatgridtraitshpp}</div>
-<div class="line"> </div>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;gridformat/grid/traits.hpp&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">namespace </span>MyLibrary {</div>
 <div class="line"> </div>
@@ -172,75 +183,91 @@ $(document).ready(function(){initNavTree('grid-traits.html',''); initResizable()
 <div class="line"> </div>
 <div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
 </div><!-- fragment --><p>&lt;/details&gt;</p>
-<p>As discussed in our <a class="el" href="grid-concepts.html#md__home_runner_work_gridformat_gridformat_docs_pages_grid_concepts">overview over supported kinds of grids</a>, <code>GridFormat</code> understands the notion of unstructured, structured, rectilinear or image grids. The reason for this is that some file formats are designed for specific kinds of grids and can store the information on their topology in a space-efficient manner. To see which format assumes which kind of grid, see the <a href="https://github.com/dglaeser/gridformat">API documentation (coming soon)</a>. In the code, there exist <a href="https://en.cppreference.com/w/cpp/language/constraints">concepts</a> for each of these kinds of grids, which essentially check if the required traits are correctly implemented. The remainder of this page discusses the different traits used by <code>GridFormat</code>, and which ones need to be specialized in order to model a particular kind of grid. In case you want to use <code>GridFormat</code> in parallel computations, please also make sure to read the related section at the end of this page. Note that all traits presented in the following are declared in the <code>namespace GridFormat::Traits</code>.</p>
+<p>As discussed in our <a class="el" href="grid-concepts.html#md__home_runner_work_gridformat_gridformat_docs_pages_grid_concepts">overview over supported kinds of grids</a>, <code>GridFormat</code> understands the notion of unstructured, structured, rectilinear or image grids. The reason for this is that some file formats are designed for specific kinds of grids and can store the information on their topology in a space-efficient manner. To see which format assumes which kind of grid, see the <a href="https://dglaeser.github.io/gridformat/">API documentation</a>. In the code, there exist <a href="https://en.cppreference.com/w/cpp/language/constraints">concepts</a> for each of these kinds of grids, which essentially check if the required traits are correctly implemented. The remainder of this page discusses the different traits used by <code>GridFormat</code>, and which ones need to be specialized in order to model a particular kind of grid. In case you want to use <code>GridFormat</code> in parallel computations, please also make sure to read the related section at the end of this page. Note that all traits presented in the following are declared in the <code>namespace GridFormat::Traits</code>.</p>
 <h2><a class="anchor" id="mandatory-traits"></a>
 Mandatory Traits</h2>
-<h3><a class="anchor" id="templatetypename-grid-struct-cells"></a>
-&lt;tt&gt;template&lt;typename Grid&gt; struct Cells;&lt;/tt&gt;</h3>
+<ul>
+<li><code>template&lt;typename Grid&gt; struct Cells;</code></li>
+</ul>
 <p>This trait exposes how one can iterate over the cells of a grid. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/forward_range">forward range</a> of cells.</p>
-<h3><a class="anchor" id="templatetypename-grid-struct-points"></a>
-&lt;tt&gt;template&lt;typename Grid&gt; struct Points;&lt;/tt&gt;</h3>
+<ul>
+<li><code>template&lt;typename Grid&gt; struct Points;</code></li>
+</ul>
 <p>This trait exposes how one can iterate over the points of a grid. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/forward_range">forward range</a> of points.</p>
 <h2><a class="anchor" id="traits-for-unstructured-grids"></a>
 Traits for Unstructured Grids</h2>
-<h3><a class="anchor" id="templatetypename-grid-typename-cell-struct-cellpoints"></a>
-&lt;tt&gt;template&lt;typename Grid, typename Cell&gt; struct CellPoints;&lt;/tt&gt;</h3>
+<ul>
+<li><code>template&lt;typename Grid, typename Cell&gt; struct CellPoints;</code></li>
+</ul>
 <p>This trait exposes how one can iterate over the points of an individual grid cell. Specializations must provide a static function <code>get(const Grid&amp;, const Cell&amp;)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/range">range</a> of points that make up the boundary of the given cell.</p>
-<h3><a class="anchor" id="templatetypename-grid-typename-cell-struct-celltype"></a>
-&lt;tt&gt;template&lt;typename Grid, typename Cell&gt; struct CellType;&lt;/tt&gt;</h3>
+<ul>
+<li><code>template&lt;typename Grid, typename Cell&gt; struct CellType;</code></li>
+</ul>
 <p>This trait exposes the geometry type of an individual grid cell. Specializations must provide a static function <code>get(const Grid&amp;, const Cell&amp;)</code> that returns an instance of the <a href="https://github.com/dglaeser/gridformat/blob/main/gridformat/grid/cell_type.hpp">CellType enum</a>.</p>
-<h3><a class="anchor" id="templatetypename-grid-typename-point-struct-pointcoordinates"></a>
-&lt;tt&gt;template&lt;typename Grid, typename Point&gt; struct PointCoordinates;&lt;/tt&gt;</h3>
-<p>This trait exposes the coordinates of a grid point. Specializations must provide a static function <code>get(const Grid&amp;, const Point&amp;)</code> that returns the coordinates of the given point as a <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize">statically sized range</a> (see section on <code>StaticSize</code> below).</p>
-<h3><a class="anchor" id="templatetypename-grid-typename-point-struct-pointid"></a>
-&lt;tt&gt;template&lt;typename Grid, typename Point&gt; struct PointId;&lt;/tt&gt;</h3>
+<ul>
+<li><code>template&lt;typename Grid, typename Point&gt; struct PointCoordinates;</code></li>
+</ul>
+<p>This trait exposes the coordinates of a grid point. Specializations must provide a static function <code>get(const Grid&amp;, const Point&amp;)</code> that returns the coordinates of the given point as a <a href="#optional-traits">statically sized range</a>.</p>
+<ul>
+<li><code>template&lt;typename Grid, typename Point&gt; struct PointId;</code></li>
+</ul>
 <p>This trait exposes a unique id for individual points of a grid. Specializations must provide a static function <code>get(const Grid&amp;, const Point&amp;)</code> that returns a unique id (as integer value, e.g. <code>std::size_t</code>) for the given point.</p>
 <h2><a class="anchor" id="traits-for-structured-grids"></a>
 Traits for Structured Grids</h2>
 <p>In addition to the traits below, the <code>StructuredGrid</code> concept also requires that the <code>PointCoordinates</code> trait is implemented (see above).</p>
-<h3><a class="anchor" id="templatetypename-grid-struct-extents"></a>
-&lt;tt&gt;template&lt;typename Grid&gt; struct Extents;&lt;/tt&gt;</h3>
-<p>This trait exposes the number of cells of the structured grid in each coordinate direction. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize">statically sized range</a>, whose size is equal to the dimension of the grid.</p>
-<h3><a class="anchor" id="templatetypename-grid-typename-entity-struct-location"></a>
-&lt;tt&gt;template&lt;typename Grid, typename Entity&gt; struct Location;&lt;/tt&gt;</h3>
-<p>This trait exposes the index tuple of a given entity within the structured grid. For a visualization and the assumptions on the orientation, see the <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md">overview over supported kinds of grids</a>. This trait must be specialized for both cells and points (i.e. for two types of <code>Entity</code>), and they must provide a static function <code>get(const Grid&amp;, const Entity&amp;)</code> that returns a <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize">statically sized range</a> whose elements are integer values (the indices of the entity) and whose size is equal to the dimension of the grid.</p>
+<ul>
+<li><code>template&lt;typename Grid&gt; struct Extents;</code></li>
+</ul>
+<p>This trait exposes the number of cells of the structured grid in each coordinate direction. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a>, whose size is equal to the dimension of the grid.</p>
+<ul>
+<li><code>template&lt;typename Grid, typename Entity&gt; struct Location;</code></li>
+</ul>
+<p>This trait exposes the index tuple of a given entity within the structured grid. For a visualization and the assumptions on the orientation, see the <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md">overview over supported kinds of grids</a>. This trait must be specialized for both cells and points (i.e. for two types of <code>Entity</code>), and they must provide a static function <code>get(const Grid&amp;, const Entity&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a> whose elements are integer values (the indices of the entity) and whose size is equal to the dimension of the grid.</p>
 <h2><a class="anchor" id="traits-for-rectilinear-grids"></a>
 Traits for Rectilinear Grids</h2>
 <p>In addition to the <code>Ordinates</code> trait below, the <code>RectilinearGrid</code> concept also requires that the <code>Extents</code> and <code>Location</code> traits are implemented (see above).</p>
-<h3><a class="anchor" id="templatetypename-grid-struct-ordinates"></a>
-&lt;tt&gt;template&lt;typename Grid&gt; struct Ordinates;&lt;/tt&gt;</h3>
+<ul>
+<li><code>template&lt;typename Grid&gt; struct Ordinates;</code></li>
+</ul>
 <p>This trait exposes the ordinates of a <code>RectilinearGrid</code> grid along the coordinate axes. Specializations must provide a static function <code>get(const Grid&amp;, unsigned int direction)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/range">range</a> over the ordinates along the axis specified by <code>direction</code> (<code>direction &lt; dim</code>, where dim is the dimension of the grid). The size of the range must be equal to the number of cells + 1 in the given direction.</p>
 <h2><a class="anchor" id="traits-for-image-grids"></a>
 Traits for Image Grids</h2>
 <p>In addition to the traits below, the <code>ImageGrid</code> concept also requires that the <code>Extents</code> and <code>Location</code> traits are implemented (see above).</p>
-<h3><a class="anchor" id="templatetypename-grid-struct-origin"></a>
-&lt;tt&gt;template&lt;typename Grid&gt; struct Origin;&lt;/tt&gt;</h3>
-<p>This trait exposes the position of the lower-left corner of the grid, that is, the position of the point at index $(0, 0, 0)$ (for a visualization see <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md">here</a>). Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize">statically sized range</a>, whose size is equal to the dimension of the grid.</p>
-<h3><a class="anchor" id="templatetypename-grid-struct-spacing"></a>
-&lt;tt&gt;template&lt;typename Grid&gt; struct Spacing;&lt;/tt&gt;</h3>
-<p>This trait exposes the spacing between grid points along the axes (in other words, the size of the cells in each coordinate direction). Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize">statically sized range</a>, whose size is equal to the dimension of the grid.</p>
+<ul>
+<li><code>template&lt;typename Grid&gt; struct Origin;</code></li>
+</ul>
+<p>This trait exposes the position of the lower-left corner of the grid, that is, the position of the point at index \((0, 0, 0)\) (for a visualization see <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md">here</a>). Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a>, whose size is equal to the dimension of the grid.</p>
+<ul>
+<li><code>template&lt;typename Grid&gt; struct Spacing;</code></li>
+</ul>
+<p>This trait exposes the spacing between grid points along the axes (in other words, the size of the cells in each coordinate direction). Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a>, whose size is equal to the dimension of the grid.</p>
 <h2><a class="anchor" id="optional-traits"></a>
 Optional Traits</h2>
-<h3><a class="anchor" id="templatetypename-grid-struct-numberofpoints"></a>
-&lt;tt&gt;template&lt;typename Grid&gt; struct NumberOfPoints;&lt;/tt&gt;</h3>
+<ul>
+<li><code>template&lt;typename Grid&gt; struct NumberOfPoints;</code></li>
+</ul>
 <p>This trait exposes the number of points of a grid, and if not specialized, the number of points is deduced from the size of the range obtained from <code>Points</code>. If your point range is not a <a href="https://en.cppreference.com/w/cpp/ranges/sized_range">sized range</a>, however, specializing this trait can lead to an improved efficiency. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns the number of points as an integral value.</p>
-<h3><a class="anchor" id="templatetypename-grid-struct-numberofcells"></a>
-&lt;tt&gt;template&lt;typename Grid&gt; struct NumberOfCells;&lt;/tt&gt;</h3>
+<ul>
+<li><code>template&lt;typename Grid&gt; struct NumberOfCells;</code></li>
+</ul>
 <p>This trait exposes the number of cells of a grid, and if not specialized, the number of cells is deduced from the size of the range obtained from <code>Cells</code>. If your cell range is not a <a href="https://en.cppreference.com/w/cpp/ranges/sized_range">sized range</a>, however, specializing this trait can lead to an improved efficiency. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns the number of cells as an integral value.</p>
-<h3><a class="anchor" id="templatetypename-grid-typename-cell-struct-numberofcellpoints"></a>
-&lt;tt&gt;template&lt;typename Grid, typename Cell&gt; struct NumberOfCellPoints;&lt;/tt&gt;</h3>
+<ul>
+<li><code>template&lt;typename Grid, typename Cell&gt; struct NumberOfCellPoints;</code></li>
+</ul>
 <p>This trait exposes the number of points in a grid cell, and if not specialized, the number of points is deduced from the size of the range obtained from <code>CellsPoints</code>. If that range is not a <a href="https://en.cppreference.com/w/cpp/ranges/sized_range">sized range</a>, however, specializing this trait can lead to an improved efficiency. Specializations must provide a static function <code>get(const Grid&amp;, const Cell&amp;)</code> that returns the number of points in the cell as an integral value.</p>
-<h3><a class="anchor" id="templatetypename-grid-struct-basis"></a>
-&lt;tt&gt;template&lt;typename Grid&gt; struct Basis;&lt;/tt&gt;</h3>
+<ul>
+<li><code>template&lt;typename Grid&gt; struct Basis;</code></li>
+</ul>
 <p>This trait can be specified for image grids in order to specify their orientation. Per default, an image grid is assumed to be axis-aligned, that is, the default basis (in 3D) is</p>
 <div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keyword">auto</span> default_basis = std::array{</div>
 <div class="line">    std::array{1.0, 0.0, 0.0},</div>
 <div class="line">    std::array{0.0, 1.0, 0.0},</div>
 <div class="line">    std::array{0.0, 0.0, 1.0},</div>
 <div class="line">};</div>
-</div><!-- fragment --><p>Specializing the <code>Basis</code> trait, you can implement the static function <code>get(const Grid&amp;)</code> and return a custom basis. It is expected that the return type from this function is a two-dimensional, <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/traits.md#templatetypename-t-struct-staticsize">statically-sized range</a>, with the outer and inner dimensions being equal to the grid dimension.</p>
-<h3><a class="anchor" id="templatetypename-t-struct-staticsize"></a>
-&lt;tt&gt;template&lt;typename T&gt; struct StaticSize;&lt;/tt&gt;</h3>
+</div><!-- fragment --><p>Specializing the <code>Basis</code> trait, you can implement the static function <code>get(const Grid&amp;)</code> and return a custom basis. It is expected that the return type from this function is a two-dimensional, <a href="#optional-traits">statically-sized range</a>, with the outer and inner dimensions being equal to the grid dimension.</p>
+<ul>
+<li><code>template&lt;typename T&gt; struct StaticSize;</code></li>
+</ul>
 <p><code>GridFormat</code> requires that the types returned from some traits model the <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/gridformat/common/concepts.hpp#L25"><code>StaticallySizedRange</code> concept</a>. Statically sized means that the size of the <a href="https://en.cppreference.com/w/cpp/ranges/range">range</a> is known at compile time. Per default, <code>GridFormat</code> accepts <code>std::array</code>, <code>std::span</code> (with non-dynamic extent), <code>T[N]</code> or anything that either has a <code>constexpr static std::size_t size()</code> function or a member variable named <code>size</code> that can be evaluated at compile time. If your type does not fulfill any of these requirements, but is in fact range with a size known at compile-time, you can also specialize the <a href="https://github.com/dglaeser/gridformat/blob/main/gridformat/common/type_traits.hpp#L349"><code>StaticSize</code> trait</a> for the type you want to return. Alternatively, you can of course just convert your type into an <code>std::array</code> within the trait that expects you to return a statically sized range.</p>
 <h2><a class="anchor" id="notes-for-parallel-grids"></a>
 Notes for Parallel Grids</h2>

@@ -49,6 +49,7 @@
   <td id="projectalign">
    <div id="projectname">GridFormat<span id="projectnumber">&#160;0.1.0</span>
    </div>
+   <div id="projectbrief">I/O-Library for grid-like data structures</div>
   </td>
  </tr>
    <!--BEGIN FULL_SIDEBAR-->
@@ -189,6 +190,16 @@ Functions</h2></td></tr>
 <tr class="separator:gaa73c41aeab2861bb23872f1498cb0eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<p>The high-level API exposes all available file formats and the generic <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">GridFormat::Writer</a>, which takes an instance of one of the formats and a grid that is to be written. For instance, to construct a writer for the .vtu file format for your <code>grid</code>, write </p><div class="fragment"><div class="line"><a class="code" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{GridFormat::vtu, grid};</div>
+<div class="ttc" id="aclassGridFormat_1_1Writer_html"><div class="ttname"><a href="classGridFormat_1_1Writer.html">GridFormat::Writer</a></div><div class="ttdoc">Interface to the writers for all supported file formats. Depending on the chosen format,...</div><div class="ttdef"><b>Definition:</b> writer.hpp:90</div></div>
+</div><!-- fragment --><p>You can also let <code>GridFormat</code> select a default for you: </p><div class="fragment"><div class="line"><a class="code" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{<a class="code" href="group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5">GridFormat::default_for</a>(grid), grid};</div>
+<div class="ttc" id="agroup__API_html_ga19ce8850e7c649e701a6cab52a3ad5a5"><div class="ttname"><a href="group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5">GridFormat::Formats::default_for</a></div><div class="ttdeci">constexpr auto default_for()</div><div class="ttdoc">Selects a default format suitable to write the given grid.</div><div class="ttdef"><b>Definition:</b> gridformat.hpp:442</div></div>
+</div><!-- fragment --><p>Some file formats take configuration options. For instance, the .vtu file format allows you to specify (among other options) an encoder to be used: </p><div class="fragment"><div class="line"><a class="code" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{</div>
+<div class="line">   GridFormat::vtu({.encoder = <a class="code" href="base64_8hpp.html#a28e611764de2305f0cbced6c2b6af869">GridFormat::Encoding::base64</a>}),</div>
+<div class="line">   grid</div>
+<div class="line">};</div>
+<div class="ttc" id="abase64_8hpp_html_a28e611764de2305f0cbced6c2b6af869"><div class="ttname"><a href="base64_8hpp.html#a28e611764de2305f0cbced6c2b6af869">GridFormat::Encoding::base64</a></div><div class="ttdeci">constexpr Base64 base64</div><div class="ttdoc">Instance of the base64 encoder.</div><div class="ttdef"><b>Definition:</b> base64.hpp:129</div></div>
+</div><!-- fragment --><p>For more information on these options, see <a class="el" href="structGridFormat_1_1FileFormat_1_1VTU.html" title="Selector for the .vtu/.pvtu file format for general unstructured grids.">GridFormat::FileFormat::VTU</a>. Note that all writers take the given grid by reference, and thus, their validity is bound to the lifetime of the grid. </p>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ga19ce8850e7c649e701a6cab52a3ad5a5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga19ce8850e7c649e701a6cab52a3ad5a5">&#9670;&nbsp;</a></span>default_for() <span class="overload">[1/2]</span></h2>
