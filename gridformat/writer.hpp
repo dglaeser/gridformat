@@ -63,6 +63,9 @@ namespace Detail {
             { WriterFactory<FileFormat>::make(f, grid, comm, std::string{}) } -> std::derived_from<TimeSeriesGridWriter<Grid>>;
         };
 
+    template<typename _Grid, typename Grid>
+    concept Compatible = std::same_as<std::remove_cvref_t<_Grid>, Grid> and std::is_lvalue_reference_v<_Grid>;
+
 }  // namespace Detail
 #endif  // DOXYGEN
 
@@ -72,13 +75,16 @@ namespace Detail {
  * \brief Interface to the writers for all supported file formats.
  *        Depending on the chosen format, this exposes the interface of
  *        grid file or time series writers.
- *
- *        Typically you would construct this class with one of the predefined
- *        file format instances. For example, with the .vtu file format:
- *        \code{.cpp}
- *        GridFormat::Writer writer{GridFormat::vtu, grid};
- *        \endcode
- * \tparam The type of grid which should be written out.
+ * \details Typically you would construct this class with one of the predefined
+ *          file format instances. For example, with the .vtu file format:
+ *          \code{.cpp}
+ *            GridFormat::Writer writer{GridFormat::vtu, grid};
+ *          \endcode
+ * \note The constructor checks that the grid you are passing in is
+ *       actually an lvalue-reference. If not, compilation will fail.
+ *       This is because all writers take the grid per reference and
+ *       their lifetime is bound to the lifetime of the given grid.
+ * \tparam Grid The type of grid which should be written out.
  */
 template<Concepts::Grid Grid>
 class Writer {
@@ -88,9 +94,9 @@ class Writer {
      * \param f The file format which should be written.
      * \param grid The grid which should be written out.
      */
-    template<typename FileFormat>
+    template<typename FileFormat, Detail::Compatible<Grid> _Grid>
         requires(Detail::has_sequential_factory<FileFormat, Grid>)
-    Writer(const FileFormat& f, const Grid& grid)
+    Writer(const FileFormat& f, _Grid&& grid)
     : Writer(WriterFactory<FileFormat>::make(f, grid))
     {}
 
@@ -100,9 +106,9 @@ class Writer {
      * \param grid The grid which should be written out.
      * \param base_filename The name of the file (without extension) into which to write.
      */
-    template<typename FileFormat>
+    template<typename FileFormat, Detail::Compatible<Grid> _Grid>
         requires(Detail::has_sequential_time_series_factory<FileFormat, Grid>)
-    Writer(const FileFormat& f, const Grid& grid, const std::string& base_filename)
+    Writer(const FileFormat& f, _Grid&& grid, const std::string& base_filename)
     : Writer(WriterFactory<FileFormat>::make(f, grid, base_filename))
     {}
 
@@ -112,9 +118,9 @@ class Writer {
      * \param grid The grid which should be written out.
      * \param comm The communicator for parallel communication.
      */
-    template<typename FileFormat, Concepts::Communicator Comm>
+    template<typename FileFormat, Detail::Compatible<Grid> _Grid, Concepts::Communicator Comm>
         requires(Detail::has_parallel_factory<FileFormat, Grid, Comm>)
-    Writer(const FileFormat& f, const Grid& grid, const Comm& comm)
+    Writer(const FileFormat& f, _Grid&& grid, const Comm& comm)
     : Writer(WriterFactory<FileFormat>::make(f, grid, comm))
     {}
 
@@ -125,9 +131,9 @@ class Writer {
      * \param comm The communicator for parallel communication.
      * \param base_filename The name of the file (without extension) into which to write.
      */
-    template<typename FileFormat, Concepts::Communicator Comm>
+    template<typename FileFormat, Detail::Compatible<Grid> _Grid, Concepts::Communicator Comm>
         requires(Detail::has_parallel_time_series_factory<FileFormat, Grid, Comm>)
-    Writer(const FileFormat& f, const Grid& grid, const Comm& comm, const std::string& base_filename)
+    Writer(const FileFormat& f, _Grid&& grid, const Comm& comm, const std::string& base_filename)
     : Writer(WriterFactory<FileFormat>::make(f, grid, comm, base_filename))
     {}
 
@@ -385,6 +391,22 @@ class Writer {
     std::unique_ptr<GridWriter<Grid>> _writer{nullptr};
     std::unique_ptr<TimeSeriesGridWriter<Grid>> _time_series_writer{nullptr};
 };
+
+template<typename F, typename G>
+    requires(Concepts::Grid<std::remove_cvref_t<G>>)
+Writer(const F&, G&&) -> Writer<std::remove_cvref_t<G>>;
+
+template<typename F, typename G, Concepts::Communicator C>
+    requires(Concepts::Grid<std::remove_cvref_t<G>>)
+Writer(const F&, G&&, const C&) -> Writer<std::remove_cvref_t<G>>;
+
+template<typename F, typename G>
+    requires(Concepts::Grid<std::remove_cvref_t<G>>)
+Writer(const F&, G&&, const std::string&) -> Writer<std::remove_cvref_t<G>>;
+
+template<typename F, typename G, Concepts::Communicator C>
+    requires(Concepts::Grid<std::remove_cvref_t<G>>)
+Writer(const F&, G&&, const C&, const std::string&) -> Writer<std::remove_cvref_t<G>>;
 
 }  // namespace GridFormat
 
