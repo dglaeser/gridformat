@@ -156,7 +156,7 @@ void write(Grid grid, std::string prefix_addition = "") {
     writer.set_cell_field("cfunc", [&] (const auto& cell) {
         const int num_corners = dim == 2 ? 3 : 4;
         return GridFormat::Test::test_function<double>(
-            GridFormat::CGAL::to_double_array(cell_center<typename Grid::Geom_traits>(cell, num_corners))
+            GridFormat::CGAL::to_double_array(cell_center<typename Grid::Geom_traits>(*cell, num_corners))
         );
     });
 

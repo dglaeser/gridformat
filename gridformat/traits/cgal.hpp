@@ -98,8 +98,8 @@ concept CGALPointWrapper = requires(const T& wrapper) {
 namespace CGAL {
 
 template<typename T> struct CellType;
-template<Concepts::CGALGrid2D T> struct CellType<T> : public std::type_identity<typename T::Face> {};
-template<Concepts::CGALGrid3D T> struct CellType<T> : public std::type_identity<typename T::Cell> {};
+template<Concepts::CGALGrid2D T> struct CellType<T> : public std::type_identity<typename T::Face_handle> {};
+template<Concepts::CGALGrid3D T> struct CellType<T> : public std::type_identity<typename T::Cell_handle> {};
 template<Concepts::CGALGrid T> using Cell = typename CellType<T>::type;
 
 template<Concepts::CGALGrid T>
@@ -125,9 +125,11 @@ template<Concepts::CGALGrid Grid>
 struct Cells<Grid> {
     static std::ranges::range auto get(const Grid& grid) {
         if constexpr (Concepts::CGALGrid2D<Grid>)
-            return std::ranges::subrange(grid.finite_faces_begin(), grid.finite_faces_end());
+            return grid.finite_face_handles()
+                | std::views::transform([] (auto it) -> typename Grid::Face_handle { return it; });
         else
-            return std::ranges::subrange(grid.finite_cells_begin(), grid.finite_cells_end());
+            return grid.finite_cell_handles()
+                | std::views::transform([] (auto it) -> typename Grid::Cell_handle { return it; });
     }
 };
 
@@ -143,8 +145,8 @@ template<Concepts::CGALGrid Grid>
 struct CellPoints<Grid, GridFormat::CGAL::Cell<Grid>> {
     static std::ranges::range auto get(const Grid&, const GridFormat::CGAL::Cell<Grid>& cell) {
         static constexpr int num_corners = Concepts::CGALGrid2D<Grid> ? 3 : 4;
-        return std::views::iota(0, num_corners) | std::views::transform([&] (int i) {
-            return cell.vertex(i);
+        return std::views::iota(0, num_corners) | std::views::transform([=] (int i) {
+            return cell->vertex(i);
         });
     }
 };
