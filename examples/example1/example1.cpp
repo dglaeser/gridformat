@@ -14,7 +14,11 @@
 // that we can export the data into suitable file formats.
 class VoxelData {
  public:
-    struct Voxel { std::size_t index; };
+    struct Voxel {
+        std::size_t x;
+        std::size_t y;
+        std::size_t z;
+    };
 
     VoxelData(std::array<std::size_t, 3> dimensions)
     : _dimensions{std::move(dimensions)}
@@ -22,32 +26,34 @@ class VoxelData {
     {}
 
     friend auto voxels(const VoxelData& vd) {
-        return std::views::iota(std::size_t{0}, vd.size())
-            | std::views::transform([] (std::size_t i) { return Voxel{i}; });
+        // `GridFormat` comes with the `MDIndexRange` that one can use to
+        // iterate over the multi-dimensional indices within a given layout:
+        using GridFormat::MDIndex;
+        using GridFormat::MDLayout;
+        return GridFormat::MDIndexRange{MDLayout{vd._dimensions}} | std::views::transform([] (const MDIndex& i) {
+            return Voxel{i.get(0), i.get(1), i.get(2)};
+        });
     }
 
     std::size_t size(int direction) const { return _dimensions.at(direction); }
     std::size_t size() const { return _data.size(); }
 
-    void set(const double value, const Voxel& v) { _data.at(v.index) = value; }
-    double get(const Voxel& v) const { return _data.at(v.index); }
+    void set(const double value, const Voxel& v) { _data.at(_index(v)) = value; }
+    double get(const Voxel& v) const { return _data.at(_index(v)); }
 
     auto center(const Voxel& v) const {
-        const std::size_t res = v.index%(_dimensions[0]*_dimensions[1]);
-        const std::size_t iz = v.index/(_dimensions[0]*_dimensions[1]);
-        const std::size_t iy = res/_dimensions[0];
-        const std::size_t ix = res%_dimensions[0];
-        // add 0.5 to get the center of the voxel
         return std::array{
-            static_cast<double>(ix) + 0.5,
-            static_cast<double>(iy) + 0.5,
-            static_cast<double>(iz) + 0.5
+            static_cast<double>(v.x) + 0.5,
+            static_cast<double>(v.y) + 0.5,
+            static_cast<double>(v.z) + 0.5
         };
     }
 
  private:
-    std::size_t _index(const std::array<std::size_t, 3>& voxel) const {
-        return voxel[2]*(_dimensions[0]*_dimensions[1]) + voxel[1]*_dimensions[0] + voxel[0];
+    std::size_t _index(const Voxel& v) const {
+        return v.z*_dimensions[0]*_dimensions[1]
+            + v.y*_dimensions[0]
+            + v.x;
     }
 
     std::array<std::size_t, 3> _dimensions;
@@ -70,21 +76,11 @@ struct Cells<VoxelData> {
 template<>
 struct Points<VoxelData> {
     static std::ranges::empty_view<int> get(const VoxelData& voxel_data) {
-        // For image grids, this point range is only needed if we want to write out
+        // For image grids, y point range is only needed if we want to write out
         // field data defined on points. Our VoxelData does not really carry a notion
         // of points, so let us just throw an exception if someone tries to call this.
-        // Note that we could easily implement this, for instance, by simply returning a
-        // sequence of indices that represent our grid "points" (see comment in the
-        // Location trait for information on what we would have to do there):
-        //
-        // const std::size_t number_of_points = (voxel_data.size(0) + 1)
-        //                                     *(voxel_data.size(1) + 1)
-        //                                     *(voxel_data.size(2) + 1);
-        // return std::views::iota(std::size_t{0}, number_of_points);
-        //
-        // Instead of the above, we just throw an exception. Note however, that we use
-        // an empty range of integers as return type, so that GridFormat can deduce a
-        // "point type" for our grid (thus, in this case int)
+        // Note however, that we use an empty range of integers as return type, so that
+        // GridFormat can deduce a "point type" for our grid (thus, in this case int)
         throw std::runtime_error("VoxelData does not implement points");
     }
 };
@@ -116,12 +112,7 @@ struct Spacing<VoxelData> {
 template<>
 struct Location<VoxelData, typename VoxelData::Voxel> {
     static auto get(const VoxelData& voxel_data, const typename VoxelData::Voxel& voxel) {
-        const auto coords = voxel_data.center(voxel);
-        return std::array{
-            static_cast<std::size_t>(coords[0]),
-            static_cast<std::size_t>(coords[1]),
-            static_cast<std::size_t>(coords[2])
-        };
+        return std::array{voxel.x, voxel.y, voxel.z};
     }
 };
 
@@ -129,9 +120,6 @@ struct Location<VoxelData, typename VoxelData::Voxel> {
 // which we defined in the Points trait to be of type int. Again, we simply throw if this is tried
 // to be called. Note that we must specify a return type that fulfills the requirements of Location,
 // that is, it must be a statically sized range with size equal to the grid dimensions.
-//
-// If we had returned a range of indices for the points as written in the comments of the `Points` trait,
-// we would have to identify the location of a point, given its index (similar to the code in voxel_data.center()).
 template<>
 struct Location<VoxelData, int> {
     static std::array<std::size_t, 3> get(const VoxelData&, int) {

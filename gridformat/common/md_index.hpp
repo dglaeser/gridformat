@@ -20,6 +20,7 @@
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/reserved_vector.hpp>
+#include <gridformat/common/iterator_facades.hpp>
 #include <gridformat/common/md_layout.hpp>
 
 namespace GridFormat {
@@ -62,12 +63,12 @@ class MDIndex {
         return _indices.size();
     }
 
-    std::size_t get(std::size_t dim) const {
-        return _indices[dim];
+    std::size_t get(unsigned int codim) const {
+        return _indices[codim];
     }
 
-    void set(std::size_t dim, std::size_t index) {
-        _indices[dim] = index;
+    void set(unsigned int codim, std::size_t index) {
+        _indices[codim] = index;
     }
 
     bool operator==(const MDIndex& other) const {
@@ -88,6 +89,79 @@ class MDIndex {
 
  private:
     ReservedVector<std::size_t, buffered_dimensions> _indices;
+};
+
+
+//! A range over multi-dimensional indices within a given layout
+class MDIndexRange {
+    class Iterator
+    : public ForwardIteratorFacade<Iterator, MDIndex, const MDIndex&> {
+     public:
+        Iterator() = default;
+        Iterator(const MDLayout& layout, bool is_end = false)
+        : _layout{&layout}
+        , _current{layout} {
+            if (is_end)
+                _current.set(0, layout.extent(0));
+        }
+
+     private:
+        friend IteratorAccess;
+
+        const MDIndex& _dereference() const {
+            return _current;
+        }
+
+        bool _is_equal(const Iterator& other) const {
+            return _layout == other._layout && _current == other._current;
+        }
+
+        void _increment() {
+            assert(!_is_end());
+            unsigned int codim = _current.size() - 1;
+            while (true) {
+                _increment_at(codim);
+                if (_current.get(codim) >= _layout->extent(codim)) {
+                    if (codim == 0)
+                        break;
+                    _current.set(codim, 0);
+                    codim--;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        void _increment_at(unsigned int codim) {
+            _current.set(codim, _current.get(codim) + 1);
+        }
+
+        bool _is_end() const {
+            return _current.get(0) >= _layout->extent(0);
+        }
+
+        const MDLayout* _layout;
+        MDIndex _current;
+    };
+
+ public:
+    explicit MDIndexRange(MDLayout layout)
+    : _layout{std::move(layout)}
+    {}
+
+    explicit MDIndexRange(const std::vector<std::size_t>& dimensions)
+    : MDIndexRange(MDLayout{dimensions})
+    {}
+
+    auto begin() const { return Iterator{_layout}; }
+    auto end() const { return Iterator{_layout, true}; }
+
+    const MDLayout& layout() const {
+        return _layout;
+    }
+
+ private:
+    MDLayout _layout;
 };
 
 

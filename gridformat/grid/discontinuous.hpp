@@ -67,64 +67,68 @@ namespace DiscontinuousGridDetail {
 
     template<typename T> struct IsDiscontinuousCell : public std::false_type {};
     template<typename C> struct IsDiscontinuousCell<Cell<C>> : public std::true_type {};
-
+    template<typename T> struct OwnsHostCell;
+    template<typename C> struct OwnsHostCell<Cell<C>> {
+        static constexpr bool value = !std::is_lvalue_reference_v<LVReferenceOrValue<C>>;
+    };
 
     template<typename _P, typename _C>
     class Point {
         using PStorage = LVReferenceOrValue<_P>;
         using CStorage = LVReferenceOrValue<_C>;
+        static_assert(IsDiscontinuousCell<std::remove_cvref_t<_C>>::value);
+
+     public:
         using Cell = std::remove_cvref_t<_C>;
         using HostCell = typename Cell::HostCell;
         using HostPoint = std::remove_cvref_t<_P>;
-        static_assert(IsDiscontinuousCell<Cell>::value);
 
-     public:
         template<typename P, typename C>
             requires(std::convertible_to<PStorage, P> and
                      std::convertible_to<CStorage, C>)
         Point(P point, C cell, std::size_t i)
-        : _point{std::forward<_P>(point)}
-        , _cell{std::forward<_C>(cell)}
+        : _host_point{std::forward<P>(point)}
+        , _cell{std::forward<C>(cell)}
         , _index_in_host{i}
         {}
 
         const Cell& cell() const { return _cell; }
         const HostCell& host_cell() const { return _cell.host_cell(); }
-        const HostPoint& host_point() const { return *this; }
-        operator const HostPoint&() const { return _point; }
+        const HostPoint& host_point() const { return _host_point; }
+        operator const HostPoint&() const { return _host_point; }
         std::size_t index_in_host() const { return _index_in_host; }
 
      private:
-        LVReferenceOrValue<_P> _point;
-        LVReferenceOrValue<_C> _cell;
+        PStorage _host_point;
+        CStorage _cell;
         std::size_t _index_in_host;
     };
 
     template<typename P, typename C>
     Point(P&&, C&&, std::size_t) -> Point<P, C>;
 
+    template<typename HostGrid>
+    using HostCellRange = decltype(GridFormat::cells(std::declval<const HostGrid&>()));
 
     template<typename HostGrid>
-    using CellType = Cell<
-        std::ranges::range_reference_t<
-            decltype(GridFormat::cells(std::declval<const HostGrid&>()))
-        >
-    >;
+    using HostCellPointRange = decltype(GridFormat::points(
+        std::declval<const HostGrid&>(),
+        std::declval<const GridFormat::Cell<HostGrid>&>())
+    );
 
     template<typename HostGrid>
-    using CellPointType = Point<
-        std::ranges::range_reference_t<
-            decltype(GridFormat::points(
-                std::declval<const HostGrid&>(),
-                std::declval<const GridFormat::Cell<HostGrid>&>()
-            ))
-        >,
-        Cell<
-            std::ranges::range_reference_t<
-                decltype(GridFormat::cells(std::declval<const HostGrid&>()))
-            >
-        >
-    >;
+    using HostCellPointRangeStorage = typename PointRangeStorage<HostCellPointRange<HostGrid>>::type;
+
+    template<typename HostGrid>
+    using HostCellPointReference = std::iterator_traits<
+        std::ranges::iterator_t<HostCellPointRangeStorage<HostGrid>>
+    >::reference;
+
+    template<typename HostGrid>
+    using CellType = Cell<std::ranges::range_reference_t<HostCellRange<HostGrid>>>;
+
+    template<typename HostGrid>
+    using CellPointType = Point<HostCellPointReference<HostGrid>, CellType<HostGrid>>;
 
 
     template<typename HostGrid, typename CellIt, typename CellSentinel>
@@ -132,12 +136,19 @@ namespace DiscontinuousGridDetail {
     : public ForwardIteratorFacade<CellPointIterator<HostGrid, CellIt, CellSentinel>,
                                    CellPointType<HostGrid>,
                                    CellPointType<HostGrid>> {
-        using PointRange = decltype(GridFormat::points(
-            std::declval<const HostGrid&>(),
-            std::declval<const GridFormat::Cell<HostGrid>&>())
-        );
-        using PointRangeIterator = std::ranges::iterator_t<PointRange>;
-        using PointRangeSentinel = std::ranges::sentinel_t<PointRange>;
+        using PointRangeStorage = HostCellPointRangeStorage<HostGrid>;
+        using PointRangeIterator = std::ranges::iterator_t<PointRangeStorage>;
+        using PointRangeSentinel = std::ranges::sentinel_t<PointRangeStorage>;
+
+        // if the cell iterator yields rvalue references, we have to cache
+        // the current cell, so that we can safely obtain a point range from it.
+        // This is necessary for the case that the user returns a transformed range,
+        // capturing the given cell by reference. That reference would otherwise be
+        // dangling...
+        using Cell = std::iterator_traits<CellIt>::value_type;
+        static_assert(IsDiscontinuousCell<Cell>::value);
+        static constexpr bool owns_host_cell = OwnsHostCell<Cell>::value;
+        using StoredCell = std::conditional_t<owns_host_cell, Cell, None>;
 
      public:
         CellPointIterator() = default;
@@ -168,7 +179,9 @@ namespace DiscontinuousGridDetail {
 
      private:
         void _set_point_range() {
-            _points = GridFormat::points(*_grid, (*_cell_it).host_cell());
+            if constexpr (owns_host_cell)
+                _cell = (*_cell_it);
+            _points = GridFormat::points(*_grid, _get_cell().host_cell());
             _point_it = std::ranges::begin(_points.value());
             _point_end_it = std::ranges::end(_points.value());
             _local_point_index = 0;
@@ -197,14 +210,22 @@ namespace DiscontinuousGridDetail {
         }
 
         CellPointType<HostGrid> _dereference() const {
-            return {*_point_it.value(), Cell{*_cell_it}, _local_point_index};
+            return {*(_point_it.value()), Cell{_get_cell()}, _local_point_index};
+        }
+
+        decltype(auto) _get_cell() const {
+            if constexpr (owns_host_cell)
+                return _cell.value();
+            else
+                return *_cell_it;
         }
 
         const HostGrid* _grid{nullptr};
         CellIt _cell_it;
         CellSentinel _cell_end_it;
+        std::optional<StoredCell> _cell;
 
-        std::optional<typename PointRangeStorage<PointRange>::type> _points;
+        std::optional<PointRangeStorage> _points;
         std::optional<PointRangeIterator> _point_it;
         std::optional<PointRangeSentinel> _point_end_it;
         unsigned int _local_point_index{0};
@@ -217,9 +238,10 @@ namespace DiscontinuousGridDetail {
     template<typename Grid, typename CellRange>
     class CellPointRange {
      public:
-        explicit CellPointRange(const Grid& grid, CellRange range)
+        template<typename _Cells>
+        explicit CellPointRange(const Grid& grid, _Cells&& range)
         : _grid{&grid}
-        , _range{std::forward<CellRange>(range)}
+        , _range{std::forward<_Cells>(range)}
         {}
 
         auto begin() const {
@@ -359,7 +381,7 @@ template<typename G>
 struct PointCoordinates<DiscontinuousGrid<G>, typename DiscontinuousGrid<G>::Point> {
     static decltype(auto) get(const DiscontinuousGrid<G>& grid,
                               const typename DiscontinuousGrid<G>::Point& p) {
-        return PointCoordinates<G, Point<G>>::get(grid, p.host_point());
+        return PointCoordinates<G, Point<G>>::get(grid.host_grid(), p.host_point());
     }
 };
 
@@ -367,7 +389,7 @@ template<typename G>
 struct CellPoints<DiscontinuousGrid<G>, typename DiscontinuousGrid<G>::Cell> {
     static auto get(const DiscontinuousGrid<G>& grid,
                     const typename DiscontinuousGrid<G>::Cell& c) {
-        return Ranges::enumerated(CellPoints<G, Cell<G>>::get(grid, c))
+        return Ranges::enumerated(CellPoints<G, Cell<G>>::get(grid.host_grid(), c.host_cell()))
             | std::views::transform([&] <typename T> (T&& pair) {
                 if constexpr (std::is_lvalue_reference_v<std::tuple_element<1, T>>)
                     return typename DiscontinuousGrid<G>::Point{
@@ -393,7 +415,7 @@ template<typename G>
 struct CellType<DiscontinuousGrid<G>, typename DiscontinuousGrid<G>::Cell> {
     static auto get(const DiscontinuousGrid<G>& grid,
                     const typename DiscontinuousGrid<G>::Cell& cell) {
-        return CellType<G, Cell<G>>::get(grid, cell);
+        return CellType<G, Cell<G>>::get(grid.host_grid(), cell.host_cell());
     }
 };
 

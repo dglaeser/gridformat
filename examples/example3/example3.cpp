@@ -4,41 +4,13 @@
 #include <numbers>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Triangulation_vertex_base_with_info_2.h>
 #include <CGAL/Triangulation_2.h>
 
-#include <gridformat/traits/cgal.hpp>
 #include <gridformat/gridformat.hpp>
-
-// CGAL triangulations do not have a standard way of associating indices
-// with grid vertices. One approach is to use the vertex type with an info
-// object, which we can use to attach indices to grid vertices
-struct VertexInfo { std::size_t id; };
-
-using Kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
-using Vertex = CGAL::Triangulation_vertex_base_with_info_2<VertexInfo, Kernel>;
-using Triangulation = CGAL::Triangulation_2<Kernel, CGAL::Triangulation_data_structure_2<Vertex>>;
+#include <gridformat/traits/cgal.hpp>
 
 
-// Since there is no defined way of retrieving vertex indices in CGAL triangulations,
-// the respective trait is not predefined. After having defined the info object, we can now implement it.
-namespace GridFormat::Traits {
-
-template<>
-struct PointId<Triangulation, typename Triangulation::Vertex> {
-    static std::size_t get(const Triangulation&, const typename Triangulation::Vertex& v) {
-        return v.info().id;
-    }
-};
-
-}  // namespace GridFormat::Traits
-
-
-void set_vertex_indices(Triangulation& triangulation) {
-    std::ranges::for_each(triangulation.finite_vertex_handles(), [i=int{0}] (auto handle) mutable {
-        handle->info().id = i++;
-    });
-}
+using Triangulation = CGAL::Triangulation_2<CGAL::Exact_predicates_inexact_constructions_kernel>;
 
 void add_points(Triangulation& triangulation) {
     const auto add_points_at_radius = [&] (double r) {
@@ -55,14 +27,29 @@ void add_points(Triangulation& triangulation) {
 int main() {
     Triangulation triangulation;
     add_points(triangulation);
-    set_vertex_indices(triangulation);
 
     // We've seen in the previous examples how to select options on a file format
     // The VTK-XML formats provide another convenient way to select those options:
     const auto format = GridFormat::vtp.with_encoding(GridFormat::Encoding::base64)
                                        .with_data_format(GridFormat::VTK::DataFormat::appended)
                                        .with_compression(GridFormat::none);
-    const auto filename = GridFormat::Writer{format, triangulation}.write("cgal_triangulation");
+    GridFormat::Writer writer{format, triangulation};
+
+    // The predefined cgal traits yield CGAL handles for cells/points. That is,
+    // the point type is Triangulation::Vertex_handle, while the cell type is
+    // Triangulation::Face_handle (in 2D) or Triangulation::Cell_handle (in 3D)
+    // These handles behave like pointers, and we need to dereference them.
+    writer.set_point_field("pfield", [] (const auto& vertex_handle) {
+        const auto vertex_x_pos = vertex_handle->point().x();
+        return std::sin(vertex_x_pos*std::numbers::pi*3.0);
+    });
+
+    writer.set_cell_field("cfield", [] (const auto& cell_handle) {
+        const auto first_cell_vertex_x_pos = cell_handle->vertex(0)->point().x();
+        return std::sin(first_cell_vertex_x_pos*std::numbers::pi*3.0);
+    });
+
+    const auto filename = writer.write("cgal_triangulation");
     std::cout << "Wrote '" << filename << "'" << std::endl;
     return 0;
 }

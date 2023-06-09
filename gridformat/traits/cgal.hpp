@@ -14,11 +14,13 @@
 #include <ranges>
 #include <vector>
 #include <array>
+#include <utility>
 #include <concepts>
 #include <type_traits>
 
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/grid/traits.hpp>
+#include <gridformat/grid/type_traits.hpp>
 #include <gridformat/grid/cell_type.hpp>
 
 // Forward declaration of the triangulation classes.
@@ -46,9 +48,14 @@ namespace Concepts {
 #ifndef DOXYGEN
 namespace CGALDetail {
 
-    // helper function to deduce the actually set LockDataStructure
-    // the thing is that Triangulation_3 exports a LockDataStructure type that
-    // may be different from the one originally set by the user.
+    // helper functions to deduce the actually set TriangulationDataStructure
+    // and LockDataStructure. The thing is that Triangulation_3 exports types
+    // that may be different from the one originally set by the user. For instance,
+    // per default it uses CGAL::Default, but then exports the actually chosen default.
+    template<typename K, typename TDS>
+    TDS deduce_tds(const CGAL::Triangulation_2<K, TDS>&) { return {}; }
+    template<typename K, typename TDS, typename LDS>
+    TDS deduce_tds(const CGAL::Triangulation_3<K, TDS, LDS>&) { return {}; }
     template<typename K, typename TDS, typename LDS>
     LDS deduce_lds(const CGAL::Triangulation_3<K, TDS, LDS>&) { return {}; }
 
@@ -61,12 +68,12 @@ namespace CGALDetail {
 #endif  // DOXYGEN
 
 template<typename T>
-concept CGALGrid2D = requires {
+concept CGALGrid2D = requires(const T& grid) {
     typename T::Geom_traits;
     typename T::Triangulation_data_structure;
     requires std::derived_from<T, CGAL::Triangulation_2<
         typename T::Geom_traits,
-        typename T::Triangulation_data_structure
+        decltype(CGALDetail::deduce_tds(grid))
     >>;
 };
 
@@ -77,7 +84,7 @@ concept CGALGrid3D = requires(const T& grid) {
     typename T::Lock_data_structure;
     requires std::derived_from<T, CGAL::Triangulation_3<
         typename T::Geom_traits,
-        typename T::Triangulation_data_structure,
+        decltype(CGALDetail::deduce_tds(grid)),
         decltype(CGALDetail::deduce_lds(grid))
     >>;
 };
@@ -96,8 +103,8 @@ concept CGALPointWrapper = requires(const T& wrapper) {
 namespace CGAL {
 
 template<typename T> struct CellType;
-template<Concepts::CGALGrid2D T> struct CellType<T> : public std::type_identity<typename T::Face> {};
-template<Concepts::CGALGrid3D T> struct CellType<T> : public std::type_identity<typename T::Cell> {};
+template<Concepts::CGALGrid2D T> struct CellType<T> : public std::type_identity<typename T::Face_handle> {};
+template<Concepts::CGALGrid3D T> struct CellType<T> : public std::type_identity<typename T::Cell_handle> {};
 template<Concepts::CGALGrid T> using Cell = typename CellType<T>::type;
 
 template<Concepts::CGALGrid T>
@@ -123,16 +130,19 @@ template<Concepts::CGALGrid Grid>
 struct Cells<Grid> {
     static std::ranges::range auto get(const Grid& grid) {
         if constexpr (Concepts::CGALGrid2D<Grid>)
-            return std::ranges::subrange(grid.finite_faces_begin(), grid.finite_faces_end());
+            return grid.finite_face_handles()
+                | std::views::transform([] (auto it) -> typename Grid::Face_handle { return it; });
         else
-            return std::ranges::subrange(grid.finite_cells_begin(), grid.finite_cells_end());
+            return grid.finite_cell_handles()
+                | std::views::transform([] (auto it) -> typename Grid::Cell_handle { return it; });
     }
 };
 
 template<Concepts::CGALGrid Grid>
 struct Points<Grid> {
     static std::ranges::range auto get(const Grid& grid) {
-        return std::ranges::subrange(grid.finite_vertices_begin(), grid.finite_vertices_end());
+        return grid.finite_vertex_handles()
+            | std::views::transform([] (auto it) -> typename Grid::Vertex_handle { return it; });
     }
 };
 
@@ -140,16 +150,23 @@ template<Concepts::CGALGrid Grid>
 struct CellPoints<Grid, GridFormat::CGAL::Cell<Grid>> {
     static std::ranges::range auto get(const Grid&, const GridFormat::CGAL::Cell<Grid>& cell) {
         static constexpr int num_corners = Concepts::CGALGrid2D<Grid> ? 3 : 4;
-        return std::views::iota(0, num_corners) | std::views::transform([&] (int i) {
-            return *cell.vertex(i);
+        return std::views::iota(0, num_corners) | std::views::transform([=] (int i) {
+            return cell->vertex(i);
         });
     }
 };
 
 template<Concepts::CGALGrid Grid>
-struct PointCoordinates<Grid, typename Grid::Vertex> {
-    static std::ranges::range auto get(const Grid&, const typename Grid::Vertex& vertex) {
-        return CGAL::to_double_array(vertex.point());
+struct PointCoordinates<Grid, typename Grid::Vertex_handle> {
+    static std::ranges::range auto get(const Grid&, const typename Grid::Vertex_handle& vertex) {
+        return CGAL::to_double_array(vertex->point());
+    }
+};
+
+template<Concepts::CGALGrid Grid>
+struct PointId<Grid, typename Grid::Vertex_handle> {
+    static std::size_t get(const Grid&, const typename Grid::Vertex_handle& v) {
+        return ::CGAL::Handle_hash_function{}(v);
     }
 };
 

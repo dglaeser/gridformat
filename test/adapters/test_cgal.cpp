@@ -8,8 +8,6 @@
 #pragma GCC diagnostic ignored "-Wnull-dereference"
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Triangulation_vertex_base_with_info_2.h>
-#include <CGAL/Triangulation_vertex_base_with_info_3.h>
 #include <CGAL/Triangulation_2.h>
 #include <CGAL/Triangulation_3.h>
 #include <CGAL/Delaunay_triangulation_2.h>
@@ -34,55 +32,41 @@
 #include "../testing.hpp"
 
 
-// register the missing trait - cgal does not have a standard way of retrieving vertex indices
-// in this test, we use the widely-used approach of attaching an info object to the vertices
-namespace GridFormat::Traits {
-
-template<GridFormat::Concepts::CGALGrid T>
-struct PointId<T, typename T::Vertex> {
-    static std::size_t get(const T&, const typename T::Vertex& vertex) {
-        return vertex.info();
-    }
+// we wrap cgal grids once more, to test if the discontinuous grid
+// wrapper also works if we capture a cell by reference in the CellPoints trait.
+// This reference would be dangling because cgal grids yield temporaries as cells
+// (namely handles), but we built in extra logic in the discontinuous grid wrapper
+// to support this case.
+template<typename CGALGrid>
+class CGALGridTestWrapper {
+ public:
+    CGALGridTestWrapper(const CGALGrid& grid) : _grid{grid} {}
+    operator const CGALGrid&() const { return _grid; }
+ private:
+    const CGALGrid& _grid;
 };
 
+namespace GridFormat::Traits {
+template<typename G> struct Cells<CGALGridTestWrapper<G>> : public Cells<G> {};
+template<typename G> struct Points<CGALGridTestWrapper<G>> : public Points<G> {};
+
+template<typename G> struct NumberOfPoints<CGALGridTestWrapper<G>> : public NumberOfPoints<G> {};
+template<typename G> struct NumberOfCells<CGALGridTestWrapper<G>> : public NumberOfCells<G> {};
+
+template<typename G> struct PointCoordinates<CGALGridTestWrapper<G>, Point<G>> : public PointCoordinates<G, Point<G>> {};
+template<typename G> struct PointId<CGALGridTestWrapper<G>, Point<G>> : public PointId<G, Point<G>> {};
+template<typename G> struct CellPoints<CGALGridTestWrapper<G>, Cell<G>> : public CellPoints<G, Cell<G>> {};
+
+template<typename G> struct CellType<CGALGridTestWrapper<G>, Cell<G>> : public CellType<G, Cell<G>> {};
+template<typename G> struct NumberOfCellPoints<CGALGridTestWrapper<G>, Cell<G>> {
+    static std::ranges::range auto get(const CGALGridTestWrapper<G>& grid, const Cell<G>& cell) {
+        return std::views::iota(0, NumberOfCellPoints<G, Cell<G>>::get(grid.host_grid(), cell.host_cell()))
+            | std::views::transform([&] (std::integral auto i) {
+                return cell->vertex(i);
+            });
+    }
+};
 }  // namespace GridFormat::Traits
-
-
-template<typename Kernel, typename Base = CGAL::Triangulation_vertex_base_2<Kernel>>
-using VertexWithIndex2D = CGAL::Triangulation_vertex_base_with_info_2<unsigned, Kernel, Base>;
-template<typename Kernel, typename Base = CGAL::Triangulation_vertex_base_3<Kernel>>
-using VertexWithIndex3D = CGAL::Triangulation_vertex_base_with_info_3<unsigned, Kernel, Base>;
-
-template<typename Kernel,
-         typename Face = CGAL::Triangulation_face_base_2<Kernel>,
-         typename BaseVertex = CGAL::Triangulation_vertex_base_2<Kernel>>
-using TDS2D = CGAL::Triangulation_data_structure_2<VertexWithIndex2D<Kernel, BaseVertex>, Face>;
-template<typename Kernel,
-         typename Cell = CGAL::Triangulation_cell_base_3<Kernel>,
-         typename BaseVertex = CGAL::Triangulation_vertex_base_3<Kernel>>
-using TDS3D = CGAL::Triangulation_data_structure_3<VertexWithIndex3D<Kernel, BaseVertex>, Cell>;
-
-template<typename K>
-using RegularTriangulation2D = CGAL::Regular_triangulation_2<K, TDS2D<K,
-    CGAL::Regular_triangulation_face_base_2<K>,
-    CGAL::Regular_triangulation_vertex_base_2<K>
->>;
-
-template<typename K>
-using RegularTriangulation3D = CGAL::Regular_triangulation_3<K, TDS3D<K,
-    CGAL::Regular_triangulation_cell_base_3<K>,
-    CGAL::Regular_triangulation_vertex_base_3<K>
->>;
-
-template<typename K>
-using ConstrainedTriangulation2D = CGAL::Constrained_triangulation_2<K, TDS2D<K,
-    CGAL::Constrained_triangulation_face_base_2<K>
->>;
-
-template<typename K>
-using ConstrainedDelaunayTriangulation2D = CGAL::Constrained_Delaunay_triangulation_2<K, TDS2D<K,
-    CGAL::Constrained_triangulation_face_base_2<K>
->>;
 
 
 // helper function to compute the center of a grid cell
@@ -114,10 +98,6 @@ void insert_points_2d(T& triangulation) {
     triangulation.insert(typename T::Point{1., 0.});
     triangulation.insert(typename T::Point{1., 1.});
     triangulation.insert(typename T::Point{0., 1.});
-
-    unsigned int i = 0;
-    for (auto vertex_handle : triangulation.finite_vertex_handles())
-        vertex_handle->info() = i++;
 }
 
 template<typename T>
@@ -131,10 +111,10 @@ void insert_points_3d(T& triangulation) {
     triangulation.insert(typename T::Point{1., 0., 1.});
     triangulation.insert(typename T::Point{0., 1., 1.});
     triangulation.insert(typename T::Point{1., 1., 1.});
+}
 
-    unsigned int i = 0;
-    for (auto vertex_handle : triangulation.finite_vertex_handles())
-        vertex_handle->info() = i++;
+void print_write_message(const std::string& filename) {
+    std::cout << "Wrote '" << GridFormat::as_highlight(filename) << "'" << std::endl;
 }
 
 template<template<typename> typename Writer = GridFormat::VTUWriter,
@@ -150,26 +130,37 @@ void write(Grid grid, std::string prefix_addition = "") {
     GridFormat::Test::add_meta_data(writer);
     writer.set_point_field("pfunc", [&] (const auto& vertex) {
         return GridFormat::Test::test_function<double>(
-            GridFormat::CGAL::to_double_array(vertex.point())
+            GridFormat::CGAL::to_double_array(vertex->point())
         );
     });
     writer.set_cell_field("cfunc", [&] (const auto& cell) {
         const int num_corners = dim == 2 ? 3 : 4;
         return GridFormat::Test::test_function<double>(
-            GridFormat::CGAL::to_double_array(cell_center<typename Grid::Geom_traits>(cell, num_corners))
+            GridFormat::CGAL::to_double_array(cell_center<typename Grid::Geom_traits>(*cell, num_corners))
         );
     });
 
     prefix_addition = prefix_addition.empty() ? "" : "_" + prefix_addition;
     const auto filename = "cgal_vtu" + prefix_addition + "_" + std::to_string(dim) + "d_in_" + std::to_string(dim) + "d";
-    std::cout << "Wrote '" << GridFormat::as_highlight(writer.write(filename)) << "'" << std::endl;
+    print_write_message(writer.write(filename));
 
     // write a discontinuous file to make sure the discontinuous grid wrapper works with CGAL grids
-    GridFormat::DiscontinuousGrid discontinuous{grid};
-    Writer discontinuous_writer{discontinuous};
-    GridFormat::Test::add_meta_data(discontinuous_writer);
-    GridFormat::Test::add_discontinuous_point_field(discontinuous_writer);
-    discontinuous_writer.write(filename + "_discontinuous");
+    {
+        GridFormat::DiscontinuousGrid discontinuous{grid};
+        Writer discontinuous_writer{discontinuous};
+        GridFormat::Test::add_meta_data(discontinuous_writer);
+        GridFormat::Test::add_discontinuous_point_field(discontinuous_writer);
+        print_write_message(discontinuous_writer.write(filename + "_discontinuous"));
+    }
+
+    {  // .. and wrap it (see comments at the beginning of this file)
+        CGALGridTestWrapper wrapped{grid};
+        GridFormat::DiscontinuousGrid discontinuous{wrapped};
+        Writer discontinuous_writer{discontinuous};
+        GridFormat::Test::add_meta_data(discontinuous_writer);
+        GridFormat::Test::add_discontinuous_point_field(discontinuous_writer);
+        print_write_message(discontinuous_writer.write(filename + "_discontinuous_wrapped"));
+    }
 
     // Run a bunch of unit tests with the given grid
     using GridFormat::Testing::operator""_test;
@@ -201,29 +192,29 @@ int main() {
     using Kernel = CGAL::Exact_predicates_exact_constructions_kernel;
     using ExactKernel = CGAL::Exact_predicates_exact_constructions_kernel;
 
-    write(CGAL::Triangulation_2<Kernel, TDS2D<Kernel>>{});
-    write(CGAL::Triangulation_2<ExactKernel, TDS2D<ExactKernel>>{}, "exact");
-    write(CGAL::Delaunay_triangulation_2<Kernel, TDS2D<Kernel>>{}, "delaunay");
-    write(CGAL::Delaunay_triangulation_2<ExactKernel, TDS2D<ExactKernel>>{}, "delaunay_exact");
+    write(CGAL::Triangulation_2<Kernel>{});
+    write(CGAL::Triangulation_2<ExactKernel>{}, "exact");
+    write(CGAL::Delaunay_triangulation_2<Kernel>{}, "delaunay");
+    write(CGAL::Delaunay_triangulation_2<ExactKernel>{}, "delaunay_exact");
 
-    write<GridFormat::VTPWriter>(CGAL::Delaunay_triangulation_2<ExactKernel, TDS2D<ExactKernel>>{}, "delaunay_exact_as_poly");
+    write<GridFormat::VTPWriter>(CGAL::Delaunay_triangulation_2<ExactKernel>{}, "delaunay_exact_as_poly");
 
-    write(RegularTriangulation2D<Kernel>{}, "regular");
-    write(RegularTriangulation2D<ExactKernel>{}, "regular_exact");
+    write(CGAL::Regular_triangulation_2<Kernel>{}, "regular");
+    write(CGAL::Regular_triangulation_2<ExactKernel>{}, "regular_exact");
 
-    write(ConstrainedTriangulation2D<Kernel>{}, "constrained");
-    write(ConstrainedTriangulation2D<ExactKernel>{}, "constrained_exact");
+    write(CGAL::Constrained_triangulation_2<Kernel>{}, "constrained");
+    write(CGAL::Constrained_triangulation_2<ExactKernel>{}, "constrained_exact");
 
-    write(ConstrainedDelaunayTriangulation2D<Kernel>{}, "constrained_delaunay");
-    write(ConstrainedDelaunayTriangulation2D<ExactKernel>{}, "constrained_delaunay_exact");
+    write(CGAL::Constrained_Delaunay_triangulation_2<Kernel>{}, "constrained_delaunay");
+    write(CGAL::Constrained_Delaunay_triangulation_2<ExactKernel>{}, "constrained_delaunay_exact");
 
     // Three-dimensional grids
-    write(CGAL::Triangulation_3<Kernel, TDS3D<Kernel>>{});
-    write(CGAL::Triangulation_3<ExactKernel, TDS3D<ExactKernel>>{}, "exact");
-    write(CGAL::Delaunay_triangulation_3<Kernel, TDS3D<Kernel>>{}, "delaunay");
-    write(CGAL::Delaunay_triangulation_3<ExactKernel, TDS3D<ExactKernel>>{}, "delaunay_exact");
-    write(RegularTriangulation3D<Kernel>{}, "regular");
-    write(RegularTriangulation3D<ExactKernel>{}, "regular_exact");
+    write(CGAL::Triangulation_3<Kernel>{});
+    write(CGAL::Triangulation_3<ExactKernel>{}, "exact");
+    write(CGAL::Delaunay_triangulation_3<Kernel>{}, "delaunay");
+    write(CGAL::Delaunay_triangulation_3<ExactKernel>{}, "delaunay_exact");
+    write(CGAL::Regular_triangulation_3<Kernel>{}, "regular");
+    write(CGAL::Regular_triangulation_3<ExactKernel>{}, "regular_exact");
 
     return 0;
 }
