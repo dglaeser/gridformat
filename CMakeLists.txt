@@ -91,3 +91,5 @@ if (GRIDFORMAT_BUILD_DOCS)
     message(STATUS "Including documentation targets")
     add_subdirectory(docs)
 endif()
+
+add_subdirectory(paper)
