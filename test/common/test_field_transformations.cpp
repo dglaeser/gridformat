@@ -108,9 +108,11 @@ int main() {
     using namespace GridFormat::Testing::Literals;
     using GridFormat::Testing::operator""_test;
     using GridFormat::Testing::expect;
+    using GridFormat::Testing::throws;
     using GridFormat::Testing::eq;
 
     using GridFormat::TransformedField;
+    using GridFormat::ExtendedField;
     using GridFormat::FieldTransformation::identity;
     using GridFormat::FieldTransformation::extend_to;
     using GridFormat::FieldTransformation::extend_all_to;
@@ -192,6 +194,24 @@ int main() {
             flattened.serialized().template as_span_of<double>(),
             std::vector<double>{2, 3, 0, 4, 5, 0}
         ));
+    };
+
+    "transformed_field_extend_1d_throws"_test = [] () {
+        auto field_ptr = GridFormat::make_field_ptr(RangeField{
+            std::vector<int>{2, 3}, GridFormat::Precision<double>{}
+        });
+        expect(throws<GridFormat::SizeError>([&] () { ExtendedField{field_ptr, GridFormat::MDLayout{{3}}}.layout(); }));
+        expect(throws<GridFormat::SizeError>([&] () { TransformedField{field_ptr, extend_to(GridFormat::MDLayout{{3}})}; }));
+    };
+
+    "transformed_field_extend_layout_mismatch_throws"_test = [] () {
+        auto field_ptr = GridFormat::make_field_ptr(RangeField{
+            std::vector<std::array<int, 2>>{{2, 3}, {2, 3}},
+            GridFormat::Precision<double>{}
+        });
+        expect(throws<GridFormat::SizeError>([&] () { ExtendedField{field_ptr, GridFormat::MDLayout{{3, 3}}}.layout(); }));
+        expect(throws<GridFormat::SizeError>([&] () { TransformedField{field_ptr, extend_to(GridFormat::MDLayout{{3, 3}})}.layout(); }));
+        TransformedField{field_ptr, extend_to(GridFormat::MDLayout{{4}})}.layout();
     };
 
     return 0;
