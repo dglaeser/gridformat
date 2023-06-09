@@ -62,12 +62,12 @@ class MDIndex {
         return _indices.size();
     }
 
-    std::size_t get(std::size_t dim) const {
-        return _indices[dim];
+    std::size_t get(unsigned int codim) const {
+        return _indices[codim];
     }
 
-    void set(std::size_t dim, std::size_t index) {
-        _indices[dim] = index;
+    void set(unsigned int codim, std::size_t index) {
+        _indices[codim] = index;
     }
 
     bool operator==(const MDIndex& other) const {
