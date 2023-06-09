@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <vector>
+#include <sstream>
 
 #include <gridformat/common/md_layout.hpp>
 #include "../testing.hpp"
@@ -43,6 +44,14 @@ int main() {
         expect(eq(layout.extent(1), std::size_t{4}));
         expect(eq(layout.extent(2), std::size_t{2}));
         expect(eq(layout.number_of_entries(), std::size_t{24}));
+    };
+
+    "md_layout_output"_test = [] () {
+        std::vector<std::array<double, 4>> vector(2);
+        const auto layout = GridFormat::get_md_layout(vector);
+        std::ostringstream s;
+        s << layout;
+        expect(eq(s.str(), std::string{"(2,4)"}));
     };
 
     return 0;

@@ -3,6 +3,7 @@
 
 #include <ranges>
 #include <vector>
+#include <sstream>
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/md_index.hpp>
@@ -100,6 +101,13 @@ int main() {
         expect(eq(index.get(1), std::size_t{42}));
         expect(eq(other.get(0), std::size_t{1}));
         expect(eq(other.get(1), std::size_t{2}));
+    };
+
+    "md_index_output"_test = [] () {
+        MDIndex index{{1, 2}};
+        std::ostringstream s;
+        s << index;
+        expect(eq(s.str(), std::string{"(1,2)"}));
     };
 
     return 0;
