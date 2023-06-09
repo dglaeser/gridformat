@@ -150,7 +150,7 @@ void write(Grid grid, std::string prefix_addition = "") {
     GridFormat::Test::add_meta_data(writer);
     writer.set_point_field("pfunc", [&] (const auto& vertex) {
         return GridFormat::Test::test_function<double>(
-            GridFormat::CGAL::to_double_array(vertex.point())
+            GridFormat::CGAL::to_double_array(vertex->point())
         );
     });
     writer.set_cell_field("cfunc", [&] (const auto& cell) {

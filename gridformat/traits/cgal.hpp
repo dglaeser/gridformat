@@ -14,11 +14,13 @@
 #include <ranges>
 #include <vector>
 #include <array>
+#include <utility>
 #include <concepts>
 #include <type_traits>
 
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/grid/traits.hpp>
+#include <gridformat/grid/type_traits.hpp>
 #include <gridformat/grid/cell_type.hpp>
 
 // Forward declaration of the triangulation classes.
@@ -132,7 +134,8 @@ struct Cells<Grid> {
 template<Concepts::CGALGrid Grid>
 struct Points<Grid> {
     static std::ranges::range auto get(const Grid& grid) {
-        return std::ranges::subrange(grid.finite_vertices_begin(), grid.finite_vertices_end());
+        return grid.finite_vertex_handles()
+            | std::views::transform([] (auto it) -> typename Grid::Vertex_handle { return it; });
     }
 };
 
@@ -141,15 +144,22 @@ struct CellPoints<Grid, GridFormat::CGAL::Cell<Grid>> {
     static std::ranges::range auto get(const Grid&, const GridFormat::CGAL::Cell<Grid>& cell) {
         static constexpr int num_corners = Concepts::CGALGrid2D<Grid> ? 3 : 4;
         return std::views::iota(0, num_corners) | std::views::transform([&] (int i) {
-            return *cell.vertex(i);
+            return cell.vertex(i);
         });
     }
 };
 
 template<Concepts::CGALGrid Grid>
-struct PointCoordinates<Grid, typename Grid::Vertex> {
-    static std::ranges::range auto get(const Grid&, const typename Grid::Vertex& vertex) {
-        return CGAL::to_double_array(vertex.point());
+struct PointCoordinates<Grid, typename Grid::Vertex_handle> {
+    static std::ranges::range auto get(const Grid&, const typename Grid::Vertex_handle& vertex) {
+        return CGAL::to_double_array(vertex->point());
+    }
+};
+
+template<Concepts::CGALGrid Grid>
+struct PointId<Grid, typename Grid::Vertex_handle> {
+    static std::size_t get(const Grid&, const typename Grid::Vertex_handle& v) {
+        return ::CGAL::Handle_hash_function{}(v);
     }
 };
 
