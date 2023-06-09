@@ -279,6 +279,7 @@ namespace CommonDetail {
     }
 
     template<Concepts::StructuredEntitySet Grid>
+        requires(!Concepts::StaticallySizedRange<Grid>)
     std::string extents_string(const Grid& grid) {
         return extents_string(extents(grid));
     }
