@@ -24,14 +24,12 @@ namespace GridFormat {
 
 #ifndef DOXYGEN
 namespace FieldTransformationDetail {
-    class MDIndexMapWalk {
+    class BackwardsMDIndexMapWalk {
      public:
-        enum Direction { forward, backward };
-
         template<std::convertible_to<MDLayout> _L1,
                  std::convertible_to<MDLayout> _L2>
-        MDIndexMapWalk(_L1&& source_layout,
-                       _L2&& target_layout)
+        BackwardsMDIndexMapWalk(_L1&& source_layout,
+                                _L2&& target_layout)
         : _source_layout{std::forward<_L1>(source_layout)}
         , _target_layout{std::forward<_L2>(target_layout)} {
             if (_source_layout.dimension() != _target_layout.dimension())
@@ -45,27 +43,13 @@ namespace FieldTransformationDetail {
                 throw InvalidState("Only mapping into larger layouts supported");
 
             _compute_target_offsets();
-            set_direction(Direction::forward);
-        }
-
-        void set_direction(Direction dir) {
-            _direction = dir;
-            if (_direction == forward) {
-                _current = _make_begin_index(_source_layout);
-                _current_flat = 0;
-                _current_target_flat = 0;
-            } else {
-                _current = _make_end_index(_source_layout);
-                _current_flat = flat_index(_current, _source_layout);
-                _current_target_flat = flat_index(_current, _target_layout);
-            }
+            _current = _make_end_index(_source_layout);
+            _current_flat = flat_index(_current, _source_layout);
+            _current_target_flat = flat_index(_current, _target_layout);
         }
 
         void next() {
-            if (_direction == forward)
-                _increment();
-            else
-                _decrement();
+            _decrement();
         }
 
         bool is_finished() const {
@@ -90,22 +74,6 @@ namespace FieldTransformationDetail {
         }
 
      private:
-        void _increment() {
-            _increment(_source_layout.dimension() - 1);
-        }
-
-        void _increment(std::size_t i) {
-            _current.set(i, _current.get(i) + 1);
-            if (_current.get(i) >= _source_layout.extent(i) && i > 0) {
-                _current.set(i, 0);
-                _increment(i-1);
-            } else {
-                _current_flat++;
-                _current_target_flat++;
-                _current_target_flat += _target_offsets[i];
-            }
-        }
-
         void _decrement() {
             _decrement(_source_layout.dimension() - 1);
         }
@@ -161,7 +129,6 @@ namespace FieldTransformationDetail {
         MDLayout _target_layout;
         std::vector<std::size_t> _target_offsets;
 
-        Direction _direction;
         MDIndex _current;
         std::size_t _current_flat;
         std::size_t _current_target_flat;
@@ -275,9 +242,8 @@ class ExtendedField : public Field {
         if (orig_layout == new_layout)
             return serialization;
 
-        using Walk = FieldTransformationDetail::MDIndexMapWalk;
+        using Walk = FieldTransformationDetail::BackwardsMDIndexMapWalk;
         Walk index_walk{orig_layout, new_layout};
-        index_walk.set_direction(Walk::backward);
 
         _field->precision().visit([&] <typename T> (const Precision<T>&) {
             serialization.resize(new_layout.number_of_entries()*sizeof(T), typename Serialization::Byte{0});
