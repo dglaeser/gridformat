@@ -14,6 +14,7 @@ int main() {
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;
     using GridFormat::MDIndex;
+    using GridFormat::MDIndexRange;
 
     "md_index_construct_from_range"_test = [] () {
         MDIndex index{std::views::iota(0, 3)};
@@ -108,6 +109,43 @@ int main() {
         std::ostringstream s;
         s << index;
         expect(eq(s.str(), std::string{"(1,2)"}));
+    };
+
+    "md_index_range_1d"_test = [] () {
+        static_assert(std::ranges::forward_range<MDIndexRange>);
+        expect(std::ranges::equal(
+            MDIndexRange{{4}},
+            std::vector{
+                MDIndex{0},
+                MDIndex{1},
+                MDIndex{2},
+                MDIndex{3}
+            }
+        ));
+    };
+
+    "md_index_range_2d"_test = [] () {
+        static_assert(std::ranges::forward_range<MDIndexRange>);
+        expect(std::ranges::equal(
+            MDIndexRange{{2, 3}},
+            std::vector{
+                MDIndex{0, 0}, MDIndex{0, 1}, MDIndex{0, 2},
+                MDIndex{1, 0}, MDIndex{1, 1}, MDIndex{1, 2}
+            }
+        ));
+    };
+
+    "md_index_range_3d"_test = [] () {
+        static_assert(std::ranges::forward_range<MDIndexRange>);
+        expect(std::ranges::equal(
+            MDIndexRange{{2, 2, 1}},
+            std::vector{
+                MDIndex{0, 0, 0},
+                MDIndex{0, 1, 0},
+                MDIndex{1, 0, 0},
+                MDIndex{1, 1, 0},
+            }
+        ));
     };
 
     return 0;
