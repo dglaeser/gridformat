@@ -381,7 +381,7 @@ template<typename G>
 struct PointCoordinates<DiscontinuousGrid<G>, typename DiscontinuousGrid<G>::Point> {
     static decltype(auto) get(const DiscontinuousGrid<G>& grid,
                               const typename DiscontinuousGrid<G>::Point& p) {
-        return PointCoordinates<G, Point<G>>::get(grid, p.host_point());
+        return PointCoordinates<G, Point<G>>::get(grid.host_grid(), p.host_point());
     }
 };
 
@@ -389,7 +389,7 @@ template<typename G>
 struct CellPoints<DiscontinuousGrid<G>, typename DiscontinuousGrid<G>::Cell> {
     static auto get(const DiscontinuousGrid<G>& grid,
                     const typename DiscontinuousGrid<G>::Cell& c) {
-        return Ranges::enumerated(CellPoints<G, Cell<G>>::get(grid, c))
+        return Ranges::enumerated(CellPoints<G, Cell<G>>::get(grid.host_grid(), c.host_cell()))
             | std::views::transform([&] <typename T> (T&& pair) {
                 if constexpr (std::is_lvalue_reference_v<std::tuple_element<1, T>>)
                     return typename DiscontinuousGrid<G>::Point{
@@ -415,7 +415,7 @@ template<typename G>
 struct CellType<DiscontinuousGrid<G>, typename DiscontinuousGrid<G>::Cell> {
     static auto get(const DiscontinuousGrid<G>& grid,
                     const typename DiscontinuousGrid<G>::Cell& cell) {
-        return CellType<G, Cell<G>>::get(grid, cell);
+        return CellType<G, Cell<G>>::get(grid.host_grid(), cell.host_cell());
     }
 };
 

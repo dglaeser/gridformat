@@ -32,6 +32,43 @@
 #include "../testing.hpp"
 
 
+// we wrap cgal grids once more, to test if the discontinuous grid
+// wrapper also works if we capture a cell by reference in the CellPoints trait.
+// This reference would be dangling because cgal grids yield temporaries as cells
+// (namely handles), but we built in extra logic in the discontinuous grid wrapper
+// to support this case.
+template<typename CGALGrid>
+class CGALGridTestWrapper {
+ public:
+    CGALGridTestWrapper(const CGALGrid& grid) : _grid{grid} {}
+    operator const CGALGrid&() const { return _grid; }
+ private:
+    const CGALGrid& _grid;
+};
+
+namespace GridFormat::Traits {
+template<typename G> struct Cells<CGALGridTestWrapper<G>> : public Cells<G> {};
+template<typename G> struct Points<CGALGridTestWrapper<G>> : public Points<G> {};
+
+template<typename G> struct NumberOfPoints<CGALGridTestWrapper<G>> : public NumberOfPoints<G> {};
+template<typename G> struct NumberOfCells<CGALGridTestWrapper<G>> : public NumberOfCells<G> {};
+
+template<typename G> struct PointCoordinates<CGALGridTestWrapper<G>, Point<G>> : public PointCoordinates<G, Point<G>> {};
+template<typename G> struct PointId<CGALGridTestWrapper<G>, Point<G>> : public PointId<G, Point<G>> {};
+template<typename G> struct CellPoints<CGALGridTestWrapper<G>, Cell<G>> : public CellPoints<G, Cell<G>> {};
+
+template<typename G> struct CellType<CGALGridTestWrapper<G>, Cell<G>> : public CellType<G, Cell<G>> {};
+template<typename G> struct NumberOfCellPoints<CGALGridTestWrapper<G>, Cell<G>> {
+    static std::ranges::range auto get(const CGALGridTestWrapper<G>& grid, const Cell<G>& cell) {
+        return std::views::iota(0, NumberOfCellPoints<G, Cell<G>>::get(grid.host_grid(), cell.host_cell()))
+            | std::views::transform([&] (std::integral auto i) {
+                return cell->vertex(i);
+            });
+    }
+};
+}  // namespace GridFormat::Traits
+
+
 // helper function to compute the center of a grid cell
 template<typename FT, std::ranges::range R>
     requires(!GridFormat::Concepts::CGALPointWrapper<std::ranges::range_value_t<R>>)
@@ -76,6 +113,10 @@ void insert_points_3d(T& triangulation) {
     triangulation.insert(typename T::Point{1., 1., 1.});
 }
 
+void print_write_message(const std::string& filename) {
+    std::cout << "Wrote '" << GridFormat::as_highlight(filename) << "'" << std::endl;
+}
+
 template<template<typename> typename Writer = GridFormat::VTUWriter,
          GridFormat::Concepts::CGALGrid Grid>
 void write(Grid grid, std::string prefix_addition = "") {
@@ -101,14 +142,25 @@ void write(Grid grid, std::string prefix_addition = "") {
 
     prefix_addition = prefix_addition.empty() ? "" : "_" + prefix_addition;
     const auto filename = "cgal_vtu" + prefix_addition + "_" + std::to_string(dim) + "d_in_" + std::to_string(dim) + "d";
-    std::cout << "Wrote '" << GridFormat::as_highlight(writer.write(filename)) << "'" << std::endl;
+    print_write_message(writer.write(filename));
 
     // write a discontinuous file to make sure the discontinuous grid wrapper works with CGAL grids
-    GridFormat::DiscontinuousGrid discontinuous{grid};
-    Writer discontinuous_writer{discontinuous};
-    GridFormat::Test::add_meta_data(discontinuous_writer);
-    GridFormat::Test::add_discontinuous_point_field(discontinuous_writer);
-    discontinuous_writer.write(filename + "_discontinuous");
+    {
+        GridFormat::DiscontinuousGrid discontinuous{grid};
+        Writer discontinuous_writer{discontinuous};
+        GridFormat::Test::add_meta_data(discontinuous_writer);
+        GridFormat::Test::add_discontinuous_point_field(discontinuous_writer);
+        print_write_message(discontinuous_writer.write(filename + "_discontinuous"));
+    }
+
+    {  // .. and wrap it (see comments at the beginning of this file)
+        CGALGridTestWrapper wrapped{grid};
+        GridFormat::DiscontinuousGrid discontinuous{wrapped};
+        Writer discontinuous_writer{discontinuous};
+        GridFormat::Test::add_meta_data(discontinuous_writer);
+        GridFormat::Test::add_discontinuous_point_field(discontinuous_writer);
+        print_write_message(discontinuous_writer.write(filename + "_discontinuous_wrapped"));
+    }
 
     // Run a bunch of unit tests with the given grid
     using GridFormat::Testing::operator""_test;
