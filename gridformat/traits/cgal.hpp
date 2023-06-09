@@ -48,9 +48,14 @@ namespace Concepts {
 #ifndef DOXYGEN
 namespace CGALDetail {
 
-    // helper function to deduce the actually set LockDataStructure
-    // the thing is that Triangulation_3 exports a LockDataStructure type that
-    // may be different from the one originally set by the user.
+    // helper functions to deduce the actually set TriangulationDataStructure
+    // and LockDataStructure. The thing is that Triangulation_3 exports types
+    // that may be different from the one originally set by the user. For instance,
+    // per default it uses CGAL::Default, but then exports the actually chosen default.
+    template<typename K, typename TDS>
+    TDS deduce_tds(const CGAL::Triangulation_2<K, TDS>&) { return {}; }
+    template<typename K, typename TDS, typename LDS>
+    TDS deduce_tds(const CGAL::Triangulation_3<K, TDS, LDS>&) { return {}; }
     template<typename K, typename TDS, typename LDS>
     LDS deduce_lds(const CGAL::Triangulation_3<K, TDS, LDS>&) { return {}; }
 
@@ -63,12 +68,12 @@ namespace CGALDetail {
 #endif  // DOXYGEN
 
 template<typename T>
-concept CGALGrid2D = requires {
+concept CGALGrid2D = requires(const T& grid) {
     typename T::Geom_traits;
     typename T::Triangulation_data_structure;
     requires std::derived_from<T, CGAL::Triangulation_2<
         typename T::Geom_traits,
-        typename T::Triangulation_data_structure
+        decltype(CGALDetail::deduce_tds(grid))
     >>;
 };
 
@@ -79,7 +84,7 @@ concept CGALGrid3D = requires(const T& grid) {
     typename T::Lock_data_structure;
     requires std::derived_from<T, CGAL::Triangulation_3<
         typename T::Geom_traits,
-        typename T::Triangulation_data_structure,
+        decltype(CGALDetail::deduce_tds(grid)),
         decltype(CGALDetail::deduce_lds(grid))
     >>;
 };
