@@ -391,7 +391,7 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
 
         auto access_offset = step_dimensions;
         std::ranges::fill(access_offset, std::size_t{0});
-        access_offset[0] = this->_step_count - 1;
+        access_offset.at(0) = this->_step_count - 1;
 
         return file.template read<std::size_t>(path, {
                 .size = std::vector<std::size_t>{},  // TODO: Slice should be a structure without size
