@@ -36,6 +36,13 @@ namespace VTKHDFDetail {
     template<Concepts::ImageGrid G, typename C>
     struct VTKHDFWriterSelector<G, C> : public std::type_identity<VTKHDFImageGridWriter<G, C>> {};
 
+    template<typename Grid, typename C>
+    struct VTKHDFTimeSeriesWriterSelector;
+    template<Concepts::UnstructuredGrid G, typename C> requires(!Concepts::ImageGrid<G>)
+    struct VTKHDFTimeSeriesWriterSelector<G, C> : public std::type_identity<VTKHDFUnstructuredTimeSeriesWriter<G, C>> {};
+    template<Concepts::ImageGrid G, typename C>
+    struct VTKHDFTimeSeriesWriterSelector<G, C> : public std::type_identity<VTKHDFImageGridTimeSeriesWriter<G, C>> {};
+
 }  // namespace VTKHDFDetail
 #endif  // DOXYGEN
 
@@ -56,6 +63,25 @@ VTKHDFWriter(const Grid&) -> VTKHDFWriter<Grid>;
 
 template<typename Grid, Concepts::Communicator Comm>
 VTKHDFWriter(const Grid&, const Comm&) -> VTKHDFWriter<Grid, Comm>;
+
+
+/*!
+ * \ingroup VTK
+ * \brief TODO: Doc me
+ * \todo TODO: deduce format from grid
+ */
+template<Concepts::Grid Grid, Concepts::Communicator C = GridFormat::NullCommunicator>
+class VTKHDFTimeSeriesWriter : public VTKHDFDetail::VTKHDFTimeSeriesWriterSelector<Grid, C>::type {
+    using ParentType = typename VTKHDFDetail::VTKHDFTimeSeriesWriterSelector<Grid, C>::type;
+
+ public:
+    using ParentType::ParentType;
+};
+
+template<Concepts::Grid Grid>
+VTKHDFTimeSeriesWriter(const Grid&, std::string, VTK::HDFTransientOptions = {}) -> VTKHDFTimeSeriesWriter<Grid>;
+template<Concepts::Grid Grid, Concepts::Communicator C>
+VTKHDFTimeSeriesWriter(const Grid&, C, std::string, VTK::HDFTransientOptions = {}) -> VTKHDFTimeSeriesWriter<Grid, C>;
 
 }  // namespace GridFormat
 

@@ -36,7 +36,20 @@
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/grid/grid.hpp>
 
-namespace GridFormat::VTKHDF {
+
+namespace GridFormat {
+
+namespace VTK {
+
+struct HDFTransientOptions {
+    bool static_grid = false;
+    bool static_meta_data = false;
+};
+
+}  // namespace VTK
+
+
+namespace VTKHDF {
 
 struct DataSetSlice {
     std::vector<std::size_t> size;  // todo: is total size, actuall. rename?
@@ -288,7 +301,49 @@ class HDF5File {
                           const HighFive::DataSpace& space) {
         if (_mode == overwrite)
             return std::make_pair(std::size_t{0}, group.createDataSet(name, space, HighFive::create_datatype<T>()));
-        throw NotImplemented("Dataset preparation for given mode");
+        else if (_mode == append) {
+            if (group.exist(name)) {
+                auto dataset = group.getDataSet(name);
+                auto out_dimensions = dataset.getDimensions();
+                const auto in_dimensions = space.getDimensions();
+
+                if (out_dimensions.size() < 1 || in_dimensions.size() < 1)
+                    throw ValueError("Cannot extend scalar datasets");
+                if (
+                    !std::ranges::equal(
+                        std::ranges::subrange(out_dimensions.begin() + 1, out_dimensions.end()),
+                        std::ranges::subrange(in_dimensions.begin() + 1, in_dimensions.end())
+                    )
+                )
+                    throw ValueError("Dataset extension requires the sub-dimensions to be equal");
+
+                const std::size_t offset = out_dimensions[0];
+                out_dimensions[0] += in_dimensions[0];
+                dataset.resize(out_dimensions);
+                return std::make_pair(offset, std::move(dataset));
+            } else {
+                const auto init_dimensions = space.getDimensions();
+                if (init_dimensions.size() < 1)
+                    throw ValueError("Scalars cannot be written in appended mode. Wrap them in std::array{scalar}");
+
+                const auto chunk_dimensions = std::vector<hsize_t>{init_dimensions.begin(), init_dimensions.end()};
+                const auto max_dimensions = [&] () {
+                    auto tmp = init_dimensions;
+                    tmp[0] *= HighFive::DataSpace::UNLIMITED;
+                    return tmp;
+                } ();
+
+                HighFive::DataSpace out_space(init_dimensions, max_dimensions);
+                HighFive::DataSetCreateProps props;
+                props.add(HighFive::Chunking(chunk_dimensions));
+                return std::make_pair(
+                    std::size_t{0},
+                    group.createDataSet(name, out_space, HighFive::create_datatype<T>(), props)
+                );
+            }
+        } else {
+            throw NotImplemented("Unknown file mode");
+        }
     }
 
     template<typename Values>
@@ -319,7 +374,8 @@ class HDF5File {
     HighFive::File _file;
 };
 
-}  // namespace GridFormat::VTKHDF
+}  // namespace VTKHDF
+}  // namespace GridFormat
 
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE
 #endif  // GRIDFORMAT_VTK_HDF_COMMON_HPP_
