@@ -19,19 +19,21 @@ gridformat_add_regression_test_if(
     "vtk_hdf_unstructured*hdf"
 )
 
-gridformat_add_regression_test_if(
+# TODO: when vtk 9.2.7 is out (with hdftransient support) do regression
+gridformat_add_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_time_series
     test_vtk_hdf_time_series.cpp
-    "vtk_hdf_time_series*unstructured*.hdf"
+    # "vtk_hdf_time_series*.hdf"
 )
 
-gridformat_add_parallel_regression_test_if(
+# TODO: when vtk 9.2.7 is out (with hdftransient support) do regression
+gridformat_add_parallel_test_if(
     GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
     test_vtk_hdf_parallel_time_series
     test_vtk_hdf_parallel_time_series.cpp
     2
-    "pvtk_hdf_time_series*unstructured*.hdf"
+    # "pvtk_hdf_time_series*.hdf"
 )
 
 gridformat_add_regression_test_if(
