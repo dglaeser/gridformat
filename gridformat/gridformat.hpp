@@ -30,9 +30,9 @@
 #include <gridformat/vtk/pvts_writer.hpp>
 #include <gridformat/vtk/pvtp_writer.hpp>
 #include <gridformat/vtk/pvtu_writer.hpp>
+#include <gridformat/vtk/xml_time_series_writer.hpp>
 
 #include <gridformat/vtk/pvd_writer.hpp>
-#include <gridformat/vtk/time_series_writer.hpp>
 
 
 #ifndef DOXYGEN
@@ -398,13 +398,13 @@ struct WriterFactory<FileFormat::TimeSeries<F>> {
     static auto make(const FileFormat::TimeSeries<F>& format,
                      const Concepts::Grid auto& grid,
                      const std::string& base_filename) {
-        return VTKTimeSeriesWriter{WriterFactory<F>::make(format.piece_format, grid), base_filename};
+        return VTKXMLTimeSeriesWriter{WriterFactory<F>::make(format.piece_format, grid), base_filename};
     }
     static auto make(const FileFormat::TimeSeries<F>& format,
                      const Concepts::Grid auto& grid,
                      const Concepts::Communicator auto& comm,
                      const std::string& base_filename) {
-        return VTKTimeSeriesWriter{WriterFactory<F>::make(format.piece_format, grid, comm), base_filename};
+        return VTKXMLTimeSeriesWriter{WriterFactory<F>::make(format.piece_format, grid, comm), base_filename};
     }
 };
 
