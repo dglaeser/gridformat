@@ -31,7 +31,7 @@ int main() {
         for (std::size_t ny : {2, 3})
             _test(
                 GridFormat::Test::StructuredGrid<2>({{1.0, 1.0}}, {{nx, ny}}),
-                std::string{"vtk_2d_in_2d_image"}
+                std::string{"vtk_hdf_image_2d_in_2d"}
                     + "_" + std::to_string(nx)
                     + "_" + std::to_string(ny)
             );
@@ -41,7 +41,7 @@ int main() {
             for (std::size_t nz : {2, 4})
                 _test(
                     GridFormat::Test::StructuredGrid<3>({{1.0, 1.0, 1.0}}, {{nx, ny, nz}}),
-                    std::string{"vtk_3d_in_3d_image"}
+                    std::string{"vtk_hdf_image_3d_in_3d"}
                     + "_" + std::to_string(nx)
                     + "_" + std::to_string(ny)
                     + "_" + std::to_string(nz)

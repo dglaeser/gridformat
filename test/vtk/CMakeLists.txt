@@ -40,7 +40,7 @@ gridformat_add_regression_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_image_grid_writer
     test_vtk_hdf_image_grid_writer.cpp
-    "vtk_*d_image*hdf"
+    "vtk_hdf_image*hdf"
     SCRIPT_ARGS "--skip-metadata"
 )
 
