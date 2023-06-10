@@ -94,16 +94,21 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
     {}
 
  private:
-    void _write(std::ostream&) const requires(!is_transient) {
+    void _write(std::ostream&) const {
         throw InvalidState("VTKHDFUnstructuredGridWriter does not support export into stream");
     }
 
-    void _write(const std::string& filename_with_ext) const requires(!is_transient) {
+    void _write(const std::string& filename_with_ext) const {
+        if constexpr (is_transient)
+            throw InvalidState("This overload only works for non-transient output");
         HDF5File file{filename_with_ext, _comm, HDF5File::overwrite};
         _write_to(file);
     }
 
-    std::string _write(double t) requires(is_transient) {
+    std::string _write(double t) {
+        if constexpr (!is_transient)
+            throw InvalidState("This overload only works for transient output");
+
         if (this->_step_count == 0)
             HDF5File::clear(_timeseries_filename, _comm);
 
