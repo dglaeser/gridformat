@@ -287,6 +287,19 @@ class TimeSeriesGridWriter : public GridWriterBase<Grid> {
     virtual std::string _write(double) = 0;
 };
 
+#ifndef DOXYGEN
+namespace GridDetail {
+
+    template<bool is_transient, typename G>
+    struct WriterBase;
+    template<typename G>
+    struct WriterBase<true, G> : std::type_identity<TimeSeriesGridWriter<G>> {};
+    template<typename G>
+    struct WriterBase<false, G> : std::type_identity<GridWriter<G>> {};
+
+}  // namespace GridDetail
+#endif  // DOXYGEN
+
 //! \} group Grid
 
 }  // namespace GridFormat

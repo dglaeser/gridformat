@@ -14,7 +14,7 @@
 #include "../make_test_data.hpp"
 
 template<typename Writer, typename Comm>
-void write(Writer&& writer, const Comm& comm, std::string suffix = "") {
+void write(Writer&& writer, const Comm& comm, std::string suffix = "", std::string prefix = "") {
     const auto& grid = writer.grid();
     GridFormat::Test::add_meta_data(writer);
     writer.set_point_field("point_func", [&] (const auto& p) {
@@ -25,7 +25,8 @@ void write(Writer&& writer, const Comm& comm, std::string suffix = "") {
     });
 
     suffix = suffix != "" ? "_" + suffix : "";
-    const auto filename = writer.write("generic_parallel_2d_in_2d" + suffix);
+    prefix = prefix != "" ? prefix + "_" : "";
+    const auto filename = writer.write(prefix + "generic_parallel_2d_in_2d" + suffix);
 
     if (GridFormat::Parallel::rank(comm) == 0)
         std::cout << "Wrote '" << GridFormat::as_highlight(filename) << "'" << std::endl;
@@ -71,6 +72,17 @@ int main(int argc, char** argv) {
         GridFormat::Writer{GridFormat::vtk_hdf, grid, MPI_COMM_WORLD},
         MPI_COMM_WORLD,
         "unstructured"
+    );
+    write(
+        GridFormat::Writer{GridFormat::FileFormat::VTKHDFUnstructured{}, grid, MPI_COMM_WORLD},
+        MPI_COMM_WORLD,
+        "unstructured_explicit"
+    );
+    write(
+        GridFormat::Writer{GridFormat::FileFormat::VTKHDFImage{}, grid, MPI_COMM_WORLD},
+        MPI_COMM_WORLD,
+        "image_explicit",
+        "_ignore_regression"
     );
 #endif
 

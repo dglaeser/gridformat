@@ -3,10 +3,10 @@
 /*!
  * \file
  * \ingroup VTK
- * \copydoc GridFormat::VTKTimeSeriesWriter
+ * \copydoc GridFormat::VTKXMLTimeSeriesWriter
  */
-#ifndef GRIDFORMAT_VTK_TIME_SERIES_WRITER_HPP_
-#define GRIDFORMAT_VTK_TIME_SERIES_WRITER_HPP_
+#ifndef GRIDFORMAT_VTK_XML_TIME_SERIES_WRITER_HPP_
+#define GRIDFORMAT_VTK_XML_TIME_SERIES_WRITER_HPP_
 
 #include <iomanip>
 #include <sstream>
@@ -21,11 +21,11 @@ namespace GridFormat {
  * \brief TODO: Doc me
  */
 template<typename VTKWriter>
-class VTKTimeSeriesWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
+class VTKXMLTimeSeriesWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {
     using ParentType = TimeSeriesGridWriter<typename VTKWriter::Grid>;
 
  public:
-    explicit VTKTimeSeriesWriter(VTKWriter&& writer, std::string base_filename)
+    explicit VTKXMLTimeSeriesWriter(VTKWriter&& writer, std::string base_filename)
     : ParentType(writer.grid(), writer.writer_options())
     , _vtk_writer{std::move(writer)}
     , _base_filename{std::move(base_filename)}
@@ -56,8 +56,8 @@ class VTKTimeSeriesWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid
 };
 
 template<typename VTKWriter>
-VTKTimeSeriesWriter(VTKWriter&&) -> VTKTimeSeriesWriter<std::remove_cvref_t<VTKWriter>>;
+VTKXMLTimeSeriesWriter(VTKWriter&&) -> VTKXMLTimeSeriesWriter<std::remove_cvref_t<VTKWriter>>;
 
 }  // namespace GridFormat
 
-#endif  // GRIDFORMAT_VTK_TIME_SERIES_WRITER_HPP_
+#endif  // GRIDFORMAT_VTK_XML_TIME_SERIES_WRITER_HPP_

@@ -3,14 +3,14 @@
 
 #include <gridformat/common/logging.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
-#include <gridformat/vtk/time_series_writer.hpp>
+#include <gridformat/vtk/xml_time_series_writer.hpp>
 
 #include "../grid/unstructured_grid.hpp"
 #include "../make_test_data.hpp"
 
 int main() {
     const auto grid = GridFormat::Test::make_unstructured<2, 2>();
-    GridFormat::VTKTimeSeriesWriter writer{
+    GridFormat::VTKXMLTimeSeriesWriter writer{
         GridFormat::VTUWriter{grid},
         "vtu_time_series_2d_in_2d"
     };

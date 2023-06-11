@@ -95,16 +95,35 @@ endfunction()
 
 
 find_package(MPI COMPONENTS CXX)
+function(gridformat_add_parallel_test NAME SOURCE NPROCS)
+    if (MPI_FOUND)
+        # we skip memcheck because issues from mpi always arise
+        gridformat_add_test_exe(${NAME} ${SOURCE} SKIP_MEMCHECK)
+        add_test(NAME ${NAME} COMMAND ${MPIEXEC} -n ${NPROCS} --oversubscribe ${NAME})
+        gridformat_set_test_props(${NAME})
+    else ()
+        gridformat_add_test_if(MPI_FOUND ${NAME} ${SOURCE} ${ARGN})
+    endif ()
+endfunction()
+
+
+function(gridformat_add_parallel_test_if CONDITION NAME SOURCE NPROCS)
+    if (MPI_FOUND AND ${CONDITION})
+        gridformat_add_parallel_test(${NAME} ${SOURCE} ${NPROCS} ${ARGN})
+    else ()
+        gridformat_add_test_if(false ${NAME} ${SOURCE} ${ARGN})
+    endif ()
+endfunction()
+
+
 function(gridformat_add_parallel_regression_test NAME SOURCE NPROC REGEX)
     cmake_parse_arguments(EXTRA_ARGS "" "SCRIPT_ARGS" "" "${ARGN}")
     if (NOT MPI_FOUND)
         message(STATUS "Skipping parallel test '${NAME}' because MPI was not found")
         gridformat_add_test_if(MPI_FOUND ${NAME} ${SOURCE} ${ARGN})
     elseif (GRIDFORMAT_SKIP_REGRESSION)
-        message(STATUS "Skipping regression-testing '${NAME}' because it is globally deactivated")
-        gridformat_add_test_exe(${NAME} ${SOURCE} ${ARGN} SKIP_MEMCHECK)
-        add_test(NAME ${NAME} COMMAND ${MPIEXEC} -n ${NPROC} --oversubscribe ${NAME})
-        gridformat_set_test_props(${NAME})
+        message(STATUS "Skipping regression-testing '${NAME}'")
+        gridformat_add_parallel_test(${NAME} ${SOURCE} ${NPROC})
     else ()
         gridformat_add_test_exe(${NAME} ${SOURCE} ${ARGN} SKIP_MEMCHECK)
         add_test(

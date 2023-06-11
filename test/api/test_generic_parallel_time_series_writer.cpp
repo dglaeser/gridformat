@@ -94,6 +94,59 @@ int main(int argc, char** argv) {
         MPI_COMM_WORLD
     );
 
+    // add pvd to make the regression script include the files (see CMakeLists.txt)
+    write(
+        GridFormat::Writer{
+            GridFormat::time_series(GridFormat::vtu),
+            grid,
+            MPI_COMM_WORLD,
+            "generic_parallel_time_series_2d_in_2d_pvd"
+        },
+        MPI_COMM_WORLD
+    );
+
+
+#if GRIDFORMAT_HAVE_HIGH_FIVE
+    // TODO: include in regression test-suite once new VTK version is published
+    write(GridFormat::Writer{
+        GridFormat::time_series(GridFormat::vtk_hdf),
+        grid,
+        MPI_COMM_WORLD,
+        "_ignore_regression_generic_parallel_time_series_2d_in_2d"
+    }, MPI_COMM_WORLD);
+    write(GridFormat::Writer{
+        GridFormat::time_series(GridFormat::FileFormat::VTKHDFImage{}),
+        grid,
+        MPI_COMM_WORLD,
+        "_ignore_regression_generic_parallel_time_series_2d_in_2d_image"
+    }, MPI_COMM_WORLD);
+    write(GridFormat::Writer{
+        GridFormat::time_series(GridFormat::FileFormat::VTKHDFUnstructured{}),
+        grid,
+        MPI_COMM_WORLD,
+        "_ignore_regression_generic_parallel_time_series_2d_in_2d_unstructured_explicit"
+    }, MPI_COMM_WORLD);
+
+    write(GridFormat::Writer{
+        GridFormat::vtk_hdf_transient,
+        grid,
+        MPI_COMM_WORLD,
+        "_ignore_regression_generic_parallel_time_series_2d_in_2d_transient_explicit"
+    }, MPI_COMM_WORLD);
+    write(GridFormat::Writer{
+        GridFormat::FileFormat::VTKHDFImageTransient{},
+        grid,
+        MPI_COMM_WORLD,
+        "_ignore_regression_generic_parallel_time_series_2d_in_2d_transient_image_explicit"
+    }, MPI_COMM_WORLD);
+    write(GridFormat::Writer{
+        GridFormat::FileFormat::VTKHDFUnstructuredTransient{},
+        grid,
+        MPI_COMM_WORLD,
+        "_ignore_regression_generic_parallel_time_series_2d_in_2d_transient_unstructured_explicit"
+    }, MPI_COMM_WORLD);
+#endif
+
     MPI_Finalize();
     return 0;
 }

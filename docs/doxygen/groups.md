@@ -7,8 +7,9 @@
 @brief The high-level API and recommended way of using `GridFormat`
 @details The high-level API exposes all available file formats and the generic
          GridFormat::Writer, which takes an instance of one of the formats and a
-         grid that is to be written. For instance, to construct a writer for the .vtu
-         file format for your `grid`, write
+         grid that is to be written. It is recommended to use the provided file
+         format selectors for construction of a GridFormat::Writer. As an example,
+         to construct a writer for the .vtu file format for your `grid`, you may write
          @code{.cpp}
              GridFormat::Writer writer{GridFormat::vtu, grid};
          @endcode
