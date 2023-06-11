@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="GridFormat::VTK::XMLWriter\lBase\< G, Impl \>::WriteContext",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1VTK_1_1XMLWriterBase_1_1WriteContext.html",tooltip=" "];
+  Node0 [label="GridFormat::VTK::XMLOptions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1VTK_1_1XMLOptions.html",tooltip="Options for VTK-XML files for setting the desired encoding, data format and compression."];
 }

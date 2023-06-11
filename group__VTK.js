@@ -15,13 +15,13 @@ var group__VTK =
     [ "pvtr_writer.hpp", "pvtr__writer_8hpp.html", null ],
     [ "pvts_writer.hpp", "pvts__writer_8hpp.html", null ],
     [ "pvtu_writer.hpp", "pvtu__writer_8hpp.html", null ],
-    [ "time_series_writer.hpp", "time__series__writer_8hpp.html", null ],
     [ "vti_writer.hpp", "vti__writer_8hpp.html", null ],
     [ "vtp_writer.hpp", "vtp__writer_8hpp.html", null ],
     [ "vtr_writer.hpp", "vtr__writer_8hpp.html", null ],
     [ "vts_writer.hpp", "vts__writer_8hpp.html", null ],
     [ "vtu_writer.hpp", "vtu__writer_8hpp.html", null ],
     [ "xml.hpp", "xml_8hpp.html", null ],
+    [ "xml_time_series_writer.hpp", "xml__time__series__writer_8hpp.html", null ],
     [ "AppendixStreamObserver", "classGridFormat_1_1VTK_1_1AppendixStreamObserver.html", [
       [ "offsets", "classGridFormat_1_1VTK_1_1AppendixStreamObserver.html#ac8335b5865d7183fb95b37db897ebf39", null ],
       [ "register_offset", "classGridFormat_1_1VTK_1_1AppendixStreamObserver.html#a7f5fcde6abd9003ceb0b4ccb6d68228d", null ]
@@ -36,16 +36,21 @@ var group__VTK =
       [ "stream", "classGridFormat_1_1VTK_1_1DataArray.html#ad688c779fc2dc7b9577623ff35ceb1ea", null ],
       [ "operator<<", "classGridFormat_1_1VTK_1_1DataArray.html#aabe15df8c24e3476c01decd64e688267", null ]
     ] ],
-    [ "VTKHDFImageGridWriter", "classGridFormat_1_1VTKHDFImageGridWriter.html", [
-      [ "VTKHDFImageGridWriter", "classGridFormat_1_1VTKHDFImageGridWriter.html#ac40e8b0dde3e9058ffde34a74a1293b7", null ],
-      [ "VTKHDFImageGridWriter", "classGridFormat_1_1VTKHDFImageGridWriter.html#abc8f051fc9980add0867b009fecbf508", null ]
+    [ "VTKHDFImageGridWriterImpl", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html", [
+      [ "VTKHDFImageGridWriterImpl", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html#af5741be4a6787f27f95978c771b43625", null ],
+      [ "VTKHDFImageGridWriterImpl", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html#a2292b78cc638bde44f243a3dbf8773c6", null ],
+      [ "VTKHDFImageGridWriterImpl", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html#a8af159ab54049fa4f4f10aa827ffaddc", null ],
+      [ "VTKHDFImageGridWriterImpl", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html#ab3266e6c4427fe4c24f9e49a462c7ae5", null ]
     ] ],
-    [ "VTKHDFUnstructuredGridWriter", "classGridFormat_1_1VTKHDFUnstructuredGridWriter.html", [
-      [ "Grid", "classGridFormat_1_1VTKHDFUnstructuredGridWriter.html#a1a85cf26ddcc0a551bac64fd5cd58542", null ],
-      [ "VTKHDFUnstructuredGridWriter", "classGridFormat_1_1VTKHDFUnstructuredGridWriter.html#aba330df00ed0bbc8cd8454a11f16d0da", null ],
-      [ "VTKHDFUnstructuredGridWriter", "classGridFormat_1_1VTKHDFUnstructuredGridWriter.html#a50d7dae0e186f1bb727be5bf112030a5", null ]
+    [ "VTKHDFUnstructuredGridWriterImpl", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html", [
+      [ "Grid", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html#aae5d3fbf1840f21dc1388bf611abfa52", null ],
+      [ "VTKHDFUnstructuredGridWriterImpl", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html#ab4414b97e2324509521937a4174557ee", null ],
+      [ "VTKHDFUnstructuredGridWriterImpl", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html#a917a7845d15255cb59ff9c3a7d4e2984", null ],
+      [ "VTKHDFUnstructuredGridWriterImpl", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html#ac61083e185df93b77a8624365998a221", null ],
+      [ "VTKHDFUnstructuredGridWriterImpl", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html#af234209ced90dbfadb1a17464aee2016", null ]
     ] ],
     [ "VTKHDFWriter", "classGridFormat_1_1VTKHDFWriter.html", null ],
+    [ "VTKHDFTimeSeriesWriter", "classGridFormat_1_1VTKHDFTimeSeriesWriter.html", null ],
     [ "PVDWriter", "classGridFormat_1_1PVDWriter.html", [
       [ "PVDWriter", "classGridFormat_1_1PVDWriter.html#a7f0917682d14d059a598674f73d2d18e", null ]
     ] ],
@@ -63,9 +68,6 @@ var group__VTK =
     ] ],
     [ "PVTUWriter", "classGridFormat_1_1PVTUWriter.html", [
       [ "PVTUWriter", "classGridFormat_1_1PVTUWriter.html#a16f99503900e3242a124243b38522498", null ]
-    ] ],
-    [ "VTKTimeSeriesWriter", "classGridFormat_1_1VTKTimeSeriesWriter.html", [
-      [ "VTKTimeSeriesWriter", "classGridFormat_1_1VTKTimeSeriesWriter.html#a9b87fe0630835926d1601d5dee345f4d", null ]
     ] ],
     [ "VTIWriter", "classGridFormat_1_1VTIWriter.html", [
       [ "Domain", "structGridFormat_1_1VTIWriter_1_1Domain.html", [
@@ -139,5 +141,8 @@ var group__VTK =
       [ "app", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a799a03048a02d37d762a897123927ff4", null ],
       [ "const", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#aabf96fb7afe22a6c0aeaf65ee7438bcd", null ],
       [ "e", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a6b7878be043069417e274f12e8efdc96", null ]
+    ] ],
+    [ "VTKXMLTimeSeriesWriter", "classGridFormat_1_1VTKXMLTimeSeriesWriter.html", [
+      [ "VTKXMLTimeSeriesWriter", "classGridFormat_1_1VTKXMLTimeSeriesWriter.html#a0f6558b65df7126486ecff794ae49bac", null ]
     ] ]
 ];

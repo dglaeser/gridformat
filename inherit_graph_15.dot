@@ -4,5 +4,7 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="GridFormat::FileFormat\l::TimeSeries\< Format \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1FileFormat_1_1TimeSeries.html",tooltip="Convenience selector for a time series flavour of the given file format. This is unavailable if the g..."];
+  Node0 [label="GridFormat::FileFormat\l::FormatWithOptions\< VTKFormat,\l VTK::XMLOptions \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1FileFormat_1_1FormatWithOptions.html",tooltip=" "];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="GridFormat::FileFormat\l::VTKXMLFormatBase\< VTKFormat \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html",tooltip="Base class for VTK-XML formats."];
 }

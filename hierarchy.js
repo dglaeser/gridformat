@@ -51,6 +51,38 @@ var hierarchy =
     [ "GridFormat::VTRWriter< Grid >::Domain", "structGridFormat_1_1VTRWriter_1_1Domain.html", null ],
     [ "GridFormat::VTSWriter< Grid >::Domain", "structGridFormat_1_1VTSWriter_1_1Domain.html", null ],
     [ "GridFormat::EncodedField< F, Encoder >", "classGridFormat_1_1EncodedField.html", null ],
+    [ "GridFormat::FileFormat::FormatWithOptions< Format, Opts >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", [
+      [ "GridFormat::FileFormat::VTKXMLFormatBase< VTI >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
+        [ "GridFormat::FileFormat::VTI", "structGridFormat_1_1FileFormat_1_1VTI.html", null ]
+      ] ],
+      [ "GridFormat::FileFormat::VTKXMLFormatBase< VTP >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
+        [ "GridFormat::FileFormat::VTP", "structGridFormat_1_1FileFormat_1_1VTP.html", null ]
+      ] ],
+      [ "GridFormat::FileFormat::VTKXMLFormatBase< VTR >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
+        [ "GridFormat::FileFormat::VTR", "structGridFormat_1_1FileFormat_1_1VTR.html", null ]
+      ] ],
+      [ "GridFormat::FileFormat::VTKXMLFormatBase< VTS >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
+        [ "GridFormat::FileFormat::VTS", "structGridFormat_1_1FileFormat_1_1VTS.html", null ]
+      ] ],
+      [ "GridFormat::FileFormat::VTKXMLFormatBase< VTKXMLTimeSeries< VTX > >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
+        [ "GridFormat::FileFormat::VTKXMLTimeSeries< VTX >", "structGridFormat_1_1FileFormat_1_1VTKXMLTimeSeries.html", null ]
+      ] ],
+      [ "GridFormat::FileFormat::VTKXMLFormatBase< VTU >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
+        [ "GridFormat::FileFormat::VTU", "structGridFormat_1_1FileFormat_1_1VTU.html", null ]
+      ] ]
+    ] ],
+    [ "GridFormat::FileFormat::FormatWithOptions< VTKFormat, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", [
+      [ "GridFormat::FileFormat::VTKXMLFormatBase< VTKFormat >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", null ]
+    ] ],
+    [ "GridFormat::FileFormat::FormatWithOptions< VTKHDFImageTransient, VTK::HDFTransientOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", [
+      [ "GridFormat::FileFormat::VTKHDFImageTransient", "structGridFormat_1_1FileFormat_1_1VTKHDFImageTransient.html", null ]
+    ] ],
+    [ "GridFormat::FileFormat::FormatWithOptions< VTKHDFTransient, VTK::HDFTransientOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", [
+      [ "GridFormat::FileFormat::VTKHDFTransient", "structGridFormat_1_1FileFormat_1_1VTKHDFTransient.html", null ]
+    ] ],
+    [ "GridFormat::FileFormat::FormatWithOptions< VTKHDFUnstructuredTransient, VTK::HDFTransientOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", [
+      [ "GridFormat::FileFormat::VTKHDFUnstructuredTransient", "structGridFormat_1_1FileFormat_1_1VTKHDFUnstructuredTransient.html", null ]
+    ] ],
     [ "GridFormat::GridWriterBase< Grid >", "classGridFormat_1_1GridWriterBase.html", [
       [ "GridFormat::GridWriter< G >", "classGridFormat_1_1GridWriter.html", [
         [ "GridFormat::VTK::XMLWriterBase< Grid, VTSWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
@@ -63,19 +95,17 @@ var hierarchy =
         [ "GridFormat::VTK::XMLWriterBase< Grid, PVTUWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
         [ "GridFormat::VTK::XMLWriterBase< Grid, VTIWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
         [ "GridFormat::VTK::XMLWriterBase< Grid, PVTRWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
-        [ "GridFormat::VTK::XMLWriterBase< G, Impl >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
-        [ "GridFormat::VTKHDFUnstructuredGridWriter< G, Communicator >", "classGridFormat_1_1VTKHDFUnstructuredGridWriter.html", null ]
+        [ "GridFormat::VTK::XMLWriterBase< G, Impl >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ]
       ] ],
       [ "GridFormat::TimeSeriesGridWriter< VTKWriter::Grid >", "classGridFormat_1_1TimeSeriesGridWriter.html", [
         [ "GridFormat::PVDWriter< VTKWriter >", "classGridFormat_1_1PVDWriter.html", null ],
-        [ "GridFormat::VTKTimeSeriesWriter< VTKWriter >", "classGridFormat_1_1VTKTimeSeriesWriter.html", null ]
+        [ "GridFormat::VTKXMLTimeSeriesWriter< VTKWriter >", "classGridFormat_1_1VTKXMLTimeSeriesWriter.html", null ]
       ] ],
-      [ "GridFormat::GridWriter< Grid >", "classGridFormat_1_1GridWriter.html", [
-        [ "GridFormat::VTKHDFImageGridWriter< Grid, Communicator >", "classGridFormat_1_1VTKHDFImageGridWriter.html", null ]
-      ] ],
+      [ "GridFormat::GridWriter< Grid >", "classGridFormat_1_1GridWriter.html", null ],
       [ "GridFormat::TimeSeriesGridWriter< Grid >", "classGridFormat_1_1TimeSeriesGridWriter.html", null ]
     ] ],
     [ "GridFormat::VTKHDF::HDF5File< Communicator >", "classGridFormat_1_1VTKHDF_1_1HDF5File.html", null ],
+    [ "GridFormat::VTK::HDFTransientOptions", "structGridFormat_1_1VTK_1_1HDFTransientOptions.html", null ],
     [ "GridFormat::ImageGrid< dim, CoordinateType >", "classGridFormat_1_1ImageGrid.html", null ],
     [ "GridFormat::VTK::DataFormat::Inlined", "structGridFormat_1_1VTK_1_1DataFormat_1_1Inlined.html", null ],
     [ "GridFormat::VTKHDF::IOContext", "structGridFormat_1_1VTKHDF_1_1IOContext.html", null ],
@@ -90,42 +120,51 @@ var hierarchy =
     ] ],
     [ "GridFormat::PVTK::PDataArrayHelper< Encoder, DataFormat >", "classGridFormat_1_1PVTK_1_1PDataArrayHelper.html", null ],
     [ "GridFormat::FileFormat::PVD< PieceFormat >", "structGridFormat_1_1FileFormat_1_1PVD.html", null ],
+    [ "GridFormat::FileFormat::PVDClosure", "structGridFormat_1_1FileFormat_1_1PVDClosure.html", null ],
     [ "GridFormat::Encoding::RawBinary", "structGridFormat_1_1Encoding_1_1RawBinary.html", null ],
     [ "GridFormat::PVTK::StructuredGridMapper< dim >", "classGridFormat_1_1PVTK_1_1StructuredGridMapper.html", null ],
     [ "GridFormat::PVTK::StructuredGridMapperHelper< T, dim >", "classGridFormat_1_1PVTK_1_1StructuredGridMapperHelper.html", null ],
     [ "GridFormat::PVTK::StructuredParallelGridHelper< Communicator >", "classGridFormat_1_1PVTK_1_1StructuredParallelGridHelper.html", null ],
-    [ "GridFormat::FileFormat::TimeSeries< Format >", "structGridFormat_1_1FileFormat_1_1TimeSeries.html", null ],
+    [ "GridFormat::FileFormat::TimeSeriesClosure", "structGridFormat_1_1FileFormat_1_1TimeSeriesClosure.html", null ],
+    [ "GridDetail::WriterBase::type", null, [
+      [ "GridFormat::VTKHDFUnstructuredGridWriterImpl< false, G, NullCommunicator >", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html", [
+        [ "GridFormat::VTKHDFUnstructuredGridWriter< G, C >", "classGridFormat_1_1VTKHDFUnstructuredGridWriter.html", null ]
+      ] ],
+      [ "GridFormat::VTKHDFUnstructuredGridWriterImpl< true, G, NullCommunicator >", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html", [
+        [ "GridFormat::VTKHDFUnstructuredTimeSeriesWriter< G, C >", "classGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter.html", null ]
+      ] ],
+      [ "GridFormat::VTKHDFUnstructuredGridWriterImpl< is_transient, G, Communicator >", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html", null ]
+    ] ],
+    [ "GridDetail::WriterBase::type", null, [
+      [ "GridFormat::VTKHDFImageGridWriterImpl< false, G, NullCommunicator >", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html", [
+        [ "GridFormat::VTKHDFImageGridWriter< G, C >", "classGridFormat_1_1VTKHDFImageGridWriter.html", null ]
+      ] ],
+      [ "GridFormat::VTKHDFImageGridWriterImpl< true, G, NullCommunicator >", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html", [
+        [ "GridFormat::VTKHDFImageGridTimeSeriesWriter< G, C >", "classGridFormat_1_1VTKHDFImageGridTimeSeriesWriter.html", null ]
+      ] ],
+      [ "GridFormat::VTKHDFImageGridWriterImpl< is_transient, Grid, Communicator >", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html", null ]
+    ] ],
+    [ "VTKHDFDetail::VTKHDFTimeSeriesWriterSelector::type", null, [
+      [ "GridFormat::VTKHDFTimeSeriesWriter< Grid, C >", "classGridFormat_1_1VTKHDFTimeSeriesWriter.html", null ]
+    ] ],
     [ "VTKHDFDetail::VTKHDFWriterSelector::type", null, [
       [ "GridFormat::VTKHDFWriter< Grid, Communicator >", "classGridFormat_1_1VTKHDFWriter.html", null ]
     ] ],
     [ "GridFormat::FileFormat::VTKHDF", "structGridFormat_1_1FileFormat_1_1VTKHDF.html", null ],
     [ "GridFormat::FileFormat::VTKHDFImage", "structGridFormat_1_1FileFormat_1_1VTKHDFImage.html", null ],
     [ "GridFormat::FileFormat::VTKHDFUnstructured", "structGridFormat_1_1FileFormat_1_1VTKHDFUnstructured.html", null ],
-    [ "GridFormat::FileFormat::VTKXMLFormatBase< VTKFormat >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", null ],
-    [ "GridFormat::FileFormat::VTKXMLFormatBase< VTI >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
-      [ "GridFormat::FileFormat::VTI", "structGridFormat_1_1FileFormat_1_1VTI.html", null ]
-    ] ],
-    [ "GridFormat::FileFormat::VTKXMLFormatBase< VTP >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
-      [ "GridFormat::FileFormat::VTP", "structGridFormat_1_1FileFormat_1_1VTP.html", null ]
-    ] ],
-    [ "GridFormat::FileFormat::VTKXMLFormatBase< VTR >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
-      [ "GridFormat::FileFormat::VTR", "structGridFormat_1_1FileFormat_1_1VTR.html", null ]
-    ] ],
-    [ "GridFormat::FileFormat::VTKXMLFormatBase< VTS >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
-      [ "GridFormat::FileFormat::VTS", "structGridFormat_1_1FileFormat_1_1VTS.html", null ]
-    ] ],
-    [ "GridFormat::FileFormat::VTKXMLFormatBase< VTU >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
-      [ "GridFormat::FileFormat::VTU", "structGridFormat_1_1FileFormat_1_1VTU.html", null ]
-    ] ],
     [ "GridFormat::VTK::XMLWriterBase< G, Impl >::WriteContext", "structGridFormat_1_1VTK_1_1XMLWriterBase_1_1WriteContext.html", null ],
     [ "GridFormat::Writer< Grid >", "classGridFormat_1_1Writer.html", null ],
     [ "GridFormat::WriterFactory< FileFormat >", "structGridFormat_1_1WriterFactory.html", null ],
     [ "GridFormat::WriterFactory< FileFormat::PVD< F > >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1PVD_3_01F_01_4_01_4.html", null ],
-    [ "GridFormat::WriterFactory< FileFormat::TimeSeries< F > >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1TimeSeries_3_01F_01_4_01_4.html", null ],
     [ "GridFormat::WriterFactory< FileFormat::VTI >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTI_01_4.html", null ],
     [ "GridFormat::WriterFactory< FileFormat::VTKHDF >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDF_01_4.html", null ],
     [ "GridFormat::WriterFactory< FileFormat::VTKHDFImage >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFImage_01_4.html", null ],
+    [ "GridFormat::WriterFactory< FileFormat::VTKHDFImageTransient >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFImageTransient_01_4.html", null ],
+    [ "GridFormat::WriterFactory< FileFormat::VTKHDFTransient >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFTransient_01_4.html", null ],
     [ "GridFormat::WriterFactory< FileFormat::VTKHDFUnstructured >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFUnstructured_01_4.html", null ],
+    [ "GridFormat::WriterFactory< FileFormat::VTKHDFUnstructuredTransient >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFUnstructuredTransient_01_4.html", null ],
+    [ "GridFormat::WriterFactory< FileFormat::VTKXMLTimeSeries< F > >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKXMLTimeSeries_3_01F_01_4_01_4.html", null ],
     [ "GridFormat::WriterFactory< FileFormat::VTP >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTP_01_4.html", null ],
     [ "GridFormat::WriterFactory< FileFormat::VTR >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTR_01_4.html", null ],
     [ "GridFormat::WriterFactory< FileFormat::VTS >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTS_01_4.html", null ],

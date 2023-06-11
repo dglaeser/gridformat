@@ -6,6 +6,4 @@ digraph "GridFormat::GridWriter&lt; Grid &gt;"
   Node1 [label="GridFormat::GridWriter\l\< Grid \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Abstract base class for grid file writers."];
   Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node2 [label="GridFormat::GridWriterBase\l\< Grid \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1GridWriterBase.html",tooltip="Base class for all writer implementations."];
-  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node3 [label="GridFormat::VTKHDFImageGrid\lWriter\< Grid, Communicator \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1VTKHDFImageGridWriter.html",tooltip="TODO: Doc me."];
 }

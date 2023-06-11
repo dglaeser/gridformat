@@ -1,6 +1,11 @@
 var searchData=
 [
-  ['operator_28_29_68',['operator()',['../structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html#aaaa1b11e8f91d54769c58583fce79836',1,'GridFormat::FileFormat::VTKXMLFormatBase::operator()()'],['../structGridFormat_1_1Encoding_1_1Ascii.html#a34f11d4b786bbc8ff59ee01b0cc85822',1,'GridFormat::Encoding::Ascii::operator()()'],['../structGridFormat_1_1Encoding_1_1Base64.html#a40cd9b8fb1e7e574666a74c3b36493e7',1,'GridFormat::Encoding::Base64::operator()()']]],
-  ['options_69',['options',['../structGridFormat_1_1Encoding_1_1Ascii.html#a6052411ab879536cf9a598a2635b7c0b',1,'GridFormat::Encoding::Ascii']]],
-  ['ordinates_70',['ordinates',['../classGridFormat_1_1ImageGrid.html#ae2c9061a39f4335a01da01336b6d0953',1,'GridFormat::ImageGrid']]]
+  ['lz4_66',['LZ4',['../classGridFormat_1_1Compression_1_1LZ4.html',1,'GridFormat::Compression']]],
+  ['lz4_67',['lz4',['../group__Compression.html#ga1390e604123e1b0853a9443a3eb103fb',1,'GridFormat::Compression']]],
+  ['lz4_2ehpp_68',['lz4.hpp',['../lz4_8hpp.html',1,'']]],
+  ['lz4options_69',['LZ4Options',['../structGridFormat_1_1Compression_1_1LZ4Options.html',1,'GridFormat::Compression']]],
+  ['lzma_70',['LZMA',['../classGridFormat_1_1Compression_1_1LZMA.html',1,'GridFormat::Compression']]],
+  ['lzma_71',['lzma',['../group__Compression.html#gaae9032c458723426ec234be1f5383930',1,'GridFormat::Compression']]],
+  ['lzma_2ehpp_72',['lzma.hpp',['../lzma_8hpp.html',1,'']]],
+  ['lzmaoptions_73',['LZMAOptions',['../structGridFormat_1_1Compression_1_1LZMAOptions.html',1,'GridFormat::Compression']]]
 ];

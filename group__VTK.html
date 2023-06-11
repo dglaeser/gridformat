@@ -180,9 +180,6 @@ Files</h2></td></tr>
 <tr class="memitem:pvtu__writer_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pvtu__writer_8hpp.html">pvtu_writer.hpp</a></td></tr>
 <tr class="memdesc:pvtu__writer_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writer for parallel .pvtu files. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:time__series__writer_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="time__series__writer_8hpp.html">time_series_writer.hpp</a></td></tr>
-<tr class="memdesc:time__series__writer_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Doc me. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:vti__writer_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vti__writer_8hpp.html">vti_writer.hpp</a></td></tr>
 <tr class="memdesc:vti__writer_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writer for .vti file format. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -201,6 +198,9 @@ Files</h2></td></tr>
 <tr class="memitem:xml_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xml_8hpp.html">xml.hpp</a></td></tr>
 <tr class="memdesc:xml_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for VTK XML-type file format writers. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:xml__time__series__writer_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="xml__time__series__writer_8hpp.html">xml_time_series_writer.hpp</a></td></tr>
+<tr class="memdesc:xml__time__series__writer_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Doc me. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -213,14 +213,17 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTK_1_1DataArray.html">GridFormat::VTK::DataArray&lt; Encoder, Compressor, HeaderType &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wraps a field and exposes it as VTK data array. Essentially, this implements the operator&lt;&lt; to stream the field data in the way that VTK file formats require it.  <a href="classGridFormat_1_1VTK_1_1DataArray.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKHDFImageGridWriter.html">GridFormat::VTKHDFImageGridWriter&lt; Grid, Communicator &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Doc me.  <a href="classGridFormat_1_1VTKHDFImageGridWriter.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKHDFImageGridWriterImpl.html">GridFormat::VTKHDFImageGridWriterImpl&lt; is_transient, Grid, Communicator &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Doc me.  <a href="classGridFormat_1_1VTKHDFImageGridWriterImpl.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">GridFormat::VTKHDFUnstructuredGridWriter&lt; G, Communicator &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Doc me.  <a href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">GridFormat::VTKHDFUnstructuredGridWriterImpl&lt; is_transient, G, Communicator &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Doc me.  <a href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKHDFWriter.html">GridFormat::VTKHDFWriter&lt; Grid, Communicator &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Doc me.  <a href="classGridFormat_1_1VTKHDFWriter.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKHDFTimeSeriesWriter.html">GridFormat::VTKHDFTimeSeriesWriter&lt; Grid, C &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Doc me.  <a href="classGridFormat_1_1VTKHDFTimeSeriesWriter.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1PVDWriter.html">GridFormat::PVDWriter&lt; VTKWriter &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> for .pvd time-series file format.  <a href="classGridFormat_1_1PVDWriter.html#details">More...</a><br /></td></tr>
@@ -239,9 +242,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1PVTUWriter.html">GridFormat::PVTUWriter&lt; Grid, Communicator &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> for parallel .pvtu files.  <a href="classGridFormat_1_1PVTUWriter.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKTimeSeriesWriter.html">GridFormat::VTKTimeSeriesWriter&lt; VTKWriter &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Doc me.  <a href="classGridFormat_1_1VTKTimeSeriesWriter.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTIWriter.html">GridFormat::VTIWriter&lt; Grid &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> for .vti file format.  <a href="classGridFormat_1_1VTIWriter.html#details">More...</a><br /></td></tr>
@@ -263,6 +263,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">GridFormat::VTK::XMLWriterBase&lt; G, Impl &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for VTK-XML <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> implementations.  <a href="classGridFormat_1_1VTK_1_1XMLWriterBase.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">GridFormat::VTKXMLTimeSeriesWriter&lt; VTKWriter &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Doc me.  <a href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>

@@ -6,4 +6,6 @@ digraph "GridFormat::FileFormat::VTR"
   Node1 [label="GridFormat::FileFormat::VTR",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Selector for the .vtr/.pvtr rectilinear grid file format to be passed to the Writer."];
   Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node2 [label="GridFormat::FileFormat\l::VTKXMLFormatBase\< VTR \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html",tooltip=" "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="GridFormat::FileFormat\l::FormatWithOptions\< Format,\l Opts \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1FileFormat_1_1FormatWithOptions.html",tooltip="Base class for formats taking options."];
 }

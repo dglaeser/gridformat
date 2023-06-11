@@ -49,18 +49,14 @@ digraph "GridFormat::GridWriterBase&lt; Grid &gt;"
   Node22 [label="GridFormat::PVTRWriter\l\< Grid, Communicator \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1PVTRWriter.html",tooltip="Writer for parallel .pvtr files."];
   Node2 -> Node23 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node23 [label="GridFormat::VTK::XMLWriter\lBase\< G, Impl \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1VTK_1_1XMLWriterBase.html",tooltip="Base class for VTK-XML Writer implementations."];
-  Node2 -> Node24 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node24 [label="GridFormat::VTKHDFUnstructured\lGridWriter\< G, Communicator \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1VTKHDFUnstructuredGridWriter.html",tooltip="TODO: Doc me."];
-  Node1 -> Node25 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node25 [label="GridFormat::TimeSeriesGrid\lWriter\< VTKWriter::Grid \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1TimeSeriesGridWriter.html",tooltip=" "];
-  Node25 -> Node26 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node26 [label="GridFormat::PVDWriter\l\< VTKWriter \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1PVDWriter.html",tooltip="Writer for .pvd time-series file format."];
-  Node25 -> Node27 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node27 [label="GridFormat::VTKTimeSeries\lWriter\< VTKWriter \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1VTKTimeSeriesWriter.html",tooltip="TODO: Doc me."];
+  Node1 -> Node24 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 [label="GridFormat::TimeSeriesGrid\lWriter\< VTKWriter::Grid \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1TimeSeriesGridWriter.html",tooltip=" "];
+  Node24 -> Node25 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node25 [label="GridFormat::PVDWriter\l\< VTKWriter \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1PVDWriter.html",tooltip="Writer for .pvd time-series file format."];
+  Node24 -> Node26 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node26 [label="GridFormat::VTKXMLTimeSeries\lWriter\< VTKWriter \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1VTKXMLTimeSeriesWriter.html",tooltip="TODO: Doc me."];
+  Node1 -> Node27 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node27 [label="GridFormat::GridWriter\l\< Grid \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1GridWriter.html",tooltip="Abstract base class for grid file writers."];
   Node1 -> Node28 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node28 [label="GridFormat::GridWriter\l\< Grid \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1GridWriter.html",tooltip="Abstract base class for grid file writers."];
-  Node28 -> Node29 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node29 [label="GridFormat::VTKHDFImageGrid\lWriter\< Grid, Communicator \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1VTKHDFImageGridWriter.html",tooltip="TODO: Doc me."];
-  Node1 -> Node30 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node30 [label="GridFormat::TimeSeriesGrid\lWriter\< Grid \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1TimeSeriesGridWriter.html",tooltip="Abstract base class for time series file writers."];
+  Node28 [label="GridFormat::TimeSeriesGrid\lWriter\< Grid \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1TimeSeriesGridWriter.html",tooltip="Abstract base class for time series file writers."];
 }

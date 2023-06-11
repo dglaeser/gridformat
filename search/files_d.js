@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['writer_2ehpp_296',['writer.hpp',['../writer_8hpp.html',1,'(Global Namespace)'],['../grid_2writer_8hpp.html',1,'(Global Namespace)']]]
+  ['xml_2ehpp_344',['xml.hpp',['../xml_8hpp.html',1,'']]],
+  ['xml_5ftime_5fseries_5fwriter_2ehpp_345',['xml_time_series_writer.hpp',['../xml__time__series__writer_8hpp.html',1,'']]]
 ];

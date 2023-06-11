@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="GridFormat::WriterFactory\l\< FileFormat::VTKHDFUnstructured \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFUnstructured_01_4.html",tooltip="Specialization of the WriterFactory for the vtk-hdf unstructured grid format."];
+  Node0 [label="GridFormat::WriterFactory\l\< FileFormat::VTI \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTI_01_4.html",tooltip="Specialization of the WriterFactory for the .vti format."];
 }
