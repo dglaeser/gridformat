@@ -35,6 +35,42 @@ int main() {
     write(GridFormat::Writer{GridFormat::pvd(GridFormat::vti), grid, "generic_time_series_2d_in_2d_vti"});
     write(GridFormat::Writer{GridFormat::pvd(GridFormat::vtr), grid, "generic_time_series_2d_in_2d_vtr"});
     write(GridFormat::Writer{GridFormat::pvd(GridFormat::vts({.encoder = GridFormat::Encoding::ascii})), grid, "generic_time_series_2d_in_2d_vts"});
+    // add pvd to make the regression script include the files (see CMakeLists.txt)
+    write(GridFormat::Writer{GridFormat::time_series(GridFormat::vtu), grid, "generic_time_series_2d_in_2d_pvd"});
 
+#if GRIDFORMAT_HAVE_HIGH_FIVE
+    // TODO: include in regression test-suite once new VTK version is published
+    write(GridFormat::Writer{
+        GridFormat::time_series(GridFormat::vtk_hdf),
+        grid,
+        "_ignore_regression_generic_time_series_2d_in_2d"
+    });
+    write(GridFormat::Writer{
+        GridFormat::time_series(GridFormat::FileFormat::VTKHDFImage{}),
+        grid,
+        "_ignore_regression_generic_time_series_2d_in_2d_image"
+    });
+    write(GridFormat::Writer{
+        GridFormat::time_series(GridFormat::FileFormat::VTKHDFUnstructured{}),
+        grid,
+        "_ignore_regression_generic_time_series_2d_in_2d_unstructured_explicit"
+    });
+
+    write(GridFormat::Writer{
+        GridFormat::vtk_hdf_transient,
+        grid,
+        "_ignore_regression_generic_time_series_2d_in_2d_transient_explicit"
+    });
+    write(GridFormat::Writer{
+        GridFormat::FileFormat::VTKHDFImageTransient{},
+        grid,
+        "_ignore_regression_generic_time_series_2d_in_2d_transient_image_explicit"
+    });
+    write(GridFormat::Writer{
+        GridFormat::FileFormat::VTKHDFUnstructuredTransient{},
+        grid,
+        "_ignore_regression_generic_time_series_2d_in_2d_transient_unstructured_explicit"
+    });
+#endif
     return 0;
 }

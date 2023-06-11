@@ -53,8 +53,11 @@ inline constexpr bool _gfmt_api_have_high_five = false;
 namespace GridFormat {
 
 using VTKHDFWriter = APIDetail::Unavailable;
+using VTKHDFTimeSeriesWriter = APIDetail::Unavailable;
 using VTKHDFImageGridWriter = APIDetail::Unavailable;
 using VTKHDFUnstructuredGridWriter = APIDetail::Unavailable;
+using VTKHDFImageGridTimeSeriesWriter = APIDetail::Unavailable;
+using VTKHDFUnstructuredGridTimeSeriesWriter = APIDetail::Unavailable;
 
 }  // namespace GridFormat
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE
@@ -68,45 +71,47 @@ template<typename FileFormat> struct WriterFactory;
 
 namespace FileFormat {
 
-//! Base class for VTK-XML formats
-template<typename VTKFormat>
-struct VTKXMLFormatBase {
+//! Base class for formats taking options
+template<typename Format, typename Opts>
+struct FormatWithOptions {
+    using Options = Opts;
+    Options opts = {};
+
     //! Construct a new instance of this format with the given options
-    constexpr auto operator()(VTK::XMLOptions opts) const {
-        auto f = VTKFormat{};
-        f.opts = std::move(opts);
+    constexpr Format operator()(Options _opts) const {
+        return with(std::move(_opts));
+    }
+
+    //! Construct a new instance of this format with the given options
+    constexpr Format with(Options _opts) const {
+        Format f;
+        f.opts = std::move(_opts);
         return f;
     }
+};
 
-    //! Construct a new instance of this format with the given options
-    constexpr auto with(VTK::XMLOptions opts) const {
-        return (*this)(std::move(opts));
-    }
-
+//! Base class for VTK-XML formats
+template<typename VTKFormat>
+struct VTKXMLFormatBase : public FormatWithOptions<VTKFormat, VTK::XMLOptions> {
     //! Construct a new instance of this format with modified encoding option
     constexpr auto with_encoding(VTK::XML::Encoder e) const {
-        auto opts = _cur_opts();
-        Variant::unwrap_to(opts.encoder, e);
-        return (*this)(std::move(opts));
+        auto cur_opts = this->opts;
+        Variant::unwrap_to(cur_opts.encoder, e);
+        return this->with(std::move(cur_opts));
     }
 
     //! Construct a new instance of this format with modified data format option
     constexpr auto with_data_format(VTK::XML::DataFormat f) const {
-        auto opts = _cur_opts();
-        Variant::unwrap_to(opts.data_format, f);
-        return (*this)(std::move(opts));
+        auto cur_opts = this->opts;
+        Variant::unwrap_to(cur_opts.data_format, f);
+        return this->with(std::move(cur_opts));
     }
 
     //! Construct a new instance of this format with modified compression option
     constexpr auto with_compression(VTK::XML::Compressor c) const {
-        auto opts = _cur_opts();
-        Variant::unwrap_to(opts.compressor, c);
-        return (*this)(std::move(opts));
-    }
-
- private:
-    VTK::XMLOptions _cur_opts() const {
-        return static_cast<const VTKFormat&>(*this).opts;
+        auto cur_opts = this->opts;
+        Variant::unwrap_to(cur_opts.compressor, c);
+        return this->with(std::move(cur_opts));
     }
 };
 
@@ -120,7 +125,7 @@ struct VTKXMLFormatBase {
  *          for the parallel variant.
  * \note The parallel variant (.pvti) is only available if MPI is found on the system.
  */
-struct VTI : VTKXMLFormatBase<VTI> { VTK::XMLOptions opts = {}; };
+struct VTI : VTKXMLFormatBase<VTI> {};
 
 /*!
  * \ingroup API
@@ -131,7 +136,7 @@ struct VTI : VTKXMLFormatBase<VTI> { VTK::XMLOptions opts = {}; };
  *          for the parallel variant.
  * \note The parallel variant (.pvtr) is only available if MPI is found on the system.
  */
-struct VTR : VTKXMLFormatBase<VTR> { VTK::XMLOptions opts = {}; };
+struct VTR : VTKXMLFormatBase<VTR> {};
 
 /*!
  * \ingroup API
@@ -142,7 +147,7 @@ struct VTR : VTKXMLFormatBase<VTR> { VTK::XMLOptions opts = {}; };
  *          for the parallel variant.
  * \note The parallel variant (.pvts) is only available if MPI is found on the system.
  */
-struct VTS : VTKXMLFormatBase<VTS> { VTK::XMLOptions opts = {}; };
+struct VTS : VTKXMLFormatBase<VTS> {};
 
 /*!
  * \ingroup API
@@ -153,7 +158,7 @@ struct VTS : VTKXMLFormatBase<VTS> { VTK::XMLOptions opts = {}; };
  *          for the parallel variant.
  * \note The parallel variant (.pvtp) is only available if MPI is found on the system.
  */
-struct VTP : VTKXMLFormatBase<VTP> { VTK::XMLOptions opts = {}; };
+struct VTP : VTKXMLFormatBase<VTP> {};
 
 /*!
  * \ingroup API
@@ -164,7 +169,14 @@ struct VTP : VTKXMLFormatBase<VTP> { VTK::XMLOptions opts = {}; };
  *          for the parallel variant.
  * \note The parallel variant (.pvtu) is only available if MPI is found on the system.
  */
-struct VTU : VTKXMLFormatBase<VTU> { VTK::XMLOptions opts = {}; };
+struct VTU : VTKXMLFormatBase<VTU> {};
+
+/*!
+ * \ingroup API
+ * \brief Selector for a time series of any VTK-XML format.
+ */
+template<typename VTX>
+struct VTKXMLTimeSeries : VTKXMLFormatBase<VTKXMLTimeSeries<VTX>> {};
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE
 /*!
@@ -180,6 +192,13 @@ struct VTKHDFImage {};
 
 /*!
  * \ingroup API
+ * \brief Transient variant of the vtk-hdf image data format
+ */
+struct VTKHDFImageTransient
+: FormatWithOptions<VTKHDFImageTransient, VTK::HDFTransientOptions> {};
+
+/*!
+ * \ingroup API
  * \brief Selector for the vtk-hdf file format for unstructured grids.
  *        For more information, see
  *        <a href="https://examples.vtk.org/site/VTKFileFormats/#unstructured-grid">here</a>.
@@ -188,6 +207,30 @@ struct VTKHDFImage {};
  *       FetchContent mechanism.
  */
 struct VTKHDFUnstructured {};
+
+/*!
+ * \ingroup API
+ * \brief Transient variant of the vtk-hdf unstructured grid format
+ */
+struct VTKHDFUnstructuredTransient
+: FormatWithOptions<VTKHDFUnstructuredTransient, VTK::HDFTransientOptions> {};
+
+/*!
+ * \ingroup API
+ * \brief Selector for the transient vtk-hdf file format with automatic deduction of the flavour.
+ *        If the grid for which a writer is constructed is an image grid, it selects the image-grid flavour, otherwise
+ *        it selects the flavour for unstructured grids (which requires the respective traits to be specialized).
+ * \note This file format is only available if HighFive is found on the system. If libhdf5 is found on the system,
+ *       Highfive is automatically included when pulling the repository recursively, or, when using cmake's
+ *       FetchContent mechanism.
+ */
+struct VTKHDFTransient : FormatWithOptions<VTKHDFTransient, VTK::HDFTransientOptions> {
+    template<typename Grid>
+    constexpr auto from(const Grid&) const {
+        // TODO: Once the VTKHDFImageGridReader is stable, use image format for image grids
+        return VTKHDFUnstructuredTransient{this->opts};
+    }
+};
 
 /*!
  * \ingroup API
@@ -204,8 +247,28 @@ struct VTKHDF {
         // TODO: Once the VTKHDFImageGridReader is stable, use image format for image grids
         return VTKHDFUnstructured{};
     }
+
+    //! Return the transient variant of this format with the given options
+    constexpr VTKHDFTransient with(VTK::HDFTransientOptions opts) {
+        return {std::move(opts)};
+    }
 };
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE
+
+#ifndef DOXYGEN
+namespace Detail {
+
+    template<typename F> struct IsVTKXMLFormat : public std::false_type {};
+    template<> struct IsVTKXMLFormat<VTI> : public std::true_type {};
+    template<> struct IsVTKXMLFormat<VTR> : public std::true_type {};
+    template<> struct IsVTKXMLFormat<VTS> : public std::true_type {};
+    template<> struct IsVTKXMLFormat<VTP> : public std::true_type {};
+    template<> struct IsVTKXMLFormat<VTU> : public std::true_type {};
+
+    template<typename T>
+    inline constexpr bool always_false = false;
+}  // namespace Detail
+#endif  // DOXYGEN
 
 /*!
  * \ingroup API
@@ -219,44 +282,45 @@ struct PVD { PieceFormat piece_format; };
 
 /*!
  * \ingroup API
- * \brief Convenience selector for a time series flavour of the given file format.
- *        This is unavailable if the given format does not provide a flavour for time series.
- * \tparam Format The file format for which a time-series flavour is requested.
+ * \brief Closure for selecting the .pvd file format. Takes a VTK-XML format and returns an instance of PVD.
  */
-template<typename Format>
-struct TimeSeries { Format format; };
+struct PVDClosure {
+    template<typename Format>
+    constexpr auto operator()(const Format& f) const {
+        static_assert(
+            Detail::IsVTKXMLFormat<Format>::value,
+            "The PVD format is only available with vtk-xml file formats"
+        );
+        return PVD<Format>{f};
+    }
+};
 
-
-#ifndef DOXYGEN
-namespace Detail {
-
-    template<typename F> struct IsVTKXMLFormat : public std::false_type {};
-    template<> struct IsVTKXMLFormat<VTI> : public std::true_type {};
-    template<> struct IsVTKXMLFormat<VTR> : public std::true_type {};
-    template<> struct IsVTKXMLFormat<VTS> : public std::true_type {};
-    template<> struct IsVTKXMLFormat<VTP> : public std::true_type {};
-    template<> struct IsVTKXMLFormat<VTU> : public std::true_type {};
-
-    struct PVDClosure {
-        template<typename Format>
-        constexpr auto operator()(const Format& f) const {
+/*!
+ * \ingroup API
+ * \brief Closure for time series format selection. Takes a sequential format and returns a time series variant.
+ */
+struct TimeSeriesClosure {
+    template<typename Format>
+    constexpr auto operator()(const Format& f) const {
+        if constexpr (Detail::IsVTKXMLFormat<Format>::value)
+            return VTKXMLTimeSeries<Format>{f.opts};
+#if GRIDFORMAT_HAVE_HIGH_FIVE
+        else if constexpr (std::same_as<VTKHDFImage, Format>)
+            return VTKHDFImageTransient{};
+        else if constexpr (std::same_as<VTKHDFUnstructured, Format>)
+            return VTKHDFUnstructuredTransient{};
+        else if constexpr (std::same_as<VTKHDF, Format>)
+            return VTKHDFTransient{};
+#endif  // GRIDFORMAT_HAVE_HIGH_FIVE
+        else {
             static_assert(
-                IsVTKXMLFormat<Format>::value,
-                "The PVD format is only available with vtk-xml file formats"
+                Detail::always_false<Format>,
+                "Cannot create a time series variant for the given format. This means the format does not "
+                "define a variant for time series, or, the selected format is already time series format."
             );
-            return PVD<Format>{f};
         }
-    };
-
-    struct TimeSeriesClosure {
-        template<typename Format>
-        constexpr auto operator()(const Format& f) const {
-            return TimeSeries<Format>{f};
-        }
-    };
-
-}  // namespace Detail
-#endif  // DOXYGEN
+    }
+};
 
 }  // namespace FileFormat
 
@@ -327,12 +391,32 @@ template<> struct WriterFactory<FileFormat::VTU> {
     }
 };
 
+//! Specialization of the WriterFactory for vtk-xml time series.
+template<typename F> struct WriterFactory<FileFormat::VTKXMLTimeSeries<F>> {
+    static auto make(const FileFormat::VTKXMLTimeSeries<F>& format,
+                     const Concepts::UnstructuredGrid auto& grid,
+                     const std::string& base_filename) {
+        return VTKXMLTimeSeriesWriter{
+            WriterFactory<F>::make(F{format.opts}, grid),
+            base_filename
+        };
+    }
+    static auto make(const FileFormat::VTKXMLTimeSeries<F>& format,
+                     const Concepts::UnstructuredGrid auto& grid,
+                     const Concepts::Communicator auto& comm,
+                     const std::string& base_filename) {
+        return VTKXMLTimeSeriesWriter{
+            WriterFactory<F>::make(F{format.opts}, grid, comm),
+            base_filename
+        };
+    }
+};
+
 #if GRIDFORMAT_HAVE_HIGH_FIVE
 //! Specialization of the WriterFactory for the vtk-hdf image grid format
 template<> struct WriterFactory<FileFormat::VTKHDFImage> {
     static auto make(const FileFormat::VTKHDFImage&,
                      const Concepts::ImageGrid auto& grid) {
-        static_assert(_gfmt_api_have_high_five, "HighFive is required for this file format");
         return VTKHDFImageGridWriter{grid};
     }
     static auto make(const FileFormat::VTKHDFImage&,
@@ -342,18 +426,46 @@ template<> struct WriterFactory<FileFormat::VTKHDFImage> {
     }
 };
 
+//! Specialization of the WriterFactory for the transient vtk-hdf image grid format
+template<> struct WriterFactory<FileFormat::VTKHDFImageTransient> {
+    static auto make(const FileFormat::VTKHDFImageTransient& f,
+                     const Concepts::ImageGrid auto& grid,
+                     const std::string& base_filename) {
+        return VTKHDFImageGridTimeSeriesWriter{grid, base_filename, f.opts};
+    }
+    static auto make(const FileFormat::VTKHDFImageTransient& f,
+                     const Concepts::ImageGrid auto& grid,
+                     const Concepts::Communicator auto& comm,
+                     const std::string& base_filename) {
+        return VTKHDFImageGridTimeSeriesWriter{grid, comm, base_filename, f.opts};
+    }
+};
+
 //! Specialization of the WriterFactory for the vtk-hdf unstructured grid format
 template<> struct WriterFactory<FileFormat::VTKHDFUnstructured> {
     static auto make(const FileFormat::VTKHDFUnstructured&,
                      const Concepts::UnstructuredGrid auto& grid) {
-        static_assert(_gfmt_api_have_high_five, "HighFive is required for this file format");
         return VTKHDFUnstructuredGridWriter{grid};
     }
     static auto make(const FileFormat::VTKHDFUnstructured&,
                      const Concepts::UnstructuredGrid auto& grid,
                      const Concepts::Communicator auto& comm) {
-        static_assert(_gfmt_api_have_high_five, "HighFive is required for this file format");
         return VTKHDFUnstructuredGridWriter{grid, comm};
+    }
+};
+
+//! Specialization of the WriterFactory for the transient vtk-hdf unstructured grid format
+template<> struct WriterFactory<FileFormat::VTKHDFUnstructuredTransient> {
+    static auto make(const FileFormat::VTKHDFUnstructuredTransient& f,
+                     const Concepts::ImageGrid auto& grid,
+                     const std::string& base_filename) {
+        return VTKHDFUnstructuredTimeSeriesWriter{grid, base_filename, f.opts};
+    }
+    static auto make(const FileFormat::VTKHDFUnstructuredTransient& f,
+                     const Concepts::ImageGrid auto& grid,
+                     const Concepts::Communicator auto& comm,
+                     const std::string& base_filename) {
+        return VTKHDFUnstructuredTimeSeriesWriter{grid, comm, base_filename, f.opts};
     }
 };
 
@@ -367,6 +479,26 @@ template<> struct WriterFactory<FileFormat::VTKHDF> {
                      const Concepts::Grid auto& grid,
                      const Concepts::Communicator auto& comm) {
         return _make(format.from(grid), grid, comm);
+    }
+ private:
+    template<typename F, typename... Args>
+    static auto _make(F&& format, Args&&... args) {
+        return WriterFactory<F>::make(format, std::forward<Args>(args)...);
+    }
+};
+
+//! Specialization of the WriterFactory for the transient vtk-hdf file format with automatic flavour selection.
+template<> struct WriterFactory<FileFormat::VTKHDFTransient> {
+    static auto make(const FileFormat::VTKHDFTransient& format,
+                     const Concepts::Grid auto& grid,
+                     const std::string& base_filename) {
+        return _make(format.from(grid), grid, base_filename);
+    }
+    static auto make(const FileFormat::VTKHDFTransient& format,
+                     const Concepts::Grid auto& grid,
+                     const Concepts::Communicator auto& comm,
+                     const std::string& base_filename) {
+        return _make(format.from(grid), grid, comm, base_filename);
     }
  private:
     template<typename F, typename... Args>
@@ -392,23 +524,6 @@ struct WriterFactory<FileFormat::PVD<F>> {
     }
 };
 
-//! Specialization of the WriterFactory for the time series formats with automatic selection.
-template<typename F>
-struct WriterFactory<FileFormat::TimeSeries<F>> {
-    static auto make(const FileFormat::TimeSeries<F>& format,
-                     const Concepts::Grid auto& grid,
-                     const std::string& base_filename) {
-        return VTKXMLTimeSeriesWriter{WriterFactory<F>::make(format.piece_format, grid), base_filename};
-    }
-    static auto make(const FileFormat::TimeSeries<F>& format,
-                     const Concepts::Grid auto& grid,
-                     const Concepts::Communicator auto& comm,
-                     const std::string& base_filename) {
-        return VTKXMLTimeSeriesWriter{WriterFactory<F>::make(format.piece_format, grid, comm), base_filename};
-    }
-};
-
-
 // We place the format instances in a namespace different from FileFormats, in which
 // the format types are defined above. Further below, we make these instances available
 // in the GridFormat namespace directly. Having a separate namespace allows downstream ´
@@ -417,17 +532,26 @@ struct WriterFactory<FileFormat::TimeSeries<F>> {
 // "hiding" the former and only expose the latter.
 namespace Formats {
 
+//! \addtogroup API
+//! \{
+//! \name File Format Selectors
+//! \{
+
 inline constexpr FileFormat::VTI vti;
 inline constexpr FileFormat::VTR vtr;
 inline constexpr FileFormat::VTS vts;
 inline constexpr FileFormat::VTP vtp;
 inline constexpr FileFormat::VTU vtu;
-inline constexpr FileFormat::Detail::PVDClosure pvd;
-inline constexpr FileFormat::Detail::TimeSeriesClosure time_series;
+inline constexpr FileFormat::PVDClosure pvd;
+inline constexpr FileFormat::TimeSeriesClosure time_series;
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE
 inline constexpr FileFormat::VTKHDF vtk_hdf;
+inline constexpr FileFormat::VTKHDFTransient vtk_hdf_transient;
 #endif
+
+//! \} name File Format Selectors
+//! \} group API
 
 #ifndef DOXYGEN
 namespace APIDetail { template<typename T> struct False : public std::false_type {}; }

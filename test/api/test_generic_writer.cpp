@@ -55,6 +55,13 @@ int main() {
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE
     write(GridFormat::Writer{GridFormat::vtk_hdf, grid}, "unstructured");
+    {  // include in regression testing once new vtk version is out
+        GridFormat::Writer writer{GridFormat::FileFormat::VTKHDFImage{}, grid};
+        add_fields(writer);
+        std::cout << "Wrote '" << GridFormat::as_highlight(
+            writer.write("_ignore_regression_generic_2d_in_2d")
+        ) << "'" << std::endl;
+    }
 #endif
 
     GridFormat::Writer writer{GridFormat::vtu, grid};
