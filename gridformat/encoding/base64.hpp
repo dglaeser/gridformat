@@ -60,58 +60,45 @@ class Base64Stream : public OutputStreamWrapperBase<OStream> {
 
     template<typename T, std::size_t size>
     void write(std::span<T, size> data) {
-        _write(std::as_bytes(data));
+        auto byte_span = std::as_bytes(data);
+        const Byte* bytes = reinterpret_cast<const Byte*>(byte_span.data());
+        _write(bytes, byte_span.size());
     }
 
  private:
-    template<std::size_t size>
-    void _write(std::span<const std::byte, size> data) {
-        const auto num_full_buffers = data.size()/buffer_size;
+    void _write(const Byte* data, std::size_t size) {
+        const auto num_full_buffers = size/buffer_size;
         for (const auto i : std::views::iota(std::size_t{0}, num_full_buffers))
-            _flush_full_buffer(data, i*buffer_size);
+            _flush_full_buffer(data + i*buffer_size);
 
         const auto written_bytes = num_full_buffers*buffer_size;
-        if (data.size() > written_bytes)
-            _flush_buffer(data, written_bytes, data.size() - written_bytes);
+        if (size > written_bytes)
+            _flush_buffer(data + written_bytes, size - written_bytes);
     }
 
-    template<std::size_t size>
-    void _flush_full_buffer(std::span<const std::byte, size> data, std::size_t offset) {
-        assert(data.size() >= offset + buffer_size);
-        const Byte* chars = _buffer_view(data, offset);
+    void _flush_full_buffer(const Byte* data) {
         const Byte out[4] = {
-            _encodeSextet0(chars),
-            _encodeSextet1(chars),
-            _encodeSextet2(chars),
-            _encodeSextet3(chars)
+            _encodeSextet0(data),
+            _encodeSextet1(data),
+            _encodeSextet2(data),
+            _encodeSextet3(data)
         };
         this->_stream.write(std::span{out});
     }
 
-    template<std::size_t size>
-    void _flush_buffer(std::span<const std::byte, size> data, std::size_t offset, std::size_t num_bytes) {
+    void _flush_buffer(const Byte* data, std::size_t num_bytes) {
         if (num_bytes == 0)
             return;
         if (num_bytes > buffer_size)
             throw InvalidState("Residual bytes larger than buffer size");
 
-        std::array<std::byte, buffer_size> buffer;
-        std::ranges::copy_n(data.data() + offset, num_bytes, buffer.begin());
-        std::ranges::fill(buffer.data() + num_bytes, buffer.end(), std::byte{0});
-
-        const Byte* chars = _buffer_view(std::as_bytes(std::span{buffer}), 0);
         const Byte out[4] = {
-            num_bytes > 0 ? _encodeSextet0(chars) : '=',
-            num_bytes > 0 ? _encodeSextet1(chars) : '=',
-            num_bytes > 1 ? _encodeSextet2(chars) : '=',
-            num_bytes > 2 ? _encodeSextet3(chars) : '='
+            _encodeSextet0(data),
+            _encodeSextet1(data),
+            num_bytes > 1 ? _encodeSextet2(data) : '=',
+            num_bytes > 2 ? _encodeSextet3(data) : '='
         };
         this->_stream.write(std::span{out});
-    }
-
-    template<std::size_t size>
-    const Byte* _buffer_view(std::span<const std::byte, size> data, std::size_t offset) const {
-        return reinterpret_cast<const Byte*>(data.data()) + offset;
     }
 };
 
