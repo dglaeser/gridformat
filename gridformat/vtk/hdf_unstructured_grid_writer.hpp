@@ -266,7 +266,7 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
             const auto my_total_num_values = Parallel::broadcast(_comm, total_num_values, root_rank);
             const auto my_offset = _accumulate_rank_offset(num_values);
             DataSetSlice slice{
-                .size = std::vector{my_total_num_values},
+                .total_size = std::vector{my_total_num_values},
                 .offset = std::vector{my_offset},
                 .count = std::vector{num_values}
             };
@@ -326,7 +326,7 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
             size.at(0) = is_point_field ? context.num_points_total : context.num_cells_total;
 
             file.write(values, path, {
-                .size = size,
+                .total_size = size,
                 .offset = offset,
                 .count = count
             });
@@ -394,7 +394,6 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
         access_offset.at(0) = this->_step_count - 1;
 
         return file.template read<std::size_t>(path, {
-                .size = std::vector<std::size_t>{},  // TODO: Slice should be a structure without size
                 .offset = access_offset,
                 .count = step_dimensions
             }

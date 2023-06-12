@@ -261,11 +261,11 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
                              const Extents& extents,
                              const Offsets& offsets) const {
         DataSetSlice result;
-        std::ranges::copy(total_extents, std::back_inserter(result.size));
+        std::ranges::copy(total_extents, std::back_inserter(result.total_size));
         std::ranges::copy(extents, std::back_inserter(result.count));
         std::ranges::copy(offsets, std::back_inserter(result.offset));
         // slices are accessed with the last coordinate first (i.e. values[z][y][x])
-        std::ranges::reverse(result.size);
+        std::ranges::reverse(result.total_size);
         std::ranges::reverse(result.count);
         std::ranges::reverse(result.offset);
         return result;
@@ -341,7 +341,7 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
                              Values&& values,
                              const DataSetPath& path,
                              const DataSetSlice& slice) const {
-        std::vector<std::size_t> size{slice.size.begin(), slice.size.end()};
+        std::vector<std::size_t> size{slice.total_size.begin(), slice.total_size.end()};
         std::vector<std::size_t> count{slice.count.begin(), slice.count.end()};
         std::vector<std::size_t> offset{slice.offset.begin(), slice.offset.end()};
 
@@ -360,13 +360,13 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
             offset.insert(offset.begin(), 0);
             count.insert(count.begin(), 1);
             file.write(std::array{std::move(values)}, path, {
-                .size = size,
+                .total_size = size,
                 .offset = offset,
                 .count = count
             });
         } else {
             file.write(values, path, {
-                .size = size,
+                .total_size = size,
                 .offset = offset,
                 .count = count
             });
