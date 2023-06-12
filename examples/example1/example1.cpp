@@ -9,9 +9,11 @@
 
 #include <gridformat/gridformat.hpp>
 
-// Data structure to store data on voxels. In this example, we want
-// to register this data structure as `ImageGrid` to GridFormat, such
-// that we can export the data into suitable file formats.
+// Data structure to store data on voxels. This implementation ignores
+// physical space dimensions, that is, it has no information on how big
+// (in physical space) a voxel is. In this example, we want to register
+// this data structure as `ImageGrid` to GridFormat, such that we can
+// export the data into suitable file formats.
 class VoxelData {
  public:
     struct Voxel {
@@ -26,8 +28,8 @@ class VoxelData {
     {}
 
     friend auto voxels(const VoxelData& vd) {
-        // `GridFormat` comes with the `MDIndexRange` that one can use to
-        // iterate over the multi-dimensional indices within a given layout:
+        // `GridFormat` comes with the `MDIndexRange` that one can use to iterate
+        // over all multi-dimensional indices within given dimensions (MDLayout):
         using GridFormat::MDIndex;
         using GridFormat::MDLayout;
         return GridFormat::MDIndexRange{MDLayout{vd._dimensions}} | std::views::transform([] (const MDIndex& i) {
@@ -76,11 +78,11 @@ struct Cells<VoxelData> {
 template<>
 struct Points<VoxelData> {
     static std::ranges::empty_view<int> get(const VoxelData& voxel_data) {
-        // For image grids, y point range is only needed if we want to write out
+        // For image grids, a point range is only needed if we want to write out
         // field data defined on points. Our VoxelData does not really carry a notion
         // of points, so let us just throw an exception if someone tries to call this.
         // Note however, that we use an empty range of integers as return type, so that
-        // GridFormat can deduce a "point type" for our grid (thus, in this case int)
+        // GridFormat can deduce a "point type" for our grid (i.e. in this case `int`)
         throw std::runtime_error("VoxelData does not implement points");
     }
 };
@@ -132,11 +134,13 @@ struct Location<VoxelData, int> {
 
 int main() {
     // Let us check against the concept to see if we implemented the traits correctly
+    // When implementing the grid traits for a data structure, it is helpful to make
+    // such static_asserts pass before actually using the GridFormat API.
     static_assert(GridFormat::Concepts::ImageGrid<VoxelData>);
 
     VoxelData voxel_data{{100, 80, 120}};
 
-    // Function that we use to define some cell data output
+    // A function that we use to define some cell data output
     const auto indicator_function = [&] (const auto& voxel) -> int {
         const auto coords = voxel_data.center(voxel);
         const auto frequency_x = 2.0*std::numbers::pi/voxel_data.size(0);

@@ -62,9 +62,10 @@ int main () {
         {10, 12}    // number of cells (pixels) in each direction
     };
 
-    // Let's write an analytical field into .vtu file format. Fields are attached to the
-    // writer via lambdas that return the discrete values at points or cells.
+    // This shows the `GridFormat` API: Construct a writer for the desired format, and add
+    // point/cell fields as lambdas. Metadata can be added directly and can be ranges or scalars.
     GridFormat::Writer writer{GridFormat::vtu, grid};
+    writer.set_meta_data("some_metadata", "i am metadata");
     writer.set_point_field("point_field", [&] (const auto& point) { return f(grid.position(point)); });
     writer.set_cell_field("cell_field", [&] (const auto& cell) { return f(grid.center(cell)); });
     writer.write("my_test_file");  // the file extension will be appended by the writer
@@ -103,7 +104,7 @@ target_link_libraries(... gridformat::gridformat)
 ### Dependencies
 
 `GridFormat` has no required dependencies, however, some features are only available if certain dependencies are present. For
-instance, the [VTK-HDF file formats](https://examples.vtk.org/site/VTKFileFormats/#hdf-file-formats) is only available if
+instance, the [VTK-HDF file formats](https://examples.vtk.org/site/VTKFileFormats/#hdf-file-formats) are only available if
 [`HighFive`](https://github.com/BlueBrain/HighFive) is found, which itself requires `libhdf5-dev`. If the latter is found on
 your system, including `GridFormat` via cmake's `FetchContent` (see quickstart) automatically brings in `HighFive`, as it is
 included in `GridFormat` as a git submodule. However, when installing `GridFormat` from the cloned sources (as described above),
@@ -139,7 +140,9 @@ Users of these frameworks can include these predefined traits and use `GridForma
 
 ## Contribution Guidelines
 
-Coming soon...
+Contributions are highly welcome! For bug reports, please file an [issue](https://github.com/dglaeser/gridformat/issues).
+If you want to contribute with features, improvements or bug fixes please fork this project and open
+a merge request into the main branch of this repository.
 
 ### Development and test suite
 

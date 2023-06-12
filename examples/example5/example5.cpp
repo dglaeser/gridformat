@@ -37,7 +37,7 @@ auto make_function_space(std::shared_ptr<Mesh> mesh, int block_size, int order) 
             order,
             basix::element::lagrange_variant::unset,
             basix::element::dpc_variant::unset,
-            (order == 0 ? true : false)
+            (order == 0 ? true : false)  // discontinuous ?
         ),
         block_size
     ));
@@ -76,7 +76,7 @@ void run_fake_simulation() {
     auto scalar_cell_function = make_function(mesh, 1, 0, "scalar_cell_function");
     auto vector_cell_function = make_function(mesh, 3, 0, "vector_cell_function");
 
-    // we can write out dolfinx meshes directly...
+    // we can also write out dolfinx meshes directly...
     // in order to properly write parallel output we pass the communicator to the writer
     GridFormat::Writer mesh_writer{GridFormat::vtu, *mesh, mesh->comm()};
     mesh_writer.set_cell_field("rank", [&] (const auto& c) {
@@ -90,7 +90,7 @@ void run_fake_simulation() {
     // in instances of dolfinx::fem::Function. In order to write out functions (of arbitrary
     // order), we can use a wrapper that is provided in `GridFormat`, and for which all the
     // required traits are specialized. We construct it with one of the nodal spaces, and then
-    // we can add data from the other functions:
+    // we can add data from the other functions to the writer...
     auto out_mesh = GridFormat::DolfinX::Mesh::from(*scalar_nodal_function.function_space());
     GridFormat::Writer writer{GridFormat::vtu, out_mesh, mesh->comm()};
     writer.set_cell_field("rank", [&] (const auto& c) {
@@ -120,7 +120,7 @@ void run_fake_simulation() {
     // additional memory. For time-dependent simulations, you may want to free that memory
     // during time steps, and update the mesh again before the next write. Note that updating
     // is also necessary in case the mesh changes adaptively. Both updating and clearing is
-    // in the API of the wrapped mesh:
+    // exposed in the API of the dolfinx function space wrapper:
     out_mesh.clear();
     out_mesh.update(*scalar_nodal_function.function_space());
 }

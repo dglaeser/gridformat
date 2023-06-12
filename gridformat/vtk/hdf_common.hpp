@@ -52,7 +52,7 @@ struct HDFTransientOptions {
 namespace VTKHDF {
 
 struct DataSetSlice {
-    std::vector<std::size_t> size;  // todo: is total size, actuall. rename?
+    std::vector<std::size_t> total_size = {};
     std::vector<std::size_t> offset;
     std::vector<std::size_t> count;
 };
@@ -238,18 +238,14 @@ class HDF5File {
         const std::vector<std::size_t> ds_size = space.getDimensions();
         std::vector<std::size_t> ds_offset(ds_size.size(), 0);
         ds_offset.at(0) += offset;
-        _write_to(dataset, values, DataSetSlice{
-            .size = std::vector<std::size_t>{},  // not used by _write_to
-            .offset = ds_offset,
-            .count = ds_size,
-        });
+        _write_to(dataset, values, {.offset = ds_offset, .count = ds_size});
         _file.flush();
         return space.getDimensions()[0];
     }
 
     template<typename Values>
     std::size_t write(const Values& values, const DataSetPath& path, DataSetSlice slice) {
-        const auto space = HighFive::DataSpace(slice.size);
+        const auto space = HighFive::DataSpace(slice.total_size);
         auto group = _get_group(path.group_path);
         auto [offset, dataset] = _prepare_dataset<FieldScalar<Values>>(group, path.dataset_name, space);
 
@@ -349,15 +345,10 @@ class HDF5File {
     template<typename Values>
     void _write_to(HighFive::DataSet& dataset,
                    const Values& values,
-                   const std::optional<DataSetSlice> slice = {},
+                   const DataSetSlice& slice,
                    const std::optional<HighFive::DataTransferProps> props = {}) {
-        if (slice) {
-            props ? dataset.select(slice->offset, slice->count).write(values, *props)
-                  : dataset.select(slice->offset, slice->count).write(values);
-        } else {
-            props ? dataset.write(values, *props)
-                  : dataset.write(values);
-        }
+        props ? dataset.select(slice.offset, slice.count).write(values, *props)
+              : dataset.select(slice.offset, slice.count).write(values);
     }
 
     HighFive::Group _get_group(const std::string& group_name) {
