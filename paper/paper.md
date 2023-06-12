@@ -20,55 +20,51 @@ bibliography: paper.bib
 
 # Summary
 
-Numerical simulations play an important role in a wide range of research domains such as mathematics, physics or engineering.
-At the core of such simulations typically lies a set of model equations that describe the physical system of interest.
-The task of the simulator is to find a numerical, that is, an approximated solution to these equations on a given domain
-geometry and for given boundary conditions. A wide-spread approach is to discretize the domain into a grid consisting of
-points and cells, and to use discretization schemes such as finite-differences, finite-volumes or finite-elements. As a
-result of this process, one obtains a discrete solution that is defined at certain positions of the grid, and depending
-on the scheme, one can interpolate the solution over the entire domain using the scheme's basis functions. Due to the
-high computational demands involved in such simulations, simulation codes are typically written in performant C++,
-leveraging distributed-memory parallelism via [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface) to be
-run on large [High-Performance-Computing](TODO:REF) systems.
+Numerical simulations play a crucial role in various research domains, including mathematics, physics, and engineering.
+These simulations typically involve solving a set of model equations that describe the physical system under investigation.
+To find an approximate solution to these equations on a given domain geometry and with specific boundary conditions, the
+domain is typically discretized into a grid composed of points and cells, on which discretization schemes such as finite differences,
+finite volumes, or finite elements are then employed. This process yields a discrete solution defined at specific grid positions,
+which can be interpolated over the entire domain using the basis functions of the chosen scheme. Due to the high computational
+demands of such simulations, developers usually implement simulation codes in performant C++ and leverage distributed-memory
+parallelism through MPI (Message Passing Interface) to run them on large High-Performance Computing systems.
 
-Visualization of plays a fundamental role in the process of analyzing numerical results, and a visualization tool that is widely
-used in research is [ParaView](https://www.paraview.org), which is based on the [Visualization Toolkit (VTK)](https://www.vtk.org).
-[ParaView](https://www.paraview.org) can read and understand a large number of different file formats, with some of the most
-popular ones being the [VTK file formats](https://examples.vtk.org/site/VTKFileFormats/). Researchers that want to visualize their
-results with `ParaView` must write them into one of the supported file formats. A solution could be to rely on one of the existing
-research software simulation frameworks, as for instance, `Dune` [@bastian2008; @Dune2021], `Dumux` [@dumux_2011; @Kochetaldumux2021],
-`Deal.II` [@dealII94], `FEniCS` [@fenicsbook2012; @fenics], or `VirtualFluids` [@virtualfluids_2022]. These frameworks typically
-provide their users with functionality to export results produced with the framework into some standard file formats. As is natural
-for a framework, this functionality is typically implemented for framework-specific data structures and is therefore hard to reuse
-in different contexts; at least without having to convert data at the cost of runtime and memory overhead. As a consequence, the work
-of implementing I/O into standard file formats is repeated in every framework, and remains inaccessible for researchers that use
-hand-written simulation codes.
+Visualization plays a fundamental role in analyzing numerical results, and one widely-used visualization tool in research is
+[ParaView](TODO:CITE), which is based on the [Visualization Toolkit](TODO:CITE) (VTK). ParaView supports a wide range of file formats,
+with the VTK file formats being among the most popular. To visualize simulation results with ParaView, researchers need to write their
+data into one of the supported file formats. Users of existing simulation frameworks such as `Dune` [@bastian2008; @Dune2021],
+`Dumux` [@dumux_2011; @Kochetaldumux2021], `Deal.II` [@dealII94], `FEniCS` [@fenicsbook2012; @fenics], or
+`VirtualFluids` [@virtualfluids_2022], can usually export their results into some standard file formats, however, they are limited
+to those formats that are supported by framework. Reusing another framework's I/O functionality is typically challenging, at least
+without runtime and memory overhead due to data conversions, since the implementation is usually tailored to its specific data structures.
+As a consequence, the work of implementing I/O into standard file formats is repeated in every framework, and remains inaccessible for
+researchers that use hand-written simulation codes.
 
 To close this gap, `GridFormat` aims to provide access to a variety of grid file formats through an easy-to-use API. Making
 use of generic programming via C++ templates and traits classes, `GridFormat` is data-structure-agnostic, thereby enabling
 both users of frameworks or hand-written codes to write out their data without runtime or memory overhead.
+
+To address this issue, `GridFormat` aims to provide an easy-to-use API for writing grid files in various formats. By utilizing generic
+programming through C++ templates and traits classes, `GridFormat` is designed to be data-structure-agnostic. This allows users of
+simulation frameworks as well as users of hand-written codes to write their data without significant runtime or memory overhead.
 
 # Statement of Need
 
 The idea for this library emerged in the context of the simulation framework `Dumux`. `Dumux` is based on `Dune`, which enables
 users to write results into the [VTU file format](https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid), one of the
 `VTK` file formats. However, `Dune` does not support writing compressed `VTU` files, or to use the `VTI` format
-when working with regulary-spaced structured grids. Both features would have proven useful in a variety of projects around
-`Dumux`, in which reduced file sizes would have helped managing the produced data. Conversion of the data after writing, for
-instance with `ParaView`, is unsatisfactory due to the overhead of having to parse the file and to hold the entire
-grid once more in memory. Especially for large and massively parallel simulations this can be problematic.
+when working with regulary-spaced structured grids. Both features would have been beneficial in a variety of projects around
+`Dumux`, as reduced file sizes could have helped manage the produced data more efficiently. Conversion of the data after writing, for
+example, using `ParaView`, is unsatisfactory due to the overhead of parsing the file and holing the entire
+grid in memory once again. EThis becomes particularly problematic for large-scale, massively parallel simulations.
 
 Instead of adding the desired features into `Dumux`, we created `GridFormat` with the goal to provide a generic solution that
 could be reused with any framework or any hand-written simulation code alike. The implementation was governed by three major
 requirements:
 
-- 1. easy integration
-- 2. no significant runtime or memory overhead
-- 3. [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface)-support
-
-A natural choice for the programming language was C++, which is used by a large number of simulation codes. We opted for a
-lightweight, header-only approach, without mandatory dependencies and with support for [CMake](TODO:CITE) features that allow for
-automatic integration of `GridFormat` in downstream projects.
+Instead of adding these features to `Dumux`, we created `GridFormat` with the goal of providing a generic solution that could be reused
+with any framework or hand-written simulation code. The implementation was guided by three major requirements: easy integration, minimal runtime or memory overhead, and MPI support. Given that C++ is widely used in simulation codes, we chose it as the programming language for `GridFormat`. We opted for a lightweight, header-only approach, without mandatory dependencies and with support for [CMake](TODO:CITE)
+features that allow for automatic integration of `GridFormat` in downstream projects.
 
 # Concept
 
@@ -157,7 +153,8 @@ Now we can specialize the traits that are required for the `ImageGrid` concept (
 namespace GridFormat::Traits {
 
 // Expose a range over grid cells. Here, we simply use the MDIndexRange provided
-// by GridFormat, which allows iterating over all index tuples within the given dimensions
+// by GridFormat, which allows to iterate over all index tuples within the given
+// dimensions (in our case the number of cells in each coordinate direction)
 template<> struct Cells<MyGrid> {
     static auto get(const MyGrid& grid) {
         return GridFormat::MDIndexRange{{grid.cells[0], grid.cells[1]}};
@@ -167,7 +164,6 @@ template<> struct Cells<MyGrid> {
 // Expose a range over grid points.
 template<> struct Points<MyGrid> {
     static auto get(const MyGrid& grid) {
-        // let's simply return a range over index pairs for the given grid dimensions
         return GridFormat::MDIndexRange{{grid.cells[0]+1, grid.cells[1]+1}};
     };
 };
@@ -207,7 +203,7 @@ template<> struct Location<MyGrid, GridFormat::MDIndex> {
 ```
 
 With these traits defined, `MyGrid` can now be written out into file formats that are designed for image grids.
-The following listing shows a `main` function
+The following listing illustrates how to achieve this with the `GridFormat` API.
 
 ```cpp
 int main() {
@@ -221,18 +217,19 @@ int main() {
     // To write out this solution, let's construct an instance of `MyGrid`
     MyGrid grid{.cells = {nx, ny}, .dx = {dx, dy}};
 
-    // ... and construct a writer with it. Let GridFormat choose a suitable format.
+    // ... and construct a writer, lerting GridFormat choose a format.
     const auto file_format = GridFormat::default_for(grid);
     GridFormat::Writer writer{file_format, grid};
 
-    // ... we can now write out our numerical solution as a field defined on cells:
-    writer.set_cell_field("cfield", [&] (const GridFormat::MDIndex& cell_location) {
-        const auto flat_cell_index = cell_location.get(1)*nx + cell_location.get(0);
-        return values[flat_cell_index];
+    // We can now write out our numerical solution as a field on grid cells:
+    using GridFormat::MDIndex;
+    writer.set_cell_field("cfield", [&] (const MDIndex& cell_location) {
+        const auto flat_index = cell_location.get(1)*nx + cell_location.get(0);
+        return values[flat_index];
     });
 
-    // ... but we can also just set am analytical function evaluated at cells/points
-    writer.set_point_field("pfield", [&] (const GridFormat::MDIndex& point_location) {
+    // But we can also just set am analytical function evaluated at cells/points
+    writer.set_point_field("pfield", [&] (const MDIndex& point_location) {
         const double x = point_location.get(0);
         const double y = point_location.get(1);
         return x*y;
