@@ -174,7 +174,7 @@ $(document).ready(function(){initNavTree('hdf__common_8hpp_source.html',''); ini
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">namespace </span>VTKHDF {</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
 <div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">   54</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">DataSetSlice</a> {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    std::vector&lt;std::size_t&gt; size;  <span class="comment">// todo: is total size, actuall. rename?</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    std::vector&lt;std::size_t&gt; total_size = {};</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    std::vector&lt;std::size_t&gt; offset;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    std::vector&lt;std::size_t&gt; count;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;};</div>
@@ -360,147 +360,138 @@ $(document).ready(function(){initNavTree('hdf__common_8hpp_source.html',''); ini
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;        <span class="keyword">const</span> std::vector&lt;std::size_t&gt; ds_size = space.getDimensions();</div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;        std::vector&lt;std::size_t&gt; ds_offset(ds_size.size(), 0);</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        ds_offset.at(0) += offset;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        _write_to(dataset, values, <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">DataSetSlice</a>{</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;            .size = std::vector&lt;std::size_t&gt;{},  <span class="comment">// not used by _write_to</span></div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;            .offset = ds_offset,</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;            .count = ds_size,</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        });</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        _file.flush();</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        <span class="keywordflow">return</span> space.getDimensions()[0];</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    }</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160; </div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Values&gt;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    std::size_t write(<span class="keyword">const</span> Values&amp; values, <span class="keyword">const</span> <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetPath.html">DataSetPath</a>&amp; path, <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">DataSetSlice</a> slice) {</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> space = HighFive::DataSpace(slice.size);</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        <span class="keyword">auto</span> group = _get_group(path.group_path);</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        <span class="keyword">auto</span> [offset, dataset] = _prepare_dataset&lt;FieldScalar&lt;Values&gt;&gt;(group, path.dataset_name, space);</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160; </div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        slice.offset[0] += offset;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        <span class="keywordflow">if</span> (Parallel::size(_comm) &gt; 1) {</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> props = Detail::parallel_transfer_props();</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;            _write_to(dataset, values, slice, props);</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;            Detail::check_successful_collective_io(props);</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;            _write_to(dataset, values, slice);</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        }</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        _file.flush();</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="keywordflow">return</span> space.getDimensions()[0];</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    }</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160; </div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    <span class="keyword">template</span>&lt;Concepts::Scalar T&gt;</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    T read(<span class="keyword">const</span> <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetPath.html">DataSetPath</a>&amp; path, <span class="keyword">const</span> <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">DataSetSlice</a>&amp; slice)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        T result;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        <span class="keywordflow">if</span> (_file.exist(path.group_path))</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;            <span class="keywordflow">if</span> (_file.getGroup(path.group_path).exist(path.dataset_name)) {</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;                _file.getGroup(path.group_path).getDataSet(path.dataset_name).select(</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;                    slice.offset, slice.count</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;                ).read(result);</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;                <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;            }</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Given group or dataset does not exist&quot;</span>);</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    }</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160; </div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;    std::optional&lt;std::vector&lt;std::size_t&gt;&gt; get_dimensions(<span class="keyword">const</span> <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetPath.html">DataSetPath</a>&amp; path)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        <span class="keywordflow">if</span> (_file.exist(path.group_path))</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;            <span class="keywordflow">if</span> (_file.getGroup(path.group_path).exist(path.dataset_name))</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;                <span class="keywordflow">return</span> _file.getGroup(path.group_path).getDataSet(path.dataset_name).getDimensions();</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;        <span class="keywordflow">return</span> {};</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    }</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160; </div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    HighFive::File _open(<span class="keyword">const</span> std::string&amp; filename)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        <span class="keyword">auto</span> open_mode = _mode == overwrite ? HighFive::File::Overwrite</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;                                            : HighFive::File::ReadWrite;</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;        <span class="keywordflow">if</span> (Parallel::size(_comm) &gt; 1)</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;            <span class="keywordflow">return</span> HighFive::File{filename, open_mode, Detail::parallel_file_access_props(_comm)};</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;        <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;            <span class="keywordflow">return</span> HighFive::File{filename, open_mode};</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    }</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160; </div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    <span class="keyword">auto</span> _prepare_dataset(HighFive::Group&amp; group,</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;                          <span class="keyword">const</span> std::string&amp; name,</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;                          <span class="keyword">const</span> HighFive::DataSpace&amp; space) {</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;        <span class="keywordflow">if</span> (_mode == overwrite)</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;            <span class="keywordflow">return</span> std::make_pair(std::size_t{0}, group.createDataSet(name, space, HighFive::create_datatype&lt;T&gt;()));</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (_mode == append) {</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;            <span class="keywordflow">if</span> (group.exist(name)) {</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;                <span class="keyword">auto</span> dataset = group.getDataSet(name);</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;                <span class="keyword">auto</span> out_dimensions = dataset.getDimensions();</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;                <span class="keyword">const</span> <span class="keyword">auto</span> in_dimensions = space.getDimensions();</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160; </div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;                <span class="keywordflow">if</span> (out_dimensions.size() &lt; 1 || in_dimensions.size() &lt; 1)</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;                    <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Cannot extend scalar datasets&quot;</span>);</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;                <span class="keywordflow">if</span> (</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;                    !std::ranges::equal(</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;                        std::ranges::subrange(out_dimensions.begin() + 1, out_dimensions.end()),</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;                        std::ranges::subrange(in_dimensions.begin() + 1, in_dimensions.end())</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;                    )</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;                )</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;                    <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Dataset extension requires the sub-dimensions to be equal&quot;</span>);</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160; </div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;                <span class="keyword">const</span> std::size_t offset = out_dimensions[0];</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;                out_dimensions[0] += in_dimensions[0];</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;                dataset.resize(out_dimensions);</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;                <span class="keywordflow">return</span> std::make_pair(offset, std::move(dataset));</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;                <span class="keyword">const</span> <span class="keyword">auto</span> init_dimensions = space.getDimensions();</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;                <span class="keywordflow">if</span> (init_dimensions.size() &lt; 1)</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;                    <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Scalars cannot be written in appended mode. Wrap them in std::array{scalar}&quot;</span>);</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160; </div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;                <span class="keyword">const</span> <span class="keyword">auto</span> chunk_dimensions = std::vector&lt;hsize_t&gt;{init_dimensions.begin(), init_dimensions.end()};</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;                <span class="keyword">const</span> <span class="keyword">auto</span> max_dimensions = [&amp;] () {</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;                    <span class="keyword">auto</span> tmp = init_dimensions;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;                    tmp[0] *= HighFive::DataSpace::UNLIMITED;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;                    <span class="keywordflow">return</span> tmp;</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;                } ();</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160; </div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;                HighFive::DataSpace out_space(init_dimensions, max_dimensions);</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;                HighFive::DataSetCreateProps props;</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;                props.add(HighFive::Chunking(chunk_dimensions));</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;                <span class="keywordflow">return</span> std::make_pair(</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;                    std::size_t{0},</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;                    group.createDataSet(name, out_space, HighFive::create_datatype&lt;T&gt;(), props)</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;                );</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;            }</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;            <span class="keywordflow">throw</span> NotImplemented(<span class="stringliteral">&quot;Unknown file mode&quot;</span>);</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;        }</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    }</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160; </div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Values&gt;</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    <span class="keywordtype">void</span> _write_to(HighFive::DataSet&amp; dataset,</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;                   <span class="keyword">const</span> Values&amp; values,</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;                   <span class="keyword">const</span> std::optional&lt;DataSetSlice&gt; slice = {},</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;                   <span class="keyword">const</span> std::optional&lt;HighFive::DataTransferProps&gt; props = {}) {</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;        <span class="keywordflow">if</span> (slice) {</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;            props ? dataset.select(slice-&gt;offset, slice-&gt;count).write(values, *props)</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;                  : dataset.select(slice-&gt;offset, slice-&gt;count).write(values);</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;            props ? dataset.write(values, *props)</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;                  : dataset.write(values);</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;        }</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        _write_to(dataset, values, {.offset = ds_offset, .count = ds_size});</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        _file.flush();</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        <span class="keywordflow">return</span> space.getDimensions()[0];</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    }</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160; </div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Values&gt;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    std::size_t write(<span class="keyword">const</span> Values&amp; values, <span class="keyword">const</span> <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetPath.html">DataSetPath</a>&amp; path, <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">DataSetSlice</a> slice) {</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> space = HighFive::DataSpace(slice.total_size);</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        <span class="keyword">auto</span> group = _get_group(path.group_path);</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        <span class="keyword">auto</span> [offset, dataset] = _prepare_dataset&lt;FieldScalar&lt;Values&gt;&gt;(group, path.dataset_name, space);</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160; </div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        slice.offset[0] += offset;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        <span class="keywordflow">if</span> (Parallel::size(_comm) &gt; 1) {</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> props = Detail::parallel_transfer_props();</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;            _write_to(dataset, values, slice, props);</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;            Detail::check_successful_collective_io(props);</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;            _write_to(dataset, values, slice);</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        }</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        _file.flush();</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        <span class="keywordflow">return</span> space.getDimensions()[0];</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    }</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160; </div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="keyword">template</span>&lt;Concepts::Scalar T&gt;</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    T read(<span class="keyword">const</span> <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetPath.html">DataSetPath</a>&amp; path, <span class="keyword">const</span> <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">DataSetSlice</a>&amp; slice)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        T result;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        <span class="keywordflow">if</span> (_file.exist(path.group_path))</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;            <span class="keywordflow">if</span> (_file.getGroup(path.group_path).exist(path.dataset_name)) {</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;                _file.getGroup(path.group_path).getDataSet(path.dataset_name).select(</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;                    slice.offset, slice.count</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;                ).read(result);</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;                <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;            }</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Given group or dataset does not exist&quot;</span>);</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    }</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160; </div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    std::optional&lt;std::vector&lt;std::size_t&gt;&gt; get_dimensions(<span class="keyword">const</span> <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetPath.html">DataSetPath</a>&amp; path)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        <span class="keywordflow">if</span> (_file.exist(path.group_path))</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;            <span class="keywordflow">if</span> (_file.getGroup(path.group_path).exist(path.dataset_name))</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                <span class="keywordflow">return</span> _file.getGroup(path.group_path).getDataSet(path.dataset_name).getDimensions();</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;        <span class="keywordflow">return</span> {};</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    }</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160; </div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    HighFive::File _open(<span class="keyword">const</span> std::string&amp; filename)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;        <span class="keyword">auto</span> open_mode = _mode == overwrite ? HighFive::File::Overwrite</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;                                            : HighFive::File::ReadWrite;</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        <span class="keywordflow">if</span> (Parallel::size(_comm) &gt; 1)</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;            <span class="keywordflow">return</span> HighFive::File{filename, open_mode, Detail::parallel_file_access_props(_comm)};</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;            <span class="keywordflow">return</span> HighFive::File{filename, open_mode};</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    }</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160; </div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    <span class="keyword">auto</span> _prepare_dataset(HighFive::Group&amp; group,</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;                          <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;                          <span class="keyword">const</span> HighFive::DataSpace&amp; space) {</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;        <span class="keywordflow">if</span> (_mode == overwrite)</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;            <span class="keywordflow">return</span> std::make_pair(std::size_t{0}, group.createDataSet(name, space, HighFive::create_datatype&lt;T&gt;()));</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (_mode == append) {</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;            <span class="keywordflow">if</span> (group.exist(name)) {</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                <span class="keyword">auto</span> dataset = group.getDataSet(name);</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;                <span class="keyword">auto</span> out_dimensions = dataset.getDimensions();</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;                <span class="keyword">const</span> <span class="keyword">auto</span> in_dimensions = space.getDimensions();</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160; </div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;                <span class="keywordflow">if</span> (out_dimensions.size() &lt; 1 || in_dimensions.size() &lt; 1)</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;                    <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Cannot extend scalar datasets&quot;</span>);</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;                <span class="keywordflow">if</span> (</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;                    !std::ranges::equal(</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;                        std::ranges::subrange(out_dimensions.begin() + 1, out_dimensions.end()),</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;                        std::ranges::subrange(in_dimensions.begin() + 1, in_dimensions.end())</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;                    )</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;                )</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;                    <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Dataset extension requires the sub-dimensions to be equal&quot;</span>);</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160; </div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;                <span class="keyword">const</span> std::size_t offset = out_dimensions[0];</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;                out_dimensions[0] += in_dimensions[0];</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;                dataset.resize(out_dimensions);</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;                <span class="keywordflow">return</span> std::make_pair(offset, std::move(dataset));</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;                <span class="keyword">const</span> <span class="keyword">auto</span> init_dimensions = space.getDimensions();</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;                <span class="keywordflow">if</span> (init_dimensions.size() &lt; 1)</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;                    <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Scalars cannot be written in appended mode. Wrap them in std::array{scalar}&quot;</span>);</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160; </div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;                <span class="keyword">const</span> <span class="keyword">auto</span> chunk_dimensions = std::vector&lt;hsize_t&gt;{init_dimensions.begin(), init_dimensions.end()};</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;                <span class="keyword">const</span> <span class="keyword">auto</span> max_dimensions = [&amp;] () {</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;                    <span class="keyword">auto</span> tmp = init_dimensions;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;                    tmp[0] *= HighFive::DataSpace::UNLIMITED;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;                    <span class="keywordflow">return</span> tmp;</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;                } ();</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160; </div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;                HighFive::DataSpace out_space(init_dimensions, max_dimensions);</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;                HighFive::DataSetCreateProps props;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;                props.add(HighFive::Chunking(chunk_dimensions));</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;                <span class="keywordflow">return</span> std::make_pair(</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;                    std::size_t{0},</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;                    group.createDataSet(name, out_space, HighFive::create_datatype&lt;T&gt;(), props)</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;                );</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;            }</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;            <span class="keywordflow">throw</span> NotImplemented(<span class="stringliteral">&quot;Unknown file mode&quot;</span>);</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        }</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    }</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160; </div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Values&gt;</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    <span class="keywordtype">void</span> _write_to(HighFive::DataSet&amp; dataset,</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;                   <span class="keyword">const</span> Values&amp; values,</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;                   <span class="keyword">const</span> <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">DataSetSlice</a>&amp; slice,</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;                   <span class="keyword">const</span> std::optional&lt;HighFive::DataTransferProps&gt; props = {}) {</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;        props ? dataset.select(slice.offset, slice.count).write(values, *props)</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;              : dataset.select(slice.offset, slice.count).write(values);</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    }</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160; </div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    HighFive::Group _get_group(<span class="keyword">const</span> std::string&amp; group_name) {</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;        <span class="keywordflow">return</span> _file.exist(group_name) ? _file.getGroup(group_name) : _file.createGroup(group_name);</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    }</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160; </div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    <span class="keywordtype">void</span> _clear_attribute(<span class="keyword">const</span> std::string&amp; name, <span class="keyword">const</span> std::string&amp; group) {</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;        <span class="keywordflow">if</span> (_get_group(group).hasAttribute(name))</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;            _get_group(group).deleteAttribute(name);</div>
 <div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    }</div>
 <div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160; </div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    HighFive::Group _get_group(<span class="keyword">const</span> std::string&amp; group_name) {</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;        <span class="keywordflow">return</span> _file.exist(group_name) ? _file.getGroup(group_name) : _file.createGroup(group_name);</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    }</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160; </div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    <span class="keywordtype">void</span> _clear_attribute(<span class="keyword">const</span> std::string&amp; name, <span class="keyword">const</span> std::string&amp; group) {</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;        <span class="keywordflow">if</span> (_get_group(group).hasAttribute(name))</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;            _get_group(group).deleteAttribute(name);</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    }</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160; </div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    Communicator _comm;</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    Mode _mode;</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    HighFive::File _file;</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;};</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160; </div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;}  <span class="comment">// namespace VTKHDF</span></div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;}  <span class="comment">// namespace GridFormat</span></div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160; </div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_HAVE_HIGH_FIVE</span></div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_HDF_COMMON_HPP_</span></div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    Communicator _comm;</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    Mode _mode;</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    HighFive::File _file;</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;};</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160; </div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;}  <span class="comment">// namespace VTKHDF</span></div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;}  <span class="comment">// namespace GridFormat</span></div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160; </div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_HAVE_HIGH_FIVE</span></div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_HDF_COMMON_HPP_</span></div>
 <div class="ttc" id="aclassGridFormat_1_1VTKHDF_1_1HDF5File_html"><div class="ttname"><a href="classGridFormat_1_1VTKHDF_1_1HDF5File.html">GridFormat::VTKHDF::HDF5File</a></div><div class="ttdef"><b>Definition:</b> hdf_common.hpp:195</div></div>
 <div class="ttc" id="agroup__Grid_html_ga733df58a3197824a355a4c24ba5bc902"><div class="ttname"><a href="group__Grid.html#ga733df58a3197824a355a4c24ba5bc902">GridFormat::Concepts::Grid</a></div><div class="ttdeci">concept Grid</div><div class="ttdoc">Concept a type that fulfills any of the grid interfaces.</div><div class="ttdef"><b>Definition:</b> concepts.hpp:93</div></div>
 <div class="ttc" id="astructGridFormat_1_1VTKHDF_1_1AsciiString_html"><div class="ttname"><a href="structGridFormat_1_1VTKHDF_1_1AsciiString.html">GridFormat::VTKHDF::AsciiString</a></div><div class="ttdef"><b>Definition:</b> hdf_common.hpp:126</div></div>

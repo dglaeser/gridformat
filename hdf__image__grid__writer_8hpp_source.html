@@ -379,11 +379,11 @@ $(document).ready(function(){initNavTree('hdf__image__grid__writer_8hpp_source.h
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;                             <span class="keyword">const</span> Extents&amp; extents,</div>
 <div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;                             <span class="keyword">const</span> Offsets&amp; offsets)<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">DataSetSlice</a> result;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        std::ranges::copy(total_extents, std::back_inserter(result.size));</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        std::ranges::copy(total_extents, std::back_inserter(result.total_size));</div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        std::ranges::copy(extents, std::back_inserter(result.count));</div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        std::ranges::copy(offsets, std::back_inserter(result.offset));</div>
 <div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        <span class="comment">// slices are accessed with the last coordinate first (i.e. values[z][y][x])</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        std::ranges::reverse(result.size);</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        std::ranges::reverse(result.total_size);</div>
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        std::ranges::reverse(result.count);</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        std::ranges::reverse(result.offset);</div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        <span class="keywordflow">return</span> result;</div>
@@ -459,7 +459,7 @@ $(document).ready(function(){initNavTree('hdf__image__grid__writer_8hpp_source.h
 <div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;                             Values&amp;&amp; values,</div>
 <div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;                             <span class="keyword">const</span> <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetPath.html">DataSetPath</a>&amp; path,</div>
 <div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;                             <span class="keyword">const</span> <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">DataSetSlice</a>&amp; slice)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        std::vector&lt;std::size_t&gt; size{slice.size.begin(), slice.size.end()};</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        std::vector&lt;std::size_t&gt; size{slice.total_size.begin(), slice.total_size.end()};</div>
 <div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;        std::vector&lt;std::size_t&gt; count{slice.count.begin(), slice.count.end()};</div>
 <div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;        std::vector&lt;std::size_t&gt; offset{slice.offset.begin(), slice.offset.end()};</div>
 <div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160; </div>
@@ -478,13 +478,13 @@ $(document).ready(function(){initNavTree('hdf__image__grid__writer_8hpp_source.h
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;            offset.insert(offset.begin(), 0);</div>
 <div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;            count.insert(count.begin(), 1);</div>
 <div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;            file.write(std::array{std::move(values)}, path, {</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;                .size = size,</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;                .total_size = size,</div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;                .offset = offset,</div>
 <div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;                .count = count</div>
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;            });</div>
 <div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;        } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;            file.write(values, path, {</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;                .size = size,</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;                .total_size = size,</div>
 <div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;                .offset = offset,</div>
 <div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;                .count = count</div>
 <div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;            });</div>

@@ -164,9 +164,10 @@ Quick Start</h1>
 <div class="line">        {10, 12}    <span class="comment">// number of cells (pixels) in each direction</span></div>
 <div class="line">    };</div>
 <div class="line"> </div>
-<div class="line">    <span class="comment">// Let&#39;s write an analytical field into .vtu file format. Fields are attached to the</span></div>
-<div class="line">    <span class="comment">// writer via lambdas that return the discrete values at points or cells.</span></div>
+<div class="line">    <span class="comment">// This shows the `GridFormat` API: Construct a writer for the desired format, and add</span></div>
+<div class="line">    <span class="comment">// point/cell fields as lambdas. Metadata can be added directly and can be ranges or scalars.</span></div>
 <div class="line">    <a class="code" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{GridFormat::vtu, grid};</div>
+<div class="line">    writer.set_meta_data(<span class="stringliteral">&quot;some_metadata&quot;</span>, <span class="stringliteral">&quot;i am metadata&quot;</span>);</div>
 <div class="line">    writer.set_point_field(<span class="stringliteral">&quot;point_field&quot;</span>, [&amp;] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; point) { <span class="keywordflow">return</span> f(grid.position(point)); });</div>
 <div class="line">    writer.set_cell_field(<span class="stringliteral">&quot;cell_field&quot;</span>, [&amp;] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; cell) { <span class="keywordflow">return</span> f(grid.center(cell)); });</div>
 <div class="line">    writer.write(<span class="stringliteral">&quot;my_test_file&quot;</span>);  <span class="comment">// the file extension will be appended by the writer</span></div>
@@ -190,7 +191,7 @@ Installation</h1>
 <div class="line">target_link_libraries(... gridformat::gridformat)</div>
 </div><!-- fragment --><h2><a class="anchor" id="dependencies"></a>
 Dependencies</h2>
-<p><code>GridFormat</code> has no required dependencies, however, some features are only available if certain dependencies are present. For instance, the <a href="https://examples.vtk.org/site/VTKFileFormats/#hdf-file-formats">VTK-HDF file formats</a> is only available if <a href="https://github.com/BlueBrain/HighFive"><code>HighFive</code></a> is found, which itself requires <code>libhdf5-dev</code>. If the latter is found on your system, including <code>GridFormat</code> via cmake's <code>FetchContent</code> (see quickstart) automatically brings in <code>HighFive</code>, as it is included in <code>GridFormat</code> as a git submodule. However, when installing <code>GridFormat</code> from the cloned sources (as described above), make sure to use <code>git clone --recursive</code> in case you want to use the HDF file formats.</p>
+<p><code>GridFormat</code> has no required dependencies, however, some features are only available if certain dependencies are present. For instance, the <a href="https://examples.vtk.org/site/VTKFileFormats/#hdf-file-formats">VTK-HDF file formats</a> are only available if <a href="https://github.com/BlueBrain/HighFive"><code>HighFive</code></a> is found, which itself requires <code>libhdf5-dev</code>. If the latter is found on your system, including <code>GridFormat</code> via cmake's <code>FetchContent</code> (see quickstart) automatically brings in <code>HighFive</code>, as it is included in <code>GridFormat</code> as a git submodule. However, when installing <code>GridFormat</code> from the cloned sources (as described above), make sure to use <code>git clone --recursive</code> in case you want to use the HDF file formats.</p>
 <p>The availability of some specific features of a file format may also depend on the availability of certain dependencies. For instance, compression of data (e.g. for the VTK-XML file formats) can only be used if the respective compression libraries are found on the system. Dependencies of those features are stated in the <a href="https://github.com/dglaeser/gridformat">API documentation (coming soon)</a>.</p>
 <h1><a class="anchor" id="compatibility-with-userdefined-grids"></a>
 Compatibility with user-defined grids</h1>
@@ -200,7 +201,7 @@ Predefined traits</h1>
 <p><code>GridFormat</code> comes with predefined traits for <a href="https://www.dune-project.org/doxygen/2.8.0/classDune_1_1GridView.html">dune grid views</a> (tested dune version: 2.9), <a href="https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html">deal.ii triangulations</a> (tested deal.ii version: 9.4.0), <a href="https://www.cgal.org/">cgal</a> triangulations in <a href="https://doc.cgal.org/latest/Triangulation_2/index.html">2d</a> and <a href="https://doc.cgal.org/latest/Triangulation_3/index.html">3d</a> (tested cgal version: 5.5.2), and <a href="https://github.com/FEniCS/dolfinx">dolfinx</a> meshes and function spaces (tested dolfinx version: 0.6.0). Users of these frameworks can include these predefined traits and use <code>GridFormat</code> directly (see the <a href="https://github.com/dglaeser/gridformat/tree/main/examples">examples</a>).</p>
 <h1><a class="anchor" id="contribution-guidelines"></a>
 Contribution Guidelines</h1>
-<p>Coming soon...</p>
+<p>Contributions are highly welcome! For bug reports, please file an <a href="https://github.com/dglaeser/gridformat/issues">issue</a>. If you want to contribute with features, improvements or bug fixes please fork this project and open a merge request into the main branch of this repository.</p>
 <h2><a class="anchor" id="development-and-test-suite"></a>
 Development and test suite</h2>
 <p>In order to configure your local copy for testing, tell <code>cmake</code> to include the test suite:</p>

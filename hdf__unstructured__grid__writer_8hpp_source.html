@@ -384,7 +384,7 @@ $(document).ready(function(){initNavTree('hdf__unstructured__grid__writer_8hpp_s
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> my_total_num_values = Parallel::broadcast(_comm, total_num_values, root_rank);</div>
 <div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> my_offset = _accumulate_rank_offset(num_values);</div>
 <div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;            <a class="code" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">DataSetSlice</a> slice{</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;                .size = std::vector{my_total_num_values},</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;                .total_size = std::vector{my_total_num_values},</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;                .offset = std::vector{my_offset},</div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;                .count = std::vector{num_values}</div>
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;            };</div>
@@ -444,7 +444,7 @@ $(document).ready(function(){initNavTree('hdf__unstructured__grid__writer_8hpp_s
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;            size.at(0) = is_point_field ? context.num_points_total : context.num_cells_total;</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160; </div>
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;            file.write(values, path, {</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;                .size = size,</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;                .total_size = size,</div>
 <div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;                .offset = offset,</div>
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;                .count = count</div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;            });</div>
@@ -512,51 +512,50 @@ $(document).ready(function(){initNavTree('hdf__unstructured__grid__writer_8hpp_s
 <div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;        access_offset.at(0) = this-&gt;_step_count - 1;</div>
 <div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160; </div>
 <div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;        <span class="keywordflow">return</span> file.template read&lt;std::size_t&gt;(path, {</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;                .size = std::vector&lt;std::size_t&gt;{},  <span class="comment">// TODO: Slice should be a structure without size</span></div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;                .offset = access_offset,</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;                .count = step_dimensions</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;            }</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;        );</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;    }</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160; </div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    Communicator _comm;</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;    std::string _timeseries_filename = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <a class="code" href="structGridFormat_1_1VTK_1_1HDFTransientOptions.html">VTK::HDFTransientOptions</a> _transient_opts;</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;};</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160; </div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G, Concepts::Communicator C = NullCommunicator&gt;</div>
-<div class="line"><a name="l00410"></a><span class="lineno"><a class="line" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">  410</a></span>&#160;<span class="keyword">class </span><a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">VTKHDFUnstructuredGridWriter</a> : <span class="keyword">public</span> <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">VTKHDFUnstructuredGridWriterImpl</a>&lt;false, G, C&gt; {</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    <span class="keyword">using</span> <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">ParentType</a> = <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">VTKHDFUnstructuredGridWriterImpl&lt;false, G, C&gt;</a>;</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    <span class="keyword">using</span> ParentType::ParentType;</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;};</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160; </div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G, Concepts::Communicator C = NullCommunicator&gt;</div>
-<div class="line"><a name="l00417"></a><span class="lineno"><a class="line" href="classGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter.html">  417</a></span>&#160;<span class="keyword">class </span><a class="code" href="classGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter.html">VTKHDFUnstructuredTimeSeriesWriter</a> : <span class="keyword">public</span> <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">VTKHDFUnstructuredGridWriterImpl</a>&lt;true, G, C&gt; {</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    <span class="keyword">using</span> <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">ParentType</a> = <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">VTKHDFUnstructuredGridWriterImpl&lt;true, G, C&gt;</a>;</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    <span class="keyword">using</span> ParentType::ParentType;</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;};</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160; </div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G&gt;</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;<a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">VTKHDFUnstructuredGridWriter</a>(<span class="keyword">const</span> G&amp;) -&gt; <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">VTKHDFUnstructuredGridWriter&lt;G, NullCommunicator&gt;</a>;</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G, Concepts::Communicator C&gt;</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;<a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">VTKHDFUnstructuredGridWriter</a>(<span class="keyword">const</span> G&amp;, <span class="keyword">const</span> C&amp;) -&gt; <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">VTKHDFUnstructuredGridWriter&lt;G, C&gt;</a>;</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160; </div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G&gt;</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;<a class="code" href="classGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter.html">VTKHDFUnstructuredTimeSeriesWriter</a>(<span class="keyword">const</span> G&amp;, std::string, <a class="code" href="structGridFormat_1_1VTK_1_1HDFTransientOptions.html">VTK::HDFTransientOptions</a> = {}) -&gt; VTKHDFUnstructuredTimeSeriesWriter&lt;G, NullCommunicator&gt;;</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G, Concepts::Communicator C&gt;</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;VTKHDFUnstructuredTimeSeriesWriter(<span class="keyword">const</span> G&amp;, <span class="keyword">const</span> C&amp;, std::string, VTK::HDFTransientOptions = {}) -&gt; VTKHDFUnstructuredTimeSeriesWriter&lt;G, C&gt;;</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160; </div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;}  <span class="comment">// namespace GridFormat</span></div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160; </div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_HAVE_HIGH_FIVE</span></div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_HDF_UNSTRUCTURED_GRID_WRITER_HPP_</span></div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;                .offset = access_offset,</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;                .count = step_dimensions</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;            }</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        );</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    }</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160; </div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    Communicator _comm;</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    std::string _timeseries_filename = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;    <a class="code" href="structGridFormat_1_1VTK_1_1HDFTransientOptions.html">VTK::HDFTransientOptions</a> _transient_opts;</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;};</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160; </div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G, Concepts::Communicator C = NullCommunicator&gt;</div>
+<div class="line"><a name="l00409"></a><span class="lineno"><a class="line" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">  409</a></span>&#160;<span class="keyword">class </span><a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">VTKHDFUnstructuredGridWriter</a> : <span class="keyword">public</span> <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">VTKHDFUnstructuredGridWriterImpl</a>&lt;false, G, C&gt; {</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    <span class="keyword">using</span> <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">ParentType</a> = <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">VTKHDFUnstructuredGridWriterImpl&lt;false, G, C&gt;</a>;</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    <span class="keyword">using</span> ParentType::ParentType;</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;};</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160; </div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G, Concepts::Communicator C = NullCommunicator&gt;</div>
+<div class="line"><a name="l00416"></a><span class="lineno"><a class="line" href="classGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter.html">  416</a></span>&#160;<span class="keyword">class </span><a class="code" href="classGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter.html">VTKHDFUnstructuredTimeSeriesWriter</a> : <span class="keyword">public</span> <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">VTKHDFUnstructuredGridWriterImpl</a>&lt;true, G, C&gt; {</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;    <span class="keyword">using</span> <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">ParentType</a> = <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">VTKHDFUnstructuredGridWriterImpl&lt;true, G, C&gt;</a>;</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    <span class="keyword">using</span> ParentType::ParentType;</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;};</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160; </div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G&gt;</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;<a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">VTKHDFUnstructuredGridWriter</a>(<span class="keyword">const</span> G&amp;) -&gt; <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">VTKHDFUnstructuredGridWriter&lt;G, NullCommunicator&gt;</a>;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G, Concepts::Communicator C&gt;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;<a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">VTKHDFUnstructuredGridWriter</a>(<span class="keyword">const</span> G&amp;, <span class="keyword">const</span> C&amp;) -&gt; <a class="code" href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">VTKHDFUnstructuredGridWriter&lt;G, C&gt;</a>;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160; </div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G&gt;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;<a class="code" href="classGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter.html">VTKHDFUnstructuredTimeSeriesWriter</a>(<span class="keyword">const</span> G&amp;, std::string, <a class="code" href="structGridFormat_1_1VTK_1_1HDFTransientOptions.html">VTK::HDFTransientOptions</a> = {}) -&gt; VTKHDFUnstructuredTimeSeriesWriter&lt;G, NullCommunicator&gt;;</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;<span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> G, Concepts::Communicator C&gt;</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;VTKHDFUnstructuredTimeSeriesWriter(<span class="keyword">const</span> G&amp;, <span class="keyword">const</span> C&amp;, std::string, VTK::HDFTransientOptions = {}) -&gt; VTKHDFUnstructuredTimeSeriesWriter&lt;G, C&gt;;</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160; </div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;}  <span class="comment">// namespace GridFormat</span></div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160; </div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_HAVE_HIGH_FIVE</span></div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_HDF_UNSTRUCTURED_GRID_WRITER_HPP_</span></div>
 <div class="ttc" id="aclassGridFormat_1_1GridWriter_html"><div class="ttname"><a href="classGridFormat_1_1GridWriter.html">GridFormat::GridWriter</a></div><div class="ttdoc">Abstract base class for grid file writers.</div><div class="ttdef"><b>Definition:</b> writer.hpp:239</div></div>
 <div class="ttc" id="aclassGridFormat_1_1TimeSeriesGridWriter_html"><div class="ttname"><a href="classGridFormat_1_1TimeSeriesGridWriter.html">GridFormat::TimeSeriesGridWriter</a></div><div class="ttdoc">Abstract base class for time series file writers.</div><div class="ttdef"><b>Definition:</b> writer.hpp:270</div></div>
 <div class="ttc" id="aclassGridFormat_1_1VTKHDFUnstructuredGridWriterImpl_html"><div class="ttname"><a href="classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html">GridFormat::VTKHDFUnstructuredGridWriterImpl</a></div><div class="ttdoc">TODO: Doc me.</div><div class="ttdef"><b>Definition:</b> hdf_unstructured_grid_writer.hpp:37</div></div>
-<div class="ttc" id="aclassGridFormat_1_1VTKHDFUnstructuredGridWriter_html"><div class="ttname"><a href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">GridFormat::VTKHDFUnstructuredGridWriter</a></div><div class="ttdef"><b>Definition:</b> hdf_unstructured_grid_writer.hpp:410</div></div>
-<div class="ttc" id="aclassGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter_html"><div class="ttname"><a href="classGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter.html">GridFormat::VTKHDFUnstructuredTimeSeriesWriter</a></div><div class="ttdef"><b>Definition:</b> hdf_unstructured_grid_writer.hpp:417</div></div>
+<div class="ttc" id="aclassGridFormat_1_1VTKHDFUnstructuredGridWriter_html"><div class="ttname"><a href="classGridFormat_1_1VTKHDFUnstructuredGridWriter.html">GridFormat::VTKHDFUnstructuredGridWriter</a></div><div class="ttdef"><b>Definition:</b> hdf_unstructured_grid_writer.hpp:409</div></div>
+<div class="ttc" id="aclassGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter_html"><div class="ttname"><a href="classGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter.html">GridFormat::VTKHDFUnstructuredTimeSeriesWriter</a></div><div class="ttdef"><b>Definition:</b> hdf_unstructured_grid_writer.hpp:416</div></div>
 <div class="ttc" id="aclassGridFormat_1_1VTKHDF_1_1HDF5File_html"><div class="ttname"><a href="classGridFormat_1_1VTKHDF_1_1HDF5File.html">GridFormat::VTKHDF::HDF5File</a></div><div class="ttdef"><b>Definition:</b> hdf_common.hpp:195</div></div>
 <div class="ttc" id="agrid_2concepts_8hpp_html"><div class="ttname"><a href="grid_2concepts_8hpp.html">concepts.hpp</a></div><div class="ttdoc">Grid concepts.</div></div>
 <div class="ttc" id="agrid_2writer_8hpp_html"><div class="ttname"><a href="grid_2writer_8hpp.html">writer.hpp</a></div><div class="ttdoc">Base classes for grid data writers.</div></div>
