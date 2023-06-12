@@ -104,7 +104,7 @@ target_link_libraries(... gridformat::gridformat)
 ### Dependencies
 
 `GridFormat` has no required dependencies, however, some features are only available if certain dependencies are present. For
-instance, the [VTK-HDF file formats](https://examples.vtk.org/site/VTKFileFormats/#hdf-file-formats) is only available if
+instance, the [VTK-HDF file formats](https://examples.vtk.org/site/VTKFileFormats/#hdf-file-formats) are only available if
 [`HighFive`](https://github.com/BlueBrain/HighFive) is found, which itself requires `libhdf5-dev`. If the latter is found on
 your system, including `GridFormat` via cmake's `FetchContent` (see quickstart) automatically brings in `HighFive`, as it is
 included in `GridFormat` as a git submodule. However, when installing `GridFormat` from the cloned sources (as described above),
@@ -140,7 +140,9 @@ Users of these frameworks can include these predefined traits and use `GridForma
 
 ## Contribution Guidelines
 
-Coming soon...
+Contributions are highly welcome! For bug reports, please file an [issue](https://github.com/dglaeser/gridformat/issues).
+If you want to contribute with features, improvements or bug fixes please fork this project and open
+a merge request into the main branch of this repository.
 
 ### Development and test suite
 
