@@ -20,8 +20,11 @@ double elevation_at(const Example::Geographic& coord) {
 
 
 int main() {
+    // Let us check that we implemented all traits for the StructuredGrid concept correctly
     static_assert(GridFormat::Concepts::StructuredGrid<Example::DEM>);
 
+    // let's use a patch of 15 degrees latitude & longitude, starting at zero degrees lat/lon,
+    // and discretized into 100 x 100 cells. The spheroid is just the unit sphere here...
     auto dem = Example::DEM::from(
         Example::Raster{
             {
@@ -33,12 +36,14 @@ int main() {
         Example::Spheroid{1.0}
     );
 
+    // let's add some artifical elevation data ...
     std::ranges::for_each(points(dem.raster()), [&] (const Example::Raster::Point& p) {
         const auto center = dem.raster().center(p);
         const auto position = dem.raster().to_geographic(center);
         dem.set_elevation_at(p, elevation_at(position));
     });
 
+    // ... and construct a writer for our DEM.
     GridFormat::Writer writer{GridFormat::default_for(dem), dem};
 
     // let us add the elevation data as point field
