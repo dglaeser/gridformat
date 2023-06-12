@@ -14,6 +14,10 @@
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/output_stream.hpp>
 
+#ifndef GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS
+#define GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS 4000  // yields ~16MB cache
+#endif
+
 namespace GridFormat {
 
 //! \addtogroup Encoding
@@ -23,7 +27,14 @@ namespace GridFormat {
 template<typename OStream>
 class Base64Stream : public OutputStreamWrapperBase<OStream> {
     using Byte = char;
+
     static constexpr int buffer_size = 3;
+    static constexpr int encoded_buffer_size = 4;
+    static constexpr int num_cached_buffers = GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS;
+    static constexpr int cache_size_in = num_cached_buffers*buffer_size;
+    static constexpr int cache_size_out = num_cached_buffers*encoded_buffer_size;
+
+    static_assert(num_cached_buffers > 0);
     static_assert(sizeof(std::byte) == sizeof(Byte));
 
     static constexpr unsigned char base64_alphabet[] = {
@@ -68,37 +79,63 @@ class Base64Stream : public OutputStreamWrapperBase<OStream> {
  private:
     void _write(const Byte* data, std::size_t size) {
         const auto num_full_buffers = size/buffer_size;
-        for (const auto i : std::views::iota(std::size_t{0}, num_full_buffers))
-            _flush_full_buffer(data + i*buffer_size);
+        const auto num_full_caches = num_full_buffers/num_cached_buffers;
+        for (const auto i : std::views::iota(std::size_t{0}, num_full_caches))
+            _flush_full_cache(data + i*cache_size_in);
 
-        const auto written_bytes = num_full_buffers*buffer_size;
-        if (size > written_bytes)
-            _flush_buffer(data + written_bytes, size - written_bytes);
+        const auto processed_bytes = num_full_caches*cache_size_in;
+        if (size > processed_bytes)
+            _flush_cache(data + processed_bytes, size - processed_bytes);
     }
 
-    void _flush_full_buffer(const Byte* data) {
-        const Byte out[4] = {
-            _encodeSextet0(data),
-            _encodeSextet1(data),
-            _encodeSextet2(data),
-            _encodeSextet3(data)
-        };
-        this->_stream.write(std::span{out});
+    void _flush_full_cache(const Byte* data) {
+        Byte cache[cache_size_out];
+        for (std::size_t i = 0; i < cache_size_out/encoded_buffer_size; ++i) {
+            const std::size_t in_offset = i*buffer_size;
+            const std::size_t out_offset = i*encoded_buffer_size;
+            cache[out_offset + 0] = _encodeSextet0(data + in_offset);
+            cache[out_offset + 1] = _encodeSextet1(data + in_offset);
+            cache[out_offset + 2] = _encodeSextet2(data + in_offset);
+            cache[out_offset + 3] = _encodeSextet3(data + in_offset);
+        }
+        this->_stream.write(std::span{cache});
     }
 
-    void _flush_buffer(const Byte* data, std::size_t num_bytes) {
-        if (num_bytes == 0)
+    void _flush_cache(const Byte* data, std::size_t num_bytes_in) {
+        if (num_bytes_in == 0)
             return;
-        if (num_bytes > buffer_size)
-            throw InvalidState("Residual bytes larger than buffer size");
+        if (num_bytes_in > cache_size_in)
+            throw SizeError("Number of bytes cannot be larger than cache size");
 
-        const Byte out[4] = {
-            _encodeSextet0(data),
-            _encodeSextet1(data),
-            num_bytes > 1 ? _encodeSextet2(data) : '=',
-            num_bytes > 2 ? _encodeSextet3(data) : '='
-        };
-        this->_stream.write(std::span{out});
+        const std::size_t num_full_buffers = num_bytes_in/buffer_size;
+        const std::size_t residual = num_bytes_in%buffer_size;
+
+        Byte cache[cache_size_out];
+        for (std::size_t i = 0; i < num_full_buffers; ++i) {
+            const std::size_t in_offset = i*buffer_size;
+            const std::size_t out_offset = i*encoded_buffer_size;
+            cache[out_offset + 0] = _encodeSextet0(data + in_offset);
+            cache[out_offset + 1] = _encodeSextet1(data + in_offset);
+            cache[out_offset + 2] = _encodeSextet2(data + in_offset);
+            cache[out_offset + 3] = _encodeSextet3(data + in_offset);
+        }
+
+        const std::size_t in_offset = num_full_buffers*buffer_size;
+        const std::size_t out_offset = num_full_buffers*encoded_buffer_size;
+        if (residual > 0) {
+            Byte last_buffer[buffer_size] = {
+                *(data + in_offset),
+                residual > 1 ? *(data + in_offset + 1) : Byte{0},
+                residual > 2 ? *(data + in_offset + 2) : Byte{0}
+            };
+            cache[out_offset] = _encodeSextet0(last_buffer);
+            cache[out_offset + 1] = _encodeSextet1(last_buffer);
+            cache[out_offset + 2] = residual > 1 ? _encodeSextet2(last_buffer) : '=';
+            cache[out_offset + 3] = residual > 2 ? _encodeSextet3(last_buffer) : '=';
+            this->_stream.write(std::span{cache, out_offset + 4});
+        } else {
+            this->_stream.write(std::span{cache, out_offset});
+        }
     }
 };
 
