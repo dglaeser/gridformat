@@ -47,14 +47,24 @@ class OutputStream {
 
     template<typename T, std::size_t size>
     void write(std::span<T, size> data) {
-        _write(std::as_bytes(data));
+        _write_chars(std::as_bytes(data));
+    }
+
+    template<std::size_t size>
+    void write(std::span<const char, size> data) {
+        _write_chars(data.data(), size);
     }
 
  private:
-    template<std::size_t size>
-    void _write(std::span<const std::byte, size> data) {
+    template<typename Byte, std::size_t size>
+    void _write_chars(std::span<const Byte, size> data) {
+        static_assert(sizeof(Byte) == sizeof(char));
         const char* chars = reinterpret_cast<const char*>(data.data());
         _stream.write(chars, data.size());
+    }
+
+    void _write_chars(const char* chars, std::size_t size) {
+        _stream.write(chars, size);
     }
 
     std::ostream& _stream;
