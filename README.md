@@ -112,7 +112,7 @@ make sure to use `git clone --recursive` in case you want to use the HDF file fo
 
 The availability of some specific features of a file format may also depend on the availability of certain dependencies. For
 instance, compression of data (e.g. for the VTK-XML file formats) can only be used if the respective compression libraries are
-found on the system. Dependencies of those features are stated in the [API documentation (coming soon)](https://github.com/dglaeser/gridformat).
+found on the system. Dependencies of those features are stated in the [API documentation](https://dglaeser.github.io/gridformat/).
 
 
 ## Compatibility with user-defined grids
