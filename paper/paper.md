@@ -46,7 +46,8 @@ both users of frameworks or hand-written codes to write out their data without r
 
 To address this issue, `GridFormat` aims to provide an easy-to-use API for writing grid files in various formats. By utilizing generic
 programming through C++ templates and traits classes, `GridFormat` is designed to be data-structure-agnostic. This allows users of
-simulation frameworks as well as users of hand-written codes to write their data without significant runtime or memory overhead.
+simulation frameworks as well as users of hand-written codes to write their data without significant runtime or memory overhead. In fact,
+`GridFormat` comes with out-of-the-box support for data structures of `Dune`, `Deal.II`, `FenicsX` and [CGAL](TODO:LINK).
 
 # Statement of Need
 
