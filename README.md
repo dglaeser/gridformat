@@ -62,9 +62,10 @@ int main () {
         {10, 12}    // number of cells (pixels) in each direction
     };
 
-    // Let's write an analytical field into .vtu file format. Fields are attached to the
-    // writer via lambdas that return the discrete values at points or cells.
+    // This shows the `GridFormat` API: Construct a writer for the desired format, and add
+    // point/cell fields as lambdas. Metadata can be added directly and can be ranges or scalars.
     GridFormat::Writer writer{GridFormat::vtu, grid};
+    writer.set_meta_data("some_metadata", "i am metadata");
     writer.set_point_field("point_field", [&] (const auto& point) { return f(grid.position(point)); });
     writer.set_cell_field("cell_field", [&] (const auto& cell) { return f(grid.center(cell)); });
     writer.write("my_test_file");  // the file extension will be appended by the writer
