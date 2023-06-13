@@ -61,15 +61,21 @@ runs:
 
     - name: test-examples-with-fetch-content
       run: |
-        GFMT_TREE=$GITHUB_HEAD_REF
-        if [[ -z "$GFMT_TREE" ]]; then
-          GFMT_TREE=$GITHUB_SHA
+        if [[ ${{ github.event_name }} == "pull_request" ]]; then
+          GFMT_ORIGIN=${{ github.event.pull_request.head.repo.clone_url }}
+          GFMT_TREE=${{ github.head_ref }}
+        else
+          GFMT_TREE=$GITHUB_HEAD_REF
+          if [[ -z "$GFMT_TREE" ]]; then
+            GFMT_TREE=$GITHUB_SHA
+          fi
         fi
         rm -rf examples/build && pushd examples
           cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
                 -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
-                -DGRIDFORMAT_FETCH_TREE=$GFMT_TREE \
+                -DGRIDFORMAT_FETCH_TREE="$GFMT_TREE" \
+                -DGRIDFORMAT_ORIGIN="$GFMT_ORIGIN" \
                 -B build
         pushd build && make && ctest --output-on-failure
       shell: bash

@@ -7,6 +7,9 @@ from os.path import exists, join, abspath, dirname
 from os import mkdir, chdir
 
 
+ORIGIN = "https://github.com/dglaeser/gridformat"
+
+
 def _get_cmake_lists_content(readme_file, branch: str) -> str:
     content = open(readme_file).read()
     content = content.split("Quick Start")[1].split("```cmake", maxsplit=1)[1].split("```", maxsplit=1)[0]
@@ -20,10 +23,11 @@ def _get_app_content(readme_file) -> str:
 
 parser = ArgumentParser()
 parser.add_argument("-e", "--extra-cmake-args", required=False)
-parser.add_argument("-b", "--branch", required=False, default="main")
+parser.add_argument("-r", "--ref", required=False, default="main")
+parser.add_argument("-o", "--origin", required=False, default="https://github.com/dglaeser/gridformat")
 args = vars(parser.parse_args())
 
-print(f"Testing quick start instructions from branch '{args['branch']}'")
+print(f"Testing quick start instructions from ref '{args['ref']}'")
 readme_path = join(join(dirname(abspath(__file__)), ".."), "README.md")
 if not exists(readme_path):
     raise IOError("Could not find readme")
@@ -32,7 +36,7 @@ mkdir("readme_quick_start_test")
 chdir("readme_quick_start_test")
 
 with open("CMakeLists.txt", "w") as cmake_file:
-    cmake_file.write(_get_cmake_lists_content(readme_path, args["branch"]))
+    cmake_file.write(_get_cmake_lists_content(readme_path, args["ref"]).replace(ORIGIN, args["origin"]))
 with open("my_app.cpp", "w") as cpp_file:
     cpp_file.write(_get_app_content(readme_path))
 
