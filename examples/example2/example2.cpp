@@ -65,5 +65,16 @@ int main() {
 
     std::cout << "Wrote '" << writer.write("dem") << "'" << std::endl;
 
+#if GRIDFORMAT_HAVE_ZLIB
+    // zlib has 10 compression levels from 0 to 9
+    const auto compressor = GridFormat::Compression::zlib.with({.compression_level = 9});
+    const auto format = GridFormat::default_for(dem).with({.compressor = compressor});
+    GridFormat::Writer compressed_writer{format, dem};
+    compressed_writer.set_point_field("elevation", [&] (const auto& point) {
+        return dem.get_elevation_at(point);
+    });
+    std::cout << "Wrote '" << compressed_writer.write("dem_compressed") << "'" << std::endl;
+#endif
+
     return 0;
 }
