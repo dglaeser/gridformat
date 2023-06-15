@@ -1,8 +1,11 @@
 // SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <array>
+// include the traits first to see if they include everything
+// they need, i.e. don't force users to include anything before
+#include <gridformat/traits/dealii.hpp>
 
+#include <array>
 #include <mpi.h>
 
 #include <deal.II/distributed/tria.h>
@@ -10,7 +13,6 @@
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/tria_description.h>
 
-#include <gridformat/traits/dealii.hpp>
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/pvtu_writer.hpp>
 #include <gridformat/vtk/pvtp_writer.hpp>

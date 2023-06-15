@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+// include the traits first to see if they include everything
+// they need, i.e. don't force users to include anything before
+#include <gridformat/traits/dealii.hpp>
+
 #include <array>
 #include <iostream>
 
@@ -8,7 +12,6 @@
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/grid_in.h>
 
-#include <gridformat/traits/dealii.hpp>
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
 
