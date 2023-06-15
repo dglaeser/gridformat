@@ -181,65 +181,198 @@ $(document).ready(function(){initNavTree('grid-traits.html',''); initResizable()
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
-</div><!-- fragment --><p>As discussed in our <a class="el" href="grid-concepts.html#md__home_runner_work_gridformat_gridformat_docs_pages_grid_concepts">overview over supported kinds of grids</a>, <code>GridFormat</code> understands the notion of unstructured, structured, rectilinear or image grids. The reason for this is that some file formats are designed for specific kinds of grids and can store the information on their topology in a space-efficient manner. To see which format assumes which kind of grid, see the <a href="https://dglaeser.github.io/gridformat/">API documentation</a>. In the code, there exist <a href="https://en.cppreference.com/w/cpp/language/constraints">concepts</a> for each of these kinds of grids, which essentially check if the required traits are correctly implemented. The remainder of this page discusses the different traits used by <code>GridFormat</code>, and which ones need to be specialized in order to model a particular kind of grid. In case you want to use <code>GridFormat</code> in parallel computations, please also make sure to read the related section at the end of this page. Note that all traits presented in the following are declared in the <code>namespace GridFormat::Traits</code>.</p>
+</div><!-- fragment --><p>As discussed in the <a class="el" href="grid-concepts.html#md__home_runner_work_gridformat_gridformat_docs_pages_grid_concepts">overview over supported kinds of grids</a>, <code>GridFormat</code> understands the notion of unstructured, structured, rectilinear or image grids. The reason for this is that some file formats are designed for specific kinds of grids and can store the information on their topology in a space-efficient manner. To see which format assumes which kind of grid, see the <a href="https://dglaeser.github.io/gridformat/">API documentation</a>. In the code, there exist <a href="https://en.cppreference.com/w/cpp/language/constraints">concepts</a> for each of these kinds of grids, which essentially check if the required traits are correctly implemented. When implementing the traits for your grid type, it is helpful to use these concepts in order to verify your traits implementations. For instance, you may use <code>static_asserts</code>:</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="gridformat_8hpp.html">gridformat/gridformat.hpp</a>&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">class </span>MyGrid { <span class="comment">/* ... */</span> };</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// let&#39;s specialize the traits for MyGrid (MyGrid is an unstructured grid)</span></div>
+<div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line">    <span class="comment">// ...</span></div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// let&#39;s directly check if we did that correctly</span></div>
+<div class="line"><span class="comment">// if this static_assert passes, we are ready to go</span></div>
+<div class="line">static_assert(GridFormat::Concepts::UnstructuredGrid&lt;MyGrid&gt;);</div>
+<div class="ttc" id="agridformat_8hpp_html"><div class="ttname"><a href="gridformat_8hpp.html">gridformat.hpp</a></div><div class="ttdoc">This file is the entrypoint to the high-level API exposing all provided writers through a unified int...</div></div>
+</div><!-- fragment --><p>The remainder of this page discusses the different traits used by <code>GridFormat</code>, and which ones need to be specialized in order to model a particular kind of grid. Note that all traits presented in the following are declared in the <code>namespace GridFormat::Traits</code>. In case you want to use <code>GridFormat</code> in parallel computations, please make sure to also read the related section at the end of this page.</p>
 <h2><a class="anchor" id="mandatory-traits"></a>
 Mandatory Traits</h2>
 <ul>
 <li><code>template&lt;typename Grid&gt; struct Cells;</code></li>
 </ul>
-<p>This trait exposes how one can iterate over the cells of a grid. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/forward_range">forward range</a> of cells.</p>
-<ul>
+<p>This trait exposes how one can iterate over the cells of a grid. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/forward_range">forward range</a> of cells. <code>GridFormat</code> deduces the cell type used by the <code>Grid</code> from this range. As an example, let's consider a grid implementation (<code>SomeUnstructuredGrid</code>) that identifies cells solely by an index. In this case, the following would be a valid specialization, which yields <code>int</code> as cell type:</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><span class="keyword">struct </span>Cells&lt;SomeUnstructuredGrid&gt; {</div>
+<div class="line">    <span class="keyword">static</span> std::ranges::forward_range <span class="keyword">auto</span> get(<span class="keyword">const</span> SomeUnstructuredGrid&amp; grid) {</div>
+<div class="line">        <span class="keywordflow">return</span> std::views::iota(0, grid.number_of_cells());</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><ul>
 <li><code>template&lt;typename Grid&gt; struct Points;</code></li>
 </ul>
-<p>This trait exposes how one can iterate over the points of a grid. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/forward_range">forward range</a> of points.</p>
+<p>This trait exposes how one can iterate over the points of a grid. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/forward_range">forward range</a> of points. <code>GridFormat</code> deduces the point type used by the <code>Grid</code> from this range. As an example, let's again consider a grid implementation (<code>SomeUnstructuredGrid</code>) that identifies points solely by an index. As before, we can simply return an index range yielding <code>int</code> as point type (<code>GridFormat</code> supports the case of cell &amp; point types being the same):</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><span class="keyword">struct </span>Points&lt;SomeUnstructuredGrid&gt; {</div>
+<div class="line">    <span class="keyword">static</span> std::ranges::forward_range <span class="keyword">auto</span> get(<span class="keyword">const</span> SomeUnstructuredGrid&amp; grid) {</div>
+<div class="line">        <span class="keywordflow">return</span> std::views::iota(0, grid.number_of_points());</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><p>In the following we will discuss the traits required for particular grid concepts. Some of these traits expose information on a single cell or point of the grid, and therefore, have to be specialized for the grid <b>and</b> its point or cell type. As discussed above, <code>GridFormat</code> deduces these types from the <code>Cells</code> and <code>Points</code> traits. In the following, we will refer to these types as <code>Cell</code> and <code>Point</code>.</p>
 <h2><a class="anchor" id="traits-for-unstructured-grids"></a>
 Traits for Unstructured Grids</h2>
 <ul>
 <li><code>template&lt;typename Grid, typename Cell&gt; struct CellPoints;</code></li>
 </ul>
-<p>This trait exposes how one can iterate over the points of an individual grid cell. Specializations must provide a static function <code>get(const Grid&amp;, const Cell&amp;)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/range">range</a> of points that make up the boundary of the given cell.</p>
-<ul>
+<p>This trait exposes how one can iterate over the points of an individual grid cell. Specializations must provide a static function <code>get(const Grid&amp;, const Cell&amp;)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/range">range</a> of points that are contained within the given cell. Note that the <a href="https://en.cppreference.com/w/cpp/ranges/iterator_t">value_type</a> of the returned range must match the point type deduced from the <code>Points</code> trait. Following the above example, an implementation of this trait could look like this:</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;  <span class="comment">// the cell type is `int` in this case, see the Cells trait description</span></div>
+<div class="line"><span class="keyword">struct </span>CellPoints&lt;SomeUnstructuredGrid, int&gt; {</div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">const</span> std::ranges::range <span class="keyword">auto</span>&amp; get(<span class="keyword">const</span> SomeUnstructuredGrid&amp; grid, <span class="keywordtype">int</span> cell_index) {</div>
+<div class="line">        <span class="keywordflow">return</span> grid.point_indices_of_cell(cell_index);</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><ul>
 <li><code>template&lt;typename Grid, typename Cell&gt; struct CellType;</code></li>
 </ul>
-<p>This trait exposes the geometry type of an individual grid cell. Specializations must provide a static function <code>get(const Grid&amp;, const Cell&amp;)</code> that returns an instance of the <a href="https://github.com/dglaeser/gridformat/blob/main/gridformat/grid/cell_type.hpp">CellType enum</a>.</p>
-<ul>
+<p>This trait exposes the geometry type of an individual grid cell. Specializations must provide a static function <code>get(const Grid&amp;, const Cell&amp;)</code> that returns an instance of the <a href="https://github.com/dglaeser/gridformat/blob/main/gridformat/grid/cell_type.hpp">CellType enum</a>. For the above example, the specialization of this traits could look like this:</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;  <span class="comment">// the cell type is `int` in this case, see the Cells trait description</span></div>
+<div class="line"><span class="keyword">struct </span>CellType&lt;SomeUnstructuredGrid, int&gt; {</div>
+<div class="line">    <span class="keyword">static</span> std::ranges::range <span class="keyword">auto</span> get(<span class="keyword">const</span> SomeUnstructuredGrid&amp; grid, <span class="keywordtype">int</span> cell_index) {</div>
+<div class="line">        <span class="keywordflow">return</span> GridFormat::CellType::tetrahedron; <span class="comment">// SomeUnstructuredGrid always only uses tets</span></div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><ul>
 <li><code>template&lt;typename Grid, typename Point&gt; struct PointCoordinates;</code></li>
 </ul>
-<p>This trait exposes the coordinates of a grid point. Specializations must provide a static function <code>get(const Grid&amp;, const Point&amp;)</code> that returns the coordinates of the given point as a <a href="#optional-traits">statically sized range</a>.</p>
-<ul>
+<p>This trait exposes the coordinates of a grid point. Specializations must provide a static function <code>get(const Grid&amp;, const Point&amp;)</code> that returns the coordinates of the given point as a <a href="#optional-traits">statically sized range</a>. From the size of this range, <code>GridFormat</code> deduces the space dimension of the grid at compile-time. If your grid does not know the space dimension at compile-time, you can simply return an <code>std::array&lt;double, 3&gt;</code> with zero padding. For the above example, a specialization of this trait may look as follows:</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;  <span class="comment">// the point type is `int` in this case, see the Points trait description</span></div>
+<div class="line"><span class="keyword">struct </span>PointCoordinates&lt;SomeUnstructuredGrid, int&gt; {</div>
+<div class="line">    <span class="keyword">static</span> GridFormat::Concepts::StaticallySizedRange <span class="keyword">auto</span> get(<span class="keyword">const</span> SomeUnstructuredGrid&amp; grid, <span class="keywordtype">int</span> point_index) {</div>
+<div class="line">        <span class="comment">// SomeUnstructuredGrid always operates in 3d, but the type used for coordinates is not compatible with</span></div>
+<div class="line">        <span class="comment">// the StaticallySizedRange concept. We could make it compatible by implementing the respective</span></div>
+<div class="line">        <span class="comment">// trait, but let&#39;s just construct an std::array with the coordinates ...</span></div>
+<div class="line">        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; point = grid.get_point(point_index);</div>
+<div class="line">        <span class="keywordflow">return</span> std::array{</div>
+<div class="line">            point.x,</div>
+<div class="line">            point.y,</div>
+<div class="line">            point.z</div>
+<div class="line">        };</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><ul>
 <li><code>template&lt;typename Grid, typename Point&gt; struct PointId;</code></li>
 </ul>
-<p>This trait exposes a unique id for individual points of a grid. Specializations must provide a static function <code>get(const Grid&amp;, const Point&amp;)</code> that returns a unique id (as integer value, e.g. <code>std::size_t</code>) for the given point.</p>
-<h2><a class="anchor" id="traits-for-structured-grids"></a>
+<p>This trait exposes a unique id for individual points of a grid. Specializations must provide a static function <code>get(const Grid&amp;, const Point&amp;)</code> that returns a unique id (as integer value, e.g. <code>std::size_t</code>) for the given point. For our example above, we could directly return the <code>Point</code>, since we chose the <code>Points</code> trait to simply return a range over all point indices:</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;  <span class="comment">// the point type is `int` in this case, see the Points trait description</span></div>
+<div class="line"><span class="keyword">struct </span>PointId&lt;SomeUnstructuredGrid, int&gt; {</div>
+<div class="line">    <span class="keyword">static</span> <span class="keywordtype">int</span> get(<span class="keyword">const</span> SomeUnstructuredGrid&amp; grid, <span class="keywordtype">int</span> point_index) {</div>
+<div class="line">        <span class="keywordflow">return</span> point_index;</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><h2><a class="anchor" id="traits-for-structured-grids"></a>
 Traits for Structured Grids</h2>
 <p>In addition to the traits below, the <code>StructuredGrid</code> concept also requires that the <code>PointCoordinates</code> trait is implemented (see above).</p>
 <ul>
 <li><code>template&lt;typename Grid&gt; struct Extents;</code></li>
 </ul>
-<p>This trait exposes the number of cells of the structured grid in each coordinate direction. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a>, whose size is equal to the dimension of the grid.</p>
-<ul>
+<p>This trait exposes the number of cells of the structured grid in each coordinate direction. Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a>, whose size is equal to the dimension of the grid. As an example, let's consider a structured grid implementation <code>SomeStructuredGrid</code> that has a <code>num_cells(int direction)</code> function:</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><span class="keyword">struct </span>Extents&lt;SomeStructuredGrid&gt; {</div>
+<div class="line">    <span class="keyword">static</span> GridFormat::Concepts::StaticallySizedRange <span class="keyword">auto</span> get(<span class="keyword">const</span> SomeStructuredGrid&amp; grid) {</div>
+<div class="line">        <span class="comment">// Let&#39;s assume SomeStructuredGrid is always two-dimensional</span></div>
+<div class="line">        <span class="keywordflow">return</span> std::array{</div>
+<div class="line">            grid.num_cells(0),</div>
+<div class="line">            grid.num_cells(1)</div>
+<div class="line">        };</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><ul>
 <li><code>template&lt;typename Grid, typename Entity&gt; struct Location;</code></li>
 </ul>
-<p>This trait exposes the index tuple of a given entity within the structured grid. For a visualization and the assumptions on the orientation, see the <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md">overview over supported kinds of grids</a>. This trait must be specialized for both cells and points (i.e. for two types of <code>Entity</code>), and they must provide a static function <code>get(const Grid&amp;, const Entity&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a> whose elements are integer values (the indices of the entity) and whose size is equal to the dimension of the grid.</p>
-<h2><a class="anchor" id="traits-for-rectilinear-grids"></a>
+<p>This trait exposes the index tuple of a given entity within the structured grid. For a visualization and the assumptions on the orientation, see the <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md">overview over supported kinds of grids</a>. This trait must be specialized for both <code>Cell</code> and <code>Point</code> (i.e. for two types of <code>Entity</code>), and they must provide a static function <code>get(const Grid&amp;, const Entity&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a> whose elements are integer values (the indices of the entity) and whose size is equal to the dimension of the grid. As an example, let's consider a grid implementation that has points and cells that carry information about their location within the grid. An implementation of this trait could then look like this:</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="comment">// Let&#39;s assume the `Point` and `Cell` types of `SomeStructuredGrid` have the same interface</span></div>
+<div class="line"><span class="comment">// for obtaining their location. Let&#39;s therefore simply leave this trait a template on `Entity`,</span></div>
+<div class="line"><span class="comment">// so that we don&#39;t have to implement it twice - once for `Point` and once for `Cell`</span></div>
+<div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Entity&gt;</div>
+<div class="line"><span class="keyword">struct </span>Location&lt;SomeStructuredGrid, Entity&gt; {</div>
+<div class="line">    <span class="keyword">static</span> GridFormat::Concepts::StaticallySizedRange <span class="keyword">auto</span> get(<span class="keyword">const</span> SomeStructuredGrid&amp; grid, <span class="keyword">const</span> Entity&amp; e) {</div>
+<div class="line">        <span class="comment">// Let&#39;s assume SomeStructuredGrid is always two-dimensional</span></div>
+<div class="line">        <span class="keywordflow">return</span> std::array{</div>
+<div class="line">            e.x_index,</div>
+<div class="line">            e.y_index</div>
+<div class="line">        };</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><h2><a class="anchor" id="traits-for-rectilinear-grids"></a>
 Traits for Rectilinear Grids</h2>
 <p>In addition to the <code>Ordinates</code> trait below, the <code>RectilinearGrid</code> concept also requires that the <code>Extents</code> and <code>Location</code> traits are implemented (see above).</p>
 <ul>
 <li><code>template&lt;typename Grid&gt; struct Ordinates;</code></li>
 </ul>
-<p>This trait exposes the ordinates of a <code>RectilinearGrid</code> grid along the coordinate axes. Specializations must provide a static function <code>get(const Grid&amp;, unsigned int direction)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/range">range</a> over the ordinates along the axis specified by <code>direction</code> (<code>direction &lt; dim</code>, where dim is the dimension of the grid). The size of the range must be equal to the number of cells + 1 in the given direction.</p>
-<h2><a class="anchor" id="traits-for-image-grids"></a>
+<p>This trait exposes the ordinates of a <code>RectilinearGrid</code> grid along the coordinate axes. Specializations must provide a static function <code>get(const Grid&amp;, unsigned int direction)</code> that returns a <a href="https://en.cppreference.com/w/cpp/ranges/range">range</a> over the ordinates along the axis specified by <code>direction</code> (<code>direction &lt; dim</code>, where dim is the dimension of the grid). The size of the range must be equal to the number of cells + 1 in the given direction. As an example, let's consider an implementation <code>SomeRectilinearGrid</code> with the following specialization for this trait:</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><span class="keyword">struct </span>Ordinates&lt;SomeRectilinearGrid&gt; {</div>
+<div class="line">    <span class="keyword">static</span> std::ranges::range <span class="keyword">auto</span> get(<span class="keyword">const</span> SomeRectilinearGrid&amp; grid, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> direction) {</div>
+<div class="line">        <span class="keyword">const</span> <span class="keyword">auto</span> num_points = grid.num_cells(direction) + 1;</div>
+<div class="line">        <span class="keyword">const</span> <span class="keyword">auto</span> dx = grid.cell_size(direction);</div>
+<div class="line">        std::vector&lt;double&gt; ordinates; ordinates.reserve(num_points);</div>
+<div class="line">        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; num_points; ++i)</div>
+<div class="line">            ordinates.push_back(i*dx);</div>
+<div class="line">        <span class="keywordflow">return</span> ordinates;</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><h2><a class="anchor" id="traits-for-image-grids"></a>
 Traits for Image Grids</h2>
 <p>In addition to the traits below, the <code>ImageGrid</code> concept also requires that the <code>Extents</code> and <code>Location</code> traits are implemented (see above).</p>
 <ul>
 <li><code>template&lt;typename Grid&gt; struct Origin;</code></li>
 </ul>
-<p>This trait exposes the position of the lower-left corner of the grid, that is, the position of the point at index \((0, 0, 0)\) (for a visualization see <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md">here</a>). Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a>, whose size is equal to the dimension of the grid.</p>
-<ul>
+<p>This trait exposes the position of the lower-left corner of the grid, that is, the position of the point at index \((0, 0, 0)\) (for a visualization see <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md">here</a>). Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a>, whose size is equal to the dimension of the grid. An exemplary specialization of this trait could look like:</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><span class="keyword">struct </span>Origin&lt;SomeImageGrid&gt; {</div>
+<div class="line">    <span class="keyword">static</span> GridFormat::Concepts::StaticallySizedRange <span class="keyword">auto</span> get(<span class="keyword">const</span> SomeImageGrid&amp; grid) {</div>
+<div class="line">        <span class="comment">// Let&#39;s say SomeImageGrid always starts at (0, 0, 0)</span></div>
+<div class="line">        <span class="keywordflow">return</span> std::array{0., 0., 0.};</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><ul>
 <li><code>template&lt;typename Grid&gt; struct Spacing;</code></li>
 </ul>
-<p>This trait exposes the spacing between grid points along the axes (in other words, the size of the cells in each coordinate direction). Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a>, whose size is equal to the dimension of the grid.</p>
-<h2><a class="anchor" id="optional-traits"></a>
+<p>This trait exposes the spacing between grid points along the axes (in other words, the size of the cells in each coordinate direction). Specializations must provide a static function <code>get(const Grid&amp;)</code> that returns a <a href="#optional-traits">statically sized range</a>, whose size is equal to the dimension of the grid. As an example, a valid specialization of this trait may be:</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><span class="keyword">struct </span>Spacing&lt;SomeImageGrid&gt; {</div>
+<div class="line">    <span class="keyword">static</span> GridFormat::Concepts::StaticallySizedRange <span class="keyword">auto</span> get(<span class="keyword">const</span> SomeImageGrid&amp; grid) {</div>
+<div class="line">        <span class="comment">// Let&#39;s say SomeImageGrid is always 3D</span></div>
+<div class="line">        <span class="keywordflow">return</span> std::array{</div>
+<div class="line">            grid.cell_size(0),</div>
+<div class="line">            grid.cell_size(1),</div>
+<div class="line">            grid.cell_size(2)</div>
+<div class="line">        };</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><h2><a class="anchor" id="optional-traits"></a>
 Optional Traits</h2>
 <ul>
 <li><code>template&lt;typename Grid&gt; struct NumberOfPoints;</code></li>
@@ -260,14 +393,23 @@ Optional Traits</h2>
 <div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keyword">auto</span> default_basis = std::array{</div>
 <div class="line">    std::array{1.0, 0.0, 0.0},</div>
 <div class="line">    std::array{0.0, 1.0, 0.0},</div>
-<div class="line">    std::array{0.0, 0.0, 1.0},</div>
+<div class="line">    std::array{0.0, 0.0, 1.0}</div>
 <div class="line">};</div>
 </div><!-- fragment --><p>Specializing the <code>Basis</code> trait, you can implement the static function <code>get(const Grid&amp;)</code> and return a custom basis. It is expected that the return type from this function is a two-dimensional, <a href="#optional-traits">statically-sized range</a>, with the outer and inner dimensions being equal to the grid dimension.</p>
 <ul>
 <li><code>template&lt;typename T&gt; struct StaticSize;</code></li>
 </ul>
-<p><code>GridFormat</code> requires that the types returned from some traits model the <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/gridformat/common/concepts.hpp#L25"><code>StaticallySizedRange</code> concept</a>. Statically sized means that the size of the <a href="https://en.cppreference.com/w/cpp/ranges/range">range</a> is known at compile time. Per default, <code>GridFormat</code> accepts <code>std::array</code>, <code>std::span</code> (with non-dynamic extent), <code>T[N]</code> or anything that either has a <code>constexpr static std::size_t size()</code> function or a member variable named <code>size</code> that can be evaluated at compile time. If your type does not fulfill any of these requirements, but is in fact range with a size known at compile-time, you can also specialize the <a href="https://github.com/dglaeser/gridformat/blob/main/gridformat/common/type_traits.hpp#L349"><code>StaticSize</code> trait</a> for the type you want to return. Alternatively, you can of course just convert your type into an <code>std::array</code> within the trait that expects you to return a statically sized range.</p>
-<h2><a class="anchor" id="notes-for-parallel-grids"></a>
+<p><code>GridFormat</code> requires that the types returned from some traits model the <a href="https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/gridformat/common/concepts.hpp#L25"><code>StaticallySizedRange</code> concept</a>. Statically sized means that the size of the <a href="https://en.cppreference.com/w/cpp/ranges/range">range</a> is known at compile time. Per default, <code>GridFormat</code> accepts <code>std::array</code>, <code>std::span</code> (with non-dynamic extent), <code>T[N]</code> or anything that either has a <code>constexpr static std::size_t size()</code> function or a member variable named <code>size</code> that can be evaluated at compile time. If your type does not fulfill any of these requirements, but is in fact range with a size known at compile-time, you can also specialize the <a href="https://github.com/dglaeser/gridformat/blob/main/gridformat/common/type_traits.hpp"><code>StaticSize</code> trait</a> for the type you want to return. Alternatively, you can of course just convert your type into an <code>std::array</code> within the trait that expects you to return a statically sized range. To give an example, let's consider a <code>Vector</code> class whose size is known at compile-time, but does not fulfill the requirements for <code>GridFormat</code> to automatically identify it as a <code>StaticallySizedRange</code>:</p>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> dim&gt;</div>
+<div class="line"><span class="keyword">class </span>Vector { <span class="comment">/* ... */</span> };</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace </span>GridFormat::Traits {</div>
+<div class="line"><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> dim&gt;</div>
+<div class="line"><span class="keyword">struct </span>StaticSize&lt;Vector&lt;dim&gt;&gt; {</div>
+<div class="line">    <span class="keyword">static</span> constexpr <span class="keywordtype">int</span> value = dim;</div>
+<div class="line">};</div>
+<div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
+</div><!-- fragment --><h2><a class="anchor" id="notes-for-parallel-grids"></a>
 Notes for Parallel Grids</h2>
 <p>In order to use <code>GridFormat</code> to write grid files from parallel computations using <a href="https://de.wikipedia.org/wiki/Message_Passing_Interface">MPI</a>, make sure that you implement the above traits such that they <b>only</b> return information on one <b>partition</b>. Moreover, <code>GridFormat</code> currently does not provide any means to flag cells/points as ghost or overlap entities, and therefore, it is expected that you only provide information on the collection of interior entities, that is, the partitions are expected to be disjoint. To be more concrete, it is expected that</p>
 <ul>

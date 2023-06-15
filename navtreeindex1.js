@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"dir_0ff2e0e61e3af8ee34dddebe9f0268dc.html":[6,0,0,0],
 "dir_ccba52d8fa730bec2eeb71410e3b9ab7.html":[6,0,0,2],
 "dir_ccfa84e27b2c4c552e7baede3d3b9943.html":[6,0,0,1],
 "dir_d0390f0727238e67894f11fe1a76445e.html":[6,0,0,3],
@@ -42,8 +43,8 @@ var NAVTREEINDEX1 =
 "gridformat_8hpp.html#gae3a15e9e51583fa1e9be686b56407d4e":[6,0,0,4,23],
 "gridformat_8hpp.html#gaf06db57266f25da150156fa98e6e0945":[6,0,0,4,24],
 "gridformat_8hpp_source.html":[6,0,0,4],
-"group__API.html":[1],
 "group__API.html":[4,0],
+"group__API.html":[1],
 "group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5":[4,0,18],
 "group__API.html#gaa73c41aeab2861bb23872f1498cb0eb4":[4,0,19],
 "group__Compression.html":[4,2],
@@ -92,14 +93,15 @@ var NAVTREEINDEX1 =
 "image__grid_8hpp.html":[6,0,0,2,1],
 "image__grid_8hpp.html#a75756d4f4a6972968fc9d1dd6050157f":[6,0,0,2,1,0],
 "image__grid_8hpp_source.html":[6,0,0,2,1],
-"index.html":[],
 "index.html":[0],
+"index.html":[],
+"index.html#caveats":[0,4],
 "index.html#compatibility-with-userdefined-grids":[0,2],
-"index.html#contribution-guidelines":[0,4],
+"index.html#contribution-guidelines":[0,5],
 "index.html#dependencies":[0,1,0],
-"index.html#development-and-test-suite":[0,4,0],
+"index.html#development-and-test-suite":[0,5,0],
 "index.html#installation":[0,1],
-"index.html#license":[0,5],
+"index.html#license":[0,6],
 "index.html#predefined-traits":[0,3],
 "index.html#quick-start":[0,0],
 "lz4_8hpp.html":[6,0,0,0,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX1 =
 "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFTransient_01_4.html":[5,0,0,18],
 "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFUnstructuredTransient_01_4.html":[5,0,0,16],
 "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFUnstructured_01_4.html":[5,0,0,15],
-"structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDF_01_4.html":[5,0,0,17],
-"structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKXMLTimeSeries_3_01F_01_4_01_4.html":[5,0,0,12],
-"structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTP_01_4.html":[5,0,0,10]
+"structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDF_01_4.html":[5,0,0,17]
 };

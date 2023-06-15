@@ -199,6 +199,11 @@ Compatibility with user-defined grids</h1>
 <h1><a class="anchor" id="predefined-traits"></a>
 Predefined traits</h1>
 <p><code>GridFormat</code> comes with predefined traits for <a href="https://www.dune-project.org/doxygen/2.8.0/classDune_1_1GridView.html">dune grid views</a> (tested dune version: 2.9), <a href="https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html">deal.ii triangulations</a> (tested deal.ii version: 9.4.0), <a href="https://www.cgal.org/">cgal</a> triangulations in <a href="https://doc.cgal.org/latest/Triangulation_2/index.html">2d</a> and <a href="https://doc.cgal.org/latest/Triangulation_3/index.html">3d</a> (tested cgal version: 5.5.2), and <a href="https://github.com/FEniCS/dolfinx">dolfinx</a> meshes and function spaces (tested dolfinx version: 0.6.0). Users of these frameworks can include these predefined traits and use <code>GridFormat</code> directly (see the <a href="https://github.com/dglaeser/gridformat/tree/main/examples">examples</a>).</p>
+<h1><a class="anchor" id="caveats"></a>
+Caveats</h1>
+<ul>
+<li>The <a href="https://en.wikipedia.org/wiki/Base64">Base64</a> encoder implementation internally uses a cache of approx. 16MB in order to speed up writing large amounts of data upon writing. You can change this by setting <code>GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS=N</code> at compile-time (per default, <code>N=4000</code>). With <code>cmake</code> you can set this, for instance, like this: `target_compile_definitions(my_target PRIVATE GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS=1)</li>
+</ul>
 <h1><a class="anchor" id="contribution-guidelines"></a>
 Contribution Guidelines</h1>
 <p>Contributions are highly welcome! For bug reports, please file an <a href="https://github.com/dglaeser/gridformat/issues">issue</a>. If you want to contribute with features, improvements or bug fixes please fork this project and open a merge request into the main branch of this repository.</p>
