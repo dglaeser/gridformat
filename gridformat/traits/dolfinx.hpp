@@ -15,7 +15,12 @@
 #include <memory>
 #include <algorithm>
 
+#include <dolfinx/io/cells.h>
 #include <dolfinx/io/vtk_utils.h>
+#include <dolfinx/mesh/cell_types.h>
+#include <dolfinx/mesh/Mesh.h>
+#include <dolfinx/fem/Function.h>
+#include <dolfinx/fem/FunctionSpace.h>
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
@@ -23,7 +28,6 @@
 #include <gridformat/grid/traits.hpp>
 #include <gridformat/grid/writer.hpp>
 
-// Important: the dolfinx headers must be included before this one!
 
 namespace GridFormat {
 
