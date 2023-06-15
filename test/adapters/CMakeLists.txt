@@ -40,6 +40,17 @@ if (deal.II_FOUND)
     set(GRIDFORMAT_HAVE_PARALLEL_DEAL_II ${MPI_FOUND})
 endif()
 
+find_package(mfem NAMES MFEM)
+gridformat_add_regression_test_if(mfem_FOUND
+    test_mfem
+    test_mfem.cpp
+    "mfem_*"
+)
+if (mfem_FOUND)
+    message(STATUS "Testing mfem traits with mfem version ${mfem_VERSION}")
+    target_link_libraries(test_mfem mfem)
+endif()
+
 function (gridformat_setup_deal_ii_target TARGET)
     if (deal.II_FOUND)
         deal_ii_setup_target(${TARGET})
