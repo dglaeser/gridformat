@@ -15,41 +15,28 @@
 #include <array>
 #include <type_traits>
 
+#include <mfem/mesh/mesh.hpp>
+
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/filtered_range.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
 
-// forward declaration of the triangulation classes
-// users are expected to include the headers of the actually used classes
-namespace mfem {
-
-// TODO
-// #ifdef MFEM_USE_MPI
-// class ParMesh;
-// #endif
-
-class Mesh;
-class Element;
-
-}  // namespace mfem
-
 namespace GridFormat::MFEM {
 
 #ifndef DOXYGEN
 namespace Detail {
     CellType cell_type(mfem::Element::Type ct) {
-        // since mfem supports higher-order cells, let's simply return the lagrange variants always
         switch (ct) {
             case mfem::Element::Type::POINT: return GridFormat::CellType::vertex;
-            case mfem::Element::Type::SEGMENT: return GridFormat::CellType::lagrange_segment;
-            case mfem::Element::Type::TRIANGLE: return GridFormat::CellType::lagrange_triangle;
-            case mfem::Element::Type::QUADRILATERAL: return GridFormat::CellType::lagrange_quadrilateral;
-            case mfem::Element::Type::TETRAHEDRON: return GridFormat::CellType::lagrange_tetrahedron;
+            case mfem::Element::Type::SEGMENT: return GridFormat::CellType::segment;
+            case mfem::Element::Type::TRIANGLE: return GridFormat::CellType::triangle;
+            case mfem::Element::Type::QUADRILATERAL: return GridFormat::CellType::quadrilateral;
+            case mfem::Element::Type::TETRAHEDRON: return GridFormat::CellType::tetrahedron;
             case mfem::Element::Type::WEDGE: break;
             case mfem::Element::Type::PYRAMID: break;
-            case mfem::Element::Type::HEXAHEDRON: return GridFormat::CellType::lagrange_hexahedron;
+            case mfem::Element::Type::HEXAHEDRON: return GridFormat::CellType::hexahedron;
         }
         throw NotImplemented("Support for given mfem cell type");
     }
@@ -96,7 +83,7 @@ struct CellPoints<mfem::Mesh, GridFormat::MFEM::Cell> {
 
 template<>
 struct PointId<mfem::Mesh, GridFormat::MFEM::Point> {
-    static auto get(const mfem::Mesh& mesh, const GridFormat::MFEM::Point& point) {
+    static auto get(const mfem::Mesh&, const GridFormat::MFEM::Point& point) {
         return point;
     }
 };
@@ -126,9 +113,9 @@ struct NumberOfCells<mfem::Mesh> {
 };
 
 template<>
-struct NumberOfCellPoints<mfem::Mesh, mfem::Element> {
-    static std::integral auto get(const mfem::Mesh&, const mfem::Element& cell) {
-        return cell.GetNVertices();
+struct NumberOfCellPoints<mfem::Mesh, GridFormat::MFEM::Cell> {
+    static std::integral auto get(const mfem::Mesh& mesh, const GridFormat::MFEM::Cell& cell) {
+        return mesh.GetElement(cell)->GetNVertices();
     }
 };
 
