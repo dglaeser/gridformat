@@ -18,31 +18,27 @@
 #include <concepts>
 #include <type_traits>
 
+#ifdef GRIDFORMAT_IGNORE_CGAL_WARNINGS
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wnull-dereference"
+#endif
+#include <CGAL/number_utils.h>
+#include <CGAL/Point_2.h>
+#include <CGAL/Point_3.h>
+#include <CGAL/Triangulation_2.h>
+#include <CGAL/Triangulation_3.h>
+#ifdef GRIDFORMAT_IGNORE_CGAL_WARNINGS
+#pragma GCC diagnostic pop
+#endif
+
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/grid/traits.hpp>
 #include <gridformat/grid/type_traits.hpp>
 #include <gridformat/grid/cell_type.hpp>
 
-// Forward declaration of the triangulation classes.
-// Users are expected to include the actual headers.
-// Note: we also need CGAL::to_double(), and therefore,
-//       users must include the cgal headers before this one!
-// Note: there is no general way of retrieving the vertex indices
-//       of a cgal triangulation. The typical way is to attach an info
-//       object containing the index to the data structure used for vertices.
-//       Users must provide the PointID trait for their application...
-namespace CGAL {
-
-template<typename T, typename TDS> class Triangulation_2;
-template<typename T, typename TDS, typename SLDS> class Triangulation_3;
-template<typename T> class Point_2;
-template<typename T> class Point_3;
-
-}  // namespace CGAL
-
 
 namespace GridFormat {
-
 namespace Concepts {
 
 #ifndef DOXYGEN
@@ -100,6 +96,7 @@ concept CGALPointWrapper = requires(const T& wrapper) {
 
 }  // namespace Concepts
 
+
 namespace CGAL {
 
 template<typename T> struct CellType;
@@ -123,6 +120,7 @@ template<Concepts::CGALPointWrapper W>
 auto to_double_array(const W& wrapper) { return to_double_array(wrapper.point()); }
 
 }  // namespace CGAL
+
 
 namespace Traits {
 

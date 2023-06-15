@@ -12,6 +12,7 @@ if (CGAL_FOUND)
     message(STATUS "Testing CGAL traits with CGAL version ${CGAL_VERSION}")
     target_link_libraries(test_cgal CGAL::CGAL)
     target_compile_options(test_cgal PRIVATE -frounding-math)
+    target_compile_definitions(test_cgal PRIVATE GRIDFORMAT_IGNORE_CGAL_WARNINGS=1)
 endif ()
 
 find_package(DOLFINX)
