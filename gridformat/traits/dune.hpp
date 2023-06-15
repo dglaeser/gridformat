@@ -11,26 +11,25 @@
 #include <ranges>
 #include <cassert>
 
+#include <dune/geometry/type.hh>
+#include <dune/grid/common/gridview.hh>
+
+#ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wnull-dereference"
+#endif  // GRIDFORMAT_IGNORE_DUNE_WARNINGS
+#include <dune/grid/yaspgrid.hh>
+#ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
+#pragma GCC diagnostic pop
+#endif  // GRIDFORMAT_IGNORE_DUNE_WARNINGS
+
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
-
-// forward declaration
-namespace Dune {
-
-class GeometryType;
-template<typename Traits> class GridView;
-
-// YaspGrid will also be registered as structured grid
-template<class ct, int dim> class EquidistantCoordinates;
-template<class ct, int dim> class EquidistantOffsetCoordinates;
-template<class ct, int dim> class TensorProductCoordinates;
-template<int dim, class Coordinates> class YaspGrid;
-
-}  // namespace Dune
-
 
 namespace GridFormat::Traits {
 

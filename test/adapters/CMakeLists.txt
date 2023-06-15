@@ -141,6 +141,7 @@ if (${DUNE_FOUND})
     )
     foreach (dune_target IN LISTS dune_targets)
         target_link_libraries(${dune_target} dunecommon dunegeometry dunegrid)
+        target_compile_definitions(${dune_target} PUBLIC GRIDFORMAT_IGNORE_DUNE_WARNINGS=1)
 
         # the dune cmake setup seems to not properly set the include dirs via target_link_libraries
         # (in case it is installed in non-standard location)
