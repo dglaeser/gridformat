@@ -18,3 +18,4 @@ This example shows:
 
 - how to implement the traits required for the `StructuredGrid` concept
 - how to write fields with a custom precision (e.g. to save space)
+- how to select a compression algorithm to use for compressed VTK-XML output, and specify options for it

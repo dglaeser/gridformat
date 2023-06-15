@@ -67,15 +67,35 @@ struct Cells<MyLibrary::Grid> {
 }  // namespace GridFormat::Traits
 ```
 
-As discussed in our
+As discussed in the
 [overview over supported kinds of grids](./grid_concepts.md),
 `GridFormat` understands the notion of unstructured, structured, rectilinear or image grids. The reason for this is that some
 file formats are designed for specific kinds of grids and can store the information on their topology in a space-efficient manner.
 To see which format assumes which kind of grid, see the [API documentation](https://dglaeser.github.io/gridformat/).
 In the code, there exist [concepts](https://en.cppreference.com/w/cpp/language/constraints) for each of these kinds of grids,
-which essentially check if the required traits are correctly implemented. The remainder of this page discusses the different
-traits used by `GridFormat`, and which ones need to be specialized in order to model a particular kind of grid. In case you want to use `GridFormat` in parallel computations, please also make sure to read the related section at the end of this page.
-Note that all traits presented in the following are declared in the `namespace GridFormat::Traits`.
+which essentially check if the required traits are correctly implemented. When implementing the traits for your grid type, it is
+helpful to use these concepts in order to verify your traits implementations. For instance, you may use `static_asserts`:
+
+```cpp
+
+#include <gridformat/gridformat.hpp>
+
+class MyGrid { /* ... */ };
+
+// let's specialize the traits for MyGrid (MyGrid is an unstructured grid)
+namespace GridFormat::Traits {
+    // ...
+}
+
+// let's directly check if we did that correctly
+// if this static_assert passes, we are ready to go
+static_assert(GridFormat::Concepts::UnstructuredGrid<MyGrid>);
+```
+
+The remainder of this page discusses the different traits used by `GridFormat`, and which ones need to be specialized in order to
+model a particular kind of grid. Note that all traits presented in the following are declared in the `namespace GridFormat::Traits`.
+In case you want to use `GridFormat` in parallel computations, please make sure to also read the related section at the end of this page.
+
 
 <!-- DOXYGEN_ONLY [TOC] -->
 
@@ -84,12 +104,45 @@ Note that all traits presented in the following are declared in the `namespace G
 - `template<typename Grid> struct Cells;`
 
 This trait exposes how one can iterate over the cells of a grid. Specializations must provide a static function `get(const Grid&)`
-that returns a [forward range](https://en.cppreference.com/w/cpp/ranges/forward_range) of cells.
+that returns a [forward range](https://en.cppreference.com/w/cpp/ranges/forward_range) of cells. `GridFormat` deduces the cell type
+used by the `Grid` from this range. As an example, let's consider a grid implementation (`SomeUnstructuredGrid`) that identifies cells
+solely by an index. In this case, the following would be a valid specialization, which yields `int` as cell type:
+
+```cpp
+namespace GridFormat::Traits {
+template<>
+struct Cells<SomeUnstructuredGrid> {
+    static std::ranges::forward_range auto get(const SomeUnstructuredGrid& grid) {
+        return std::views::iota(0, grid.number_of_cells());
+    }
+};
+}  // namespace GridFormat::Traits
+```
 
 - `template<typename Grid> struct Points;`
 
 This trait exposes how one can iterate over the points of a grid. Specializations must provide a static function `get(const Grid&)`
-that returns a [forward range](https://en.cppreference.com/w/cpp/ranges/forward_range) of points.
+that returns a [forward range](https://en.cppreference.com/w/cpp/ranges/forward_range) of points. `GridFormat` deduces the point type
+used by the `Grid` from this range. As an example, let's again consider a grid implementation (`SomeUnstructuredGrid`) that identifies
+points solely by an index. As before, we can simply return an index range yielding `int` as point type (`GridFormat` supports the case
+of cell & point types being the same):
+
+```cpp
+namespace GridFormat::Traits {
+template<>
+struct Points<SomeUnstructuredGrid> {
+    static std::ranges::forward_range auto get(const SomeUnstructuredGrid& grid) {
+        return std::views::iota(0, grid.number_of_points());
+    }
+};
+}  // namespace GridFormat::Traits
+```
+
+
+In the following we will discuss the traits required for particular grid concepts. Some of these traits expose information on a
+single cell or point of the grid, and therefore, have to be specialized for the grid __and__ its point or cell type. As discussed
+above, `GridFormat` deduces these types from the `Cells` and `Points` traits. In the following, we will refer to these types as `Cell`
+and `Point`.
 
 
 ### Traits for Unstructured Grids
@@ -98,24 +151,83 @@ that returns a [forward range](https://en.cppreference.com/w/cpp/ranges/forward_
 
 This trait exposes how one can iterate over the points of an individual grid cell. Specializations must provide a static function
 `get(const Grid&, const Cell&)` that returns a [range](https://en.cppreference.com/w/cpp/ranges/range) of points that
-make up the boundary of the given cell.
+are contained within the given cell. Note that the [value_type](https://en.cppreference.com/w/cpp/ranges/iterator_t) of the
+returned range must match the point type deduced from the `Points` trait. Following the above example, an implementation of this
+trait could look like this:
+
+```cpp
+namespace GridFormat::Traits {
+template<>  // the cell type is `int` in this case, see the Cells trait description
+struct CellPoints<SomeUnstructuredGrid, int> {
+    static const std::ranges::range auto& get(const SomeUnstructuredGrid& grid, int cell_index) {
+        return grid.point_indices_of_cell(cell_index);
+    }
+};
+}  // namespace GridFormat::Traits
+```
 
 - `template<typename Grid, typename Cell> struct CellType;`
 
 This trait exposes the geometry type of an individual grid cell. Specializations must provide a static function
 `get(const Grid&, const Cell&)` that returns an instance of the
-[CellType enum](https://github.com/dglaeser/gridformat/blob/main/gridformat/grid/cell_type.hpp).
+[CellType enum](https://github.com/dglaeser/gridformat/blob/main/gridformat/grid/cell_type.hpp). For the above example,
+the specialization of this traits could look like this:
+
+```cpp
+namespace GridFormat::Traits {
+template<>  // the cell type is `int` in this case, see the Cells trait description
+struct CellType<SomeUnstructuredGrid, int> {
+    static std::ranges::range auto get(const SomeUnstructuredGrid& grid, int cell_index) {
+        return GridFormat::CellType::tetrahedron; // SomeUnstructuredGrid always only uses tets
+    }
+};
+}  // namespace GridFormat::Traits
+```
 
 - `template<typename Grid, typename Point> struct PointCoordinates;`
 
 This trait exposes the coordinates of a grid point. Specializations must provide a static function `get(const Grid&, const Point&)`
-that returns the coordinates of the given point as a
-[statically sized range](#optional-traits).
+that returns the coordinates of the given point as a [statically sized range](#optional-traits). From the size of this range,
+`GridFormat` deduces the space dimension of the grid at compile-time. If your grid does not know the space dimension at compile-time,
+you can simply return an `std::array<double, 3>` with zero padding. For the above example, a specialization of this trait
+may look as follows:
+
+```cpp
+namespace GridFormat::Traits {
+template<>  // the point type is `int` in this case, see the Points trait description
+struct PointCoordinates<SomeUnstructuredGrid, int> {
+    static GridFormat::Concepts::StaticallySizedRange auto get(const SomeUnstructuredGrid& grid, int point_index) {
+        // SomeUnstructuredGrid always operates in 3d, but the type used for coordinates is not compatible with
+        // the StaticallySizedRange concept. We could make it compatible by implementing the respective
+        // trait, but let's just construct an std::array with the coordinates ...
+        const auto& point = grid.get_point(point_index);
+        return std::array{
+            point.x,
+            point.y,
+            point.z
+        };
+    }
+};
+}  // namespace GridFormat::Traits
+```
 
 - `template<typename Grid, typename Point> struct PointId;`
 
 This trait exposes a unique id for individual points of a grid. Specializations must provide a static function
 `get(const Grid&, const Point&)` that returns a unique id (as integer value, e.g. `std::size_t`) for the given point.
+For our example above, we could directly return the `Point`, since we chose the `Points` trait to simply return a
+range over all point indices:
+
+```cpp
+namespace GridFormat::Traits {
+template<>  // the point type is `int` in this case, see the Points trait description
+struct PointId<SomeUnstructuredGrid, int> {
+    static int get(const SomeUnstructuredGrid& grid, int point_index) {
+        return point_index;
+    }
+};
+}  // namespace GridFormat::Traits
+```
 
 
 ### Traits for Structured Grids
@@ -127,17 +239,53 @@ In addition to the traits below, the `StructuredGrid` concept also requires that
 
 This trait exposes the number of cells of the structured grid in each coordinate direction. Specializations must provide
 a static function `get(const Grid&)` that returns a
-[statically sized range](#optional-traits), whose size is equal to the dimension of the grid.
+[statically sized range](#optional-traits), whose size is equal to the dimension of the grid. As an example, let's consider
+a structured grid implementation `SomeStructuredGrid` that has a `num_cells(int direction)` function:
+
+```cpp
+namespace GridFormat::Traits {
+template<>
+struct Extents<SomeStructuredGrid> {
+    static GridFormat::Concepts::StaticallySizedRange auto get(const SomeStructuredGrid& grid) {
+        // Let's assume SomeStructuredGrid is always two-dimensional
+        return std::array{
+            grid.num_cells(0),
+            grid.num_cells(1)
+        };
+    }
+};
+}  // namespace GridFormat::Traits
+```
 
 - `template<typename Grid, typename Entity> struct Location;`
 
 This trait exposes the index tuple of a given entity within the structured grid. For a visualization and the assumptions on the
 orientation, see the
 [overview over supported kinds of grids](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md).
-This trait must be specialized for both cells and points (i.e. for two types of `Entity`), and they must provide a static function
+This trait must be specialized for both `Cell` and `Point` (i.e. for two types of `Entity`), and they must provide a static function
 `get(const Grid&, const Entity&)` that returns a
 [statically sized range](#optional-traits)
-whose elements are integer values (the indices of the entity) and whose size is equal to the dimension of the grid.
+whose elements are integer values (the indices of the entity) and whose size is equal to the dimension of the grid. As an example,
+let's consider a grid implementation that has points and cells that carry information about their location within the grid. An
+implementation of this trait could then look like this:
+
+```cpp
+namespace GridFormat::Traits {
+// Let's assume the `Point` and `Cell` types of `SomeStructuredGrid` have the same interface
+// for obtaining their location. Let's therefore simply leave this trait a template on `Entity`,
+// so that we don't have to implement it twice - once for `Point` and once for `Cell`
+template<typename Entity>
+struct Location<SomeStructuredGrid, Entity> {
+    static GridFormat::Concepts::StaticallySizedRange auto get(const SomeStructuredGrid& grid, const Entity& e) {
+        // Let's assume SomeStructuredGrid is always two-dimensional
+        return std::array{
+            e.x_index,
+            e.y_index
+        };
+    }
+};
+}  // namespace GridFormat::Traits
+```
 
 
 ### Traits for Rectilinear Grids
@@ -150,7 +298,23 @@ are implemented (see above).
 This trait exposes the ordinates of a `RectilinearGrid` grid along the coordinate axes.
 Specializations must provide a static function `get(const Grid&, unsigned int direction)` that returns a
 [range](https://en.cppreference.com/w/cpp/ranges/range) over the ordinates along the axis specified by `direction` (`direction < dim`, where dim is the dimension of the grid). The size of the range must be equal to the number of cells + 1 in the given
-direction.
+direction. As an example, let's consider an implementation `SomeRectilinearGrid` with the following specialization for this trait:
+
+```cpp
+namespace GridFormat::Traits {
+template<>
+struct Ordinates<SomeRectilinearGrid> {
+    static std::ranges::range auto get(const SomeRectilinearGrid& grid, unsigned int direction) {
+        const auto num_points = grid.num_cells(direction) + 1;
+        const auto dx = grid.cell_size(direction);
+        std::vector<double> ordinates; ordinates.reserve(num_points);
+        for (std::size_t i = 0; i < num_points; ++i)
+            ordinates.push_back(i*dx);
+        return ordinates;
+    }
+};
+}  // namespace GridFormat::Traits
+```
 
 
 ### Traits for Image Grids
@@ -165,14 +329,43 @@ is, the position of the point at index $(0, 0, 0)$ (for a visualization see
 [here](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md)).
 Specializations must provide a static function `get(const Grid&)` that returns a
 [statically sized range](#optional-traits),
-whose size is equal to the dimension of the grid.
+whose size is equal to the dimension of the grid. An exemplary specialization of this trait could look like:
+
+```cpp
+namespace GridFormat::Traits {
+template<>
+struct Origin<SomeImageGrid> {
+    static GridFormat::Concepts::StaticallySizedRange auto get(const SomeImageGrid& grid) {
+        // Let's say SomeImageGrid always starts at (0, 0, 0)
+        return std::array{0., 0., 0.};
+    }
+};
+}  // namespace GridFormat::Traits
+```
+
 
 - `template<typename Grid> struct Spacing;`
 
 This trait exposes the spacing between grid points along the axes (in other words, the size of the cells in each coordinate
 direction). Specializations must provide a static function `get(const Grid&)` that returns a
-[statically sized range](#optional-traits), whose size is equal to the dimension of the grid.
+[statically sized range](#optional-traits), whose size is equal to the dimension of the grid. As an example, a valid
+specialization of this trait may be:
 
+```cpp
+namespace GridFormat::Traits {
+template<>
+struct Spacing<SomeImageGrid> {
+    static GridFormat::Concepts::StaticallySizedRange auto get(const SomeImageGrid& grid) {
+        // Let's say SomeImageGrid is always 3D
+        return std::array{
+            grid.cell_size(0),
+            grid.cell_size(1),
+            grid.cell_size(2)
+        };
+    }
+};
+}  // namespace GridFormat::Traits
+```
 
 ### Optional Traits
 
@@ -206,7 +399,7 @@ axis-aligned, that is, the default basis (in 3D) is
 const auto default_basis = std::array{
     std::array{1.0, 0.0, 0.0},
     std::array{0.0, 1.0, 0.0},
-    std::array{0.0, 0.0, 1.0},
+    std::array{0.0, 0.0, 1.0}
 };
 ```
 
@@ -223,9 +416,23 @@ Statically sized means that the size of the [range](https://en.cppreference.com/
 Per default, `GridFormat` accepts `std::array`, `std::span` (with non-dynamic extent), `T[N]` or anything that either has a
 `constexpr static std::size_t size()` function or a member variable named `size` that can be evaluated at compile time.
 If your type does not fulfill any of these requirements, but is in fact range with a size known at compile-time, you can also
-specialize the [`StaticSize` trait](https://github.com/dglaeser/gridformat/blob/main/gridformat/common/type_traits.hpp#L349)
+specialize the [`StaticSize` trait](https://github.com/dglaeser/gridformat/blob/main/gridformat/common/type_traits.hpp)
 for the type you want to return. Alternatively, you can of course just convert your type into an `std::array` within the
-trait that expects you to return a statically sized range.
+trait that expects you to return a statically sized range. To give an example, let's consider a `Vector` class whose size
+is known at compile-time, but does not fulfill the requirements for `GridFormat` to automatically identify it as a
+`StaticallySizedRange`:
+
+```cpp
+template<int dim>
+class Vector { /* ... */ };
+
+namespace GridFormat::Traits {
+template<int dim>
+struct StaticSize<Vector<dim>> {
+    static constexpr int value = dim;
+};
+}  // namespace GridFormat::Traits
+```
 
 
 ### Notes for Parallel Grids
