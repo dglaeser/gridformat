@@ -9,7 +9,7 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '30 22 * * 0'
+    - cron: '30 22 * * 0,3'
   workflow_dispatch:
 
 env:
