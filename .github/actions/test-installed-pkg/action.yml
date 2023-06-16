@@ -20,7 +20,7 @@ runs:
               -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
               -DGRIDFORMAT_BUILD_TESTS=OFF \
               -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
-              -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
+              -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
               -B build
         cmake --build build
         cmake --install build
@@ -38,7 +38,7 @@ runs:
           cmake -Dgridformat_ROOT=$(pwd)/../install \
                 -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
-                -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
+                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                 -DCMAKE_BUILD_TYPE=Release \
                 -B build
           if [[ ${{ github.ref_name }} != "main" ]]; then
@@ -53,7 +53,7 @@ runs:
         pushd examples
           cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
-                -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
+                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                 -Dgridformat_ROOT=$(pwd)/../install \
                 -B build
         pushd build && make && ctest --output-on-failure
@@ -68,7 +68,7 @@ runs:
         rm -rf examples/build && pushd examples
           cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
-                -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
+                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                 -DGRIDFORMAT_FETCH_TREE=$GFMT_TREE \
                 -B build
         pushd build && make && ctest --output-on-failure
