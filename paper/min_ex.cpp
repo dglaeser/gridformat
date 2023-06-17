@@ -11,7 +11,8 @@ struct MyGrid {
 namespace GridFormat::Traits {
 
 // Expose a range over grid cells. Here, we simply use the MDIndexRange provided
-// by GridFormat, which allows iterating over all index tuples within the given dimensions
+// by GridFormat, which allows to iterate over all index tuples within the given
+// dimensions (in our case the number of cells in each coordinate direction)
 template<> struct Cells<MyGrid> {
     static auto get(const MyGrid& grid) {
         return GridFormat::MDIndexRange{{grid.cells[0], grid.cells[1]}};
@@ -21,7 +22,6 @@ template<> struct Cells<MyGrid> {
 // Expose a range over grid points.
 template<> struct Points<MyGrid> {
     static auto get(const MyGrid& grid) {
-        // let's simply return a range over index pairs for the given grid dimensions
         return GridFormat::MDIndexRange{{grid.cells[0]+1, grid.cells[1]+1}};
     };
 };
@@ -36,7 +36,7 @@ template<> struct Extents<MyGrid> {
 // Expose the size of the cells per direction.
 template<> struct Spacing<MyGrid> {
     static auto get(const MyGrid& grid) {
-        return std::array{grid.dx[0], grid.dx[1]};
+        return grid.dx;
     }
 };
 
@@ -70,21 +70,21 @@ int main() {
     // To write out this solution, let's construct an instance of `MyGrid`
     MyGrid grid{.cells = {nx, ny}, .dx = {dx, dy}};
 
-    // ... and construct a writer, lerting GridFormat choose a format.
+    // ... and construct a writer, letting GridFormat choose a format.
     const auto file_format = GridFormat::default_for(grid);
     GridFormat::Writer writer{file_format, grid};
 
     // We can now write out our numerical solution as a field on grid cells:
     using GridFormat::MDIndex;
     writer.set_cell_field("cfield", [&] (const MDIndex& cell_location) {
-        const auto flat_cell_index = cell_location.get(1)*nx + cell_location.get(0);
-        return values[flat_cell_index];
+        const auto flat_index = cell_location.get(1)*nx + cell_location.get(0);
+        return values[flat_index];
     });
 
-    // But we can also just set am analytical function evaluated at cells/points
+    // But we can also just set an analytical function evaluated at cells/points
     writer.set_point_field("pfield", [&] (const MDIndex& point_location) {
-        const double x = point_location.get(0);
-        const double y = point_location.get(1);
+        const double x = point_location.get(0)*dx;
+        const double y = point_location.get(1)*dy;
         return x*y;
     });
 
