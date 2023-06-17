@@ -10,13 +10,16 @@
 `GridFormat` is a header-only C++ library for writing data into grid file formats that can be visualized with tools
 such as [ParaView](https://www.paraview.org/). The typical use case for `GridFormat` is within codes for numerical simulations
 that want to export numerical results into visualizable file formats. A variety of simulation frameworks exist, such as
-[Dune](https://www.dune-project.org/), [DuMuX](https://dumux.org/), [Deal.II](https://www.dealii.org/) or [Fenics](https://fenicsproject.org/),
+[Dune](https://www.dune-project.org/), [DuMuX](https://dumux.org/), [Deal.II](https://www.dealii.org/), [Fenics](https://fenicsproject.org/)
+or [MFEM](https://mfem.org/),
 which usually provide mechanisms to export data produced with the framework into some file formats. However, there are situations
 in which one wants to use a format that the framework does not support, or, use some features of the format specification that are
 not implemented in the framework. `GridFormat` aims to provide access to a variety of file formats through a unified interface and
 without the need to convert any data or to use a specific data structure to represent computational grids. Using generic programming
 and traits classes, `GridFormat` fully operates on the user-given data structures, thereby minimizing the runtime overhead.
 `GridFormat` also supports writing files from parallel computations that use [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface).
+Ideally, simulation frameworks use `GridFormat` under-the-hood to avoid duplicate implementation efforts, and implement support for new
+formats into `GridFormat` such that they are directly available to all other frameworks that utilize it.
 
 
 ## Quick Start
