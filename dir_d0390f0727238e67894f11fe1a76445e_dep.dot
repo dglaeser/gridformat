@@ -1,4 +1,4 @@
-digraph "/home/runner/work/gridformat/gridformat/gridformat/vtk" {
+digraph "/__w/gridformat/gridformat/gridformat/vtk" {
   compound=true
   node [ fontsize="10", fontname="Helvetica"];
   edge [ labelfontsize="10", labelfontname="Helvetica"];

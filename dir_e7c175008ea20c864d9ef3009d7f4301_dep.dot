@@ -1,4 +1,4 @@
-digraph "/home/runner/work/gridformat/gridformat/gridformat" {
+digraph "/__w/gridformat/gridformat/gridformat" {
   compound=true
   node [ fontsize="10", fontname="Helvetica"];
   edge [ labelfontsize="10", labelfontname="Helvetica"];

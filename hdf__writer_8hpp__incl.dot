@@ -1,9 +1,9 @@
-digraph "/home/runner/work/gridformat/gridformat/gridformat/vtk/hdf_writer.hpp"
+digraph "/__w/gridformat/gridformat/gridformat/vtk/hdf_writer.hpp"
 {
  // LATEX_PDF_SIZE
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
-  Node1 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/hdf_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Writers for the VTK HDF file formats."];
+  Node1 [label="/__w/gridformat/gridformat\l/gridformat/vtk/hdf_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Writers for the VTK HDF file formats."];
   Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node2 [label="type_traits",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
   Node1 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

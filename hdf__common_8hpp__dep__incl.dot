@@ -1,15 +1,15 @@
-digraph "/home/runner/work/gridformat/gridformat/gridformat/vtk/hdf_common.hpp"
+digraph "/__w/gridformat/gridformat/gridformat/vtk/hdf_common.hpp"
 {
  // LATEX_PDF_SIZE
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
-  Node1 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/hdf_common.hpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Common functionality for writing VTK HDF files."];
+  Node1 [label="/__w/gridformat/gridformat\l/gridformat/vtk/hdf_common.hpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Common functionality for writing VTK HDF files."];
   Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node2 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/hdf_image_grid_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hdf__image__grid__writer_8hpp.html",tooltip="Writer for the VTK HDF file format for image grids."];
+  Node2 [label="/__w/gridformat/gridformat\l/gridformat/vtk/hdf_image\l_grid_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hdf__image__grid__writer_8hpp.html",tooltip="Writer for the VTK HDF file format for image grids."];
   Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node3 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/hdf_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hdf__writer_8hpp.html",tooltip="Writers for the VTK HDF file formats."];
+  Node3 [label="/__w/gridformat/gridformat\l/gridformat/vtk/hdf_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hdf__writer_8hpp.html",tooltip="Writers for the VTK HDF file formats."];
   Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node4 [label="/home/runner/work/gridformat\l/gridformat/gridformat/vtk\l/hdf_unstructured_grid_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hdf__unstructured__grid__writer_8hpp.html",tooltip="Writer for the VTK HDF file format for unstructured grids."];
+  Node4 [label="/__w/gridformat/gridformat\l/gridformat/vtk/hdf_unstructured\l_grid_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hdf__unstructured__grid__writer_8hpp.html",tooltip="Writer for the VTK HDF file format for unstructured grids."];
   Node4 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 }

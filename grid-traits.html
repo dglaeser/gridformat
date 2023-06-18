@@ -136,7 +136,7 @@ $(document).ready(function(){initNavTree('grid-traits.html',''); initResizable()
 </ul>
 </ul>
 </div>
-<div class="textblock"><p><a class="anchor" id="md__home_runner_work_gridformat_gridformat_docs_pages_traits"></a></p>
+<div class="textblock"><p><a class="anchor" id="md____w_gridformat_gridformat_docs_pages_traits"></a></p>
 <p><code>GridFormat</code> uses a traits (or meta-function) mechanism to operate on user-given grid types. As a motivating example, consider this piece of code:</p>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Gr<span class="keywordtype">id</span>&gt;</div>
 <div class="line"><span class="keywordtype">void</span> do_something_on_a_grid(<span class="keyword">const</span> <a class="code" href="group__Grid.html#ga733df58a3197824a355a4c24ba5bc902">Grid</a>&amp; grid) {</div>
@@ -181,7 +181,7 @@ $(document).ready(function(){initNavTree('grid-traits.html',''); initResizable()
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line">}  <span class="comment">// namespace GridFormat::Traits</span></div>
-</div><!-- fragment --><p>As discussed in the <a class="el" href="grid-concepts.html#md__home_runner_work_gridformat_gridformat_docs_pages_grid_concepts">overview over supported kinds of grids</a>, <code>GridFormat</code> understands the notion of unstructured, structured, rectilinear or image grids. The reason for this is that some file formats are designed for specific kinds of grids and can store the information on their topology in a space-efficient manner. To see which format assumes which kind of grid, see the <a href="https://dglaeser.github.io/gridformat/">API documentation</a>. In the code, there exist <a href="https://en.cppreference.com/w/cpp/language/constraints">concepts</a> for each of these kinds of grids, which essentially check if the required traits are correctly implemented. When implementing the traits for your grid type, it is helpful to use these concepts in order to verify your traits implementations. For instance, you may use <code>static_asserts</code>:</p>
+</div><!-- fragment --><p>As discussed in the <a class="el" href="grid-concepts.html#md____w_gridformat_gridformat_docs_pages_grid_concepts">overview over supported kinds of grids</a>, <code>GridFormat</code> understands the notion of unstructured, structured, rectilinear or image grids. The reason for this is that some file formats are designed for specific kinds of grids and can store the information on their topology in a space-efficient manner. To see which format assumes which kind of grid, see the <a href="https://dglaeser.github.io/gridformat/">API documentation</a>. In the code, there exist <a href="https://en.cppreference.com/w/cpp/language/constraints">concepts</a> for each of these kinds of grids, which essentially check if the required traits are correctly implemented. When implementing the traits for your grid type, it is helpful to use these concepts in order to verify your traits implementations. For instance, you may use <code>static_asserts</code>:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="gridformat_8hpp.html">gridformat/gridformat.hpp</a>&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">class </span>MyGrid { <span class="comment">/* ... */</span> };</div>
