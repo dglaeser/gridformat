@@ -13,6 +13,7 @@
 
 #include <dune/geometry/type.hh>
 #include <dune/grid/common/gridview.hh>
+#include <dune/grid/common/gridenums.hh>
 
 #ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
 #pragma GCC diagnostic push
@@ -73,7 +74,6 @@ using Vertex = typename GridView::template Codim<GridView::dimension>::Entity;
 template<typename Traits>
 struct Points<Dune::GridView<Traits>> {
     static decltype(auto) get(const Dune::GridView<Traits>& grid_view) {
-        // assumes dune/grid/gridenums.hh header to have been included
         using GV = Dune::GridView<Traits>;
         static constexpr int vertex_codim = GV::dimension;
         return std::ranges::subrange(
@@ -86,7 +86,6 @@ struct Points<Dune::GridView<Traits>> {
 template<typename Traits>
 struct Cells<Dune::GridView<Traits>> {
     static decltype(auto) get(const Dune::GridView<Traits>& grid_view) {
-        // assumes dune/grid/gridenums.hh header to have been included
         return std::ranges::subrange(
             grid_view.template begin<0, Dune::Interior_Partition>(),
             grid_view.template end<0, Dune::Interior_Partition>()
