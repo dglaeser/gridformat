@@ -1,5 +1,5 @@
-<!-- SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
-<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 [![Pages](https://github.com/dglaeser/gridformat/actions/workflows/pages.yml/badge.svg)](https://dglaeser.github.io/gridformat)
 [![Test suite](https://github.com/dglaeser/gridformat/actions/workflows/main.yml/badge.svg)](https://github.com/dglaeser/gridformat/actions?query=branch%3Amain+)
@@ -177,7 +177,6 @@ Note that an internet connection is required for the call to `cmake` as it pulls
 
 ## License
 
-`GridFormat` is licensed under the terms and conditions of the GNU General Public License (GPL) version 3 or - at your option -
-any later version. The GPL can be [read online](https://www.gnu.org/licenses/gpl-3.0.en.html) or in the
-[LICENSES/GPL-3.0-or-later.txt](https://github.com/dglaeser/gridformat/blob/main/LICENSES/GPL-3.0-or-later.txt) file.
-See [LICENSES/GPL-3.0-or-later.txt](https://github.com/dglaeser/gridformat/blob/main/LICENSES/GPL-3.0-or-later.txt) for full copying permissions.
+`GridFormat` is licensed under the terms and conditions of the MIT License. It can be [read online](https://opensource.org/license/mit/) or in the
+[LICENSES/MIT.txt](https://github.com/dglaeser/gridformat/blob/main/LICENSES/MIT.txt) file.
+See [LICENSES/MIT.txt](https://github.com/dglaeser/gridformat/blob/main/LICENSES/MIT.txt) for full copying permissions.
