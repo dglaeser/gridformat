@@ -172,7 +172,7 @@ namespace DiscontinuousGridDetail {
             return self._point_iterator().value() == other._point_iterator().value();
         }
 
-        const auto _grid_ptr() const { return _grid; }
+        auto _grid_ptr() const { return _grid; }
         const auto& _cell_iterator() const { return _cell_it; }
         const auto& _point_iterator() const { return _point_it; }
         bool is_cell_end() const { return _cell_it == _cell_end_it; }

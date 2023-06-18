@@ -12,6 +12,7 @@ if (CGAL_FOUND)
     message(STATUS "Testing CGAL traits with CGAL version ${CGAL_VERSION}")
     target_link_libraries(test_cgal CGAL::CGAL)
     target_compile_options(test_cgal PRIVATE -frounding-math)
+    target_compile_definitions(test_cgal PRIVATE GRIDFORMAT_IGNORE_CGAL_WARNINGS=1)
 endif ()
 
 find_package(DOLFINX)
@@ -38,6 +39,17 @@ if (deal.II_FOUND)
     message(STATUS "Testing deal.ii traits with deal.ii version ${deal.II_VERSION}")
     deal_ii_initialize_cached_variables()
     set(GRIDFORMAT_HAVE_PARALLEL_DEAL_II ${MPI_FOUND})
+endif()
+
+find_package(mfem NAMES MFEM)
+gridformat_add_regression_test_if(mfem_FOUND
+    test_mfem
+    test_mfem.cpp
+    "mfem_*"
+)
+if (mfem_FOUND)
+    message(STATUS "Testing mfem traits with mfem version ${mfem_VERSION}")
+    target_link_libraries(test_mfem mfem)
 endif()
 
 function (gridformat_setup_deal_ii_target TARGET)
@@ -129,6 +141,7 @@ if (${DUNE_FOUND})
     )
     foreach (dune_target IN LISTS dune_targets)
         target_link_libraries(${dune_target} dunecommon dunegeometry dunegrid)
+        target_compile_definitions(${dune_target} PUBLIC GRIDFORMAT_IGNORE_DUNE_WARNINGS=1)
 
         # the dune cmake setup seems to not properly set the include dirs via target_link_libraries
         # (in case it is installed in non-standard location)

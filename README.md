@@ -136,7 +136,8 @@ or the predefined [traits for several frameworks](https://github.com/dglaeser/gr
 [cgal](https://www.cgal.org/) triangulations in
 [2d](https://doc.cgal.org/latest/Triangulation_2/index.html) and
 [3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 5.5.2),
-and [dolfinx](https://github.com/FEniCS/dolfinx) meshes and function spaces (tested dolfinx version: 0.6.0).
+[dolfinx](https://github.com/FEniCS/dolfinx) meshes and function spaces (tested dolfinx version: 0.6.0)
+and [mfem](https://mfem.org/) meshes (tested mfem version: 4.5.2).
 Users of these frameworks can include these predefined traits and use `GridFormat` directly
 (see the [examples](https://github.com/dglaeser/gridformat/tree/main/examples)).
 

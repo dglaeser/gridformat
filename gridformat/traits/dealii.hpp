@@ -15,34 +15,15 @@
 #include <array>
 #include <type_traits>
 
+#include <deal.II/grid/tria.h>
+#include <deal.II/distributed/tria.h>
+#include <deal.II/distributed/fully_distributed_tria.h>
+
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/filtered_range.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
-
-// forward declaration of the triangulation classes
-// users are expected to include the headers of the actually used classes
-namespace dealii {
-
-template<int dim, int spacedim>
-class Triangulation;
-
-namespace parallel::distributed {
-
-template<int dim, int spacedim>
-class Triangulation;
-
-}  // namespace parallel::distributed
-
-namespace parallel::fullydistributed {
-
-template<int dim, int spacedim>
-class Triangulation;
-
-}  // namespace parallel::fullydistributed
-
-}  // namespace dealii
 
 
 namespace GridFormat {
