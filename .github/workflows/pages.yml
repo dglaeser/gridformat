@@ -20,6 +20,9 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
+          
+      - name: install-rsync
+        run: apt-install -y rsync
 
       - name: configure
         run: |
