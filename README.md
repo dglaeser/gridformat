@@ -147,7 +147,7 @@ Users of these frameworks can include these predefined traits and use `GridForma
 - The [Base64](https://en.wikipedia.org/wiki/Base64) encoder implementation internally uses a cache of approx. 16MB in order to
 speed up writing large amounts of data upon writing. You can change this by setting `GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS=N`
 at compile-time (per default, `N=4000`). With `cmake` you can set this, for instance, like this:
-`target_compile_definitions(my_target PRIVATE GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS=1)
+`target_compile_definitions(my_target PRIVATE GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS=1)`
 
 ## Contribution Guidelines
 
