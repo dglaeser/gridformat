@@ -10,10 +10,10 @@
 
 #include <ranges>
 #include <cassert>
-
-#include <dune/geometry/type.hh>
-#include <dune/grid/common/gridview.hh>
-#include <dune/grid/common/gridenums.hh>
+// dune seems to not explicitly include this but uses std::int64_t.
+// With gcc-13 this leads to an error, maybe before gcc-12 the header
+// was included by some other standard library header...
+#include <cstdint>
 
 #ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
 #pragma GCC diagnostic push
@@ -21,6 +21,9 @@
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #pragma GCC diagnostic ignored "-Wnull-dereference"
 #endif  // GRIDFORMAT_IGNORE_DUNE_WARNINGS
+#include <dune/geometry/type.hh>
+#include <dune/grid/common/gridview.hh>
+#include <dune/grid/common/gridenums.hh>
 #include <dune/grid/yaspgrid.hh>
 #ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
 #pragma GCC diagnostic pop
