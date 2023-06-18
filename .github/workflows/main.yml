@@ -63,6 +63,7 @@ jobs:
           fi
           python3 test/test_readme_quick_start.py -b ${GFMT_TREE} -e "-DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12"
           python3 test/test_readme_tested_versions.py --cmake-log-file gfmt_cmake_log.txt
+        shell: bash
 
       - name: build-tests
         run: pushd build && make build_tests && popd
