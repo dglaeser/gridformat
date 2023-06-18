@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightInfo: Copyright (c) 2021 - 2023 jothepro
+// SPDX-FileCopyrightInfo: 2021-2023 jothepro
 // SPDX-License-Identifier: MIT
 /**
 
@@ -48,7 +48,7 @@ class DoxygenAwesomeDarkModeToggle extends HTMLElement {
             DoxygenAwesomeDarkModeToggle.onSystemPreferenceChanged()
         })
         // Update the color scheme when the tab is made visible again.
-        // It is possible that the appearance was changed in another tab 
+        // It is possible that the appearance was changed in another tab
         // while this tab was in the background.
         document.addEventListener("visibilitychange", visibilityState => {
             if (document.visibilityState === 'visible') {
@@ -99,7 +99,7 @@ class DoxygenAwesomeDarkModeToggle extends HTMLElement {
      * @returns `true` for dark-mode, `false` for light-mode user preference
      */
     static get userPreference() {
-        return (!DoxygenAwesomeDarkModeToggle.systemPreference && localStorage.getItem(DoxygenAwesomeDarkModeToggle.prefersDarkModeInLightModeKey)) || 
+        return (!DoxygenAwesomeDarkModeToggle.systemPreference && localStorage.getItem(DoxygenAwesomeDarkModeToggle.prefersDarkModeInLightModeKey)) ||
         (DoxygenAwesomeDarkModeToggle.systemPreference && !localStorage.getItem(DoxygenAwesomeDarkModeToggle.prefersLightModeInDarkModeKey))
     }
 

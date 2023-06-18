@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2023 Timo Koch <timokoch@uio.no>
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: MIT
 
 #include "mfem.hpp"
 

@@ -1,11 +1,6 @@
 #!/usr/bin/env perl
-# SPDX-FileCopyrightInfo: Copyright © DuMux Project contributors, see https://git.iws.uni-stuttgart.de/dumux-repositories/dumux/-/blob/master/AUTHORS.md
-# SPDX-License-Identifier: GPL-3.0-or-later
-# SPDX-FileCopyrightInfo: Copyright 2017 - 2023 Simulating eXtreme Spacetimes Collaboration
+# SPDX-FileCopyrightInfo: 2017-2023 Simulating eXtreme Spacetimes Collaboration
 # SPDX-License-Identifier: MIT
-# Based on the original by Simulating eXtreme Spacetimes Collaboration,
-# licensed under MIT. All Changes are licensed under GPL-3.0-or-later.
-#
 #
 # Doxygen filter to format markdown math for Doxygen
 #
