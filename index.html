@@ -202,7 +202,7 @@ Predefined traits</h1>
 <h1><a class="anchor" id="caveats"></a>
 Caveats</h1>
 <ul>
-<li>The <a href="https://en.wikipedia.org/wiki/Base64">Base64</a> encoder implementation internally uses a cache of approx. 16MB in order to speed up writing large amounts of data upon writing. You can change this by setting <code>GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS=N</code> at compile-time (per default, <code>N=4000</code>). With <code>cmake</code> you can set this, for instance, like this: `target_compile_definitions(my_target PRIVATE GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS=1)</li>
+<li>The <a href="https://en.wikipedia.org/wiki/Base64">Base64</a> encoder implementation internally uses a cache of approx. 16MB in order to speed up writing large amounts of data upon writing. You can change this by setting <code>GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS=N</code> at compile-time (per default, <code>N=4000</code>). With <code>cmake</code> you can set this, for instance, like this: <code>target_compile_definitions(my_target PRIVATE GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS=1)</code></li>
 </ul>
 <h1><a class="anchor" id="contribution-guidelines"></a>
 Contribution Guidelines</h1>
