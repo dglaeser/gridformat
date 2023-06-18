@@ -15,39 +15,49 @@
 #include "../make_test_data.hpp"
 #include "../testing.hpp"
 
+template<typename MFEMPoint>
+double eval_test_function(const MFEMPoint& p, int dim) {
+    if (dim == 1)
+        return GridFormat::Test::test_function<double>(std::array{p[0]});
+    else if (dim == 2)
+        return GridFormat::Test::test_function<double>(std::array{p[0], p[1]});
+    else
+        return GridFormat::Test::test_function<double>(std::array{p[0], p[1], p[2]});
+}
 
-int main() {
-    auto mesh = mfem::Mesh::MakeCartesian2D(15, 10, mfem::Element::Type::QUADRILATERAL);
+template<typename Mesh>
+void test(Mesh mesh, const std::string& suffix = "") {
+    std::string base_filename =
+        "mfem_"
+        + std::to_string(mesh.Dimension()) + "d_in_"
+        + std::to_string(mesh.SpaceDimension()) + "d"
+        + (suffix.empty() ? "" : "_" + suffix);
 
     GridFormat::VTUWriter writer{mesh};
     GridFormat::Test::add_meta_data(writer);
     writer.set_point_field("pfunc", [&] (const auto& vertex) {
-        return GridFormat::Test::test_function<double>(std::array{
-            mesh.GetVertex(vertex)[0],
-            mesh.GetVertex(vertex)[1]
-        });
+        return eval_test_function(mesh.GetVertex(vertex), mesh.SpaceDimension());
     });
     writer.set_cell_field("cfunc", [&] (const auto& element) {
         mfem::Vector v;
         mesh.GetElementCenter(element, v);
-        return GridFormat::Test::test_function<double>(std::array{v[0], v[1]});
+        return eval_test_function(v, mesh.SpaceDimension());
     });
-    std::cout << "Wrote '" << writer.write("mfem_2d_in_2d") << "'" << std::endl;
+    std::cout << "Wrote '" << writer.write(base_filename) << "'" << std::endl;
 
-    GridFormat::VTPWriter poly_writer{mesh};
-    GridFormat::Test::add_meta_data(poly_writer);
-    poly_writer.set_point_field("pfunc", [&] (const auto& vertex) {
-        return GridFormat::Test::test_function<double>(std::array{
-            mesh.GetVertex(vertex)[0],
-            mesh.GetVertex(vertex)[1]
+    if (mesh.Dimension() < 3) {
+        GridFormat::VTPWriter poly_writer{mesh};
+        GridFormat::Test::add_meta_data(poly_writer);
+        poly_writer.set_point_field("pfunc", [&] (const auto& vertex) {
+            return eval_test_function(mesh.GetVertex(vertex), mesh.SpaceDimension());
         });
-    });
-    poly_writer.set_cell_field("cfunc", [&] (const auto& element) {
-        mfem::Vector v;
-        mesh.GetElementCenter(element, v);
-        return GridFormat::Test::test_function<double>(std::array{v[0], v[1]});
-    });
-    std::cout << "Wrote '" << poly_writer.write("mfem_2d_in_2d_as_poly") << "'" << std::endl;
+        poly_writer.set_cell_field("cfunc", [&] (const auto& element) {
+            mfem::Vector v;
+            mesh.GetElementCenter(element, v);
+            return eval_test_function(v, mesh.SpaceDimension());
+        });
+        std::cout << "Wrote '" << poly_writer.write(base_filename + "_as_poly") << "'" << std::endl;
+    }
 
     // run a bunch of unit tests
     using GridFormat::Testing::operator""_test;
@@ -75,6 +85,17 @@ int main() {
                 )
             ));
     };
+}
+
+
+int main() {
+    test(mfem::Mesh::MakeCartesian1D(15, mfem::Element::Type::SEGMENT));
+
+    test(mfem::Mesh::MakeCartesian2D(8, 10, mfem::Element::Type::TRIANGLE));
+    test(mfem::Mesh::MakeCartesian2D(8, 10, mfem::Element::Type::QUADRILATERAL));
+
+    test(mfem::Mesh::MakeCartesian3D(5, 6, 7, mfem::Element::Type::TETRAHEDRON));
+    test(mfem::Mesh::MakeCartesian3D(5, 6, 7, mfem::Element::Type::HEXAHEDRON));
 
     return 0;
 }
