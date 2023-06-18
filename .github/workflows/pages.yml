@@ -22,7 +22,7 @@ jobs:
           submodules: true
           
       - name: install-rsync
-        run: apt-install -y rsync
+        run: apt-get install -y rsync
 
       - name: configure
         run: |
