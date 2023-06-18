@@ -7,6 +7,10 @@ on:
   push:
     branches: [ main ]
 
+env:
+  OMPI_ALLOW_RUN_AS_ROOT: 1
+  OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
+
 jobs:
   coverage-and-deploy:
     runs-on: ubuntu-22.04
