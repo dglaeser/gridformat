@@ -9,17 +9,20 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '30 22 * * 0'
+    - cron: '30 22 * * 0,3'
   workflow_dispatch:
 
 env:
   DEFAULT_COMPILER_PKG: g++-12
   DEFAULT_C_COMPILER: gcc-12
   DEFAULT_CXX_COMPILER: g++-12
+  OMPI_ALLOW_RUN_AS_ROOT: 1
+  OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
 
 jobs:
   test-compilers:
     runs-on: ubuntu-22.04
+    container: dglaeser/gridformat-action-images:full
     strategy:
       matrix:
         compiler_pkg: [g++-12, clang-16]
@@ -42,21 +45,13 @@ jobs:
       - name: check-reuse-compliance
         run: python3 -m pip install reuse && reuse lint
 
-      - name: install-dependencies
-        uses: ./.github/actions/install-dependencies
-        with:
-          compiler: ${{ matrix.compiler_pkg }}
-
-      - name: install-adapted-packages
-        uses: ./.github/actions/install-adapted-packages
-
       - name: configure
         run: |
           rm -rf build
           cmake -DCMAKE_C_COMPILER=${{matrix.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}} \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
+                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -B build | tee gfmt_cmake_log.txt
 
@@ -71,6 +66,7 @@ jobs:
 
       - name: build-tests
         run: pushd build && make build_tests && popd
+        shell: bash
 
       - name: test
         run: |
@@ -79,32 +75,25 @@ jobs:
             export GRIDFORMAT_REGRESSION_SAMPLES_ONLY=true
           fi
           pushd build && ctest --output-on-failure && popd
+        shell: bash
 
 
   mem-check:
     runs-on: ubuntu-22.04
+    container: dglaeser/gridformat-action-images:full
     steps:
       - name: checkout-repository
         uses: actions/checkout@v2
         with:
           submodules: true
 
-      - name: install-dependencies
-        uses: ./.github/actions/install-dependencies
-        with:
-          compiler: $DEFAULT_COMPILER_PKG
-
-      - name: install-adapted-packages
-        uses: ./.github/actions/install-adapted-packages
-
       - name: run-valgrind
         run: |
-          sudo apt install valgrind
           rm -rf build
           cmake -DCMAKE_C_COMPILER=/usr/bin/$DEFAULT_C_COMPILER \
                 -DCMAKE_CXX_COMPILER=/usr/bin/$DEFAULT_CXX_COMPILER \
                 -DCMAKE_BUILD_TYPE=Debug \
-                -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
+                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -B build
           cd build && make memcheck
@@ -112,19 +101,12 @@ jobs:
 
   test-full-installation:
     runs-on: ubuntu-22.04
+    container: dglaeser/gridformat-action-images:full
     steps:
       - name: checkout-repository
         uses: actions/checkout@v2
         with:
           submodules: true
-
-      - name: install-dependencies
-        uses: ./.github/actions/install-dependencies
-        with:
-          compiler: $DEFAULT_COMPILER_PKG
-
-      - name: install-adapted-packages
-        uses: ./.github/actions/install-adapted-packages
 
       - name: test-installed-package
         uses: ./.github/actions/test-installed-pkg
@@ -135,20 +117,12 @@ jobs:
 
   test-minimal-installation:
     runs-on: ubuntu-22.04
+    container: dglaeser/gridformat-action-images:minimal
     steps:
       - name: checkout-repository
         uses: actions/checkout@v2
         with:
           submodules: false
-
-      - name: remove-optional-dependencies
-        run: sudo apt remove liblz4-dev liblzma-dev
-
-      - name: install-compiler
-        run: sudo apt install $DEFAULT_COMPILER_PKG
-
-      - name: install-vtk
-        run: python3 -m pip install vtk
 
       - name: test-installed-package
         uses: ./.github/actions/test-installed-pkg

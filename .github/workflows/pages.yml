@@ -10,27 +10,19 @@ on:
 jobs:
   coverage-and-deploy:
     runs-on: ubuntu-22.04
+    container: dglaeser/gridformat-action-images:full
     steps:
       - name: checkout-repository
         uses: actions/checkout@v2
         with:
           submodules: true
 
-      - name: install-dependencies
-        uses: ./.github/actions/install-dependencies
-        with:
-          compiler: g++-12
-
-      - name: install-adapted-packages
-        uses: ./.github/actions/install-adapted-packages
-
       - name: configure
         run: |
-          sudo apt install gcovr doxygen
           rm -rf build
           cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
                 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \
-                -DCMAKE_PREFIX_PATH=/gridformat-manually-installed-deps \
+                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -DGRIDFORMAT_DO_COVERAGE=ON \

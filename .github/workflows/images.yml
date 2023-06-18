@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: 2022 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: build-action-images
+
+on: workflow_dispatch
+
+jobs:
+  push-to-registry:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: checkout-repo
+        uses: actions/checkout@v2
+
+      - name: Docker-hub-Login
+        uses: docker/login-action@v2.2.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Build-and-push-minimal-image
+        uses: docker/build-push-action@v4.1.1
+        with:
+          context: docker
+          file: docker/Dockerfile
+          push: true
+          tags: dglaeser/gridformat-action-images:minimal
+          target: minimal
+
+      - name: Build-and-push-full-image
+        uses: docker/build-push-action@v4.1.1
+        with:
+          context: docker
+          file: docker/Dockerfile
+          push: true
+          tags: dglaeser/gridformat-action-images:full
+          target: full
