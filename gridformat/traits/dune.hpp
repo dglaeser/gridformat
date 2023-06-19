@@ -11,7 +11,7 @@
 #include <ranges>
 #include <cassert>
 // dune seems to not explicitly include this but uses std::int64_t.
-// With gcc-13 this leads to an error, maybe before gcc-12 the header
+// With gcc-13 this leads to an error, maybe before gcc-13 the header
 // was included by some other standard library header...
 #include <cstdint>
 
@@ -273,7 +273,330 @@ struct Ordinates<Dune::GridView<Traits>> {
     }
 };
 
-
 }  // namespace GridFormat::Traits
 
+#if GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
+
+#include <map>
+#include <unordered_map>
+#include <iterator>
+
+#ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif  // GRIDFORMAT_IGNORE_DUNE_WARNINGS
+#include <dune/geometry/multilineargeometry.hh>
+#include <dune/geometry/referenceelements.hh>
+
+#include <dune/grid/common/mcmgmapper.hh>
+#include <dune/localfunctions/lagrange/equidistantpoints.hh>
+#ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
+#pragma GCC diagnostic pop
+#endif  // GRIDFORMAT_IGNORE_DUNE_WARNINGS
+
+
+namespace GridFormat {
+
+#ifndef DOXYGEN
+namespace DuneLagrangeDetail {
+
+    inline int dune_to_gfmt_sub_entity(const Dune::GeometryType& gt, int i, int codim) {
+        if (gt.isTriangle()) {
+            if (codim == 1) {
+                assert(i < 3);
+                static constexpr int map[3] = {0, 2, 1};
+                return map[i];
+            }
+        }
+        if (gt.isQuadrilateral()) {
+            if (codim == 2) {
+                assert(i < 4);
+                static constexpr int map[4] = {0, 1, 3, 2};
+                return map[i];
+            }
+            if (codim == 1) {
+                assert(i < 4);
+                static constexpr int map[4] = {3, 1, 0, 2};
+                return map[i];
+            }
+        }
+        if (gt.isTetrahedron()) {
+            if (codim == 2) {
+                assert(i < 6);
+                static constexpr int map[6] = {0, 2, 1, 3, 4, 5};
+                return map[i];
+            }
+            if (codim == 1) {
+                assert(i < 4);
+                static constexpr int map[4] = {3, 0, 2, 1};
+                return map[i];
+            }
+        }
+        if (gt.isHexahedron()) {
+            if (codim == 3) {
+                assert(i < 8);
+                static constexpr int map[8] = {0, 1, 3, 2, 4, 5, 7, 6};
+                return map[i];
+            }
+            if (codim == 2) {
+                assert(i < 12);
+                static constexpr int map[12] = {8, 9, 11, 10, 3, 1, 0, 2, 7, 5, 4, 6};
+                return map[i];
+            }
+        }
+        return i;
+    }
+
+    inline constexpr GridFormat::CellType cell_type(const Dune::GeometryType& gt) {
+        if (gt.isLine()) return GridFormat::CellType::lagrange_segment;
+        if (gt.isTriangle()) return GridFormat::CellType::lagrange_triangle;
+        if (gt.isQuadrilateral()) return GridFormat::CellType::lagrange_quadrilateral;
+        if (gt.isTetrahedron()) return GridFormat::CellType::lagrange_tetrahedron;
+        if (gt.isHexahedron()) return GridFormat::CellType::lagrange_hexahedron;
+        throw NotImplemented("Unsupported Dune::GeometryType");
+    }
+
+}  // namespace DuneLagrangeDetail
+#endif  // DOXYGEN
+
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Exposes a `Dune::GridView` as a mesh composed of lagrange cells with the given order.
+ *        Can be used to conveniently write `Dune::Functions` into mesh files.
+ */
+template<typename GridView>
+class DuneLagrangeMesh {
+    using Element = typename GridView::template Codim<0>::Entity;
+    using Position = typename Element::Geometry::GlobalCoordinate;
+    using LocalPoints = Dune::EquidistantPointSet<typename GridView::ctype, GridView::dimension>;
+    static constexpr int dim = GridView::dimension;
+
+    class PointIndicesHelper {
+     public:
+        struct Key {
+            unsigned int codim;
+            std::size_t global_index;
+            unsigned int sub_index;
+        };
+
+        bool contains(const Key& key) const {
+            if (!_codim_to_global_indices.contains(key.codim))
+                return false;
+            if (!_codim_to_global_indices.at(key.codim).contains(key.global_index))
+                return false;
+            return _codim_to_global_indices.at(key.codim).at(key.global_index).contains(key.sub_index);
+        }
+
+        void insert(const Key& key, std::size_t index) {
+            _codim_to_global_indices[key.codim][key.global_index][key.sub_index] = index;
+        }
+
+        const std::ranges::range auto& get(int codim, std::size_t global_index) const {
+            return _codim_to_global_indices.at(codim).at(global_index);
+        }
+
+     private:
+        std::unordered_map<
+            int, // codim
+            std::unordered_map<
+                std::size_t, // entity index
+                std::unordered_map<int, std::size_t>  // sub-entity index to global indices
+            >
+        > _codim_to_global_indices;
+    };
+
+ public:
+    DuneLagrangeMesh(const GridView& grid_view, unsigned int order = 1)
+    : _grid_view{grid_view}
+    , _order{order} {
+        update(grid_view);
+        if (order < 1)
+            throw InvalidState("Order must be >= 1");
+    }
+
+    void update(const GridView& grid_view) {
+        clear();
+        _grid_view = grid_view;
+        _update_local_points();
+        _update_mesh();
+    }
+
+    void clear() {
+        _local_points.clear();
+        _points.clear();
+        _cells.clear();
+        _cell_topology_id.clear();
+    }
+
+    std::size_t number_of_points() const { return _points.size(); }
+    std::size_t number_of_cells() const { return _cells.size(); }
+    const Position& point(std::size_t i) const { return _points.at(i); }
+    const std::vector<std::size_t>& cell_points(std::size_t i) const { return _cells.at(i); }
+
+    Dune::GeometryType geometry_type(std::size_t i) const {
+        return {_cell_topology_id.at(i), dim};
+    }
+
+    auto geometry(std::size_t i) const {
+        const auto gt = geometry_type(i);
+        const auto num_corners = referenceElement<typename GridView::ctype, dim>(gt).size(dim);
+        std::vector<Position> corners; corners.reserve(num_corners);
+        std::ranges::for_each(std::views::iota(0, num_corners), [&] (int corner) {
+            corners.push_back(_points[_cells[i][corner]]);
+        });
+        return Dune::MultiLinearGeometry<typename GridView::ctype, dim, GridView::dimensionworld>{gt, corners};
+    }
+
+ private:
+    void _update_local_points() {
+        for (const auto& gt : _grid_view.indexSet().types(0)) {
+            _local_points.emplace(gt, _order);
+            _local_points.at(gt).build(gt);
+        }
+    }
+
+    auto _make_codim_mappers() {
+        using Mapper = Dune::MultipleCodimMultipleGeomTypeMapper<GridView>;
+        std::unordered_map<int, Mapper> codim_to_mapper;
+        codim_to_mapper.emplace(0, Mapper{_grid_view, Dune::mcmgLayout(Dune::Codim<0>{})});
+        codim_to_mapper.emplace(1, Mapper{_grid_view, Dune::mcmgLayout(Dune::Codim<1>{})});
+        if constexpr (int(GridView::dimension) >= 2)
+            codim_to_mapper.emplace(2, Mapper{_grid_view, Dune::mcmgLayout(Dune::Codim<2>{})});
+        if constexpr (int(GridView::dimension) == 3)
+            codim_to_mapper.emplace(3, Mapper{_grid_view, Dune::mcmgLayout(Dune::Codim<3>{})});
+        return codim_to_mapper;
+    }
+
+    void _update_mesh() {
+        const auto codim_to_mapper = _make_codim_mappers();
+        PointIndicesHelper point_indices;
+        _make_points(point_indices, codim_to_mapper);
+        _set_connectivity(point_indices, codim_to_mapper);
+    }
+
+    template<typename Mappers>
+    void _make_points(PointIndicesHelper& point_indices, const Mappers& codim_to_mapper) {
+        for (const auto& element : Traits::Cells<GridView>::get(_grid_view)) {
+            for (const auto& local_point : _local_points.at(element.type())) {
+                const auto codim = local_point.localKey().codim();
+                const auto sub_entity = local_point.localKey().subEntity();
+                const auto sub_index = local_point.localKey().index();
+                const auto global_index = codim_to_mapper.at(codim).subIndex(element, sub_entity, codim);
+                if (!point_indices.contains({codim, global_index, sub_index})) {
+                    _points.emplace_back(element.geometry().global(local_point.point()));
+                    point_indices.insert({codim, global_index, sub_index}, _points.size() - 1);
+                }
+            }
+        }
+    }
+
+    template<typename Mappers>
+    void _set_connectivity(PointIndicesHelper& point_indices, const Mappers& codim_to_mapper) {
+        _cells.reserve(Traits::NumberOfCells<GridView>::get(_grid_view));
+        _cell_topology_id.reserve(_cells.size());
+        std::vector<std::vector<std::size_t>> codim_points;
+        for (const auto& element : Traits::Cells<GridView>::get(_grid_view)) {
+            _cell_topology_id.push_back(element.type().id());
+            auto& cell_points = _cells.emplace_back();
+            for (int codim = GridView::dimension; codim >= 0; --codim) {
+                codim_points.clear();
+                codim_points.resize(element.subEntities(codim));
+                for (unsigned int sub_entity = 0; sub_entity < element.subEntities(codim); ++sub_entity) {
+                    const auto mapped_sub_entity = DuneLagrangeDetail::dune_to_gfmt_sub_entity(
+                        element.type(), sub_entity, codim
+                    );
+                    const auto global_index = codim_to_mapper.at(codim).subIndex(element, sub_entity, codim);
+                    if (point_indices.contains({static_cast<unsigned int>(codim), global_index, 0})) {
+                        const auto& indices = point_indices.get(codim, global_index);
+                        codim_points[mapped_sub_entity].resize(indices.size());
+                        for (const auto& [local, global] : indices)
+                            codim_points[mapped_sub_entity][local] = global;
+                    }
+                }
+                for (const auto& sub_points : codim_points) {
+                    cell_points.reserve(cell_points.size() + sub_points.size());
+                    std::ranges::copy(sub_points, std::back_inserter(cell_points));
+                }
+            }
+        }
+    }
+
+    GridView _grid_view;
+    unsigned int _order;
+    std::vector<Position> _points;
+    std::vector<std::vector<std::size_t>> _cells;
+    std::vector<unsigned int> _cell_topology_id;
+    std::map<Dune::GeometryType, LocalPoints> _local_points;
+};
+
+namespace Traits {
+
+template<typename GridView>
+struct Points<DuneLagrangeMesh<GridView>> {
+    static decltype(auto) get(const DuneLagrangeMesh<GridView>& mesh) {
+        return std::views::iota(std::size_t{0}, mesh.number_of_points());
+    }
+};
+
+template<typename GridView>
+struct Cells<DuneLagrangeMesh<GridView>> {
+    static decltype(auto) get(const DuneLagrangeMesh<GridView>& mesh) {
+        return std::views::iota(std::size_t{0}, mesh.number_of_cells());
+    }
+};
+
+template<typename GridView>
+struct NumberOfPoints<DuneLagrangeMesh<GridView>> {
+    static auto get(const DuneLagrangeMesh<GridView>& mesh) {
+        return mesh.number_of_points();
+    }
+};
+
+template<typename GridView>
+struct NumberOfCells<DuneLagrangeMesh<GridView>> {
+    static auto get(const DuneLagrangeMesh<GridView>& mesh) {
+        return mesh.number_of_cells();
+    }
+};
+
+template<typename GridView>
+struct NumberOfCellPoints<DuneLagrangeMesh<GridView>, std::size_t> {
+    static auto get(const DuneLagrangeMesh<GridView>& mesh, const std::size_t cell_index) {
+        return mesh.cell_points(cell_index).size();
+    }
+};
+
+template<typename GridView>
+struct CellPoints<DuneLagrangeMesh<GridView>, std::size_t> {
+    static auto get(const DuneLagrangeMesh<GridView>& mesh, const std::size_t cell_index) {
+        return mesh.cell_points(cell_index);
+    }
+};
+
+template<typename GridView>
+struct CellType<DuneLagrangeMesh<GridView>, std::size_t> {
+    static decltype(auto) get(const DuneLagrangeMesh<GridView>& mesh, const std::size_t cell_index) {
+        return DuneLagrangeDetail::cell_type(mesh.geometry_type(cell_index));
+    }
+};
+
+template<typename GridView>
+struct PointCoordinates<DuneLagrangeMesh<GridView>, std::size_t> {
+    static decltype(auto) get(const DuneLagrangeMesh<GridView>& mesh, const std::size_t point_index) {
+        return mesh.point(point_index);
+    }
+};
+
+template<typename GridView>
+struct PointId<DuneLagrangeMesh<GridView>, std::size_t> {
+    static decltype(auto) get(const DuneLagrangeMesh<GridView>&, const std::size_t point_index) {
+        return point_index;
+    }
+};
+
+}  // namespace Traits
+
+}  // namespace GridFormat
+
+#endif  // GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
 #endif  // GRIDFORMAT_TRAITS_DUNE_HPP_
