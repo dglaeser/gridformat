@@ -96,7 +96,7 @@ concept CGALPointWrapper = requires(const T& wrapper) {
 
 }  // namespace Concepts
 
-
+#ifndef DOXYGEN
 namespace CGAL {
 
 template<typename T> struct CellType;
@@ -120,7 +120,7 @@ template<Concepts::CGALPointWrapper W>
 auto to_double_array(const W& wrapper) { return to_double_array(wrapper.point()); }
 
 }  // namespace CGAL
-
+#endif  // DOXYGEN
 
 namespace Traits {
 

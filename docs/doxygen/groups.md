@@ -43,3 +43,6 @@
 
 @defgroup Grid
 @brief Classes & functions related to grids and operations on them.
+
+@defgroup PredefinedTraits
+@brief Traits specializations and helper classes for frameworks

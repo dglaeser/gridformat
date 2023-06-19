@@ -28,6 +28,7 @@
 
 namespace GridFormat {
 
+#ifndef DOXYGEN
 namespace DealII {
 
 template<int dim, int space_dim> using Tria = dealii::Triangulation<dim, space_dim>;
@@ -143,7 +144,7 @@ const std::vector<int>& cell_corners_in_gridformat_order(unsigned int cell_dimen
 }
 
 }  // namespace DealII
-
+#endif  // DOXYGEN
 
 // Specializations of the traits required for the `UnstructuredGrid` concept for dealii triangulations
 namespace Traits {

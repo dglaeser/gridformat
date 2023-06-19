@@ -157,6 +157,10 @@ struct NumberOfCellPoints<dolfinx::mesh::Mesh, DolfinX::Cell> {
 
 namespace DolfinX {
 
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Wrapper around a nodal dolfinx::FunctionSpace, exposing it as a mesh.
+ */
 class Mesh {
  public:
     Mesh() = default;
@@ -302,6 +306,10 @@ class Mesh {
     bool _set = false;
 };
 
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Insert the given function into the writer as point field.
+ */
 template<typename Writer, Concepts::Scalar T>
 void set_point_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
     if (!writer.grid().is_compatible(f))
@@ -320,6 +328,10 @@ void set_point_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::st
         writer.set_point_field(name, [&] (const auto p) { return writer.grid().template evaluate<2>(f, p); });
 }
 
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Insert the given function into the writer as cell field.
+ */
 template<typename Writer, Concepts::Scalar T>
 void set_cell_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
     if (!writer.grid().is_compatible(f))
@@ -338,6 +350,10 @@ void set_cell_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::str
         writer.set_cell_field(name, [&] (const auto p) { return writer.grid().template evaluate<2>(f, p); });
 }
 
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Insert the given function into the writer as field.
+ */
 template<typename Writer, Concepts::Scalar T>
 void set_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
     if (Detail::is_cellwise_constant(f))

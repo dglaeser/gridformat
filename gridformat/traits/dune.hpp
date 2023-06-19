@@ -368,7 +368,7 @@ namespace DuneLagrangeDetail {
     // Exposes the lagrange points of a geometry in gridformat ordering
     template<typename GridView>
     class LocalPoints {
-        // for third-order hexahedra
+        // reserve space for third-order hexahedra
         static constexpr std::size_t reserved_size = 64;
 
      public:
@@ -420,22 +420,6 @@ namespace DuneLagrangeDetail {
         ReservedVector<unsigned int, reserved_size> _sorted_indices;
     };
 
-}  // namespace DuneLagrangeDetail
-#endif  // DOXYGEN
-
-/*!
- * \ingroup PredefinedTraits
- * \brief Exposes a `Dune::GridView` as a mesh composed of lagrange cells with the given order.
- *        Can be used to conveniently write `Dune::Functions` into grid files.
- */
-template<typename GridView>
-class DuneLagrangeMesh {
-    using Element = typename GridView::template Codim<0>::Entity;
-    using Position = typename Element::Geometry::GlobalCoordinate;
-    using LocalPoints = DuneLagrangeDetail::LocalPoints<GridView>;
-    using Mapper = Dune::MultipleCodimMultipleGeomTypeMapper<GridView>;
-    static constexpr int dim = GridView::dimension;
-
     class PointIndicesHelper {
      public:
         struct Key {
@@ -469,6 +453,23 @@ class DuneLagrangeMesh {
             >
         > _codim_to_global_indices;
     };
+
+}  // namespace DuneLagrangeDetail
+#endif  // DOXYGEN
+
+
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Exposes a `Dune::GridView` as a mesh composed of lagrange cells with the given order.
+ *        Can be used to conveniently write `Dune::Functions` into grid files.
+ */
+template<typename GridView>
+class DuneLagrangeMesh {
+    using Element = typename GridView::template Codim<0>::Entity;
+    using Position = typename Element::Geometry::GlobalCoordinate;
+    using LocalPoints = DuneLagrangeDetail::LocalPoints<GridView>;
+    using Mapper = Dune::MultipleCodimMultipleGeomTypeMapper<GridView>;
+    static constexpr int dim = GridView::dimension;
 
  public:
     explicit DuneLagrangeMesh(const GridView& grid_view, unsigned int order = 1)
@@ -544,7 +545,7 @@ class DuneLagrangeMesh {
     }
 
     void _update_mesh() {
-        PointIndicesHelper point_indices;
+        DuneLagrangeDetail::PointIndicesHelper point_indices;
         _cells.reserve(Traits::NumberOfCells<GridView>::get(_grid_view));
         _cell_topology_id.reserve(_cells.size());
         for (const auto& element : Traits::Cells<GridView>::get(_grid_view)) {
@@ -576,6 +577,7 @@ class DuneLagrangeMesh {
     std::unordered_map<int, Mapper> _codim_to_mapper;
     std::unordered_map<std::size_t, std::size_t> _element_to_running_index;
 };
+
 
 namespace Traits {
 
@@ -644,6 +646,11 @@ struct PointId<DuneLagrangeMesh<GridView>, std::size_t> {
 
 }  // namespace Traits
 
+
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Implements the field interface for a Dune::Function defined on a DuneLagrangeMesh.
+ */
 template<typename Function, typename GridView>
 class DuneFunctionField : public Field {
     using Element = typename GridView::template Codim<0>::Entity;
@@ -727,11 +734,21 @@ class DuneFunctionField : public Field {
     bool _cellwise_constant;
 };
 
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Insert the given Dune::Function to the writer as point field.
+ * \note This requires the Writer to have been constructed with a DuneLagrangeMesh.
+ */
 template<typename Writer, typename Function>
 void set_dune_function_point_field(Writer& writer, const Function& f, const std::string& name) {
     writer.set_point_field(name, DuneFunctionField{f, writer.grid()});
 }
 
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Insert the given Dune::Function to the writer as cell field.
+ * \note This requires the Writer to have been constructed with a DuneLagrangeMesh.
+ */
 template<typename Writer, typename Function>
 void set_dune_function_cell_field(Writer& writer, const Function& f, const std::string& name) {
     writer.set_cell_field(name, DuneFunctionField{f, writer.grid(), true});
