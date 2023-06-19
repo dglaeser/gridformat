@@ -5,10 +5,26 @@
 // they need, i.e. don't force users to include anything before
 #include <gridformat/traits/dune.hpp>
 
+#include <memory>
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #include <dune/grid/yaspgrid.hh>
+
+#if GRIDFORMAT_HAVE_DUNE_ALUGRID
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+#pragma GCC diagnostic ignored "-Wcast-qual"
+#include <dune/alugrid/grid.hh>
+#include <dune/grid/common/gridfactory.hh>
+#include <dune/grid/io/file/gmshreader.hh>
+#endif
+
 #pragma GCC diagnostic pop
 
 #include <gridformat/grid/discontinuous.hpp>
@@ -62,11 +78,51 @@ void test(const GridView& grid_view) {
     std::cout << "Wrote '" << discontinuous_writer.write(base_filename + "_discontinuous") << "'" << std::endl;
 }
 
+template<typename GridView>
+void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
+    std::string base_filename =
+        "dune_vtu_lagrange_"
+        + std::to_string(GridView::dimension) + "d_in_"
+        + std::to_string(GridView::dimensionworld) + "d";
+    base_filename += suffix.empty() ? "" : "_" + suffix;
+
+    for (auto order : std::vector<unsigned int>{1, 2, 3}) {
+        GridFormat::DuneLagrangeMesh mesh{grid_view, order};
+        GridFormat::VTUWriter writer{mesh, {.encoder = GridFormat::Encoding::ascii}};
+        GridFormat::Test::add_meta_data(writer);
+        writer.set_point_field("pfield", [&] (const auto& p) {
+            return GridFormat::Test::test_function<double>(mesh.point(p));
+        });
+        writer.set_cell_field("cfield", [&] (const auto c) {
+            return GridFormat::Test::test_function<double>(mesh.geometry(c).center());
+        });
+        std::cout << "Wrote '" << writer.write(base_filename + "_order_" + std::to_string(order)) << "'" << std::endl;
+    }
+}
+
 int main(int argc, char** argv) {
     Dune::MPIHelper::instance(argc, argv);
-    Dune::YaspGrid<2> grid_2d{{1.0, 1.0}, {6, 7}};
-    Dune::YaspGrid<3> grid_3d{{1.0, 1.0, 1.0}, {5, 6, 7}};
+    Dune::YaspGrid<2> grid_2d{{1.0, 1.0}, {2, 3}};
+    Dune::YaspGrid<3> grid_3d{{1.0, 1.0, 1.0}, {2, 3, 4}};
     test(grid_2d.leafGridView());
     test(grid_3d.leafGridView());
+    test_lagrange(grid_2d.leafGridView());
+    test_lagrange(grid_3d.leafGridView());
+
+#if GRIDFORMAT_HAVE_DUNE_ALUGRID
+    using Grid2D = Dune::ALUGrid<2, 2, Dune::simplex, Dune::conforming>;
+    Dune::GridFactory<Grid2D> factory_2d;
+    Dune::GmshReader<Grid2D>::read(factory_2d, MESH_FILE_2D);
+    const auto lagrange_grid_2d = std::shared_ptr<Grid2D>(factory_2d.createGrid());
+
+    using Grid3D = Dune::ALUGrid<3, 3, Dune::simplex, Dune::conforming>;
+    Dune::GridFactory<Grid3D> factory_3d;
+    Dune::GmshReader<Grid3D>::read(factory_3d, MESH_FILE_3D);
+    const auto lagrange_grid_3d = std::shared_ptr<Grid3D>(factory_3d.createGrid());
+
+    // mesh file paths are defined in CMakeLists.txt
+    test_lagrange(lagrange_grid_2d->leafGridView(), "triangles");
+    test_lagrange(lagrange_grid_3d->leafGridView(), "tets");
+#endif
     return 0;
 }

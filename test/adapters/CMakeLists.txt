@@ -82,8 +82,11 @@ gridformat_setup_deal_ii_target(test_dealii_parallel)
 find_package(dune-common QUIET)
 find_package(dune-geometry QUIET)
 find_package(dune-grid QUIET)
+find_package(dune-alugrid QUIET)
 find_package(Threads)  # dune links against it but doesn't seem to check for it itself
 find_package(TBB)  # dune links against it but doesn't seem to check for it itself
+find_package(MPI)  # dune links against it but doesn't seem to check for it itself
+find_package(PARMETIS)  # dune links against it but doesn't seem to check for it itself
 
 if (dune-grid_FOUND AND dune-common_FOUND AND dune-geometry_FOUND)
     message(STATUS
@@ -142,6 +145,10 @@ if (${DUNE_FOUND})
     foreach (dune_target IN LISTS dune_targets)
         target_link_libraries(${dune_target} dunecommon dunegeometry dunegrid)
         target_compile_definitions(${dune_target} PUBLIC GRIDFORMAT_IGNORE_DUNE_WARNINGS=1)
+        target_compile_definitions(${dune_target} PUBLIC
+            MESH_FILE_2D="${CMAKE_CURRENT_SOURCE_DIR}/simplices_2d.msh"
+            MESH_FILE_3D="${CMAKE_CURRENT_SOURCE_DIR}/simplices_3d.msh"
+        )
 
         # the dune cmake setup seems to not properly set the include dirs via target_link_libraries
         # (in case it is installed in non-standard location)
@@ -150,6 +157,12 @@ if (${DUNE_FOUND})
             PRIVATE
                 ${dune-grid_INCLUDE_DIRS} ${dune-geometry_INCLUDE_DIRS} ${dune-common_INCLUDE_DIRS}
         )
+
+        if (dune-alugrid_FOUND)
+            target_link_libraries(${dune_target} dunealugrid)
+            target_include_directories(${dune_target} PRIVATE ${dune-alugrid_INCLUDE_DIRS})
+            target_compile_definitions(${dune_target} PUBLIC GRIDFORMAT_HAVE_DUNE_ALUGRID=1)
+        endif ()
 
         # dune uses this preprocessor variable to know if MPI is present (but doesn't seem to set it itself)
         if (${MPI_FOUND} AND ${dune_target} MATCHES "parallel")
