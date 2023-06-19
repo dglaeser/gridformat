@@ -24,94 +24,12 @@
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/iterator_facades.hpp>
 #include <gridformat/common/flat_index_mapper.hpp>
+#include <gridformat/common/md_index.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
 
 namespace GridFormat {
-
-#ifndef DOXYGEN
-namespace Detail {
-
-    template<std::size_t dim>
-    class MDIndexRange {
-        using IndexTuple = std::array<std::size_t, dim>;
-
-        class Iterator : public ForwardIteratorFacade<Iterator, IndexTuple, const IndexTuple&> {
-        public:
-            Iterator() = default;
-            Iterator(const IndexTuple& bounds)
-            : _bounds{&bounds}
-            , _current{} {
-                std::ranges::fill(_current, std::size_t{0});
-            }
-
-            Iterator(const IndexTuple& bounds, bool)
-            : Iterator(bounds) {
-                _current[0] = (*_bounds)[0];
-            }
-
-        private:
-            friend IteratorAccess;
-
-            const IndexTuple& _dereference() const {
-                return _current;
-            }
-
-            bool _is_equal(const Iterator& other) const {
-                if (_bounds != other._bounds)
-                    return false;
-                return std::ranges::equal(_current, other._current);
-            }
-
-            void _increment() {
-                assert(_is_valid());
-                for (int dir = dim - 1; dir > 0; dir--) {
-                    if (_current[dir]++; _current[dir] == (*_bounds)[dir])
-                        _current[dir] = 0;
-                    else
-                        return;
-                }
-                _current[0]++;
-            }
-
-            bool _is_valid() const {
-                for (unsigned i = 0; i < dim; ++i)
-                    if (_current[i] >= (*_bounds)[i])
-                        return false;
-                return true;
-            }
-
-            const IndexTuple* _bounds{nullptr};
-            IndexTuple _current;
-        };
-
-    public:
-        template<Concepts::StaticallySizedMDRange<1> Bounds>
-        explicit MDIndexRange(Bounds&& bounds)
-        : _bounds(Ranges::to_array<dim, std::size_t>(std::forward<Bounds>(bounds)))
-        {}
-
-        auto begin() const { return Iterator{_bounds}; }
-        auto end() const { return Iterator{_bounds, true}; }
-
-        std::size_t size(int dir) const { return _bounds[dir]; }
-        std::size_t size() const {
-            return std::accumulate(
-                _bounds.begin(), _bounds.end(), std::size_t{1}, std::multiplies{}
-            );
-        }
-
-    private:
-        std::array<std::size_t, dim> _bounds;
-    };
-
-    template<Concepts::StaticallySizedMDRange<1> Bounds>
-    MDIndexRange(Bounds&&) -> MDIndexRange<static_size<Bounds>>;
-
-}  // namespace Detail
-#endif  // DOXYGEN
-
 
 /*!
  * \ingroup Grid
@@ -179,9 +97,9 @@ class ImageGrid {
     : _lower_right{std::move(origin)}
     , _upper_right{Ranges::apply_pairwise<CoordinateType>(std::plus{}, _lower_right, size)}
     , _spacing{_compute_spacing(cells)}
-    , _cell_index_tuples{cells}
-    , _point_index_tuples{Ranges::incremented(cells, 1)}
-    , _cell_point_offsets{Ranges::filled_array<dim, std::size_t>(2)}
+    , _cell_index_tuples{MDLayout{cells}}
+    , _point_index_tuples{MDLayout{Ranges::incremented(cells, 1)}}
+    , _cell_point_offsets{MDLayout{Ranges::filled_array<dim, std::size_t>(2)}}
     , _point_mapper{Ranges::incremented(cells, 1)} {
         if (std::ranges::any_of(cells, [] (const std::integral auto i) { return i == 0; }))
             throw ValueError("Number of cells in each direction must be > 0");
@@ -242,12 +160,16 @@ class ImageGrid {
 
     //! Return a range over all cells of the grid
     std::ranges::range auto cells() const {
-        return _cell_index_tuples | std::views::transform([] (const auto& indices) { return Cell{indices}; });
+        return _cell_index_tuples | std::views::transform([] (const auto& indices) {
+            return Cell{Ranges::to_array<dim>(indices)};
+        });
     }
 
     //! Return a range over all points of the grid
     std::ranges::range auto points() const {
-        return _point_index_tuples | std::views::transform([] (const auto& indices) { return Point{indices}; });
+        return _point_index_tuples | std::views::transform([] (const auto& indices) {
+            return Point{Ranges::to_array<dim>(indices)};
+        });
     }
 
     //! Return a range over all points in the given grid cell
@@ -290,9 +212,9 @@ class ImageGrid {
     std::array<CoordinateType, dim> _lower_right;
     std::array<CoordinateType, dim> _upper_right;
     std::array<CoordinateType, dim> _spacing;
-    Detail::MDIndexRange<dim> _cell_index_tuples;
-    Detail::MDIndexRange<dim> _point_index_tuples;
-    Detail::MDIndexRange<dim> _cell_point_offsets;
+    MDIndexRange _cell_index_tuples;
+    MDIndexRange _point_index_tuples;
+    MDIndexRange _cell_point_offsets;
     FlatIndexMapper<dim> _point_mapper;
 };
 
