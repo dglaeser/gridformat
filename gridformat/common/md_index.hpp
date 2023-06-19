@@ -168,6 +168,14 @@ class MDIndexRange {
         return _layout;
     }
 
+    std::size_t size() const {
+        return _layout.number_of_entries();
+    }
+
+    std::size_t size(unsigned int codim) const {
+        return _layout.extent(codim);
+    }
+
  private:
     MDLayout _layout;
 };
