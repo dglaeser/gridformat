@@ -287,14 +287,11 @@ void write() {
                 dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_vertex)
             ), "shared_vertex");
 
-            if (is_sequential()) {
+            if (is_sequential())
                 write_with(
                     GridFormat::VTUWriter{higher_order_mesh<dim>(ct)}.with_encoding(GridFormat::Encoding::ascii),
                     get_filename(ct, "higher_order")
                 );
-                dolfinx::io::VTKFile file{MPI_COMM_WORLD, std::string{"mesh_"} + dolfinx::mesh::to_string(ct) + ".pvd", "w"};
-                file.write(higher_order_mesh<dim>(ct), 0.0);
-            }
         }
     }
 }
