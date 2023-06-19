@@ -59,6 +59,14 @@ class MDIndex {
     : MDIndex(layout.dimension())
     {}
 
+    auto begin() const {
+        return _indices.begin();
+    }
+
+    auto end() const {
+        return _indices.end();
+    }
+
     std::size_t size() const {
         return _indices.size();
     }
