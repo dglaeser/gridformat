@@ -279,6 +279,7 @@ struct Ordinates<Dune::GridView<Traits>> {
 
 #include <map>
 #include <unordered_map>
+#include <algorithm>
 #include <iterator>
 
 #ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
@@ -293,6 +294,9 @@ struct Ordinates<Dune::GridView<Traits>> {
 #ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
 #pragma GCC diagnostic pop
 #endif  // GRIDFORMAT_IGNORE_DUNE_WARNINGS
+
+
+#include <gridformat/common/reserved_vector.hpp>
 
 
 namespace GridFormat {
@@ -356,6 +360,50 @@ namespace DuneLagrangeDetail {
         throw NotImplemented("Unsupported Dune::GeometryType");
     }
 
+    // Exposes the lagrange points of a geometry in gridformat ordering
+    template<typename GridView>
+    class LocalPoints {
+        // for third-order hexahedra
+        static constexpr std::size_t reserved_size = 64;
+
+     public:
+        explicit LocalPoints(unsigned int order)
+        : _points(order)
+        {}
+
+        void build(const Dune::GeometryType& geo_type) {
+            if (geo_type.dim() != GridView::dimension)
+                throw ValueError("Dimension of given geometry does not match the grid");
+
+            _points.build(geo_type);
+            std::ranges::copy(
+                std::views::iota(unsigned{0}, static_cast<unsigned int>(_points.size())),
+                std::back_inserter(_sorted_indices)
+            );
+            std::ranges::sort(_sorted_indices, [&] (unsigned int i1, unsigned int i2) {
+                const auto& key1 = _points[i1].localKey();
+                const auto& key2 = _points[i2].localKey();
+                using DuneLagrangeDetail::dune_to_gfmt_sub_entity;
+                if (key1.codim() == key2.codim()) {
+                    const auto mapped1 = dune_to_gfmt_sub_entity(geo_type, key1.subEntity(), key1.codim());
+                    const auto mapped2 = dune_to_gfmt_sub_entity(geo_type, key2.subEntity(), key2.codim());
+                    return mapped1 == mapped2 ? key1.index() < key2.index() : mapped1 < mapped2;
+                }
+                return _points[i1].localKey().codim() > _points[i2].localKey().codim();
+            });
+        }
+
+        std::ranges::range auto get() const {
+            return _sorted_indices | std::views::transform([&] (unsigned int i) {
+                return _points[i];
+            });
+        }
+
+     private:
+        Dune::EquidistantPointSet<typename GridView::ctype, GridView::dimension> _points;
+        ReservedVector<unsigned int, reserved_size> _sorted_indices;
+    };
+
 }  // namespace DuneLagrangeDetail
 #endif  // DOXYGEN
 
@@ -368,7 +416,7 @@ template<typename GridView>
 class DuneLagrangeMesh {
     using Element = typename GridView::template Codim<0>::Entity;
     using Position = typename Element::Geometry::GlobalCoordinate;
-    using LocalPoints = Dune::EquidistantPointSet<typename GridView::ctype, GridView::dimension>;
+    using LocalPoints = DuneLagrangeDetail::LocalPoints<GridView>;
     static constexpr int dim = GridView::dimension;
 
     class PointIndicesHelper {
@@ -391,8 +439,8 @@ class DuneLagrangeMesh {
             _codim_to_global_indices[key.codim][key.global_index][key.sub_index] = index;
         }
 
-        const std::ranges::range auto& get(int codim, std::size_t global_index) const {
-            return _codim_to_global_indices.at(codim).at(global_index);
+        std::size_t get(const Key& key) {
+            return _codim_to_global_indices.at(key.codim).at(key.global_index).at(key.sub_index);
         }
 
      private:
@@ -470,14 +518,13 @@ class DuneLagrangeMesh {
     void _update_mesh() {
         const auto codim_to_mapper = _make_codim_mappers();
         PointIndicesHelper point_indices;
-        _make_points(point_indices, codim_to_mapper);
-        _set_connectivity(point_indices, codim_to_mapper);
-    }
 
-    template<typename Mappers>
-    void _make_points(PointIndicesHelper& point_indices, const Mappers& codim_to_mapper) {
+        _cells.reserve(Traits::NumberOfCells<GridView>::get(_grid_view));
+        _cell_topology_id.reserve(_cells.size());
         for (const auto& element : Traits::Cells<GridView>::get(_grid_view)) {
-            for (const auto& local_point : _local_points.at(element.type())) {
+            _cell_topology_id.push_back(element.type().id());
+            auto& cell_points = _cells.emplace_back();
+            for (const auto& local_point : _local_points.at(element.type()).get()) {
                 const auto codim = local_point.localKey().codim();
                 const auto sub_entity = local_point.localKey().subEntity();
                 const auto sub_index = local_point.localKey().index();
@@ -485,37 +532,9 @@ class DuneLagrangeMesh {
                 if (!point_indices.contains({codim, global_index, sub_index})) {
                     _points.emplace_back(element.geometry().global(local_point.point()));
                     point_indices.insert({codim, global_index, sub_index}, _points.size() - 1);
-                }
-            }
-        }
-    }
-
-    template<typename Mappers>
-    void _set_connectivity(PointIndicesHelper& point_indices, const Mappers& codim_to_mapper) {
-        _cells.reserve(Traits::NumberOfCells<GridView>::get(_grid_view));
-        _cell_topology_id.reserve(_cells.size());
-        std::vector<std::vector<std::size_t>> codim_points;
-        for (const auto& element : Traits::Cells<GridView>::get(_grid_view)) {
-            _cell_topology_id.push_back(element.type().id());
-            auto& cell_points = _cells.emplace_back();
-            for (int codim = GridView::dimension; codim >= 0; --codim) {
-                codim_points.clear();
-                codim_points.resize(element.subEntities(codim));
-                for (unsigned int sub_entity = 0; sub_entity < element.subEntities(codim); ++sub_entity) {
-                    const auto mapped_sub_entity = DuneLagrangeDetail::dune_to_gfmt_sub_entity(
-                        element.type(), sub_entity, codim
-                    );
-                    const auto global_index = codim_to_mapper.at(codim).subIndex(element, sub_entity, codim);
-                    if (point_indices.contains({static_cast<unsigned int>(codim), global_index, 0})) {
-                        const auto& indices = point_indices.get(codim, global_index);
-                        codim_points[mapped_sub_entity].resize(indices.size());
-                        for (const auto& [local, global] : indices)
-                            codim_points[mapped_sub_entity][local] = global;
-                    }
-                }
-                for (const auto& sub_points : codim_points) {
-                    cell_points.reserve(cell_points.size() + sub_points.size());
-                    std::ranges::copy(sub_points, std::back_inserter(cell_points));
+                    cell_points.push_back(_points.size() - 1);
+                } else {
+                    cell_points.push_back(point_indices.get({codim, global_index, sub_index}));
                 }
             }
         }
