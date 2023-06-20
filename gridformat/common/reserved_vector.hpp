@@ -59,6 +59,9 @@ class ReservedVector {
     T& operator[](std::size_t i) { return _elements[i]; }
     const T& operator[](std::size_t i) const { return _elements[i]; }
 
+    T& at(std::size_t i) { return _elements.at(i); }
+    const T& at(std::size_t i) const { return _elements.at(i); }
+
  private:
     std::array<std::byte, N*sizeof(std::size_t)> _buffer;
     std::pmr::monotonic_buffer_resource _resource;
