@@ -91,7 +91,7 @@ void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
     base_filename += suffix.empty() ? "" : "_" + suffix;
 
     for (auto order : std::vector<unsigned int>{1, 2, 3}) {
-        GridFormat::DuneLagrangeMesh mesh{grid_view, order};
+        GridFormat::Dune::LagrangeMesh mesh{grid_view, order};
         GridFormat::VTUWriter writer{mesh, {.encoder = GridFormat::Encoding::ascii}};
         GridFormat::Test::add_meta_data(writer);
         writer.set_point_field("pfield", [&] (const auto& p) {
@@ -117,12 +117,12 @@ void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
             std::ranges::fill(result, row);
             return result;
         }, grid_view);
-        GridFormat::set_dune_function_point_field(writer, scalar, "dune_scalar_function");
-        GridFormat::set_dune_function_point_field(writer, vector, "dune_vector_function");
-        GridFormat::set_dune_function_point_field(writer, tensor, "dune_tensor_function");
-        GridFormat::set_dune_function_cell_field(writer, scalar, "dune_scalar_cell_function");
-        GridFormat::set_dune_function_cell_field(writer, vector, "dune_vector_cell_function");
-        GridFormat::set_dune_function_cell_field(writer, tensor, "dune_tensor_cell_function");
+        GridFormat::Dune::set_point_function(scalar, writer, "dune_scalar_function");
+        GridFormat::Dune::set_point_function(vector, writer, "dune_vector_function");
+        GridFormat::Dune::set_point_function(tensor, writer, "dune_tensor_function");
+        GridFormat::Dune::set_cell_function(scalar, writer, "dune_scalar_cell_function");
+        GridFormat::Dune::set_cell_function(vector, writer, "dune_vector_cell_function");
+        GridFormat::Dune::set_cell_function(tensor, writer, "dune_tensor_cell_function");
 #endif
 
         std::cout << "Wrote '" << writer.write(base_filename + "_order_" + std::to_string(order)) << "'" << std::endl;
