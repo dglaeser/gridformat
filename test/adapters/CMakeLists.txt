@@ -83,6 +83,7 @@ find_package(dune-common QUIET)
 find_package(dune-geometry QUIET)
 find_package(dune-grid QUIET)
 find_package(dune-alugrid QUIET)
+find_package(dune-functions QUIET)
 find_package(Threads)  # dune links against it but doesn't seem to check for it itself
 find_package(TBB)  # dune links against it but doesn't seem to check for it itself
 find_package(MPI)  # dune links against it but doesn't seem to check for it itself
@@ -162,6 +163,11 @@ if (${DUNE_FOUND})
             target_link_libraries(${dune_target} dunealugrid)
             target_include_directories(${dune_target} PRIVATE ${dune-alugrid_INCLUDE_DIRS})
             target_compile_definitions(${dune_target} PUBLIC GRIDFORMAT_HAVE_DUNE_ALUGRID=1)
+        endif ()
+
+        if (dune-functions_FOUND)
+            target_include_directories(${dune_target} PRIVATE ${dune-functions_INCLUDE_DIRS})
+            target_compile_definitions(${dune_target} PUBLIC GRIDFORMAT_HAVE_DUNE_FUNCTIONS=1)
         endif ()
 
         # dune uses this preprocessor variable to know if MPI is present (but doesn't seem to set it itself)

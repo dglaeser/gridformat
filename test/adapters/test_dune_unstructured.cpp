@@ -23,7 +23,11 @@
 #include <dune/alugrid/grid.hh>
 #include <dune/grid/common/gridfactory.hh>
 #include <dune/grid/io/file/gmshreader.hh>
-#endif
+#endif  // GRIDFORMAT_HAVE_DUNE_ALUGRID
+
+#if GRIDFORMAT_HAVE_DUNE_FUNCTIONS
+#include <dune/functions/gridfunctions/analyticgridviewfunction.hh>
+#endif  // GRIDFORMAT_HAVE_DUNE_FUNCTIONS
 
 #pragma GCC diagnostic pop
 
@@ -96,6 +100,31 @@ void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
         writer.set_cell_field("cfield", [&] (const auto c) {
             return GridFormat::Test::test_function<double>(mesh.geometry(c).center());
         });
+
+#if GRIDFORMAT_HAVE_DUNE_FUNCTIONS
+        auto scalar = Dune::Functions::makeAnalyticGridViewFunction([] (const auto& x) {
+            return GridFormat::Test::test_function<double>(x);
+        }, grid_view);
+        auto vector = Dune::Functions::makeAnalyticGridViewFunction([] (const auto& x) {
+            std::array<double, GridView::dimension> result;
+            std::ranges::fill(result, GridFormat::Test::test_function<double>(x));
+            return result;
+        }, grid_view);
+        auto tensor = Dune::Functions::makeAnalyticGridViewFunction([] (const auto& x) {
+            std::array<double, GridView::dimension> row;
+            std::ranges::fill(row, GridFormat::Test::test_function<double>(x));
+            std::array<std::array<double, GridView::dimension>, GridView::dimension> result;
+            std::ranges::fill(result, row);
+            return result;
+        }, grid_view);
+        GridFormat::set_dune_function_point_field(writer, scalar, "dune_scalar_function");
+        GridFormat::set_dune_function_point_field(writer, vector, "dune_vector_function");
+        GridFormat::set_dune_function_point_field(writer, tensor, "dune_tensor_function");
+        GridFormat::set_dune_function_cell_field(writer, scalar, "dune_scalar_cell_function");
+        GridFormat::set_dune_function_cell_field(writer, vector, "dune_vector_cell_function");
+        GridFormat::set_dune_function_cell_field(writer, tensor, "dune_tensor_cell_function");
+#endif
+
         std::cout << "Wrote '" << writer.write(base_filename + "_order_" + std::to_string(order)) << "'" << std::endl;
     }
 }
@@ -103,7 +132,7 @@ void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
 int main(int argc, char** argv) {
     Dune::MPIHelper::instance(argc, argv);
     Dune::YaspGrid<2> grid_2d{{1.0, 1.0}, {2, 3}};
-    Dune::YaspGrid<3> grid_3d{{1.0, 1.0, 1.0}, {2, 3, 4}};
+    Dune::YaspGrid<3> grid_3d{{1.0, 1.0, 1.0}, {2, 3, 2}};
     test(grid_2d.leafGridView());
     test(grid_3d.leafGridView());
     test_lagrange(grid_2d.leafGridView());
