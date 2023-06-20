@@ -84,6 +84,7 @@ void test(const GridView& grid_view) {
 
 template<typename GridView>
 void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
+#if GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
     std::string base_filename =
         "dune_vtu_lagrange_"
         + std::to_string(GridView::dimension) + "d_in_"
@@ -123,9 +124,10 @@ void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
         GridFormat::Dune::set_cell_function(scalar, writer, "dune_scalar_cell_function");
         GridFormat::Dune::set_cell_function(vector, writer, "dune_vector_cell_function");
         GridFormat::Dune::set_cell_function(tensor, writer, "dune_tensor_cell_function");
-#endif
+#endif  // GRIDFORMAT_HAVE_DUNE_FUNCTIONS
 
         std::cout << "Wrote '" << writer.write(base_filename + "_order_" + std::to_string(order)) << "'" << std::endl;
+#endif  // GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
     }
 }
 
