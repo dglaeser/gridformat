@@ -159,12 +159,13 @@ namespace DolfinX {
 
 /*!
  * \ingroup PredefinedTraits
- * \brief Wrapper around a nodal dolfinx::FunctionSpace, exposing it as a mesh.
+ * \brief Wrapper around a nodal dolfinx::FunctionSpace, exposing it as a mesh
+ *        composed of lagrange elements with the order of the given function space.
  */
-class Mesh {
+class LagrangeMesh {
  public:
-    Mesh() = default;
-    Mesh(const dolfinx::fem::FunctionSpace& space) {
+    LagrangeMesh() = default;
+    LagrangeMesh(const dolfinx::fem::FunctionSpace& space) {
         if (!space.mesh() || !space.element())
             throw ValueError("Cannot construct mesh from space without mesh or element");
 
@@ -182,7 +183,7 @@ class Mesh {
     }
 
     void update(const dolfinx::fem::FunctionSpace& space) {
-        *this = Mesh{space};
+        *this = LagrangeMesh{space};
     }
 
     void clear() {
@@ -194,7 +195,7 @@ class Mesh {
         _set = false;
     }
 
-    static Mesh from(const dolfinx::fem::FunctionSpace& space) {
+    static LagrangeMesh from(const dolfinx::fem::FunctionSpace& space) {
         return {space};
     }
 
@@ -311,7 +312,7 @@ class Mesh {
  * \brief Insert the given function into the writer as point field.
  */
 template<typename Writer, Concepts::Scalar T>
-void set_point_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
+void set_point_function(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
     if (!writer.grid().is_compatible(f))
         throw ValueError("Grid passed to writer is incompatible with the given function");
     if (Detail::is_cellwise_constant(f))
@@ -333,7 +334,7 @@ void set_point_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::st
  * \brief Insert the given function into the writer as cell field.
  */
 template<typename Writer, Concepts::Scalar T>
-void set_cell_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
+void set_cell_function(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
     if (!writer.grid().is_compatible(f))
         throw ValueError("Grid passed to writer is incompatible with the given function");
     if (!Detail::is_cellwise_constant(f))
@@ -355,11 +356,11 @@ void set_cell_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::str
  * \brief Insert the given function into the writer as field.
  */
 template<typename Writer, Concepts::Scalar T>
-void set_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
+void set_function(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
     if (Detail::is_cellwise_constant(f))
-        set_cell_field(f, writer, name);
+        set_cell_function(f, writer, name);
     else
-        set_point_field(f, writer, name);
+        set_point_function(f, writer, name);
 }
 
 }  // namespace DolfinX
@@ -367,64 +368,64 @@ void set_field(const dolfinx::fem::Function<T>& f, Writer& writer, std::string n
 namespace Traits {
 
 template<>
-struct Cells<DolfinX::Mesh> {
-    static std::ranges::range auto get(const DolfinX::Mesh& mesh) {
+struct Cells<DolfinX::LagrangeMesh> {
+    static std::ranges::range auto get(const DolfinX::LagrangeMesh& mesh) {
         return mesh.cells();
     }
 };
 
 template<>
-struct CellType<DolfinX::Mesh, DolfinX::Cell> {
-    static GridFormat::CellType get(const DolfinX::Mesh& mesh, const DolfinX::Cell&) {
+struct CellType<DolfinX::LagrangeMesh, DolfinX::Cell> {
+    static GridFormat::CellType get(const DolfinX::LagrangeMesh& mesh, const DolfinX::Cell&) {
         return DolfinX::Detail::cell_type(mesh.cell_type());
     }
 };
 
 template<>
-struct CellPoints<DolfinX::Mesh, DolfinX::Cell> {
-    static std::ranges::range auto get(const DolfinX::Mesh& mesh, const DolfinX::Cell& cell) {
+struct CellPoints<DolfinX::LagrangeMesh, DolfinX::Cell> {
+    static std::ranges::range auto get(const DolfinX::LagrangeMesh& mesh, const DolfinX::Cell& cell) {
         return mesh.points(cell);
     }
 };
 
 template<>
-struct Points<DolfinX::Mesh> {
-    static std::ranges::range auto get(const DolfinX::Mesh& mesh) {
+struct Points<DolfinX::LagrangeMesh> {
+    static std::ranges::range auto get(const DolfinX::LagrangeMesh& mesh) {
         return mesh.points();
     }
 };
 
 template<>
-struct PointCoordinates<DolfinX::Mesh, DolfinX::Point> {
-    static std::ranges::range auto get(const DolfinX::Mesh& mesh, const DolfinX::Point& point) {
+struct PointCoordinates<DolfinX::LagrangeMesh, DolfinX::Point> {
+    static std::ranges::range auto get(const DolfinX::LagrangeMesh& mesh, const DolfinX::Point& point) {
         return mesh.position(point);
     }
 };
 
 template<>
-struct PointId<DolfinX::Mesh, DolfinX::Point> {
-    static std::integral auto get(const DolfinX::Mesh& mesh, const DolfinX::Point& point) {
+struct PointId<DolfinX::LagrangeMesh, DolfinX::Point> {
+    static std::integral auto get(const DolfinX::LagrangeMesh& mesh, const DolfinX::Point& point) {
         return mesh.id(point);
     }
 };
 
 template<>
-struct NumberOfPoints<DolfinX::Mesh> {
-    static std::integral auto get(const DolfinX::Mesh& mesh) {
+struct NumberOfPoints<DolfinX::LagrangeMesh> {
+    static std::integral auto get(const DolfinX::LagrangeMesh& mesh) {
         return mesh.number_of_points();
     }
 };
 
 template<>
-struct NumberOfCells<DolfinX::Mesh> {
-    static std::integral auto get(const DolfinX::Mesh& mesh) {
+struct NumberOfCells<DolfinX::LagrangeMesh> {
+    static std::integral auto get(const DolfinX::LagrangeMesh& mesh) {
         return mesh.number_of_cells();
     }
 };
 
 template<>
-struct NumberOfCellPoints<DolfinX::Mesh, DolfinX::Cell> {
-    static std::integral auto get(const DolfinX::Mesh& mesh, const DolfinX::Cell&) {
+struct NumberOfCellPoints<DolfinX::LagrangeMesh, DolfinX::Cell> {
+    static std::integral auto get(const DolfinX::LagrangeMesh& mesh, const DolfinX::Cell&) {
         return mesh.number_of_cell_points();
     }
 };
