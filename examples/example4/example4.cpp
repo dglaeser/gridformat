@@ -118,6 +118,14 @@ void write_higher_order_dune_function() {
     // ... and write the file
     const auto higher_order_filename = writer.write("dune_quadratic_function");
     std::cout << "Wrote '" << higher_order_filename << "'" << std::endl;
+
+    // The wrapped mesh stores points and connectivity information, and thus, uses
+    // additional memory. For time-dependent simulations, you may want to free that memory
+    // during time steps, and update the mesh again before the next write. Note that updating
+    // is also necessary in case the mesh changes adaptively. Both updating and clearing is
+    // exposed in the API of the GridFormat::Dune::LagrangeMesh:
+    lagrange_mesh.clear();
+    lagrange_mesh.update(grid_view);
 }
 
 

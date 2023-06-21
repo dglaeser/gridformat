@@ -120,7 +120,7 @@ void run_fake_simulation() {
     // additional memory. For time-dependent simulations, you may want to free that memory
     // during time steps, and update the mesh again before the next write. Note that updating
     // is also necessary in case the mesh changes adaptively. Both updating and clearing is
-    // exposed in the API of the dolfinx function space wrapper:
+    // exposed in the API of GridFormat::DolfinX::LagrangeMesh:
     lagrange_mesh.clear();
     lagrange_mesh.update(*scalar_nodal_function.function_space());
 }

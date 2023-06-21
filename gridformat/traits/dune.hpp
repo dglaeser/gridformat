@@ -500,11 +500,12 @@ class LagrangeMesh {
     }
 
     void clear() {
-        _local_points.clear();
         _points.clear();
         _cells.clear();
         _cell_topology_id.clear();
+        _local_points.clear();
         _codim_to_mapper.clear();
+        _element_to_running_index.clear();
     }
 
     std::size_t number_of_points() const { return _points.size(); }
