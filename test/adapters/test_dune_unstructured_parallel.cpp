@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
         return GridFormat::Test::test_function<double>(element.geometry().center());
     });
     const auto filename = writer.write("dune_pvtu_2d_in_2d");
-    if (GridFormat::Parallel::rank(mpi_helper.getCommunicator()))
+    if (GridFormat::Parallel::rank(mpi_helper.getCommunicator()) == 0)
         std::cout << "Wrote '" << filename << "'" << std::endl;
 
 #if GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
@@ -111,9 +111,9 @@ int main(int argc, char** argv) {
 #endif  // GRIDFORMAT_HAVE_DUNE_FUNCTIONS
 
         const auto lagrange_filename = lagrange_writer.write(
-            "dune_pvtu_2d_in_2d_lagrange_" + std::to_string(order)
+            "dune_pvtu_2d_in_2d_lagrange_order_" + std::to_string(order)
         );
-        if (GridFormat::Parallel::rank(mpi_helper.getCommunicator()))
+        if (GridFormat::Parallel::rank(mpi_helper.getCommunicator()) == 0)
             std::cout << "Wrote '" << lagrange_filename << "'" << std::endl;
     }
 #endif  // GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS

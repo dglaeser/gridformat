@@ -84,10 +84,19 @@ find_package(dune-geometry QUIET)
 find_package(dune-grid QUIET)
 find_package(dune-alugrid QUIET)
 find_package(dune-functions QUIET)
-find_package(Threads)  # dune links against it but doesn't seem to check for it itself
-find_package(TBB)  # dune links against it but doesn't seem to check for it itself
-find_package(MPI)  # dune links against it but doesn't seem to check for it itself
-find_package(PARMETIS)  # dune links against it but doesn't seem to check for it itself
+
+# dune may link against the following targets but doesn't seem to check for them downstream :/...
+# we need to also prepend the dune-common module path such that it uses the dune FindMETIS module,
+# because alugrid links against METIS::METIS, which is defined therein and it doesn't transitively
+# search for it... There seem to be several issues with the dune cmake setup, when installed in
+# non-standard locations at least...
+if (dune-common_FOUND)
+    list(PREPEND CMAKE_MODULE_PATH ${dune-common_MODULE_PATH})
+endif ()
+find_package(Threads)
+find_package(TBB)
+find_package(MPI)
+find_package(METIS)
 
 if (dune-grid_FOUND AND dune-common_FOUND AND dune-geometry_FOUND)
     message(STATUS

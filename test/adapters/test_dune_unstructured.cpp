@@ -14,6 +14,7 @@
 
 #if GRIDFORMAT_HAVE_DUNE_ALUGRID
 #pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Wuse-after-free"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"

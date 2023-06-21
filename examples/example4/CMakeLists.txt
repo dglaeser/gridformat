@@ -13,7 +13,9 @@ find_package(Threads)
 find_package(TBB)
 
 # Unfortunately, transitive linking seems to not work properly in dune, and
-# we need to find geometry and common manually here and link against them :/ ...
+# we need to find further modules manually here and link against them :/ ...
+# if you use GridFormat within a dune module as git-submodule or sub-folder
+# in a standard dune development environment, everything should work fine...
 find_package(dune-grid REQUIRED)
 find_package(dune-geometry REQUIRED)
 find_package(dune-common REQUIRED)

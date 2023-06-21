@@ -18,6 +18,8 @@
 #ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Warray-bounds"
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #pragma GCC diagnostic ignored "-Wnull-dereference"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
@@ -290,6 +292,7 @@ struct Ordinates<Dune::GridView<Traits>> {
 #ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wtype-limits"
 #endif  // GRIDFORMAT_IGNORE_DUNE_WARNINGS
 #include <dune/geometry/multilineargeometry.hh>
 #include <dune/geometry/referenceelements.hh>
