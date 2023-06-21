@@ -15,6 +15,7 @@ if (CGAL_FOUND)
     target_compile_definitions(test_cgal PRIVATE GRIDFORMAT_IGNORE_CGAL_WARNINGS=1)
 endif ()
 
+
 find_package(DOLFINX)
 gridformat_add_parallel_regression_test_if(DOLFINX_FOUND
     test_dolfinx
@@ -34,22 +35,12 @@ if (DOLFINX_FOUND)
     target_link_libraries(test_dolfinx_sequential dolfinx)
 endif ()
 
+
 find_package(deal.II)
 if (deal.II_FOUND)
     message(STATUS "Testing deal.ii traits with deal.ii version ${deal.II_VERSION}")
     deal_ii_initialize_cached_variables()
     set(GRIDFORMAT_HAVE_PARALLEL_DEAL_II ${MPI_FOUND})
-endif()
-
-find_package(mfem NAMES MFEM)
-gridformat_add_regression_test_if(mfem_FOUND
-    test_mfem
-    test_mfem.cpp
-    "mfem_*"
-)
-if (mfem_FOUND)
-    message(STATUS "Testing mfem traits with mfem version ${mfem_VERSION}")
-    target_link_libraries(test_mfem mfem)
 endif()
 
 function (gridformat_setup_deal_ii_target TARGET)
@@ -78,6 +69,19 @@ gridformat_add_parallel_regression_test_if(GRIDFORMAT_HAVE_PARALLEL_DEAL_II
 )
 gridformat_setup_deal_ii_target(test_dealii_sequential)
 gridformat_setup_deal_ii_target(test_dealii_parallel)
+
+
+find_package(mfem NAMES MFEM)
+gridformat_add_regression_test_if(mfem_FOUND
+    test_mfem
+    test_mfem.cpp
+    "mfem_*"
+)
+if (mfem_FOUND)
+    message(STATUS "Testing mfem traits with mfem version ${mfem_VERSION}")
+    target_link_libraries(test_mfem mfem)
+endif()
+
 
 find_package(dune-common QUIET)
 find_package(dune-geometry QUIET)
@@ -169,9 +173,14 @@ if (${DUNE_FOUND})
         )
 
         if (dune-alugrid_FOUND)
+            # clang-16 fails to compile with alugrid included :/
+            set(GRIDFORMAT_HAVE_ALUGRID true)
+            if (${CMAKE_CXX_COMPILER} MATCHES "clang")
+                set(GRIDFORMAT_HAVE_ALUGRID false)
+            endif ()
             target_link_libraries(${dune_target} dunealugrid)
             target_include_directories(${dune_target} PRIVATE ${dune-alugrid_INCLUDE_DIRS})
-            target_compile_definitions(${dune_target} PUBLIC GRIDFORMAT_HAVE_DUNE_ALUGRID=1)
+            target_compile_definitions(${dune_target} PUBLIC GRIDFORMAT_HAVE_DUNE_ALUGRID=${GRIDFORMAT_HAVE_ALUGRID})
         endif ()
 
         if (dune-functions_FOUND)
