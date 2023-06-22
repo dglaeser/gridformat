@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="GridFormat::Traits\l::CellPoints\< Dune::\lGridView\< Traits \>, DuneDetail\l::Element\< Dune::GridView\<\l Traits \> \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1Traits_1_1CellPoints_3_01Dune_1_1GridView_3_01Traits_01_4_00_01DuneDetail_1_e589cfc75a52019bf0ee3db3dbd5361e.html",tooltip=" "];
+  Node0 [label="GridFormat::Traits\l::CellPoints\< dolfinx\l::mesh::Mesh, DolfinX\l::Cell \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1Traits_1_1CellPoints_3_01dolfinx_1_1mesh_1_1Mesh_00_01DolfinX_1_1Cell_01_4.html",tooltip=" "];
 }

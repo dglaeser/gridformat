@@ -146,6 +146,8 @@ digraph "/__w/gridformat/gridformat/gridformat/vtk/pvtr_writer.hpp"
   Node45 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node45 -> Node50 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node50 [label="gridformat/encoding\l/base64.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$base64_8hpp.html",tooltip="Encoder and stream using base64."];
+  Node50 -> Node16 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node50 -> Node17 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node50 -> Node29 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node50 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node50 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

@@ -15,8 +15,11 @@ var group__Encoding =
       [ "AsciiOutputStream", "classGridFormat_1_1AsciiOutputStream.html#a92a234c1bb36684a300384c14685d065", null ],
       [ "write", "classGridFormat_1_1AsciiOutputStream.html#a426cf50b78f47de0206e6f0507badc06", null ]
     ] ],
+    [ "Base64EncoderOptions", "structGridFormat_1_1Base64EncoderOptions.html", [
+      [ "num_cached_buffers", "structGridFormat_1_1Base64EncoderOptions.html#a3a4f39c2fc7f18903b5006d3cbf3381a", null ]
+    ] ],
     [ "Base64Stream", "classGridFormat_1_1Base64Stream.html", [
-      [ "Base64Stream", "classGridFormat_1_1Base64Stream.html#a52337f9faa8f17d5389a637b7ca7bd9e", null ],
+      [ "Base64Stream", "classGridFormat_1_1Base64Stream.html#aac7f7bb86d08b4516bcb653409b74a19", null ],
       [ "write", "classGridFormat_1_1Base64Stream.html#a1bccc03e9812bd5acd93f400934a483b", null ]
     ] ],
     [ "EncodedField", "classGridFormat_1_1EncodedField.html", [

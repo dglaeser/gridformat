@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="GridFormat::VTKHDF\l::HDF5File\< Communicator \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1VTKHDF_1_1HDF5File.html",tooltip=" "];
+  Node0 [label="GridFormat::VTKHDF\l::DataSetSlice",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1VTKHDF_1_1DataSetSlice.html",tooltip=" "];
 }

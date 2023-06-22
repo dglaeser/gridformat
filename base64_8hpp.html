@@ -123,7 +123,6 @@ $(document).ready(function(){initNavTree('base64_8hpp.html',''); initResizable()
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">base64.hpp File Reference<div class="ingroups"><a class="el" href="group__Encoding.html">Encoding</a></div></div>  </div>
@@ -132,7 +131,9 @@ $(document).ready(function(){initNavTree('base64_8hpp.html',''); initResizable()
 
 <p>Encoder and stream using base64.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;cassert&gt;</code><br />
+<div class="textblock"><code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;gridformat/common/exceptions.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/output_stream.hpp&gt;</code><br />
@@ -153,18 +154,14 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Base64EncoderOptions.html">GridFormat::Base64EncoderOptions</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Base64Stream.html">GridFormat::Base64Stream&lt; OStream &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper around a given stream to write output encoded with base64.  <a href="classGridFormat_1_1Base64Stream.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Encoding_1_1Base64.html">GridFormat::Encoding::Base64</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structGridFormat_1_1Encoding_1_1Base64.html" title="Base64 encoder.">Base64</a> encoder.  <a href="structGridFormat_1_1Encoding_1_1Base64.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:a374a1f4f5cf7ee3486bba407a091ce53"><td class="memItemLeft" align="right" valign="top"><a id="a374a1f4f5cf7ee3486bba407a091ce53"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>GRIDFORMAT_BASE64_NUM_CACHED_TRIPLETS</b>&#160;&#160;&#160;4000</td></tr>
-<tr class="separator:a374a1f4f5cf7ee3486bba407a091ce53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>

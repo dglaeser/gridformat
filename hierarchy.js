@@ -6,6 +6,7 @@ var hierarchy =
     [ "GridFormat::Encoding::Ascii", "structGridFormat_1_1Encoding_1_1Ascii.html", null ],
     [ "GridFormat::AsciiFormatOptions", "structGridFormat_1_1AsciiFormatOptions.html", null ],
     [ "GridFormat::Encoding::Base64", "structGridFormat_1_1Encoding_1_1Base64.html", null ],
+    [ "GridFormat::Base64EncoderOptions", "structGridFormat_1_1Base64EncoderOptions.html", null ],
     [ "GridFormat::Compression::Blocks< HeaderType >", "structGridFormat_1_1Compression_1_1Blocks.html", null ],
     [ "GridFormat::DolfinX::Cell", "structGridFormat_1_1DolfinX_1_1Cell.html", null ],
     [ "GridFormat::Dune::LagrangeMesh< GV >::Cell", "structGridFormat_1_1Dune_1_1LagrangeMesh_1_1Cell.html", null ],

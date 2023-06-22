@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="GridFormat::Dune::Lagrange\lMesh\< GV \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1Dune_1_1LagrangeMesh.html",tooltip="Exposes a Dune::GridView as a mesh composed of lagrange cells with the given order...."];
+  Node0 [label="GridFormat::Dune::Lagrange\lMesh\< GridView \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1Dune_1_1LagrangeMesh.html",tooltip=" "];
 }

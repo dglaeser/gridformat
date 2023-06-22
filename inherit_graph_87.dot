@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="GridFormat::Traits\l::Points\< dolfinx::mesh\l::Mesh \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1Traits_1_1Points_3_01dolfinx_1_1mesh_1_1Mesh_01_4.html",tooltip=" "];
+  Node0 [label="GridFormat::Traits\l::Points\< DolfinX::Lagrange\lMesh \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1Traits_1_1Points_3_01DolfinX_1_1LagrangeMesh_01_4.html",tooltip=" "];
 }

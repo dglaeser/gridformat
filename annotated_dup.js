@@ -167,6 +167,7 @@ var annotated_dup =
       [ "VTKXMLTimeSeriesWriter", "classGridFormat_1_1VTKXMLTimeSeriesWriter.html", "classGridFormat_1_1VTKXMLTimeSeriesWriter" ],
       [ "AsciiFormatOptions", "structGridFormat_1_1AsciiFormatOptions.html", "structGridFormat_1_1AsciiFormatOptions" ],
       [ "AsciiOutputStream", "classGridFormat_1_1AsciiOutputStream.html", "classGridFormat_1_1AsciiOutputStream" ],
+      [ "Base64EncoderOptions", "structGridFormat_1_1Base64EncoderOptions.html", "structGridFormat_1_1Base64EncoderOptions" ],
       [ "Base64Stream", "classGridFormat_1_1Base64Stream.html", "classGridFormat_1_1Base64Stream" ],
       [ "EncodedField", "classGridFormat_1_1EncodedField.html", "classGridFormat_1_1EncodedField" ],
       [ "RawBinaryStream", "classGridFormat_1_1RawBinaryStream.html", "classGridFormat_1_1RawBinaryStream" ]

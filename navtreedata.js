@@ -32,7 +32,6 @@ var NAVTREE =
       ] ],
       [ "Compatibility with user-defined grids", "index.html#compatibility-with-userdefined-grids", null ],
       [ "Predefined traits", "index.html#predefined-traits", null ],
-      [ "Caveats", "index.html#caveats", null ],
       [ "Contribution Guidelines", "index.html#contribution-guidelines", [
         [ "Development and test suite", "index.html#development-and-test-suite", null ]
       ] ],
@@ -62,8 +61,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"classGridFormat_1_1VTK_1_1XMLWriterBase.html#a4e907a7c318805a1d31746777b90aef9",
-"structGridFormat_1_1FileFormat_1_1FormatWithOptions.html#a9ac96219bc83305b1a6a6dfe2b2c1684"
+"classGridFormat_1_1VTK_1_1XMLWriterBase.html#a5e8f7423b0013d548b6df2e1bc2a9bfc",
+"structGridFormat_1_1FileFormat_1_1FormatWithOptions.html#a992f4d97822f3bd87129d0fb7c4d4fda"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
