@@ -42,8 +42,8 @@ namespace GridFormat {
 namespace VTK {
 
 struct HDFTransientOptions {
-    bool static_grid = false;
-    bool static_meta_data = false;
+    bool static_grid = false; //!< Set to true if the metadata is same for all time steps (will only be written once)
+    bool static_meta_data = false; //!< Set to true the grid is the same for all time steps (will only be written once)
 };
 
 }  // namespace VTK
