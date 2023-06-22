@@ -9,6 +9,10 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #include <dune/grid/yaspgrid.hh>
+
+#if GRIDFORMAT_HAVE_DUNE_FUNCTIONS
+#include <dune/functions/gridfunctions/analyticgridviewfunction.hh>
+#endif  // GRIDFORMAT_HAVE_DUNE_FUNCTIONS
 #pragma GCC diagnostic pop
 
 #include <gridformat/vtk/pvtu_writer.hpp>
@@ -65,7 +69,54 @@ int main(int argc, char** argv) {
     writer.set_cell_field("cfunc", [&] (const auto& element) {
         return GridFormat::Test::test_function<double>(element.geometry().center());
     });
-    writer.write("dune_pvtu_2d_in_2d");
+    const auto filename = writer.write("dune_pvtu_2d_in_2d");
+    if (GridFormat::Parallel::rank(mpi_helper.getCommunicator()) == 0)
+        std::cout << "Wrote '" << filename << "'" << std::endl;
+
+#if GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
+    for (unsigned int order : {1, 2, 3}) {
+        GridFormat::Dune::LagrangeMesh mesh{grid_view, order};
+        GridFormat::PVTUWriter lagrange_writer{mesh, mpi_helper.getCommunicator()};
+        GridFormat::Test::add_meta_data(lagrange_writer);
+        lagrange_writer.set_point_field("pfunc", [&] (const auto& point) {
+            return GridFormat::Test::test_function<double>(mesh.position(point));
+        });
+        lagrange_writer.set_cell_field("cfunc", [&] (const auto& cell) {
+            return GridFormat::Test::test_function<double>(mesh.geometry(cell).center());
+        });
+
+#if GRIDFORMAT_HAVE_DUNE_FUNCTIONS
+        using GridView = std::decay_t<decltype(grid_view)>;
+        auto scalar = Dune::Functions::makeAnalyticGridViewFunction([] (const auto& x) {
+            return GridFormat::Test::test_function<double>(x);
+        }, grid_view);
+        auto vector = Dune::Functions::makeAnalyticGridViewFunction([] (const auto& x) {
+            std::array<double, GridView::dimension> result;
+            std::ranges::fill(result, GridFormat::Test::test_function<double>(x));
+            return result;
+        }, grid_view);
+        auto tensor = Dune::Functions::makeAnalyticGridViewFunction([] (const auto& x) {
+            std::array<double, GridView::dimension> row;
+            std::ranges::fill(row, GridFormat::Test::test_function<double>(x));
+            std::array<std::array<double, GridView::dimension>, GridView::dimension> result;
+            std::ranges::fill(result, row);
+            return result;
+        }, grid_view);
+        GridFormat::Dune::set_point_function(scalar, lagrange_writer, "dune_scalar_function");
+        GridFormat::Dune::set_point_function(vector, lagrange_writer, "dune_vector_function");
+        GridFormat::Dune::set_point_function(tensor, lagrange_writer, "dune_tensor_function");
+        GridFormat::Dune::set_cell_function(scalar, lagrange_writer, "dune_scalar_cell_function");
+        GridFormat::Dune::set_cell_function(vector, lagrange_writer, "dune_vector_cell_function");
+        GridFormat::Dune::set_cell_function(tensor, lagrange_writer, "dune_tensor_cell_function");
+#endif  // GRIDFORMAT_HAVE_DUNE_FUNCTIONS
+
+        const auto lagrange_filename = lagrange_writer.write(
+            "dune_pvtu_2d_in_2d_lagrange_order_" + std::to_string(order)
+        );
+        if (GridFormat::Parallel::rank(mpi_helper.getCommunicator()) == 0)
+            std::cout << "Wrote '" << lagrange_filename << "'" << std::endl;
+    }
+#endif  // GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
 
     run_unit_tests(grid_view);
 

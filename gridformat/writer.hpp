@@ -86,9 +86,11 @@ namespace Detail {
  *       their lifetime is bound to the lifetime of the given grid.
  * \tparam Grid The type of grid which should be written out.
  */
-template<Concepts::Grid Grid>
+template<Concepts::Grid G>
 class Writer {
  public:
+    using Grid = G;
+
     /*!
      * \brief Construct a sequential grid file writer.
      * \param f The file format which should be written.

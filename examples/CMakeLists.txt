@@ -15,8 +15,8 @@ else ()
     message(STATUS "Skipping example 3 because CGAL was not found")
 endif ()
 
-find_package(dune-grid)
-if (dune-grid_FOUND)
+find_package(dune-functions)
+if (dune-functions_FOUND)
     # unfortunately we have to repeat those here :/
     # see CMakeLists.txt of example4 for more details
     find_package(Threads)

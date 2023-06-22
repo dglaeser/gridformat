@@ -41,7 +41,8 @@ INPUT                 += @CMAKE_SOURCE_DIR@/README.md \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/writer.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/vtk/ \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/encoding/ \
-                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/compression/
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/compression/ \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/traits/
 PROJECT_BRIEF          = "I/O-Library for grid-like data structures"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       =
@@ -56,7 +57,8 @@ PREDEFINED             = DOXYGEN \
                          GRIDFORMAT_HAVE_LZ4 \
                          GRIDFORMAT_HAVE_LZMA \
                          GRIDFORMAT_HAVE_ZLIB \
-                         GRIDFORMAT_HAVE_HIGH_FIVE
+                         GRIDFORMAT_HAVE_HIGH_FIVE \
+                         GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
 LAYOUT_FILE            = @DOXYGEN_SOURCE_DIR@/DoxygenLayout.xml
 HTML_HEADER            = @DOXYGEN_SOURCE_DIR@/header.html
 HTML_FOOTER            = @DOXYGEN_SOURCE_DIR@/footer.html

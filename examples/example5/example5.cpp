@@ -91,8 +91,8 @@ void run_fake_simulation() {
     // order), we can use a wrapper that is provided in `GridFormat`, and for which all the
     // required traits are specialized. We construct it with one of the nodal spaces, and then
     // we can add data from the other functions to the writer...
-    auto out_mesh = GridFormat::DolfinX::Mesh::from(*scalar_nodal_function.function_space());
-    GridFormat::Writer writer{GridFormat::vtu, out_mesh, mesh->comm()};
+    auto lagrange_mesh = GridFormat::DolfinX::LagrangeMesh::from(*scalar_nodal_function.function_space());
+    GridFormat::Writer writer{GridFormat::vtu, lagrange_mesh, mesh->comm()};
     writer.set_cell_field("rank", [&] (const auto& c) {
         return GridFormat::Parallel::rank(mesh->comm());
     });
@@ -101,16 +101,16 @@ void run_fake_simulation() {
     // However, you have to specify the rank (0 for scalars; 1 for vectors; 2 for tensors) of
     // the field at compile-time.
     writer.set_point_field("scalar_nodal", [&] (const auto& p) {
-        return out_mesh.evaluate<0>(scalar_nodal_function, p);
+        return lagrange_mesh.evaluate<0>(scalar_nodal_function, p);
     });
 
     // But there are predefined convenience functions to add a given function to a writer
-    GridFormat::DolfinX::set_point_field(vector_nodal_function, writer);
-    GridFormat::DolfinX::set_cell_field(scalar_cell_function, writer);
+    GridFormat::DolfinX::set_point_function(vector_nodal_function, writer);
+    GridFormat::DolfinX::set_cell_function(scalar_cell_function, writer);
 
     // There is also a function that can automatically detect if the given function is nodal
     // or cell-wise and add the field as point/cell field correspondingly:
-    GridFormat::DolfinX::set_field(vector_cell_function, writer);
+    GridFormat::DolfinX::set_function(vector_cell_function, writer);
 
     const auto space_filename = writer.write("dolfinx_spaces");
     if (GridFormat::Parallel::rank(mesh->comm()) == 0)
@@ -120,9 +120,9 @@ void run_fake_simulation() {
     // additional memory. For time-dependent simulations, you may want to free that memory
     // during time steps, and update the mesh again before the next write. Note that updating
     // is also necessary in case the mesh changes adaptively. Both updating and clearing is
-    // exposed in the API of the dolfinx function space wrapper:
-    out_mesh.clear();
-    out_mesh.update(*scalar_nodal_function.function_space());
+    // exposed in the API of GridFormat::DolfinX::LagrangeMesh:
+    lagrange_mesh.clear();
+    lagrange_mesh.update(*scalar_nodal_function.function_space());
 }
 
 int main(int argc, char** argv) {

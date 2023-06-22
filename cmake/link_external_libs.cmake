@@ -65,3 +65,10 @@ if (HighFive_FOUND OR GRIDFORMAT_HIGHFIVE_SOURCE_INCLUDED)
         set(GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE true)
     endif ()
 endif ()
+
+
+find_package(dune-localfunctions QUIET)
+if (dune-localfunctions_FOUND)
+    target_compile_definitions(${PROJECT_NAME} INTERFACE GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS)
+    set(GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS true)
+endif ()

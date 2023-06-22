@@ -287,14 +287,11 @@ void write() {
                 dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_vertex)
             ), "shared_vertex");
 
-            if (is_sequential()) {
+            if (is_sequential())
                 write_with(
                     GridFormat::VTUWriter{higher_order_mesh<dim>(ct)}.with_encoding(GridFormat::Encoding::ascii),
                     get_filename(ct, "higher_order")
                 );
-                dolfinx::io::VTKFile file{MPI_COMM_WORLD, std::string{"mesh_"} + dolfinx::mesh::to_string(ct) + ".pvd", "w"};
-                file.write(higher_order_mesh<dim>(ct), 0.0);
-            }
         }
     }
 }
@@ -356,21 +353,27 @@ int main(int argc, char** argv) {
         auto scalar_cell_function = make_function(make_hex_function_space(mesh, 0, 1));
         auto vector_cell_function = make_function(make_hex_function_space(mesh, 0, 3));
 
-        auto out_mesh = GridFormat::DolfinX::Mesh::from(*scalar_nodal_function.function_space());
-        GridFormat::PVTUWriter writer{out_mesh, MPI_COMM_WORLD};
+        auto lagrange_mesh = GridFormat::DolfinX::LagrangeMesh::from(*scalar_nodal_function.function_space());
+        GridFormat::PVTUWriter writer{lagrange_mesh, MPI_COMM_WORLD};
         GridFormat::Test::add_meta_data(writer);
-        writer.set_point_field("pfunc", [&] (const auto& p) { return out_mesh.evaluate(scalar_nodal_function, p); });
-        writer.set_point_field("pfunc_vec", [&] (const auto& p) { return out_mesh.evaluate<1>(vector_nodal_function, p); });
-        writer.set_cell_field("cfunc", [&] (const auto& p) { return out_mesh.evaluate(scalar_cell_function, p); });
-        writer.set_cell_field("cfunc_vec", [&] (const auto& p) { return out_mesh.evaluate<1>(vector_cell_function, p); });
-        GridFormat::DolfinX::set_point_field(scalar_nodal_function, writer, "pfunc_via_freefunction");
-        GridFormat::DolfinX::set_point_field(vector_nodal_function, writer, "pfunc_vec_via_freefunction");
-        GridFormat::DolfinX::set_cell_field(scalar_cell_function, writer, "cfunc_via_freefunction");
-        GridFormat::DolfinX::set_cell_field(vector_cell_function, writer, "cfunc_vec_via_freefunction");
-        GridFormat::DolfinX::set_field(scalar_nodal_function, writer, "pfunc_via_auto_freefunction");
-        GridFormat::DolfinX::set_field(vector_nodal_function, writer, "pfunc_vec_via_auto_freefunction");
-        GridFormat::DolfinX::set_field(scalar_cell_function, writer, "cfunc_via_auto_freefunction");
-        GridFormat::DolfinX::set_field(vector_cell_function, writer, "cfunc_vec_via_auto_freefunction");
+        writer.set_point_field("pfunc", [&] (const auto& p) { return lagrange_mesh.evaluate(scalar_nodal_function, p); });
+        writer.set_point_field("pfunc_vec", [&] (const auto& p) { return lagrange_mesh.evaluate<1>(vector_nodal_function, p); });
+        writer.set_cell_field("cfunc", [&] (const auto& p) { return lagrange_mesh.evaluate(scalar_cell_function, p); });
+        writer.set_cell_field("cfunc_vec", [&] (const auto& p) { return lagrange_mesh.evaluate<1>(vector_cell_function, p); });
+        GridFormat::DolfinX::set_point_function(scalar_nodal_function, writer, "pfunc_via_freefunction");
+        GridFormat::DolfinX::set_point_function(vector_nodal_function, writer, "pfunc_vec_via_freefunction");
+        GridFormat::DolfinX::set_cell_function(scalar_cell_function, writer, "cfunc_via_freefunction");
+        GridFormat::DolfinX::set_cell_function(vector_cell_function, writer, "cfunc_vec_via_freefunction");
+        GridFormat::DolfinX::set_function(scalar_nodal_function, writer, "pfunc_via_auto_freefunction");
+        GridFormat::DolfinX::set_function(vector_nodal_function, writer, "pfunc_vec_via_auto_freefunction");
+        GridFormat::DolfinX::set_function(scalar_cell_function, writer, "cfunc_via_auto_freefunction");
+        GridFormat::DolfinX::set_function(vector_cell_function, writer, "cfunc_vec_via_auto_freefunction");
+
+        const auto prec = GridFormat::float32;
+        GridFormat::DolfinX::set_point_function(scalar_nodal_function, writer, "pfunc_float32_via_freefunction", prec);
+        GridFormat::DolfinX::set_cell_function(scalar_cell_function, writer, "cfunc_float32_via_freefunction", prec);
+        GridFormat::DolfinX::set_function(scalar_cell_function, writer, "cfunc_float32_via_auto_freefunction", prec);
+
         const auto filename = writer.write(get_filename(mesh->topology().cell_type(), "from_space"));
         if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
             std::cout << "Wrote '" << filename << "'" << std::endl;
@@ -385,9 +388,9 @@ int main(int argc, char** argv) {
         scalar_nodal_function.name = "from_point_function_name";
         scalar_cell_function.name = "from_cell_function_name";
         "field_setter_name_from_function"_test = [&] () {
-            GridFormat::DolfinX::set_point_field(scalar_nodal_function, writer);
-            GridFormat::DolfinX::set_cell_field(scalar_cell_function, writer);
-            GridFormat::DolfinX::set_field(vector_nodal_function, writer);
+            GridFormat::DolfinX::set_point_function(scalar_nodal_function, writer);
+            GridFormat::DolfinX::set_cell_function(scalar_cell_function, writer);
+            GridFormat::DolfinX::set_function(vector_nodal_function, writer);
             expect(std::ranges::any_of(point_fields(writer), [] (const auto& pair) {
                 return pair.first == "from_point_function_name";
             }));
@@ -400,15 +403,15 @@ int main(int argc, char** argv) {
         };
 
         "adapter_clear"_test = [&] () {
-            out_mesh.clear();
-            expect(throws<GridFormat::InvalidState>([&] () { out_mesh.cells(); }));
-            expect(throws<GridFormat::InvalidState>([&] () { out_mesh.points(); }));
+            lagrange_mesh.clear();
+            expect(throws<GridFormat::InvalidState>([&] () { lagrange_mesh.cells(); }));
+            expect(throws<GridFormat::InvalidState>([&] () { lagrange_mesh.points(); }));
         };
 
         "adapter_update"_test = [&] () {
-            out_mesh.update(*scalar_nodal_function.function_space());
-            out_mesh.cells();
-            out_mesh.points();
+            lagrange_mesh.update(*scalar_nodal_function.function_space());
+            lagrange_mesh.cells();
+            lagrange_mesh.points();
         };
 
         const auto different_mesh = std::make_shared<dolfinx::mesh::Mesh>(dolfinx::mesh::create_box(
@@ -425,27 +428,27 @@ int main(int argc, char** argv) {
 
         "field_setter_throws_with_different_mesh"_test = [&] () {
             expect(throws<GridFormat::ValueError>([&] () {
-                GridFormat::DolfinX::set_point_field(nodal_function_different_mesh, writer);
+                GridFormat::DolfinX::set_point_function(nodal_function_different_mesh, writer);
             }));
             expect(throws<GridFormat::ValueError>([&] () {
-                GridFormat::DolfinX::set_cell_field(cell_function_different_mesh, writer);
+                GridFormat::DolfinX::set_cell_function(cell_function_different_mesh, writer);
             }));
             expect(throws<GridFormat::ValueError>([&] () {
-                GridFormat::DolfinX::set_field(cell_function_different_mesh, writer);
+                GridFormat::DolfinX::set_function(cell_function_different_mesh, writer);
             }));
         };
 
         "field_setter_throws_for_nonmatching_space"_test = [&] () {
             expect(throws<GridFormat::ValueError>([&] () {
-                GridFormat::DolfinX::set_point_field(scalar_cell_function, writer);
+                GridFormat::DolfinX::set_point_function(scalar_cell_function, writer);
             }));
             expect(throws<GridFormat::ValueError>([&] () {
-                GridFormat::DolfinX::set_cell_field(scalar_nodal_function, writer);
+                GridFormat::DolfinX::set_cell_function(scalar_nodal_function, writer);
             }));
         };
 
         "dolfinx_adapter_fails_to_construct_from_p0_space"_test = [&] () {
-            expect(throws([&] () { GridFormat::DolfinX::Mesh::from(*scalar_cell_function.function_space()); }));
+            expect(throws([&] () { GridFormat::DolfinX::LagrangeMesh::from(*scalar_cell_function.function_space()); }));
         };
     }
 

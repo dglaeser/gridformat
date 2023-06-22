@@ -187,6 +187,9 @@ struct VTKXMLTimeSeries : VTKXMLFormatBase<VTKXMLTimeSeries<VTX>> {};
  * \note This file format is only available if HighFive is found on the system. If libhdf5 is found on the system,
  *       Highfive is automatically included when pulling the repository recursively, or, when using cmake's
  *       FetchContent mechanism.
+ * \note A bug in VTK/ParaView related to reading cell data arrays has been fixed in
+ *       <a href="https://gitlab.kitware.com/vtk/vtk/-/merge_requests/10147">VTK merge request 10147</a>.
+ *       The fix is included in VTK>9.2.6 and ParaView>5.11.0.
  */
 struct VTKHDFImage {};
 

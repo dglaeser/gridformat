@@ -59,6 +59,14 @@ class MDIndex {
     : MDIndex(layout.dimension())
     {}
 
+    auto begin() const {
+        return _indices.begin();
+    }
+
+    auto end() const {
+        return _indices.end();
+    }
+
     std::size_t size() const {
         return _indices.size();
     }
@@ -158,6 +166,14 @@ class MDIndexRange {
 
     const MDLayout& layout() const {
         return _layout;
+    }
+
+    std::size_t size() const {
+        return _layout.number_of_entries();
+    }
+
+    std::size_t size(unsigned int codim) const {
+        return _layout.extent(codim);
     }
 
  private:

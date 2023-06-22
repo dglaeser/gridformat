@@ -67,18 +67,24 @@ def _install_pkg(name, opts: dict) -> None:
         os.mkdir("dune_libs")
         os.chdir("dune_libs")
         with open("dune.opts", "w") as opts_file:
-            prefix_arg = (
+            prefix_arg = str(
                 f"-DCMAKE_INSTALL_PREFIX={opts['install_prefix']}"
                 if opts.get("install_prefix") is not None
                 else ""
             )
+            print(f"Installing dune with prefix argument '{prefix_arg}'")
             opts_file.write(f'CMAKE_FLAGS="-DCMAKE_BUILD_TYPE=Release -DDUNE_ENABLE_PYTHONBINDINGS=0 {prefix_arg}"')
-            _clone_sources("https://gitlab.dune-project.org/core/dune-common.git", f"releases/{PACKAGES['dune']}")
-            _clone_sources("https://gitlab.dune-project.org/core/dune-geometry.git", f"releases/{PACKAGES['dune']}")
-            _clone_sources("https://gitlab.dune-project.org/core/dune-grid.git", f"releases/{PACKAGES['dune']}")
-            subprocess.run(["dune-common/bin/dunecontrol", "--opts=dune.opts", "configure"], check=True)
-            subprocess.run(["dune-common/bin/dunecontrol", "--opts=dune.opts", "make", "-j4"], check=True)
-            subprocess.run(["dune-common/bin/dunecontrol", "--opts=dune.opts", "make", "install"], check=True)
+        _clone_sources("https://gitlab.dune-project.org/core/dune-common.git", f"releases/{PACKAGES['dune']}")
+        _clone_sources("https://gitlab.dune-project.org/core/dune-geometry.git", f"releases/{PACKAGES['dune']}")
+        _clone_sources("https://gitlab.dune-project.org/core/dune-grid.git", f"releases/{PACKAGES['dune']}")
+        _clone_sources("https://gitlab.dune-project.org/core/dune-localfunctions.git", f"releases/{PACKAGES['dune']}")
+        _clone_sources("https://gitlab.dune-project.org/core/dune-istl.git", f"releases/{PACKAGES['dune']}")
+        _clone_sources("https://gitlab.dune-project.org/extensions/dune-alugrid.git", f"releases/{PACKAGES['dune']}")
+        _clone_sources("https://gitlab.dune-project.org/staging/dune-typetree.git", f"releases/{PACKAGES['dune']}")
+        _clone_sources("https://gitlab.dune-project.org/staging/dune-functions.git", f"releases/{PACKAGES['dune']}")
+        subprocess.run(["dune-common/bin/dunecontrol", "--opts=dune.opts", "configure"], check=True)
+        subprocess.run(["dune-common/bin/dunecontrol", "--opts=dune.opts", "make", "-j4"], check=True)
+        subprocess.run(["dune-common/bin/dunecontrol", "--opts=dune.opts", "make", "install"], check=True)
         os.chdir(cwd)
         shutil.rmtree("dune_libs")
     elif name == "mfem":
