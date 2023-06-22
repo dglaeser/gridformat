@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="GridFormat::VTK::Appendix\lStreamObserver",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1VTK_1_1AppendixStreamObserver.html",tooltip="Observer for appendices. Allows registering the offsets when streaming all fields that are part of th..."];
+  Node0 [label="GridFormat::FileFormat\l::VTKHDFUnstructured",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1FileFormat_1_1VTKHDFUnstructured.html",tooltip="Selector for the vtk-hdf file format for unstructured grids. For more information,..."];
 }

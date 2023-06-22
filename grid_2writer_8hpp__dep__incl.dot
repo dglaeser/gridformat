@@ -50,4 +50,6 @@ digraph "/__w/gridformat/gridformat/gridformat/grid/writer.hpp"
   Node17 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node18 [label="/__w/gridformat/gridformat\l/gridformat/vtk/pvtu_writer.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pvtu__writer_8hpp.html",tooltip="Writer for parallel .pvtu files."];
   Node18 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="/__w/gridformat/gridformat\l/gridformat/traits/dolfinx.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$dolfinx_8hpp.html",tooltip="Traits specializations for dolfinx meshes"];
 }

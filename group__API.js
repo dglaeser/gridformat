@@ -28,10 +28,11 @@ var group__API =
       [ "operator()", "structGridFormat_1_1FileFormat_1_1TimeSeriesClosure.html#ab49a346abe3a1d04604d066d79bfd4e9", null ]
     ] ],
     [ "Writer", "classGridFormat_1_1Writer.html", [
-      [ "requires", "classGridFormat_1_1Writer.html#a1ca0765c3f8cd7eb0150aa3bdbe0272c", null ],
-      [ "_time_series_writer", "classGridFormat_1_1Writer.html#a768ed858e9238ddb8b8d81c7659833d2", null ],
-      [ "grid", "classGridFormat_1_1Writer.html#a63478dabf27c1784b2c0468b317c0d41", null ],
-      [ "grid", "classGridFormat_1_1Writer.html#a264e9d211a53ca773e62578fba7ac0df", null ]
+      [ "Grid", "classGridFormat_1_1Writer.html#aa59fe951951b19dc39ffa46545e7afac", null ],
+      [ "requires", "classGridFormat_1_1Writer.html#a679f5271a5b8447961f3864e43a4a903", null ],
+      [ "_time_series_writer", "classGridFormat_1_1Writer.html#a58c7fa70c07721db8b0dbf5d3ceaca15", null ],
+      [ "grid", "classGridFormat_1_1Writer.html#ad16318ed4f8f3ad0bf53b2c64d17a44a", null ],
+      [ "grid", "classGridFormat_1_1Writer.html#a215404e43ca842b19e5c6aa58cd3392c", null ]
     ] ],
     [ "default_for", "group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5", null ],
     [ "default_for", "group__API.html#gaa73c41aeab2861bb23872f1498cb0eb4", null ]

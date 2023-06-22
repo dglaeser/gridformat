@@ -4,5 +4,7 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="GridFormat::ImageGrid\l\< dim, CoordinateType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1ImageGrid.html",tooltip="Predefined grid implementation that represents a structured, equispaced grid."];
+  Node0 [label="GridFormat::FileFormat\l::FormatWithOptions\< VTKHDFTransient,\l VTK::HDFTransientOptions \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1FileFormat_1_1FormatWithOptions.html",tooltip=" "];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="GridFormat::FileFormat\l::VTKHDFTransient",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1FileFormat_1_1VTKHDFTransient.html",tooltip="Selector for the transient vtk-hdf file format with automatic deduction of the flavour...."];
 }

@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="GridFormat::PVTK::Structured\lParallelGridHelper\< Communicator \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFormat_1_1PVTK_1_1StructuredParallelGridHelper.html",tooltip=" "];
+  Node0 [label="GridFormat::FileFormat\l::TimeSeriesClosure",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structGridFormat_1_1FileFormat_1_1TimeSeriesClosure.html",tooltip="Closure for time series format selection. Takes a sequential format and returns a time series variant..."];
 }
