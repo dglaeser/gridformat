@@ -78,11 +78,11 @@ int main(int argc, char** argv) {
         GridFormat::Dune::LagrangeMesh mesh{grid_view, order};
         GridFormat::PVTUWriter lagrange_writer{mesh, mpi_helper.getCommunicator()};
         GridFormat::Test::add_meta_data(lagrange_writer);
-        lagrange_writer.set_point_field("pfunc", [&] (const auto& point_index) {
-            return GridFormat::Test::test_function<double>(mesh.point(point_index));
+        lagrange_writer.set_point_field("pfunc", [&] (const auto& point) {
+            return GridFormat::Test::test_function<double>(mesh.position(point));
         });
-        lagrange_writer.set_cell_field("cfunc", [&] (const auto& cell_index) {
-            return GridFormat::Test::test_function<double>(mesh.geometry(cell_index).center());
+        lagrange_writer.set_cell_field("cfunc", [&] (const auto& cell) {
+            return GridFormat::Test::test_function<double>(mesh.geometry(cell).center());
         });
 
 #if GRIDFORMAT_HAVE_DUNE_FUNCTIONS

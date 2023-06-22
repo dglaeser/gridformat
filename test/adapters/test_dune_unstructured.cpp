@@ -39,6 +39,7 @@
 
 #include "../vtk/vtk_writer_tester.hpp"
 #include "../make_test_data.hpp"
+#include "../testing.hpp"
 
 template<typename GridView>
 void test(const GridView& grid_view) {
@@ -97,10 +98,13 @@ void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
         GridFormat::VTUWriter writer{mesh, {.encoder = GridFormat::Encoding::ascii}};
         GridFormat::Test::add_meta_data(writer);
         writer.set_point_field("pfield", [&] (const auto& p) {
-            return GridFormat::Test::test_function<double>(mesh.point(p));
+            return GridFormat::Test::test_function<double>(mesh.position(p));
         });
         writer.set_cell_field("cfield", [&] (const auto c) {
             return GridFormat::Test::test_function<double>(mesh.geometry(c).center());
+        });
+        writer.set_cell_field("cfield_from_element", [&] (const auto c) {
+            return GridFormat::Test::test_function<double>(mesh.element(c).geometry().center());
         });
 
 #if GRIDFORMAT_HAVE_DUNE_FUNCTIONS
@@ -125,10 +129,34 @@ void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
         GridFormat::Dune::set_cell_function(scalar, writer, "dune_scalar_cell_function");
         GridFormat::Dune::set_cell_function(vector, writer, "dune_vector_cell_function");
         GridFormat::Dune::set_cell_function(tensor, writer, "dune_tensor_cell_function");
+
+        const auto prec = GridFormat::float32;
+        GridFormat::Dune::set_point_function(scalar, writer, "dune_scalar_function_custom_prec", prec);
+        GridFormat::Dune::set_cell_function(scalar, writer, "dune_scalar_cell_function_custom_prec", prec);
+
 #endif  // GRIDFORMAT_HAVE_DUNE_FUNCTIONS
 
         std::cout << "Wrote '" << writer.write(base_filename + "_order_" + std::to_string(order)) << "'" << std::endl;
 #endif  // GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
+
+        // run a bunch of unit tests
+        using GridFormat::Testing::operator""_test;
+        using GridFormat::Testing::expect;
+        using GridFormat::Testing::eq;
+
+        "lagrange_mesh_num_cells"_test = [&] () {
+            expect(eq(mesh.number_of_cells(), static_cast<std::size_t>(grid_view.size(0))));
+        };
+
+        "lagrange_mesh_clear"_test = [&] () {
+            mesh.clear();
+            expect(eq(mesh.number_of_cells(), std::size_t{0}));
+        };
+
+        "lagrange_mesh_update"_test = [&] () {
+            mesh.update(grid_view);
+            expect(eq(mesh.number_of_cells(), static_cast<std::size_t>(grid_view.size(0))));
+        };
     }
 }
 

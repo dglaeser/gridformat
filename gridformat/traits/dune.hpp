@@ -284,6 +284,8 @@ struct Ordinates<Dune::GridView<Traits>> {
 
 #include <algorithm>
 #include <iterator>
+#include <utility>
+#include <ranges>
 #include <cassert>
 #include <type_traits>
 #include <unordered_map>
@@ -294,9 +296,7 @@ struct Ordinates<Dune::GridView<Traits>> {
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wtype-limits"
 #endif  // GRIDFORMAT_IGNORE_DUNE_WARNINGS
-#include <dune/geometry/multilineargeometry.hh>
 #include <dune/geometry/referenceelements.hh>
-
 #include <dune/grid/common/mcmgmapper.hh>
 #include <dune/localfunctions/lagrange/equidistantpoints.hh>
 #ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
@@ -305,6 +305,7 @@ struct Ordinates<Dune::GridView<Traits>> {
 
 #include <gridformat/common/reserved_vector.hpp>
 #include <gridformat/common/type_traits.hpp>
+#include <gridformat/common/precision.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/field.hpp>
 
@@ -474,15 +475,21 @@ namespace LagrangeDetail {
  * \brief Exposes a `Dune::GridView` as a mesh composed of lagrange cells with the given order.
  *        Can be used to conveniently write `Dune::Functions` into grid files.
  */
-template<typename GridView>
+template<typename GV>
 class LagrangeMesh {
-    using Element = typename GridView::template Codim<0>::Entity;
-    using Position = typename Element::Geometry::GlobalCoordinate;
-    using LocalPoints = LagrangeDetail::LocalPoints<GridView>;
-    using Mapper = DUNE::MultipleCodimMultipleGeomTypeMapper<GridView>;
-    static constexpr int dim = GridView::dimension;
+    using ElementSeed = typename GV::Grid::template Codim<0>::EntitySeed;
+    using LocalPoints = LagrangeDetail::LocalPoints<GV>;
+    using Mapper = DUNE::MultipleCodimMultipleGeomTypeMapper<GV>;
+    static constexpr int dim = GV::dimension;
 
  public:
+    struct Point { std::size_t index; };
+    struct Cell { std::size_t index; };
+
+    using GridView = GV;
+    using Element = typename GridView::template Codim<0>::Entity;
+    using Position = typename Element::Geometry::GlobalCoordinate;
+
     explicit LagrangeMesh(const GridView& grid_view, unsigned int order = 1)
     : _grid_view{grid_view}
     , _order{order} {
@@ -502,40 +509,54 @@ class LagrangeMesh {
     void clear() {
         _points.clear();
         _cells.clear();
-        _cell_topology_id.clear();
+        _element_seeds.clear();
         _local_points.clear();
         _codim_to_mapper.clear();
         _element_to_running_index.clear();
     }
 
-    std::size_t number_of_points() const { return _points.size(); }
     std::size_t number_of_cells() const { return _cells.size(); }
+    std::size_t number_of_points() const { return _points.size(); }
+    std::size_t number_of_points(const Cell& cell) const { return _cells.at(cell.index).size(); }
 
-    const std::vector<std::size_t>& cell_points(std::size_t i) const { return _cells.at(i); }
-    const std::vector<std::size_t>& cell_points(const Element& e) const {
-        return _cells.at(_element_to_running_index.at(_codim_to_mapper.at(0).index(e)));
+    auto cells() const {
+        return std::views::iota(std::size_t{0}, number_of_cells())
+            | std::views::transform([] (const std::size_t i) {
+                return Cell{i};
+            });
+    }
+
+    auto points() const {
+        return std::views::iota(std::size_t{0}, number_of_points())
+            | std::views::transform([] (const std::size_t i) {
+                return Point{i};
+            });
+    }
+
+    auto points(const Cell& cell) const {
+        return _cells.at(cell.index) | std::views::transform([] (const std::size_t i) {
+            return Point{i};
+        });
+    }
+
+    auto points(const Element& e) const {
+        return points(Cell{_element_to_running_index.at(_codim_to_mapper.at(0).index(e))});
     }
 
     const GridView& grid_view() const {
         return _grid_view;
     }
 
-    const Position& point(std::size_t i) const {
-        return _points.at(i);
+    const Position& position(const Point& p) const {
+        return _points.at(p.index);
     }
 
-    DUNE::GeometryType geometry_type(std::size_t i) const {
-        return {_cell_topology_id.at(i), dim};
+    Element element(const Cell& cell) const {
+        return _grid_view.grid().entity(_element_seeds.at(cell.index));
     }
 
-    auto geometry(std::size_t i) const {
-        const auto gt = geometry_type(i);
-        const auto num_corners = referenceElement<typename GridView::ctype, dim>(gt).size(dim);
-        std::vector<Position> corners; corners.reserve(num_corners);
-        std::ranges::for_each(std::views::iota(0, num_corners), [&] (int corner) {
-            corners.push_back(_points[_cells[i][corner]]);
-        });
-        return DUNE::MultiLinearGeometry<typename GridView::ctype, dim, GridView::dimensionworld>{gt, corners};
+    auto geometry(const Cell& cell) const {
+        return element(cell).geometry();
     }
 
  private:
@@ -559,10 +580,10 @@ class LagrangeMesh {
     void _update_mesh() {
         LagrangeDetail::PointIndicesHelper point_indices;
         _cells.reserve(Traits::NumberOfCells<GridView>::get(_grid_view));
-        _cell_topology_id.reserve(_cells.size());
+        _element_seeds.reserve(_cells.size());
         for (const auto& element : Traits::Cells<GridView>::get(_grid_view)) {
             _element_to_running_index[_codim_to_mapper.at(0).index(element)] = _cells.size();
-            _cell_topology_id.push_back(element.type().id());
+            _element_seeds.push_back(element.seed());
             auto& cell_points = _cells.emplace_back();
             for (const auto& local_point : _local_points.at(element.type()).get()) {
                 const auto codim = local_point.localKey().codim();
@@ -584,7 +605,7 @@ class LagrangeMesh {
     unsigned int _order;
     std::vector<Position> _points;
     std::vector<std::vector<std::size_t>> _cells;
-    std::vector<unsigned int> _cell_topology_id;
+    std::vector<ElementSeed> _element_seeds;
     std::map<DUNE::GeometryType, LocalPoints> _local_points;
     std::unordered_map<int, Mapper> _codim_to_mapper;
     std::unordered_map<std::size_t, std::size_t> _element_to_running_index;
@@ -597,15 +618,15 @@ namespace Traits {
 
 template<typename GridView>
 struct Points<Dune::LagrangeMesh<GridView>> {
-    static decltype(auto) get(const Dune::LagrangeMesh<GridView>& mesh) {
-        return std::views::iota(std::size_t{0}, mesh.number_of_points());
+    static auto get(const Dune::LagrangeMesh<GridView>& mesh) {
+        return mesh.points();
     }
 };
 
 template<typename GridView>
 struct Cells<Dune::LagrangeMesh<GridView>> {
-    static decltype(auto) get(const Dune::LagrangeMesh<GridView>& mesh) {
-        return std::views::iota(std::size_t{0}, mesh.number_of_cells());
+    static auto get(const Dune::LagrangeMesh<GridView>& mesh) {
+        return mesh.cells();
     }
 };
 
@@ -624,37 +645,47 @@ struct NumberOfCells<Dune::LagrangeMesh<GridView>> {
 };
 
 template<typename GridView>
-struct NumberOfCellPoints<Dune::LagrangeMesh<GridView>, std::size_t> {
-    static auto get(const Dune::LagrangeMesh<GridView>& mesh, const std::size_t cell_index) {
-        return mesh.cell_points(cell_index).size();
+struct NumberOfCellPoints<Dune::LagrangeMesh<GridView>,
+                          typename Dune::LagrangeMesh<GridView>::Cell> {
+    static auto get(const Dune::LagrangeMesh<GridView>& mesh,
+                    const typename Dune::LagrangeMesh<GridView>::Cell& cell) {
+        return mesh.number_of_points(cell);
     }
 };
 
 template<typename GridView>
-struct CellPoints<Dune::LagrangeMesh<GridView>, std::size_t> {
-    static auto get(const Dune::LagrangeMesh<GridView>& mesh, const std::size_t cell_index) {
-        return mesh.cell_points(cell_index);
+struct CellPoints<Dune::LagrangeMesh<GridView>,
+                  typename Dune::LagrangeMesh<GridView>::Cell> {
+    static auto get(const Dune::LagrangeMesh<GridView>& mesh,
+                    const typename Dune::LagrangeMesh<GridView>::Cell& cell) {
+        return mesh.points(cell);
     }
 };
 
 template<typename GridView>
-struct CellType<Dune::LagrangeMesh<GridView>, std::size_t> {
-    static decltype(auto) get(const Dune::LagrangeMesh<GridView>& mesh, const std::size_t cell_index) {
-        return Dune::LagrangeDetail::cell_type(mesh.geometry_type(cell_index));
+struct CellType<Dune::LagrangeMesh<GridView>,
+                typename Dune::LagrangeMesh<GridView>::Cell> {
+    static auto get(const Dune::LagrangeMesh<GridView>& mesh,
+                    const typename Dune::LagrangeMesh<GridView>::Cell& cell) {
+        return Dune::LagrangeDetail::cell_type(mesh.element(cell).type());
     }
 };
 
 template<typename GridView>
-struct PointCoordinates<Dune::LagrangeMesh<GridView>, std::size_t> {
-    static decltype(auto) get(const Dune::LagrangeMesh<GridView>& mesh, const std::size_t point_index) {
-        return mesh.point(point_index);
+struct PointCoordinates<Dune::LagrangeMesh<GridView>,
+                        typename Dune::LagrangeMesh<GridView>::Point> {
+    static const auto& get(const Dune::LagrangeMesh<GridView>& mesh,
+                           const typename Dune::LagrangeMesh<GridView>::Point& point) {
+        return mesh.position(point);
     }
 };
 
 template<typename GridView>
-struct PointId<Dune::LagrangeMesh<GridView>, std::size_t> {
-    static decltype(auto) get(const Dune::LagrangeMesh<GridView>&, const std::size_t point_index) {
-        return point_index;
+struct PointId<Dune::LagrangeMesh<GridView>,
+               typename Dune::LagrangeMesh<GridView>::Point> {
+    static auto get(const Dune::LagrangeMesh<GridView>&,
+                    const typename Dune::LagrangeMesh<GridView>::Point& point) {
+        return point.index;
     }
 };
 
@@ -663,21 +694,31 @@ struct PointId<Dune::LagrangeMesh<GridView>, std::size_t> {
 
 namespace Dune {
 
+#ifndef DOXYGEN
+namespace FunctionDetail {
+
+    template<typename Function, typename GridView>
+    using RangeType = std::invoke_result_t<
+        typename std::remove_cvref_t<Function>::LocalFunction,
+        typename GridView::template Codim<0>::Entity::Geometry::LocalCoordinate
+    >;
+
+    template<typename Function, typename GridView>
+    using RangeScalar = FieldScalar<RangeType<Function, GridView>>;
+
+}  // FunctionDetail
+#endif  // DOXYGEN
+
 /*!
  * \ingroup PredefinedTraits
  * \brief Implements the field interface for a Dune::Function defined on a GridFormat::Dune::LagrangeMesh.
  */
-template<typename Function, typename GridView>
+template<typename Function, typename GridView, typename T = FunctionDetail::RangeScalar<Function, GridView>>
 class FunctionField : public GridFormat::Field {
-    using Element = typename GridView::template Codim<0>::Entity;
-    using Domain = typename Element::Geometry::LocalCoordinate;
-    using LocalFunction = typename Function::LocalFunction;
-    using Range = std::invoke_result_t<LocalFunction, const Domain&>;
-    using Scalar = FieldScalar<Range>;
-
  public:
     explicit FunctionField(const Function& function,
                            const LagrangeMesh<GridView>& mesh,
+                           const Precision<T>& = {},
                            bool cellwise_constant = false)
     : _function{function}
     , _mesh{mesh}
@@ -691,14 +732,14 @@ class FunctionField : public GridFormat::Field {
 
  private:
     MDLayout _layout() const override {
-        return get_md_layout<Range>(
+        return get_md_layout<FunctionDetail::RangeType<Function, GridView>>(
             _cellwise_constant ? _mesh.number_of_cells()
                                : _mesh.number_of_points()
         );
     }
 
     DynamicPrecision _precision() const override {
-        return {Precision<Scalar>{}};
+        return {Precision<T>{}};
     }
 
     Serialization _serialized() const override {
@@ -706,8 +747,8 @@ class FunctionField : public GridFormat::Field {
         const auto num_entries = layout.number_of_entries();
         const auto num_entries_per_value = layout.dimension() == 1 ? 1 : layout.number_of_entries(1);
 
-        Serialization result(num_entries*sizeof(Scalar));
-        auto out_data = result.template as_span_of<Scalar>();
+        Serialization result(num_entries*sizeof(T));
+        auto out_data = result.template as_span_of<T>();
         auto local_function = localFunction(_function);
 
         if (_cellwise_constant) {
@@ -722,9 +763,9 @@ class FunctionField : public GridFormat::Field {
         } else {
             for (const auto& element : elements(_mesh.grid_view())) {
                 local_function.bind(element);
-                for (const auto& point_index : _mesh.cell_points(element)) {
-                    const auto& local_pos = element.geometry().local(_mesh.point(point_index));
-                    std::size_t offset = point_index*num_entries_per_value;
+                for (const auto& point : _mesh.points(element)) {
+                    const auto& local_pos = element.geometry().local(_mesh.position(point));
+                    std::size_t offset = point.index*num_entries_per_value;
                     _copy_values(local_function(local_pos), out_data, offset);
                 }
             }
@@ -733,16 +774,16 @@ class FunctionField : public GridFormat::Field {
         return result;
     }
 
-    template<std::ranges::range R, typename T>
+    template<std::ranges::range R>
     void _copy_values(R&& range, std::span<T> out, std::size_t& offset) const {
         std::ranges::for_each(range, [&] (const auto& entry) {
             _copy_values(entry, out, offset);
         });
     }
 
-    template<Concepts::Scalar I, typename T>
-    void _copy_values(const I value, std::span<T> out, std::size_t& offset) const {
-        out[offset++] = static_cast<I>(value);
+    template<Concepts::Scalar S>
+    void _copy_values(const S value, std::span<T> out, std::size_t& offset) const {
+        out[offset++] = static_cast<T>(value);
     }
 
     const Function& _function;
@@ -754,6 +795,31 @@ class FunctionField : public GridFormat::Field {
 #ifndef DOXYGEN
 template<typename T> struct IsLagrangeMesh : public std::false_type {};
 template<typename GV> struct IsLagrangeMesh<LagrangeMesh<GV>> : public std::true_type {};
+
+namespace FunctionDetail {
+    template<typename F, typename W, typename T>
+    void set_function(F&& f, W& w, const std::string& name, const Precision<T>& prec, bool is_cellwise) {
+        static_assert(std::is_lvalue_reference_v<F>, "Functions are stored as references and need to be lvalues");
+        static_assert(
+            IsLagrangeMesh<typename W::Grid>::value,
+            "Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangeMesh"
+        );
+        if (is_cellwise)
+            w.set_cell_field(name, FunctionField{f, w.grid(), prec, true});
+        else
+            w.set_point_field(name, FunctionField{f, w.grid(), prec, false});
+    }
+
+    template<typename F, typename W>
+    void set_function(F&& f, W& w, const std::string& name, bool is_cellwise) {
+        static_assert(
+            IsLagrangeMesh<typename W::Grid>::value,
+            "Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangeMesh"
+        );
+        using T = RangeScalar<F, typename W::Grid::GridView>;
+        set_function(std::forward<F>(f), w, name, Precision<T>{}, is_cellwise);
+    }
+}  // namespace FunctionDetail
 #endif  //DOXYGEN
 
 /*!
@@ -762,13 +828,18 @@ template<typename GV> struct IsLagrangeMesh<LagrangeMesh<GV>> : public std::true
  * \note This requires the Writer to have been constructed with a LagrangeMesh.
  */
 template<typename Function, typename Writer>
-    requires(std::is_lvalue_reference_v<Function>)
 void set_point_function(Function&& f, Writer& writer, const std::string& name) {
-    static_assert(
-        IsLagrangeMesh<typename Writer::Grid>::value,
-        "Functions can only be added to writers that were constructed with a GridFormat::Dune::LagrangeMesh."
-    );
-    writer.set_point_field(name, FunctionField{f, writer.grid()});
+    FunctionDetail::set_function(std::forward<Function>(f), writer, name, false);
+}
+
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Insert the given Dune::Function to the writer as point field with the given precision.
+ * \note This requires the Writer to have been constructed with a LagrangeMesh.
+ */
+template<typename Function, typename Writer, Concepts::Scalar T>
+void set_point_function(Function&& f, Writer& writer, const std::string& name, const Precision<T>& prec) {
+    FunctionDetail::set_function(std::forward<Function>(f), writer, name, prec, false);
 }
 
 /*!
@@ -777,14 +848,18 @@ void set_point_function(Function&& f, Writer& writer, const std::string& name) {
  * \note This requires the Writer to have been constructed with a LagrangeMesh.
  */
 template<typename Writer, typename Function>
-    requires(std::is_lvalue_reference_v<Function> and
-             IsLagrangeMesh<typename Writer::Grid>::value)
 void set_cell_function(Function&& f, Writer& writer, const std::string& name) {
-    static_assert(
-        IsLagrangeMesh<typename Writer::Grid>::value,
-        "Functions can only be added to writers that were constructed with a GridFormat::Dune::LagrangeMesh."
-    );
-    writer.set_cell_field(name, FunctionField{f, writer.grid(), true});
+    FunctionDetail::set_function(std::forward<Function>(f), writer, name, true);
+}
+
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Insert the given Dune::Function to the writer as cell field with the given precision.
+ * \note This requires the Writer to have been constructed with a LagrangeMesh.
+ */
+template<typename Writer, typename Function, Concepts::Scalar T>
+void set_cell_function(Function&& f, Writer& writer, const std::string& name, const Precision<T>& prec) {
+    FunctionDetail::set_function(std::forward<Function>(f), writer, name, prec, true);
 }
 
 }  // namespace Dune
