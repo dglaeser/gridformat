@@ -74,7 +74,7 @@ int main() {
         const auto grid = GridFormat::Test::make_unstructured<2, 2>();
         GridFormat::VTKHDFTimeSeriesWriter writer{
             grid,
-            "vtk_hdf_time_series_2d_in_2d_unstructured",
+            "vtk_hdf_time_series_2d_in_2d_unstructured_static_grid",
             GridFormat::VTK::HDFTransientOptions{
                 .static_grid = true,
                 .static_meta_data = true
@@ -89,7 +89,7 @@ int main() {
 
         "hdf_time_series_static_grid_steps_dimensions"_test = [&] () {
             HighFive::File file{
-                "vtk_hdf_time_series_2d_in_2d_unstructured.hdf",
+                "vtk_hdf_time_series_2d_in_2d_unstructured_static_grid.hdf",
                 HighFive::File::ReadOnly
             };
             expect(eq(
