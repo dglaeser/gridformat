@@ -32,14 +32,15 @@ domain is usually discretized into a grid composed of points and cells, on which
 finite volumes, or finite elements are then employed. This process yields a discrete solution defined at specific grid positions,
 which, depending on the scheme, can be interpolated over the entire domain using its basis functions. Due to the high computational
 demand of such simulations, developers often implement simulation codes in performant C++ and leverage distributed-memory
-parallelism through MPI (Message Passing Interface) [TODO:cite] to run them on large high-performance computing systems.
+parallelism through `MPI`, the _Message Passing Interface_ [@mpi_1994; @mpi_web], to run them on large high-performance computing
+systems.
 
 Visualization plays a fundamental role in analyzing numerical results, and one widely-used visualization tool in research is
-[ParaView](TODO:CITE), which is based on the [Visualization Toolkit](TODO:CITE) (VTK). ParaView can read results from a wide range of
+`ParaView` [@ahrens2005_paraview; @paraview_web], which is based on `VTK`, the _Visualization Toolkit_ [@vtk_book; @vtk_web]. `ParaView` can read results from a wide range of
 file formats, with the [VTK file formats](https://examples.vtk.org/site/VTKFileFormats/) being among the most popular.
-To visualize simulation results with ParaView, researchers need to write their data into one of the supported file formats.
+To visualize simulation results with `ParaView`, researchers need to write their data into one of the supported file formats.
 Users of existing simulation frameworks such as `Dune` [@bastian2008; @Dune2021],
-`Dumux` [@dumux_2011; @Kochetaldumux2021], `Deal.II` [@dealII94], `FEniCS` [@fenicsbook2012; @fenics] or `MFEM` [TODO],
+`Dumux` [@dumux_2011; @Kochetaldumux2021], `Deal.II` [@dealII94], `FEniCS` [@fenicsbook2012; @fenics] or `MFEM` [@mfem; @mfem_web],
 can usually export their results into some standard file formats, however, they are limited
 to those formats that are supported by framework. Reusing another framework's I/O functionality is generally challenging, at least
 without runtime and memory overhead due to data conversions, since the implementation is typically tailored to its specific data structures.
@@ -51,13 +52,13 @@ programming through C++ templates and traits classes, `GridFormat` is designed t
 full interoperability with their data structures by implementing a few traits classes (see discussion below). This enables users of both
 simulation frameworks and hand-written codes to write their data into standard file formats with minimal effort and without significant
 runtime or memory overhead. In fact, `GridFormat` comes with out-of-the-box support for data structures of several widely-used frameworks,
-namely `Dune`, `Deal.II`, `FenicsX`, `MFEM` and [CGAL](TODO:LINK).
+namely `Dune`, `Deal.II`, `FenicsX`, `MFEM` and `CGAL` [@cgal; @cgal_web].
 
 # Statement of Need
 
 `GridFormat` addresses the issue of duplicate implementation efforts for I/O across different simulation frameworks. By utilizing `GridFormat` as an underlying tool, framework developers can easily provide their users with access to additional file formats. Moreover, instead of implementing support for new formats within the framework, developers can integrate them into `GridFormat`, thereby making them available to all other frameworks that utilize it. In addition to benefiting framework developers and users, the generic implementation of `GridFormat` also serves researchers with custom simulation codes.
 
-Three key requirements governed the design of `GridFormat`: seamless integration, minimal runtime and memory overhead, and support for MPI. Given that C++ is widely used in simulation codes, we selected it as the programming language such that `GridFormat` can be used natively. It is lightweight, header-only, free of mandatory dependencies, and supports [CMake](TODO:CITE) features that allow for automatic integration of `GridFormat` in downstream projects.
+Three key requirements governed the design of `GridFormat`: seamless integration, minimal runtime and memory overhead, and support for `MPI`. Given that C++ is widely used in simulation codes, we selected it as the programming language such that `GridFormat` can be used natively. It is lightweight, header-only, free of mandatory dependencies, and supports CMake [@cmake_web] features that allow for automatic integration of `GridFormat` in downstream projects.
 
 # Concept
 
@@ -66,7 +67,7 @@ supports four different _grid concepts_: `ImageGrid`, `RectilinearGrid`, `Struct
 latter is fully generic, the first three assume that the grid has a structured topology. A known structured topology makes
 it obsolete to define cell geometries and grid connectivity, and formats designed for such grids can therefore store the grid
 in a space-efficient manner. An overview over the different types of grids is shown in the image below, and a more detailed
-discussion can be found in the `GridFormat` [repository](TODO: link).
+discussion can be found in the `GridFormat` [documentation](https://github.com/dglaeser/gridformat/blob/40596747e306fa6b899bdc5a19ae67e2308952f4/docs/pages/grid_concepts.md).
 
 \begin{figure}[htb]
     \centering
@@ -114,7 +115,8 @@ The different above-mentioned grid concepts require the user to specialize diffe
 connectivity of an unstructured grid, `GridFormat` needs to know which points are embedded in a given grid cell. To this end,
 users operating on unstructured grids can specialize a specific trait for that. However, this is not required for structured grids
 and for writing them into structured grid file formats. An overview over which traits are required for which grid concept can be
-found in the `GridFormat` [documentation](TODO:LINK). As mentioned, for an easy integration with existing and widely-used grid data
+found in the `GridFormat` [documentation](https://github.com/dglaeser/gridformat/blob/40596747e306fa6b899bdc5a19ae67e2308952f4/docs/pages/traits.md).
+As mentioned, for an easy integration with existing and widely-used grid data
 structures, `GridFormat` comes with predefined traits for `Dune`, `FenicsX`, `Deal.II`, `MFEM` and `CGAL`.
 
 
@@ -124,7 +126,8 @@ Let us assume that we have some hand-written code that performs simulations on a
 of cells and yields a `std::vector<double>` storing the numerical solution. Due to this known trivial topology, the code does not
 define a specific data structure to represent grids. It only needs to know the number of cells per direction and the size of one cell.
 In the following code snippets, we want demonstrate how one could use `GridFormat` to write that data into established file formats,
-in this case the [VTI](TODO:link) file format. Stitched together, the subsequent snippets constitute a fully working C++ main file.
+in this case the [VTI](https://examples.vtk.org/site/VTKFileFormats/#imagedata) file format. Stitched together, the subsequent snippets
+constitute a fully working C++ main file.
 
 First of all, let us define a simple data structure to represent the grid by collecting the above-mentioned information in a `struct`:
 
