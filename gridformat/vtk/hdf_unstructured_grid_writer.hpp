@@ -121,10 +121,14 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
         file.write(std::vector{std::array{offsets.cell_offset}}, {"VTKHDF/Steps", "CellOffsets"});
         file.write(std::vector{std::array{offsets.connectivity_offset}}, {"VTKHDF/Steps", "ConnectivityIdOffsets"});
 
+        file.write(std::vector{Parallel::size(_comm)}, {"VTKHDF/Steps", "NumberOfParts"});
         if (this->_step_count > 0 && _transient_opts.static_grid) {
             file.write(std::vector{_get_last_step_data(file, {"", "PartOffsets"})}, {"VTKHDF/Steps", "PartOffsets"});
         } else {
-            file.write(std::vector{this->_step_count*Parallel::size(_comm)}, {"VTKHDF/Steps", "PartOffsets"});
+            const std::size_t offset = this->_step_count == 0
+                ? 0
+                : _get_last_step_data(file, {"", "PartOffsets"}) + Parallel::size(_comm);
+            file.write(std::vector{offset}, {"VTKHDF/Steps", "PartOffsets"});
         }
 
         return _timeseries_filename;
