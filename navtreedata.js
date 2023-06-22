@@ -49,6 +49,7 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", null ],
         [ "Functions", "functions_func.html", null ],
+        [ "Variables", "functions_vars.html", null ],
         [ "Typedefs", "functions_type.html", null ]
       ] ]
     ] ],
@@ -62,7 +63,7 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a4e907a7c318805a1d31746777b90aef9",
-"structGridFormat_1_1FileFormat_1_1PVD.html"
+"structGridFormat_1_1FileFormat_1_1FormatWithOptions.html#a9ac96219bc83305b1a6a6dfe2b2c1684"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
