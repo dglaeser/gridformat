@@ -24,6 +24,7 @@
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/precision.hpp>
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
 #include <gridformat/grid/writer.hpp>
@@ -310,9 +311,16 @@ class LagrangeMesh {
 /*!
  * \ingroup PredefinedTraits
  * \brief Insert the given function into the writer as point field.
+ * \param f The function to be inserted
+ * \param writer The writer in which to insert it
+ * \param name The name of the field (defaults to `f.name`)
+ * \param prec The precision with which to write the field (defaults to the function's scalar type)
  */
-template<typename Writer, Concepts::Scalar T>
-void set_point_function(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
+template<typename Writer, Concepts::Scalar T, Concepts::Scalar P = T>
+void set_point_function(const dolfinx::fem::Function<T>& f,
+                        Writer& writer,
+                        std::string name = "",
+                        const Precision<P>& prec = {}) {
     if (!writer.grid().is_compatible(f))
         throw ValueError("Grid passed to writer is incompatible with the given function");
     if (Detail::is_cellwise_constant(f))
@@ -322,19 +330,26 @@ void set_point_function(const dolfinx::fem::Function<T>& f, Writer& writer, std:
     const auto block_size = f.function_space()->element()->block_size();
     const auto dim = f.function_space()->mesh()->geometry().dim();
     if (block_size == 1)
-        writer.set_point_field(name, [&] (const auto p) { return writer.grid().template evaluate<0>(f, p); });
+        writer.set_point_field(name, [&] (const auto p) { return writer.grid().template evaluate<0>(f, p); }, prec);
     else if (dim >= block_size)
-        writer.set_point_field(name, [&] (const auto p) { return writer.grid().template evaluate<1>(f, p); });
+        writer.set_point_field(name, [&] (const auto p) { return writer.grid().template evaluate<1>(f, p); }, prec);
     else
-        writer.set_point_field(name, [&] (const auto p) { return writer.grid().template evaluate<2>(f, p); });
+        writer.set_point_field(name, [&] (const auto p) { return writer.grid().template evaluate<2>(f, p); }, prec);
 }
 
 /*!
  * \ingroup PredefinedTraits
  * \brief Insert the given function into the writer as cell field.
+ * \param f The function to be inserted
+ * \param writer The writer in which to insert it
+ * \param name The name of the field (defaults to `f.name`)
+ * \param prec The precision with which to write the field (defaults to the function's scalar type)
  */
-template<typename Writer, Concepts::Scalar T>
-void set_cell_function(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
+template<typename Writer, Concepts::Scalar T, Concepts::Scalar P = T>
+void set_cell_function(const dolfinx::fem::Function<T>& f,
+                       Writer& writer,
+                       std::string name = "",
+                       const Precision<P>& prec = {}) {
     if (!writer.grid().is_compatible(f))
         throw ValueError("Grid passed to writer is incompatible with the given function");
     if (!Detail::is_cellwise_constant(f))
@@ -344,23 +359,30 @@ void set_cell_function(const dolfinx::fem::Function<T>& f, Writer& writer, std::
     const auto block_size = f.function_space()->element()->block_size();
     const auto dim = f.function_space()->mesh()->geometry().dim();
     if (block_size == 1)
-        writer.set_cell_field(name, [&] (const auto p) { return writer.grid().template evaluate<0>(f, p); });
+        writer.set_cell_field(name, [&] (const auto p) { return writer.grid().template evaluate<0>(f, p); }, prec);
     else if (dim >= block_size)
-        writer.set_cell_field(name, [&] (const auto p) { return writer.grid().template evaluate<1>(f, p); });
+        writer.set_cell_field(name, [&] (const auto p) { return writer.grid().template evaluate<1>(f, p); }, prec);
     else
-        writer.set_cell_field(name, [&] (const auto p) { return writer.grid().template evaluate<2>(f, p); });
+        writer.set_cell_field(name, [&] (const auto p) { return writer.grid().template evaluate<2>(f, p); }, prec);
 }
 
 /*!
  * \ingroup PredefinedTraits
  * \brief Insert the given function into the writer as field.
+ * \param f The function to be inserted
+ * \param writer The writer in which to insert it
+ * \param name The name of the field (defaults to `f.name`)
+ * \param prec The precision with which to write the field (defaults to the function's scalar type)
  */
-template<typename Writer, Concepts::Scalar T>
-void set_function(const dolfinx::fem::Function<T>& f, Writer& writer, std::string name = "") {
+template<typename Writer, Concepts::Scalar T, Concepts::Scalar P = T>
+void set_function(const dolfinx::fem::Function<T>& f,
+                  Writer& writer,
+                  const std::string& name = "",
+                  const Precision<P>& prec = {}) {
     if (Detail::is_cellwise_constant(f))
-        set_cell_function(f, writer, name);
+        set_cell_function(f, writer, name, prec);
     else
-        set_point_function(f, writer, name);
+        set_point_function(f, writer, name, prec);
 }
 
 }  // namespace DolfinX

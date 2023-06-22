@@ -368,6 +368,12 @@ int main(int argc, char** argv) {
         GridFormat::DolfinX::set_function(vector_nodal_function, writer, "pfunc_vec_via_auto_freefunction");
         GridFormat::DolfinX::set_function(scalar_cell_function, writer, "cfunc_via_auto_freefunction");
         GridFormat::DolfinX::set_function(vector_cell_function, writer, "cfunc_vec_via_auto_freefunction");
+
+        const auto prec = GridFormat::float32;
+        GridFormat::DolfinX::set_point_function(scalar_nodal_function, writer, "pfunc_float32_via_freefunction", prec);
+        GridFormat::DolfinX::set_cell_function(scalar_cell_function, writer, "cfunc_float32_via_freefunction", prec);
+        GridFormat::DolfinX::set_function(scalar_cell_function, writer, "cfunc_float32_via_auto_freefunction", prec);
+
         const auto filename = writer.write(get_filename(mesh->topology().cell_type(), "from_space"));
         if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
             std::cout << "Wrote '" << filename << "'" << std::endl;
