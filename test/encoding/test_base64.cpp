@@ -12,11 +12,25 @@ int main() {
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;
 
-    "base64_encoded_stream"_test = [] () {
-        char bytes[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    char in_data[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    std::string expected{"AQIDBAUGBwgJ"};
+
+    "base64_encoded_stream"_test = [&] () {
         std::ostringstream s;
-        GridFormat::Encoding::base64(s).write(std::span{bytes});
-        expect(eq(s.str(), std::string{"AQIDBAUGBwgJ"}));
+        GridFormat::Encoding::base64(s).write(std::span{in_data});
+        expect(eq(s.str(), expected));
+    };
+
+    "base64_encoded_stream_without_cache"_test = [&] () {
+        std::ostringstream s;
+        GridFormat::Encoding::base64({.num_cached_buffers=1})(s).write(std::span{in_data});
+        expect(eq(s.str(), expected));
+    };
+
+    "base64_encoded_stream_with_small_cache"_test = [&] () {
+        std::ostringstream s;
+        GridFormat::Encoding::base64.with({.num_cached_buffers=20})(s).write(std::span{in_data});
+        expect(eq(s.str(), expected));
     };
 
     return 0;
