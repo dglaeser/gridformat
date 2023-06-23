@@ -108,16 +108,19 @@ void do_something_on_a_grid(const Grid& grid) {
 
 Instead of calling a function on `grid` directly, it is accessed via the `Cells` trait, which can be specialized for any type.
 If such specialization exists, one can call `do_something_on_a_grid` with an instance of type `Grid` directly, without having to wrap it
-in an adapter. Using C++-20 concepts, `GridFormat` checks if a user grid implements the required traits correctly at compile-time,
-and the error messages emitted by the compiler indicate which traits are missing or which traits are not implemented correctly.
+in an adapter. Using C++-20 concepts, `GridFormat` checks if a user grid specializes the required traits correctly at compile-time,
+and the error messages emitted by the compiler indicate which traits specializations are missing or incorrect.
+By accessing information on user-defined grids via traits, I/O functionality in `GridFormat` is implemented in a way that is fully
+decoupled from and agnostic about concrete grid types. Users can achieve compatibility with their concrete grid type by specializing the
+required traits within _their_ code base, without having to change any code in `GridFormat`. Moreover, `GridFormat` comes with predefined
+traits for `Dune`, `FenicsX`, `Deal.II`, `MFEM` and `CGAL` such that users of these frameworks can directly use `GridFormat` without
+any implementation effort.
 
-The different above-mentioned grid concepts require the user to specialize different traits. As an example, in order to determine the
+Note that the different above-mentioned grid concepts require the user to specialize different traits. As an example, in order to determine the
 connectivity of an unstructured grid, `GridFormat` needs to know which points are embedded in a given grid cell. To this end,
 users operating on unstructured grids can specialize a specific trait for that. However, this is not required for structured grids
 and for writing them into structured grid file formats. An overview over which traits are required for which grid concept can be
 found in the `GridFormat` [documentation](https://github.com/dglaeser/gridformat/blob/40596747e306fa6b899bdc5a19ae67e2308952f4/docs/pages/traits.md).
-As mentioned, for an easy integration with existing and widely-used grid data
-structures, `GridFormat` comes with predefined traits for `Dune`, `FenicsX`, `Deal.II`, `MFEM` and `CGAL`.
 
 
 ## Minimal Example
