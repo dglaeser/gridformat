@@ -474,6 +474,7 @@ namespace LagrangeDetail {
  * \ingroup PredefinedTraits
  * \brief Exposes a `Dune::GridView` as a mesh composed of lagrange cells with the given order.
  *        Can be used to conveniently write `Dune::Functions` into grid files.
+ * \note This is only available if dune-localfunctions is found on the system.
  */
 template<typename GV>
 class LagrangeMesh {
@@ -864,6 +865,24 @@ void set_cell_function(Function&& f, Writer& writer, const std::string& name, co
 
 }  // namespace Dune
 }  // namespace GridFormat
+
+#else  // GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
+
+#ifndef DOXYGEN
+namespace GridFormat::Dune {
+
+template<typename... T>
+class LagrangeMesh {
+    template<typename... Ts> struct False { static constexpr bool value = false; };
+ public:
+    template<typename... Args>
+    LagrangeMesh(Args&&... args) {
+        static_assert(False<Args...>::value, "Dune-localfunctions required for higher-order output");
+    }
+};
+
+}  // namespace GridFormat::Dune
+#endif  // DOXYGEN
 
 #endif  // GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
 #endif  // GRIDFORMAT_TRAITS_DUNE_HPP_
