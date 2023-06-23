@@ -12,6 +12,7 @@
 #include <string_view>
 #include <algorithm>
 #include <ostream>
+#include <format>
 
 #include <gridformat/common/exceptions.hpp>
 
@@ -91,5 +92,13 @@ template<std::size_t N>
 ReservedString(const char (&input)[N]) -> ReservedString<N-1>;
 
 }  // namespace GridFormat
+
+// specialize std::formatter for GridFormat::ReservedString
+template <std::size_t n>
+struct std::formatter<GridFormat::ReservedString<n>> : std::formatter<std::string_view> {
+    auto format(const GridFormat::ReservedString<n>& s, std::format_context& ctx) const {
+        return std::formatter<std::string_view>::format(static_cast<std::string_view>(s), ctx);
+    }
+};
 
 #endif  // GRIDFORMAT_COMMON_RESERVED_STRING_HPP_
