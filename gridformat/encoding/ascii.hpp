@@ -13,6 +13,10 @@
 #include <algorithm>
 #include <optional>
 #include <cstdint>
+#include <string>
+#include <span>
+
+#include <format>
 
 #include <gridformat/common/output_stream.hpp>
 #include <gridformat/common/reserved_string.hpp>
@@ -40,11 +44,13 @@ struct AsciiFormatOptions {
     ReservedString<30> delimiter{""};
     ReservedString<30> line_prefix{""};
     std::size_t entries_per_line = std::numeric_limits<std::size_t>::max();
+    std::size_t num_cached_lines = 100; //!< Number of line cached between flushing the buffer
 
     friend bool operator==(const AsciiFormatOptions& a, const AsciiFormatOptions& b) {
         return a.delimiter == b.delimiter
             && a.line_prefix == b.line_prefix
-            && a.entries_per_line == b.entries_per_line;
+            && a.entries_per_line == b.entries_per_line
+            && a.num_cached_lines == b.num_cached_lines;
     }
 };
 
@@ -59,25 +65,39 @@ class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
 
     template<typename T, std::size_t size>
     void write(std::span<T, size> data) {
-        using std::min;
-        std::size_t count = 0;
-        while (count < data.size()) {
-            const auto num_entries = min(_opts.entries_per_line, data.size() - count);
-            this->_write_formatted(count > 0 ? "\n" : "");
-            this->_write_formatted(_opts.line_prefix);
-            _write(data.data() + count, num_entries);
-            count += num_entries;
-        }
-    }
+        std::size_t count_entries = 0;
+        std::size_t count_buffer_lines = 0;
+        std::string buffer;
 
- private:
-    template<typename T>
-    void _write(const T* data, std::size_t num_entries) {
-        using PrintType = typename Encoding::Detail::AsciiPrintType<T>::type;
-        std::for_each_n(data, num_entries, [&] (const T& value) {
-            this->_write_formatted(static_cast<PrintType>(value));
-            this->_write_formatted(_opts.delimiter);
-        });
+        while (count_entries < data.size()) {
+            // format one line to buffer
+            std::format_to(std::back_inserter(buffer),
+                "{}{}", count_entries > 0 ? "\n" : "", _opts.line_prefix
+            );
+
+            using std::min;
+            const auto num_entries = min(_opts.entries_per_line, data.size() - count_entries);
+            const auto sub_range = data.subspan(count_entries, num_entries);
+            using PrintType = typename Encoding::Detail::AsciiPrintType<T>::type;
+            for (const auto& value : sub_range)
+                std::format_to(std::back_inserter(buffer),
+                    "{}{}", static_cast<PrintType>(value), _opts.delimiter
+                );
+
+            // update counters
+            count_entries += num_entries;
+            ++count_buffer_lines;
+
+            // flush and reset buffer
+            if (count_buffer_lines >= _opts.num_cached_lines) {
+                this->_write_raw(std::span{buffer.c_str(), buffer.size()});
+                buffer.clear();
+                count_buffer_lines = 0;
+            }
+        }
+
+        // flush remaining buffer content
+        this->_write_raw(std::span{buffer.c_str(), buffer.size()});
     }
 
     AsciiFormatOptions _opts;
