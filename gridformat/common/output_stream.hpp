@@ -12,6 +12,7 @@
 #include <limits>
 #include <ostream>
 #include <concepts>
+#include <type_traits>
 
 #include <gridformat/common/concepts.hpp>
 
@@ -52,7 +53,7 @@ class OutputStream {
 
     template<std::size_t size>
     void write(std::span<const char, size> data) {
-        _write_chars(data.data(), size);
+        _write_chars(data.data(), data.size());
     }
 
  private:
@@ -70,57 +71,44 @@ class OutputStream {
     std::ostream& _stream;
 };
 
+#ifndef DOXYGEN
+namespace Detail {
+
+    template<typename T> struct OutputStreamStorage : std::type_identity<T&> {};
+    template<std::derived_from<std::ostream> T> struct OutputStreamStorage<T> : std::type_identity<OutputStream> {};
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
 /*!
  * \ingroup Common
  * \brief Base class for wrappers around output streams.
+ *        Makes it possible to wrap both instances of OutputStream or std::ostream.
  */
 template<typename OStream>
 class OutputStreamWrapperBase {
+    using Storage = typename Detail::OutputStreamStorage<OStream>::type;
+    using Stream = std::remove_cvref_t<Storage>;
+
  public:
-    explicit OutputStreamWrapperBase(OStream& s)
-    : _stream{s}
+    template<typename S>
+        requires(std::constructible_from<Storage, S>)
+    explicit OutputStreamWrapperBase(S&& s)
+    : _stream{std::forward<S>(s)}
     {}
 
  protected:
-    template<Concepts::StreamableWith<OStream> T>
-    void _write_formatted(const T& t) {
-        _stream << t;
-    }
-
-    template<Concepts::WritableWith<OStream> T, std::size_t size>
-    void _write_raw(const T& data) {
-        _stream.write(data);
-    }
-
-    OStream& _stream;
-};
-
-//! Specialization for std ostreams
-template<std::derived_from<std::ostream> OStream>
-class OutputStreamWrapperBase<OStream> {
- public:
-    explicit OutputStreamWrapperBase(OStream& s)
-    : _stream{s}
-    {}
-
- protected:
-    template<typename T>
+    template<Concepts::StreamableWith<Stream> T>
     void _write_formatted(const T& t) {
         _stream << t;
     }
 
     template<typename T, std::size_t size>
     void _write_raw(std::span<T, size> data) {
-        _stream.write(std::as_bytes(data));
+        _stream.write(data);
     }
 
-    template<std::size_t size>
-    void _write_raw(std::span<const std::byte, size> bytes) {
-        const char* chars = reinterpret_cast<const char*>(bytes.data());
-        _stream.write(chars, bytes.size());
-    }
-
-    OutputStream _stream;
+    Storage _stream;
 };
 
 }  // namespace GridFormat
