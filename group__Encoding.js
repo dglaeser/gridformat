@@ -9,11 +9,13 @@ var group__Encoding =
       [ "operator==", "structGridFormat_1_1AsciiFormatOptions.html#a3d196942a97f0940e4390d993d89619b", null ],
       [ "delimiter", "structGridFormat_1_1AsciiFormatOptions.html#a3f3833e63c6af8747aea5bad803827e3", null ],
       [ "entries_per_line", "structGridFormat_1_1AsciiFormatOptions.html#a2e9bfeb3c1005846b23e192fe277e1d4", null ],
-      [ "line_prefix", "structGridFormat_1_1AsciiFormatOptions.html#ad19c419bb1a3f03290fc205dce9c297e", null ]
+      [ "line_prefix", "structGridFormat_1_1AsciiFormatOptions.html#ad19c419bb1a3f03290fc205dce9c297e", null ],
+      [ "num_cached_lines", "structGridFormat_1_1AsciiFormatOptions.html#ab0a15b8c0114db7c1ba34ed848e8013d", null ]
     ] ],
     [ "AsciiOutputStream", "classGridFormat_1_1AsciiOutputStream.html", [
       [ "AsciiOutputStream", "classGridFormat_1_1AsciiOutputStream.html#a92a234c1bb36684a300384c14685d065", null ],
-      [ "write", "classGridFormat_1_1AsciiOutputStream.html#a426cf50b78f47de0206e6f0507badc06", null ]
+      [ "write", "classGridFormat_1_1AsciiOutputStream.html#a426cf50b78f47de0206e6f0507badc06", null ],
+      [ "_opts", "classGridFormat_1_1AsciiOutputStream.html#a0aa40b7ace71061b5f54ea52a7796d8e", null ]
     ] ],
     [ "Base64EncoderOptions", "structGridFormat_1_1Base64EncoderOptions.html", [
       [ "num_cached_buffers", "structGridFormat_1_1Base64EncoderOptions.html#a3a4f39c2fc7f18903b5006d3cbf3381a", null ]
