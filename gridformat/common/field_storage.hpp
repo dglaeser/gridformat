@@ -11,7 +11,7 @@
 #include <string>
 #include <ranges>
 #include <utility>
-#include <unordered_map>
+#include <map>
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/exceptions.hpp>
@@ -61,7 +61,7 @@ class FieldStorage {
     }
 
  private:
-    std::unordered_map<std::string, FieldPtr> _fields;
+    std::map<std::string, FieldPtr> _fields;
 };
 
 }  // namespace GridFormat
