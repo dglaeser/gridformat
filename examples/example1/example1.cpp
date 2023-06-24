@@ -125,7 +125,7 @@ struct Location<VoxelData, typename VoxelData::Voxel> {
 template<>
 struct Location<VoxelData, int> {
     static std::array<std::size_t, 3> get(const VoxelData&, int) {
-        throw std::runtime_error("VoxelData does not implement Location");
+        throw std::runtime_error("VoxelData does not implement Location for points");
     }
 };
 
@@ -154,7 +154,7 @@ int main() {
     // we will write a bunch of files. This is a convenience function
     // to add a cell field to a writer and write the file.
     const auto add_data_and_write = [&] (auto& writer, const std::string& filename) {
-        // Most file formats allow to attach meta data. You can attach metadata via
+        // Most file formats allow to attach metadata. You can attach metadata via
         // the `set_meta_data` function, which takes a name and the data to be written.
         // This can be arrays of any sort, including strings.
         writer.set_meta_data("SomeMetadata", "I am metadata");
@@ -165,7 +165,7 @@ int main() {
         std::cout << "Wrote '" << written_filename << "'" << std::endl;
     };
 
-    // First, let gridformat select a suitable default file format for us
+    // First, let Gridformat select a suitable default file format for us
     {
         GridFormat::Writer writer{
             GridFormat::default_for(voxel_data),
@@ -174,7 +174,7 @@ int main() {
         add_data_and_write(writer, "voxel_data_default_format");
     }
 
-    // Let's explicit ask for the .vti image grid format
+    // Let's explicitly ask for the .vti image grid format
     {
         GridFormat::Writer writer{
             GridFormat::vti,
