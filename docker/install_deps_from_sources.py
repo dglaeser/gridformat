@@ -12,7 +12,8 @@ PACKAGES = {
     "cgal": "5.2.2",
     "dolfinx": "0.6.0",
     "dune": "2.9",
-    "mfem": "4.5.2"
+    "mfem": "4.5.2",
+    "doxygen": "Release_1_9_6"
 }
 
 
@@ -91,6 +92,11 @@ def _install_pkg(name, opts: dict) -> None:
         _install_from_source({
             "origin": "https://github.com/mfem/mfem.git",
             "branch": f"v{PACKAGES['mfem']}"
+        } | opts)
+    elif name == "doxygen":
+        _install_from_source({
+            "origin": "https://github.com/doxygen/doxygen.git",
+            "branch": f"{PACKAGES['doxygen']}"
         } | opts)
 
 
