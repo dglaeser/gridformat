@@ -12,7 +12,10 @@
 #include <string_view>
 #include <algorithm>
 #include <ostream>
+
+#if __has_include(<format>)
 #include <format>
+#endif
 
 #include <gridformat/common/exceptions.hpp>
 
@@ -93,6 +96,7 @@ ReservedString(const char (&input)[N]) -> ReservedString<N-1>;
 
 }  // namespace GridFormat
 
+#if __cpp_lib_format
 // specialize std::formatter for GridFormat::ReservedString
 template <std::size_t n>
 struct std::formatter<GridFormat::ReservedString<n>> : std::formatter<std::string_view> {
@@ -100,5 +104,6 @@ struct std::formatter<GridFormat::ReservedString<n>> : std::formatter<std::strin
         return std::formatter<std::string_view>::format(static_cast<std::string_view>(s), ctx);
     }
 };
+#endif
 
 #endif  // GRIDFORMAT_COMMON_RESERVED_STRING_HPP_

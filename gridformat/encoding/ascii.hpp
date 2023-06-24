@@ -16,7 +16,11 @@
 #include <string>
 #include <span>
 
+#if __has_include(<format>)
 #include <format>
+#else
+#include <sstream>
+#endif
 
 #include <gridformat/common/output_stream.hpp>
 #include <gridformat/common/reserved_string.hpp>
@@ -67,8 +71,9 @@ class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
     void write(std::span<T, size> data) {
         std::size_t count_entries = 0;
         std::size_t count_buffer_lines = 0;
-        std::string buffer;
 
+#if __cpp_lib_format
+        std::string buffer;
         while (count_entries < data.size()) {
             // format one line to buffer
             std::format_to(std::back_inserter(buffer),
@@ -98,6 +103,37 @@ class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
 
         // flush remaining buffer content
         this->_write_raw(std::span{buffer.c_str(), buffer.size()});
+#else
+        std::string str_buffer;
+        std::ostringstream buffer;
+        using PrintType = typename Encoding::Detail::AsciiPrintType<T>::type;
+        buffer.precision(std::numeric_limits<PrintType>::digits10);
+        while (count_entries < data.size()) {
+            buffer << (count_entries > 0 ? "\n" : "") << _opts.line_prefix;
+
+            using std::min;
+            const auto num_entries = min(_opts.entries_per_line, data.size() - count_entries);
+            const auto sub_range = data.subspan(count_entries, num_entries);
+            for (const auto& value : sub_range)
+                buffer << static_cast<PrintType>(value) << _opts.delimiter;
+
+            // update counters
+            count_entries += num_entries;
+            ++count_buffer_lines;
+
+            // flush and reset buffer
+            if (count_buffer_lines >= _opts.num_cached_lines) {
+                str_buffer = std::move(buffer).str();
+                this->_write_raw(std::span{str_buffer.c_str(), str_buffer.size()});
+                buffer.str("");
+                count_buffer_lines = 0;
+            }
+        }
+
+        // flush remaining buffer content
+        str_buffer = std::move(buffer).str();
+        this->_write_raw(std::span{str_buffer.c_str(), str_buffer.size()});
+#endif
     }
 
     AsciiFormatOptions _opts;
