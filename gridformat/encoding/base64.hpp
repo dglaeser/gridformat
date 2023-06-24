@@ -21,6 +21,7 @@ namespace GridFormat {
 //! \addtogroup Encoding
 //! \{
 
+//! Options for fomatted output of ranges with base64 encoding
 struct Base64EncoderOptions {
     std::size_t num_cached_buffers = 4000;  //!< Number of triplets cached between write operations
 };
@@ -141,7 +142,14 @@ class Base64Stream : public OutputStreamWrapperBase<OStream> {
     Base64EncoderOptions _opts;
 };
 
-namespace Encoding {
+//! \} group Encoding
+
+}  // namespace GridFormat
+
+namespace GridFormat::Encoding {
+
+//! \addtogroup Encoding
+//! \{
 
 //! Base64 encoder
 struct Base64 {
@@ -169,12 +177,11 @@ struct Base64 {
     Base64EncoderOptions _opts = {};
 };
 
-inline constexpr Base64 base64;  //!< Instance of the base64 encoder
-
-}  // namespace Encoding
+//! Instance of the base64 encoder
+inline constexpr Base64 base64;
 
 //! \} group Encoding
 
-}  // namespace GridFormat
+}  // namespace GridFormat::Encoding
 
 #endif  // GRIDFORMAT_COMMON_ENCODING_BASE64_HPP_
