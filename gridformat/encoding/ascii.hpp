@@ -10,16 +10,16 @@
 
 #include <cmath>
 #include <limits>
+#include <concepts>
 #include <algorithm>
 #include <optional>
 #include <cstdint>
 #include <string>
 #include <span>
+#include <sstream>
 
 #if __has_include(<format>)
 #include <format>
-#else
-#include <sstream>
 #endif
 
 #include <gridformat/common/output_stream.hpp>
@@ -61,6 +61,57 @@ struct AsciiFormatOptions {
 //! Wrapper around a given stream to write formatted ascii output
 template<typename OStream>
 class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
+    class Buffer {
+     public:
+        Buffer(std::streamsize precision)
+        : _precision{precision} {
+            _init_stream_buf();
+        }
+
+        template<typename V, typename D>
+        void push(V&& value, D&& delimiter) {
+#if __cpp_lib_format
+            if constexpr (std::floating_point<std::remove_cvref_t<V>>)
+                std::format_to(std::back_inserter(_string_buf),
+                    "{:.{}g}{}", std::forward<V>(value), _precision, std::forward<D>(delimiter)
+                );
+            else
+                std::format_to(std::back_inserter(_string_buf),
+                    "{}{}", std::forward<V>(value), std::forward<D>(delimiter)
+                );
+#else
+            _stream_buf << std::forward<V>(value) << std::forward<D>(delimiter);
+#endif
+        }
+
+        void prepare_readout() {
+#if !__cpp_lib_format
+            // move internal string buffer out of the stream
+            // (see https://stackoverflow.com/a/66662433)
+            _string_buf = std::move(_stream_buf).str();
+            _init_stream_buf(); // reinitialize
+#endif
+        }
+
+        auto data() const {
+            return std::span{_string_buf.data(), _string_buf.size()};
+        }
+
+        void clear() {
+            _string_buf.clear();
+        }
+
+     private:
+        void _init_stream_buf() {
+            _stream_buf = {};
+            _stream_buf.precision(_precision);
+        }
+
+        std::streamsize _precision;
+        std::string _string_buf;
+        std::ostringstream _stream_buf;
+    };
+
  public:
     AsciiOutputStream(OStream& s, AsciiFormatOptions opts = {})
     : OutputStreamWrapperBase<OStream>(s)
@@ -72,22 +123,15 @@ class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
         std::size_t count_entries = 0;
         std::size_t count_buffer_lines = 0;
 
-#if __cpp_lib_format
-        std::string buffer;
+        using PrintType = typename Encoding::Detail::AsciiPrintType<T>::type;
+        Buffer buffer(std::numeric_limits<PrintType>::digits10);
         while (count_entries < data.size()) {
-            // format one line to buffer
-            std::format_to(std::back_inserter(buffer),
-                "{}{}", count_entries > 0 ? "\n" : "", _opts.line_prefix
-            );
+            buffer.push(count_entries > 0 ? "\n" : "", _opts.line_prefix);
 
             using std::min;
             const auto num_entries = min(_opts.entries_per_line, data.size() - count_entries);
-            const auto sub_range = data.subspan(count_entries, num_entries);
-            using PrintType = typename Encoding::Detail::AsciiPrintType<T>::type;
-            for (const auto& value : sub_range)
-                std::format_to(std::back_inserter(buffer),
-                    "{}{}", static_cast<PrintType>(value), _opts.delimiter
-                );
+            for (const auto& value : data.subspan(count_entries, num_entries))
+                buffer.push(static_cast<PrintType>(value), _opts.delimiter);
 
             // update counters
             count_entries += num_entries;
@@ -95,45 +139,16 @@ class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
 
             // flush and reset buffer
             if (count_buffer_lines >= _opts.num_cached_lines) {
-                this->_write_raw(std::span{buffer.c_str(), buffer.size()});
+                buffer.prepare_readout();
+                this->_write_raw(buffer.data());
                 buffer.clear();
                 count_buffer_lines = 0;
             }
         }
 
         // flush remaining buffer content
-        this->_write_raw(std::span{buffer.c_str(), buffer.size()});
-#else
-        std::string str_buffer;
-        std::ostringstream buffer;
-        using PrintType = typename Encoding::Detail::AsciiPrintType<T>::type;
-        buffer.precision(std::numeric_limits<PrintType>::digits10);
-        while (count_entries < data.size()) {
-            buffer << (count_entries > 0 ? "\n" : "") << _opts.line_prefix;
-
-            using std::min;
-            const auto num_entries = min(_opts.entries_per_line, data.size() - count_entries);
-            const auto sub_range = data.subspan(count_entries, num_entries);
-            for (const auto& value : sub_range)
-                buffer << static_cast<PrintType>(value) << _opts.delimiter;
-
-            // update counters
-            count_entries += num_entries;
-            ++count_buffer_lines;
-
-            // flush and reset buffer
-            if (count_buffer_lines >= _opts.num_cached_lines) {
-                str_buffer = std::move(buffer).str();
-                this->_write_raw(std::span{str_buffer.c_str(), str_buffer.size()});
-                buffer.str("");
-                count_buffer_lines = 0;
-            }
-        }
-
-        // flush remaining buffer content
-        str_buffer = std::move(buffer).str();
-        this->_write_raw(std::span{str_buffer.c_str(), str_buffer.size()});
-#endif
+        buffer.prepare_readout();
+        this->_write_raw(buffer.data());
     }
 
     AsciiFormatOptions _opts;
