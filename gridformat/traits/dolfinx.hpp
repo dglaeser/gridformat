@@ -163,10 +163,10 @@ namespace DolfinX {
  * \brief Wrapper around a nodal dolfinx::FunctionSpace, exposing it as a mesh
  *        composed of lagrange elements with the order of the given function space.
  */
-class LagrangeMesh {
+class LagrangePolynomialGrid {
  public:
-    LagrangeMesh() = default;
-    LagrangeMesh(const dolfinx::fem::FunctionSpace& space) {
+    LagrangePolynomialGrid() = default;
+    LagrangePolynomialGrid(const dolfinx::fem::FunctionSpace& space) {
         if (!space.mesh() || !space.element())
             throw ValueError("Cannot construct mesh from space without mesh or element");
 
@@ -184,7 +184,7 @@ class LagrangeMesh {
     }
 
     void update(const dolfinx::fem::FunctionSpace& space) {
-        *this = LagrangeMesh{space};
+        *this = LagrangePolynomialGrid{space};
     }
 
     void clear() {
@@ -196,7 +196,7 @@ class LagrangeMesh {
         _set = false;
     }
 
-    static LagrangeMesh from(const dolfinx::fem::FunctionSpace& space) {
+    static LagrangePolynomialGrid from(const dolfinx::fem::FunctionSpace& space) {
         return {space};
     }
 
@@ -390,64 +390,64 @@ void set_function(const dolfinx::fem::Function<T>& f,
 namespace Traits {
 
 template<>
-struct Cells<DolfinX::LagrangeMesh> {
-    static std::ranges::range auto get(const DolfinX::LagrangeMesh& mesh) {
+struct Cells<DolfinX::LagrangePolynomialGrid> {
+    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid& mesh) {
         return mesh.cells();
     }
 };
 
 template<>
-struct CellType<DolfinX::LagrangeMesh, DolfinX::Cell> {
-    static GridFormat::CellType get(const DolfinX::LagrangeMesh& mesh, const DolfinX::Cell&) {
+struct CellType<DolfinX::LagrangePolynomialGrid, DolfinX::Cell> {
+    static GridFormat::CellType get(const DolfinX::LagrangePolynomialGrid& mesh, const DolfinX::Cell&) {
         return DolfinX::Detail::cell_type(mesh.cell_type());
     }
 };
 
 template<>
-struct CellPoints<DolfinX::LagrangeMesh, DolfinX::Cell> {
-    static std::ranges::range auto get(const DolfinX::LagrangeMesh& mesh, const DolfinX::Cell& cell) {
+struct CellPoints<DolfinX::LagrangePolynomialGrid, DolfinX::Cell> {
+    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid& mesh, const DolfinX::Cell& cell) {
         return mesh.points(cell);
     }
 };
 
 template<>
-struct Points<DolfinX::LagrangeMesh> {
-    static std::ranges::range auto get(const DolfinX::LagrangeMesh& mesh) {
+struct Points<DolfinX::LagrangePolynomialGrid> {
+    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid& mesh) {
         return mesh.points();
     }
 };
 
 template<>
-struct PointCoordinates<DolfinX::LagrangeMesh, DolfinX::Point> {
-    static std::ranges::range auto get(const DolfinX::LagrangeMesh& mesh, const DolfinX::Point& point) {
+struct PointCoordinates<DolfinX::LagrangePolynomialGrid, DolfinX::Point> {
+    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid& mesh, const DolfinX::Point& point) {
         return mesh.position(point);
     }
 };
 
 template<>
-struct PointId<DolfinX::LagrangeMesh, DolfinX::Point> {
-    static std::integral auto get(const DolfinX::LagrangeMesh& mesh, const DolfinX::Point& point) {
+struct PointId<DolfinX::LagrangePolynomialGrid, DolfinX::Point> {
+    static std::integral auto get(const DolfinX::LagrangePolynomialGrid& mesh, const DolfinX::Point& point) {
         return mesh.id(point);
     }
 };
 
 template<>
-struct NumberOfPoints<DolfinX::LagrangeMesh> {
-    static std::integral auto get(const DolfinX::LagrangeMesh& mesh) {
+struct NumberOfPoints<DolfinX::LagrangePolynomialGrid> {
+    static std::integral auto get(const DolfinX::LagrangePolynomialGrid& mesh) {
         return mesh.number_of_points();
     }
 };
 
 template<>
-struct NumberOfCells<DolfinX::LagrangeMesh> {
-    static std::integral auto get(const DolfinX::LagrangeMesh& mesh) {
+struct NumberOfCells<DolfinX::LagrangePolynomialGrid> {
+    static std::integral auto get(const DolfinX::LagrangePolynomialGrid& mesh) {
         return mesh.number_of_cells();
     }
 };
 
 template<>
-struct NumberOfCellPoints<DolfinX::LagrangeMesh, DolfinX::Cell> {
-    static std::integral auto get(const DolfinX::LagrangeMesh& mesh, const DolfinX::Cell&) {
+struct NumberOfCellPoints<DolfinX::LagrangePolynomialGrid, DolfinX::Cell> {
+    static std::integral auto get(const DolfinX::LagrangePolynomialGrid& mesh, const DolfinX::Cell&) {
         return mesh.number_of_cell_points();
     }
 };

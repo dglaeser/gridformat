@@ -98,14 +98,14 @@ void write_higher_order_dune_function() {
     Dune::YaspGrid<3> grid{{1.0, 1.0, 1.0}, {20, 20, 20}};
     const auto& grid_view = grid.leafGridView();
 
-    // To use higher-order output, let us wrap the grid view in the provided LagrangeMesh,
+    // To use higher-order output, let us wrap the grid view in the provided LagrangePolynomialGrid,
     // which exposes a mesh consisting of lagrange cells with the specified order
     unsigned int order = 2;
-    GridFormat::Dune::LagrangeMesh lagrange_mesh{grid_view, 2};
-    GridFormat::Writer writer{GridFormat::default_for(lagrange_mesh), lagrange_mesh};
+    GridFormat::Dune::LagrangePolynomialGrid lagrange_grid{grid_view, 2};
+    GridFormat::Writer writer{GridFormat::default_for(lagrange_grid), lagrange_grid};
 
     // we can now use convenience functions to add Dune::Functions, evaluated at the
-    // points/cells of the lagrange mesh, to the writer...
+    // points/cells of the lagrange grid, to the writer...
     // First, let's create a Dune::Function:
     auto function = Dune::Functions::makeAnalyticGridViewFunction([] (const auto& position) {
         return position[0]*position[1];
@@ -123,9 +123,9 @@ void write_higher_order_dune_function() {
     // additional memory. For time-dependent simulations, you may want to free that memory
     // during time steps, and update the mesh again before the next write. Note that updating
     // is also necessary in case the mesh changes adaptively. Both updating and clearing is
-    // exposed in the API of the GridFormat::Dune::LagrangeMesh:
-    lagrange_mesh.clear();
-    lagrange_mesh.update(grid_view);
+    // exposed in the API of the GridFormat::Dune::LagrangePolynomialGrid:
+    lagrange_grid.clear();
+    lagrange_grid.update(grid_view);
 }
 
 

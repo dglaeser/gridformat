@@ -36,4 +36,4 @@ In this example you can see:
 - a possible way how to write out discrete numerical data from simulations
 - write discontinuous output by using the provided `DiscontinuousGrid` wrapper
 - how to write [dune-functions](https://gitlab.dune-project.org/staging/dune-functions)
-into meshes composed of higher-order Lagrange cells by using the `GridFormat::Dune::LagrangeMesh` wrapper.
+into meshes composed of higher-order Lagrange cells by using the `GridFormat::Dune::LagrangePolynomialGrid` wrapper.

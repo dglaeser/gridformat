@@ -472,12 +472,12 @@ namespace LagrangeDetail {
 
 /*!
  * \ingroup PredefinedTraits
- * \brief Exposes a `Dune::GridView` as a mesh composed of lagrange cells with the given order.
+ * \brief Exposes a `Dune::GridView` as a grid composed of lagrange cells with the given order.
  *        Can be used to conveniently write `Dune::Functions` into grid files.
  * \note This is only available if dune-localfunctions is found on the system.
  */
 template<typename GV>
-class LagrangeMesh {
+class LagrangePolynomialGrid {
     using ElementSeed = typename GV::Grid::template Codim<0>::EntitySeed;
     using LocalPoints = LagrangeDetail::LocalPoints<GV>;
     using Mapper = DUNE::MultipleCodimMultipleGeomTypeMapper<GV>;
@@ -491,7 +491,7 @@ class LagrangeMesh {
     using Element = typename GridView::template Codim<0>::Entity;
     using Position = typename Element::Geometry::GlobalCoordinate;
 
-    explicit LagrangeMesh(const GridView& grid_view, unsigned int order = 1)
+    explicit LagrangePolynomialGrid(const GridView& grid_view, unsigned int order = 1)
     : _grid_view{grid_view}
     , _order{order} {
         update(grid_view);
@@ -618,74 +618,74 @@ class LagrangeMesh {
 namespace Traits {
 
 template<typename GridView>
-struct Points<Dune::LagrangeMesh<GridView>> {
-    static auto get(const Dune::LagrangeMesh<GridView>& mesh) {
+struct Points<Dune::LagrangePolynomialGrid<GridView>> {
+    static auto get(const Dune::LagrangePolynomialGrid<GridView>& mesh) {
         return mesh.points();
     }
 };
 
 template<typename GridView>
-struct Cells<Dune::LagrangeMesh<GridView>> {
-    static auto get(const Dune::LagrangeMesh<GridView>& mesh) {
+struct Cells<Dune::LagrangePolynomialGrid<GridView>> {
+    static auto get(const Dune::LagrangePolynomialGrid<GridView>& mesh) {
         return mesh.cells();
     }
 };
 
 template<typename GridView>
-struct NumberOfPoints<Dune::LagrangeMesh<GridView>> {
-    static auto get(const Dune::LagrangeMesh<GridView>& mesh) {
+struct NumberOfPoints<Dune::LagrangePolynomialGrid<GridView>> {
+    static auto get(const Dune::LagrangePolynomialGrid<GridView>& mesh) {
         return mesh.number_of_points();
     }
 };
 
 template<typename GridView>
-struct NumberOfCells<Dune::LagrangeMesh<GridView>> {
-    static auto get(const Dune::LagrangeMesh<GridView>& mesh) {
+struct NumberOfCells<Dune::LagrangePolynomialGrid<GridView>> {
+    static auto get(const Dune::LagrangePolynomialGrid<GridView>& mesh) {
         return mesh.number_of_cells();
     }
 };
 
 template<typename GridView>
-struct NumberOfCellPoints<Dune::LagrangeMesh<GridView>,
-                          typename Dune::LagrangeMesh<GridView>::Cell> {
-    static auto get(const Dune::LagrangeMesh<GridView>& mesh,
-                    const typename Dune::LagrangeMesh<GridView>::Cell& cell) {
+struct NumberOfCellPoints<Dune::LagrangePolynomialGrid<GridView>,
+                          typename Dune::LagrangePolynomialGrid<GridView>::Cell> {
+    static auto get(const Dune::LagrangePolynomialGrid<GridView>& mesh,
+                    const typename Dune::LagrangePolynomialGrid<GridView>::Cell& cell) {
         return mesh.number_of_points(cell);
     }
 };
 
 template<typename GridView>
-struct CellPoints<Dune::LagrangeMesh<GridView>,
-                  typename Dune::LagrangeMesh<GridView>::Cell> {
-    static auto get(const Dune::LagrangeMesh<GridView>& mesh,
-                    const typename Dune::LagrangeMesh<GridView>::Cell& cell) {
+struct CellPoints<Dune::LagrangePolynomialGrid<GridView>,
+                  typename Dune::LagrangePolynomialGrid<GridView>::Cell> {
+    static auto get(const Dune::LagrangePolynomialGrid<GridView>& mesh,
+                    const typename Dune::LagrangePolynomialGrid<GridView>::Cell& cell) {
         return mesh.points(cell);
     }
 };
 
 template<typename GridView>
-struct CellType<Dune::LagrangeMesh<GridView>,
-                typename Dune::LagrangeMesh<GridView>::Cell> {
-    static auto get(const Dune::LagrangeMesh<GridView>& mesh,
-                    const typename Dune::LagrangeMesh<GridView>::Cell& cell) {
+struct CellType<Dune::LagrangePolynomialGrid<GridView>,
+                typename Dune::LagrangePolynomialGrid<GridView>::Cell> {
+    static auto get(const Dune::LagrangePolynomialGrid<GridView>& mesh,
+                    const typename Dune::LagrangePolynomialGrid<GridView>::Cell& cell) {
         return Dune::LagrangeDetail::cell_type(mesh.element(cell).type());
     }
 };
 
 template<typename GridView>
-struct PointCoordinates<Dune::LagrangeMesh<GridView>,
-                        typename Dune::LagrangeMesh<GridView>::Point> {
-    static const auto& get(const Dune::LagrangeMesh<GridView>& mesh,
-                           const typename Dune::LagrangeMesh<GridView>::Point& point) {
+struct PointCoordinates<Dune::LagrangePolynomialGrid<GridView>,
+                        typename Dune::LagrangePolynomialGrid<GridView>::Point> {
+    static const auto& get(const Dune::LagrangePolynomialGrid<GridView>& mesh,
+                           const typename Dune::LagrangePolynomialGrid<GridView>::Point& point) {
         return mesh.position(point);
     }
 };
 
 template<typename GridView>
-struct PointId<Dune::LagrangeMesh<GridView>,
-               typename Dune::LagrangeMesh<GridView>::Point> {
-    static auto get(const Dune::LagrangeMesh<GridView>&,
-                    const typename Dune::LagrangeMesh<GridView>::Point& point) {
+struct PointId<Dune::LagrangePolynomialGrid<GridView>,
+               typename Dune::LagrangePolynomialGrid<GridView>::Point> {
+    static auto get(const Dune::LagrangePolynomialGrid<GridView>&,
+                    const typename Dune::LagrangePolynomialGrid<GridView>::Point& point) {
         return point.index;
     }
 };
@@ -712,13 +712,13 @@ namespace FunctionDetail {
 
 /*!
  * \ingroup PredefinedTraits
- * \brief Implements the field interface for a Dune::Function defined on a GridFormat::Dune::LagrangeMesh.
+ * \brief Implements the field interface for a Dune::Function defined on a GridFormat::Dune::LagrangePolynomialGrid.
  */
 template<typename Function, typename GridView, typename T = FunctionDetail::RangeScalar<Function, GridView>>
 class FunctionField : public GridFormat::Field {
  public:
     explicit FunctionField(const Function& function,
-                           const LagrangeMesh<GridView>& mesh,
+                           const LagrangePolynomialGrid<GridView>& mesh,
                            const Precision<T>& = {},
                            bool cellwise_constant = false)
     : _function{function}
@@ -788,22 +788,22 @@ class FunctionField : public GridFormat::Field {
     }
 
     const Function& _function;
-    const LagrangeMesh<GridView>& _mesh;
+    const LagrangePolynomialGrid<GridView>& _mesh;
     bool _cellwise_constant;
 };
 
 
 #ifndef DOXYGEN
-template<typename T> struct IsLagrangeMesh : public std::false_type {};
-template<typename GV> struct IsLagrangeMesh<LagrangeMesh<GV>> : public std::true_type {};
+template<typename T> struct IsLagrangeGrid : public std::false_type {};
+template<typename GV> struct IsLagrangeGrid<LagrangePolynomialGrid<GV>> : public std::true_type {};
 
 namespace FunctionDetail {
     template<typename F, typename W, typename T>
     void set_function(F&& f, W& w, const std::string& name, const Precision<T>& prec, bool is_cellwise) {
         static_assert(std::is_lvalue_reference_v<F>, "Functions are stored as references and need to be lvalues");
         static_assert(
-            IsLagrangeMesh<typename W::Grid>::value,
-            "Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangeMesh"
+            IsLagrangeGrid<typename W::Grid>::value,
+            "Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangePolynomialGrid"
         );
         if (is_cellwise)
             w.set_cell_field(name, FunctionField{f, w.grid(), prec, true});
@@ -814,8 +814,8 @@ namespace FunctionDetail {
     template<typename F, typename W>
     void set_function(F&& f, W& w, const std::string& name, bool is_cellwise) {
         static_assert(
-            IsLagrangeMesh<typename W::Grid>::value,
-            "Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangeMesh"
+            IsLagrangeGrid<typename W::Grid>::value,
+            "Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangePolynomialGrid"
         );
         using T = RangeScalar<F, typename W::Grid::GridView>;
         set_function(std::forward<F>(f), w, name, Precision<T>{}, is_cellwise);
@@ -826,7 +826,7 @@ namespace FunctionDetail {
 /*!
  * \ingroup PredefinedTraits
  * \brief Insert the given Dune::Function to the writer as point field.
- * \note This requires the Writer to have been constructed with a LagrangeMesh.
+ * \note This requires the Writer to have been constructed with a LagrangePolynomialGrid.
  */
 template<typename Function, typename Writer>
 void set_point_function(Function&& f, Writer& writer, const std::string& name) {
@@ -836,7 +836,7 @@ void set_point_function(Function&& f, Writer& writer, const std::string& name) {
 /*!
  * \ingroup PredefinedTraits
  * \brief Insert the given Dune::Function to the writer as point field with the given precision.
- * \note This requires the Writer to have been constructed with a LagrangeMesh.
+ * \note This requires the Writer to have been constructed with a LagrangePolynomialGrid.
  */
 template<typename Function, typename Writer, Concepts::Scalar T>
 void set_point_function(Function&& f, Writer& writer, const std::string& name, const Precision<T>& prec) {
@@ -846,7 +846,7 @@ void set_point_function(Function&& f, Writer& writer, const std::string& name, c
 /*!
  * \ingroup PredefinedTraits
  * \brief Insert the given Dune::Function to the writer as cell field.
- * \note This requires the Writer to have been constructed with a LagrangeMesh.
+ * \note This requires the Writer to have been constructed with a LagrangePolynomialGrid.
  */
 template<typename Writer, typename Function>
 void set_cell_function(Function&& f, Writer& writer, const std::string& name) {
@@ -856,7 +856,7 @@ void set_cell_function(Function&& f, Writer& writer, const std::string& name) {
 /*!
  * \ingroup PredefinedTraits
  * \brief Insert the given Dune::Function to the writer as cell field with the given precision.
- * \note This requires the Writer to have been constructed with a LagrangeMesh.
+ * \note This requires the Writer to have been constructed with a LagrangePolynomialGrid.
  */
 template<typename Writer, typename Function, Concepts::Scalar T>
 void set_cell_function(Function&& f, Writer& writer, const std::string& name, const Precision<T>& prec) {
@@ -872,11 +872,11 @@ void set_cell_function(Function&& f, Writer& writer, const std::string& name, co
 namespace GridFormat::Dune {
 
 template<typename... T>
-class LagrangeMesh {
+class LagrangePolynomialGrid {
     template<typename... Ts> struct False { static constexpr bool value = false; };
  public:
     template<typename... Args>
-    LagrangeMesh(Args&&... args) {
+    LagrangePolynomialGrid(Args&&... args) {
         static_assert(False<Args...>::value, "Dune-localfunctions required for higher-order output");
     }
 };
