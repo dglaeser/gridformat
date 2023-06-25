@@ -405,12 +405,12 @@ class XMLWriterBase
         if (_has_element(context, "Piece.PointData"))
             for (unsigned int i = 0; i <= 2; ++i)
                 for (const auto& [n, _] : point_fields_of_rank(i, *this) | std::views::take(1))
-                    _set_attribute(context, "Piece.PointData", VTK::active_array_attribute[i], n);
+                    _set_attribute(context, "Piece.PointData", active_array_attribute_for_rank(i), n);
 
         if (_has_element(context, "Piece.CellData"))
             for (unsigned int i = 0; i <= 2; ++i)
                 for (const auto& [n, _] : cell_fields_of_rank(i, *this) | std::views::take(1))
-                    _set_attribute(context, "Piece.CellData", VTK::active_array_attribute[i], n);
+                    _set_attribute(context, "Piece.CellData", active_array_attribute_for_rank(i), n);
 
     }
 };
