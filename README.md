@@ -1,6 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
+[![C++ Standard](https://img.shields.io/badge/C++-20-blue.svg?style=flat&logo=c%2B%2B)](https://isocpp.org/std/the-standard)
 [![Pages](https://github.com/dglaeser/gridformat/actions/workflows/pages.yml/badge.svg)](https://dglaeser.github.io/gridformat)
 [![Test suite](https://github.com/dglaeser/gridformat/actions/workflows/main.yml/badge.svg)](https://github.com/dglaeser/gridformat/actions?query=branch%3Amain+)
 [![Coverage Report](https://dglaeser.github.io/gridformat/coverage.svg)](https://dglaeser.github.io/gridformat/test_coverage)
