@@ -80,13 +80,12 @@ class VTIWriter : public VTK::XMLWriterBase<Grid, VTIWriter<Grid>> {
         });
 
         // set default active arrays (scalars, vectors, tensors)
-        for (std::size_t i = 1; i <= 3; ++i)
+        for (std::size_t i = 0; i <= 2; ++i)
         {
-            if (const auto cell_default = this->first_cell_field(i); !cell_default.empty())
-                this->_set_attribute(context, "Piece.CellData", VTK::active_array_attribute[i-1], cell_default);
-
-            if (const auto point_default = this->first_point_field(i); !point_default.empty())
-                this->_set_attribute(context, "Piece.PointData", VTK::active_array_attribute[i-1], point_default);
+            for (const auto& [n, _] : cell_fields_of_rank(i, *this) | std::views::take(1))
+                this->_set_attribute(context, "Piece.CellData", VTK::active_array_attribute[i], n);
+            for (const auto& [n, _] : point_fields_of_rank(i, *this) | std::views::take(1))
+                this->_set_attribute(context, "Piece.PointData", VTK::active_array_attribute[i], n);
         }
 
         this->_write_xml(std::move(context), s);

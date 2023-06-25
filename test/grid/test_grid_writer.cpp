@@ -5,6 +5,9 @@
 #include <sstream>
 #include <iterator>
 #include <type_traits>
+#include <algorithm>
+#include <utility>
+#include <vector>
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/field.hpp>
@@ -281,6 +284,40 @@ int main() {
         writer.set_meta_data("test", 1.0);
         auto field = writer.remove_meta_data("test");
         expect(throws([&] () { writer.remove_meta_data("test"); }));
+    };
+
+    "grid_writer_get_fields_of_rank"_test = [&] () {
+        std::array vector{1., 1.};
+        std::array tensor{vector, vector};
+
+        const auto set_fields = [&] (const auto& setter) {
+            setter("scalar0", [&] (const auto&) { return 1.0; });
+            setter("scalar1", [&] (const auto&) { return 1.0; });
+            setter("vector0", [&] (const auto&) { return vector; });
+            setter("vector1", [&] (const auto&) { return vector; });
+            setter("tensor0", [&] (const auto&) { return tensor; });
+            setter("tensor1", [&] (const auto&) { return tensor; });
+        };
+
+        MyWriter writer{grid};
+        set_fields([&] <typename... Args> (Args&&... args) { writer.set_point_field(std::forward<Args>(args)...); });
+        set_fields([&] <typename... Args> (Args&&... args) { writer.set_cell_field(std::forward<Args>(args)...); });
+
+        const auto matches = [] (auto pairs, std::vector<std::string> expected) {
+            for (const auto& [n, _] : pairs)
+                if (std::ranges::count(expected, n))
+                    std::erase(expected, n);
+            return expected.empty();
+        };
+
+        expect(matches(point_fields_of_rank(0, writer), {"scalar0", "scalar1"}));
+        expect(matches(cell_fields_of_rank(0, writer), {"scalar0", "scalar1"}));
+
+        expect(matches(point_fields_of_rank(1, writer), {"vector0", "vector1"}));
+        expect(matches(cell_fields_of_rank(1, writer), {"vector0", "vector1"}));
+
+        expect(matches(point_fields_of_rank(2, writer), {"tensor0", "tensor1"}));
+        expect(matches(cell_fields_of_rank(2, writer), {"tensor0", "tensor1"}));
     };
 
     return 0;
