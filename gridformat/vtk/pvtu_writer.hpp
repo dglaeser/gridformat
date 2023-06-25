@@ -103,6 +103,7 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
             );
         });
 
+        this->_set_default_active_fields(pvtk_xml.get_child("PUnstructuredGrid"));
         write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
     }
 };

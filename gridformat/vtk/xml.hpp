@@ -361,20 +361,6 @@ class XMLWriterBase
         return *element;
     }
 
-    bool _has_element(WriteContext& context, std::string_view xml_group) const {
-        return _has_element(context, _get_element_names(xml_group));
-    }
-
-    bool _has_element(WriteContext& context, const std::vector<std::string>& sub_elem_names) const {
-        XMLElement* element = &context.xml_representation.get_child(context.vtk_grid_type);
-        for (const auto& element_name : sub_elem_names) {
-            if (!element->has_child(element_name))
-                return false;
-            element = &element->get_child(element_name);
-        }
-        return true;
-    }
-
     std::vector<std::string> _get_element_names(std::string_view elements) const {
         std::vector<std::string> result;
         std::ranges::for_each(
@@ -390,7 +376,7 @@ class XMLWriterBase
 
     void _write_xml(WriteContext&& context, std::ostream& s) const {
         Indentation indentation{{.width = 2}};
-        _set_default_active_fields(context);
+        _set_default_active_fields(context.xml_representation.get_child(context.vtk_grid_type));
         std::visit([&] (const auto& encoder) {
             std::visit([&] <typename DataFormat> (const DataFormat&) {
                 if constexpr (std::is_same_v<DataFormat, VTK::DataFormat::Inlined>)
@@ -401,17 +387,26 @@ class XMLWriterBase
         }, this->_xml_settings.encoder);
     }
 
-    void _set_default_active_fields(WriteContext& context) const {
-        if (_has_element(context, "Piece.PointData"))
+    void _set_default_active_fields(XMLElement& xml) const {
+        const auto set = [&] (std::string_view group, const auto& attr, const auto& name) -> void {
+            XMLElement* element = &xml;
+            for (const auto& element_name : _get_element_names(group)) {
+                if (!element->has_child(element_name))
+                    return;
+                element = &element->get_child(element_name);
+            }
+            element->set_attribute(attr, name);
+        };
+
+        for (std::string_view group : {"Piece.PointData", "PPointData"})
             for (unsigned int i = 0; i <= 2; ++i)
                 for (const auto& [n, _] : point_fields_of_rank(i, *this) | std::views::take(1))
-                    _set_attribute(context, "Piece.PointData", active_array_attribute_for_rank(i), n);
+                    set(group, active_array_attribute_for_rank(i), n);
 
-        if (_has_element(context, "Piece.CellData"))
+        for (std::string_view group : {"Piece.CellData", "PCellData"})
             for (unsigned int i = 0; i <= 2; ++i)
                 for (const auto& [n, _] : cell_fields_of_rank(i, *this) | std::views::take(1))
-                    _set_attribute(context, "Piece.CellData", active_array_attribute_for_rank(i), n);
-
+                    set(group, active_array_attribute_for_rank(i), n);
     }
 };
 
