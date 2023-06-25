@@ -83,6 +83,16 @@ class VTRWriter : public VTK::XMLWriterBase<Grid, VTRWriter<Grid>> {
             this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
         });
 
+        // set default active arrays (scalars, vectors, tensors)
+        for (std::size_t i = 1; i <= 3; ++i)
+        {
+            if (const auto cell_default = this->first_cell_field(i); !cell_default.empty())
+                this->_set_attribute(context, "Piece.CellData", VTK::active_array_attribute[i-1], cell_default);
+
+            if (const auto point_default = this->first_point_field(i); !point_default.empty())
+                this->_set_attribute(context, "Piece.PointData", VTK::active_array_attribute[i-1], point_default);
+        }
+
         const auto coord_fields = _make_ordinate_fields();
         for (unsigned dir = 0; dir < space_dim; ++dir)
             this->_set_data_array(context, "Piece.Coordinates", "X_" + std::to_string(dir), *coord_fields[dir]);

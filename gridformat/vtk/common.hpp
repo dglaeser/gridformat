@@ -221,6 +221,8 @@ auto make_cell_types_field(const Grid& grid) {
     });
 }
 
+inline constexpr std::array active_array_attribute = {"Scalars", "Vectors", "Tensors"};
+
 namespace CommonDetail {
 
     template<Concepts::StaticallySizedRange R>
