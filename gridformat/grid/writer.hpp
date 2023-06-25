@@ -125,6 +125,22 @@ class GridWriterBase {
         return _cell_fields.pop(name);
     }
 
+    //! first cell field name of given dimension or empty string if none such field exists
+    std::string first_cell_field(std::size_t dimension) const {
+        const auto get_dimension = [this](const auto& name){ return _cell_fields.get(name).layout().dimension(); };
+        const auto predicate = [=](auto d){ return d == dimension; };
+        auto it = std::ranges::find_if(_cell_field_names(), predicate, get_dimension);
+        return it != std::ranges::end(_cell_field_names()) ? *it : std::string{};
+    }
+
+    //! first point field name of given dimension or empty string if none such field exists
+    std::string first_point_field(std::size_t dimension) const {
+        const auto get_dimension = [this](const auto& name){ return _point_fields.get(name).layout().dimension(); };
+        const auto predicate = [=](auto d){ return d == dimension; };
+        auto it = std::ranges::find_if(_point_field_names(), predicate, get_dimension);
+        return it != std::ranges::end(_point_field_names()) ? *it : std::string{};
+    }
+
     void clear() {
         _meta_data.clear();
         _point_fields.clear();
