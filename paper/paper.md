@@ -42,32 +42,32 @@ To visualize simulation results with `ParaView`, researchers need to write their
 Users of existing simulation frameworks such as `Dune` [@bastian2008; @Dune2021],
 `Dumux` [@dumux_2011; @Kochetaldumux2021], `Deal.II` [@dealII94], `FEniCS` [@fenicsbook2012; @fenics] or `MFEM` [@mfem; @mfem_web],
 can usually export their results into some standard file formats, however, they are limited
-to those formats that are supported by framework. Reusing another framework's I/O functionality is generally challenging, at least
+to those formats that are supported by the framework. Reusing another framework's I/O functionality is generally challenging, at least
 without runtime and memory overhead due to data conversions, since the implementation is typically tailored to its specific data structures.
-As a consequence, the work of implementing I/O into standard file formats is repeated in every framework, and remains inaccessible for
-researchers that use hand-written simulation codes.
+As a consequence, the work of implementing I/O into standard file formats is currently repeated in every framework and remains inaccessible for
+researchers developing new simulation frameworks or other research codes relying on I/O for visualization.
 
-To address this issue, `GridFormat` aims to provide an easy-to-use API for writing grid files in various formats. By utilizing generic
-programming through C++ templates and traits classes, `GridFormat` is designed to be data-structure agnostic and allows users to achieve
-full interoperability with their data structures by implementing a few traits classes (see discussion below). This enables users of both
-simulation frameworks and hand-written codes to write their data into standard file formats with minimal effort and without significant
-runtime or memory overhead. In fact, `GridFormat` comes with out-of-the-box support for data structures of several widely-used frameworks,
-namely `Dune`, `Deal.II`, `FenicsX`, `MFEM` and `CGAL` [@cgal; @cgal_web].
+To address this issue, `GridFormat` aims to provide an easy-to-use framework-agnostic API for writing grid files in various formats.
+By utilizing generic programming with C++ templates and traits, `GridFormat` is data-structure agnostic and allows developers to achieve
+full interoperability with their data structures by implementing a small number of trait classes (see discussion below). Users of both
+simulation frameworks and self-written small codes can write grid-based data into standard file formats with minimal effort and without significant
+runtime or memory overhead. `GridFormat` comes with out-of-the-box support for data structures of several widely-used frameworks,
+namely `Dune`, `Deal.II`, `FenicsX`, `MFEM`, and `CGAL` [@cgal; @cgal_web].
 
 # Statement of Need
 
-`GridFormat` addresses the issue of duplicate implementation efforts for I/O across different simulation frameworks. By utilizing `GridFormat` as an underlying tool, framework developers can easily provide their users with access to additional file formats. Moreover, instead of implementing support for new formats within the framework, developers can integrate them into `GridFormat`, thereby making them available to all other frameworks that utilize it. In addition to benefiting framework developers and users, the generic implementation of `GridFormat` also serves researchers with custom simulation codes.
+`GridFormat` addresses the issue of duplicate implementation effort for I/O across different simulation frameworks. By utilizing `GridFormat` as a backend for visualization file output, framework developers can easily provide their users with access to additional file formats. Moreover, instead of implementing support for new formats within the framework, developers can integrate them into `GridFormat`, thereby making them available to all other frameworks that use `GridFormat`. In addition to benefiting framework developers and users, the generic implementation of `GridFormat` also serves researchers with framework-independent smaller simulation codes.
 
-Three key requirements governed the design of `GridFormat`: seamless integration, minimal runtime and memory overhead, and support for `MPI`. Given that C++ is widely used in simulation codes, we selected it as the programming language such that `GridFormat` can be used natively. It is lightweight, header-only, free of mandatory dependencies, and supports CMake [@cmake_web] features that allow for automatic integration of `GridFormat` in downstream projects.
+Three key requirements govern the design of `GridFormat`: seamless integration, minimal runtime and memory overhead, and support for `MPI`. Given that C++ is widely used in grid-based simulation codes for performance reasons, we selected C++ as the programming language such that `GridFormat` can be adopted and used natively. It is lightweight, header-only, free of dependencies (unless opt-in features such as HDF5 output is desired), and supports CMake [@cmake_web] features that allow for automatic integration of `GridFormat` in downstream projects.
 
 # Concept
 
 Following the distinct [VTK-XML](https://examples.vtk.org/site/VTKFileFormats/#xml-file-formats) file formats, `GridFormat`
-supports four different _grid concepts_: `ImageGrid`, `RectilinearGrid`, `StructuredGrid` and `UnstructuredGrid`. While the
+supports four different _grid concepts_: `ImageGrid`, `RectilinearGrid`, `StructuredGrid`, and `UnstructuredGrid`. While the
 latter is fully generic, the first three assume that the grid has a structured topology. A known structured topology makes
 it obsolete to define cell geometries and grid connectivity, and formats designed for such grids can therefore store the grid
-in a space-efficient manner. An overview over the different types of grids is shown in the image below, and a more detailed
-discussion can be found in the `GridFormat` [documentation](https://github.com/dglaeser/gridformat/blob/40596747e306fa6b899bdc5a19ae67e2308952f4/docs/pages/grid_concepts.md).
+in a space-efficient manner. An overview of the different types of grids is shown in the image below, and a more detailed
+discussion can be found in the [`GridFormat` documentation](https://github.com/dglaeser/gridformat/blob/40596747e306fa6b899bdc5a19ae67e2308952f4/docs/pages/grid_concepts.md).
 
 \begin{figure}[htb]
     \centering
@@ -78,7 +78,7 @@ discussion can be found in the `GridFormat` [documentation](https://github.com/d
 
 
 `GridFormat` uses a traits (or meta-function) mechanism to operate on user-given grid types, and to identify which concept
-a given grid models. As a motivating example, consider this piece of code:
+a given grid models. As a motivating example, consider the following function template:
 
 ```cpp
 template<typename Grid>
@@ -89,11 +89,12 @@ void do_something_on_a_grid(const Grid& grid) {
 }
 ```
 
-This function internally iterates over all cells of the given grid by calling the `cells` function on it. This limits the usability
-of this function to grids that fulfill this interface. As a user, one could wrap the grid in an adapter that exposes the required
-interface. However, this can become cumbersome, especially if there are certain requirements on the cells that the iteration
-yields. An alternative is to use traits, which can allow us to write this function generically, accepting any grid that implements
-the `Cells` trait:
+In the function body, we iterate over all cells of the given grid by calling the `cells` method. This limits the usability
+of this function to grid types that fulfill such an interface. One could wrap the grid in an adapter that exposes the required
+interface method. However, this can become cumbersome, especially if there are certain requirements on the cell type
+in the iterated range.
+An alternative is to use traits, which allows writing the function generically, accepting any instance of a grid type that
+the `Cells` trait class template is specialized for (by using (partial) template specialization):
 
 ```cpp
 namespace Traits { template<typename Grid> struct Cells; }
@@ -106,33 +107,34 @@ void do_something_on_a_grid(const Grid& grid) {
 }
 ```
 
-Instead of calling a function on `grid` directly, it is accessed via the `Cells` trait, which can be specialized for any type.
-If such specialization exists, one can call `do_something_on_a_grid` with an instance of type `Grid` directly, without having to wrap it
-in an adapter. Using C++-20 concepts, `GridFormat` checks if a user grid specializes the required traits correctly at compile-time,
-and the error messages emitted by the compiler indicate which traits specializations are missing or incorrect.
-By accessing information on user-defined grids via traits, I/O functionality in `GridFormat` is implemented in a way that is fully
-decoupled from and agnostic about concrete grid types. Users can achieve compatibility with their concrete grid type by specializing the
+Instead of calling a function on `grid` directly, it is accessed via `Cells`, which can be specialized for any type.
+If such specialization exists, `do_something_on_a_grid` is invocable with an instance of type `Grid` directly, without the need for
+wrappers or adapters. Using C++-20 concepts, `GridFormat` can check at compile-time if a user grid specializes all required traits correctly.
+Error messages emitted by the compiler indicate which trait specializations are missing or incorrect.
+The traits mechanism makes the `GridFormat` library fully extensible: users can achieve compatibility
+with their concrete grid type by specializing the
 required traits within _their_ code base, without having to change any code in `GridFormat`. Moreover, `GridFormat` comes with predefined
 traits for `Dune`, `FenicsX`, `Deal.II`, `MFEM` and `CGAL` such that users of these frameworks can directly use `GridFormat` without
 any implementation effort.
 
-Note that the different above-mentioned grid concepts require the user to specialize different traits. As an example, in order to determine the
-connectivity of an unstructured grid, `GridFormat` needs to know which points are embedded in a given grid cell. To this end,
-users operating on unstructured grids can specialize a specific trait for that. However, this is not required for structured grids
-and for writing them into structured grid file formats. An overview over which traits are required for which grid concept can be
-found in the `GridFormat` [documentation](https://github.com/dglaeser/gridformat/blob/40596747e306fa6b899bdc5a19ae67e2308952f4/docs/pages/traits.md).
+Note that each of the above-mentioned grid concepts requires the user to specialize a certain subset of traits.
+For instance, to determine the
+connectivity of an unstructured grid, `GridFormat` needs to know which points are embedded in a given grid cell.
+The information is not required for writing structured grids into structured grid file formats.
+An overview of which traits are required for which grid concept can be
+found in the [`GridFormat` documentation](https://github.com/dglaeser/gridformat/blob/40596747e306fa6b899bdc5a19ae67e2308952f4/docs/pages/traits.md).
 
 
 ## Minimal Example
 
-Let us assume that we have some hand-written code that performs simulations on a two-dimensional, structured arrangement
-of cells and yields a `std::vector<double>` storing the numerical solution. Due to this known trivial topology, the code does not
+Let us assume that we have some hand-written code that performs simulations on a two-dimensional, structured grid
+and yields a `std::vector<double>` storing the numerical solution. Due to this known trivial topology, the code does not
 define a specific data structure to represent grids. It only needs to know the number of cells per direction and the size of one cell.
-In the following code snippets, we want demonstrate how one could use `GridFormat` to write that data into established file formats,
-in this case the [VTI](https://examples.vtk.org/site/VTKFileFormats/#imagedata) file format. Stitched together, the subsequent snippets
-constitute a fully working C++ main file.
+In the following code snippets, we demonstrate how one can use `GridFormat` to write such data into established file formats,
+in this case, the [VTI](https://examples.vtk.org/site/VTKFileFormats/#imagedata) file format. Stitched together, the subsequent snippets
+constitute a fully working C++ program.
 
-First of all, let us define a simple data structure to represent the grid by collecting the above-mentioned information in a `struct`:
+First, let us define a simple data structure to represent the grid:
 
 ```cpp
 #include <array>
@@ -143,16 +145,17 @@ struct MyGrid {
 };
 ```
 
-Now we can specialize the traits required for the `ImageGrid` concept for the type `MyGrid` (see the code comments for more details).
+We can specialize the traits required for the `ImageGrid` concept
+for the type `MyGrid` (see the code comments for more details).
 
 ```cpp
-// bring in the library, this also brings in the traits declarations
+// Include the GridFormat library header, this also brings in the traits declarations
 #include <gridformat/gridformat.hpp>
 
 namespace GridFormat::Traits {
 
 // Expose a range over grid cells. Here, we simply use the MDIndexRange provided
-// by GridFormat, which allows to iterate over all index tuples within the given
+// by GridFormat, which allows iterating over all index tuples within the given
 // dimensions (in our case the number of cells in each coordinate direction)
 template<> struct Cells<MyGrid> {
     static auto get(const MyGrid& grid) {
@@ -160,31 +163,31 @@ template<> struct Cells<MyGrid> {
     };
 };
 
-// Expose a range over grid points.
+// Expose a range over grid points
 template<> struct Points<MyGrid> {
     static auto get(const MyGrid& grid) {
         return GridFormat::MDIndexRange{{grid.cells[0]+1, grid.cells[1]+1}};
     };
 };
 
-// Expose the number of cells of our "image grid" per direction.
+// Expose the number of cells of the image grid per coordinate direction
 template<> struct Extents<MyGrid> {
     static auto get(const MyGrid& grid) {
         return grid.cells;
     }
 };
 
-// Expose the size of the cells per direction.
+// Expose the size of the cells per coordinate direction
 template<> struct Spacing<MyGrid> {
     static auto get(const MyGrid& grid) {
         return grid.dx;
     }
 };
 
-// Expose the position of the grid origin.
+// Expose the position of the grid origin
 template<> struct Origin<MyGrid> {
     static auto get(const MyGrid& grid) {
-        // our grid always starts at (0, 0)
+        // The origin for our grid's coordinate system is (0, 0)
         return std::array{0.0, 0.0};
     }
 };
@@ -209,19 +212,19 @@ int main() {
     std::size_t nx = 15, ny = 20;
     double dx = 0.1, dy = 0.2;
 
-    // Here, there could be a call to our simulation code:
+    // Here, there could be a call to our simulation code, for example:
     // std::vector<double> = solve_problem(nx, ny, dx, dy);
-    // But for this example, let's just create a vector filled with 1.0 ...
+    // But for this simple example, let's just create a vector filled with 1.0 ...
     std::vector<double> values(nx*ny, 1.0);
 
     // To write out this solution, let's construct an instance of `MyGrid`
     MyGrid grid{.cells = {nx, ny}, .dx = {dx, dy}};
 
-    // ... and construct a writer, letting GridFormat choose a format.
+    // ... and construct a writer, letting GridFormat choose a format
     const auto file_format = GridFormat::default_for(grid);
     GridFormat::Writer writer{file_format, grid};
 
-    // We can now write out our numerical solution as a field on grid cells:
+    // We can now write out our numerical solution as a field on grid cells
     using GridFormat::MDIndex;
     writer.set_cell_field("cfield", [&] (const MDIndex& cell_location) {
         const auto flat_index = cell_location.get(1)*nx + cell_location.get(0);
@@ -235,7 +238,7 @@ int main() {
         return x*y;
     });
 
-    writer.write("example"); // gridformat adds the extension
+    writer.write("example"); // GridFormat adds the right file extension
     return 0;
 }
 ```
