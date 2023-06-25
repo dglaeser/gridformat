@@ -7,6 +7,12 @@
 
 #include <gridformat/common/logging.hpp>
 #include <gridformat/parallel/communication.hpp>
+
+// In the GitHub action runner we run into a compiler warning when
+// using release flags. Locally, this could not be reproduced. For
+// now, we simply ignore those warnings here.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wrestrict"
 #include <gridformat/vtk/pvts_writer.hpp>
 
 #include "../grid/structured_grid.hpp"
@@ -104,3 +110,5 @@ int main(int argc, char** argv) {
     MPI_Finalize();
     return 0;
 }
+
+#pragma GCC diagnostic pop
