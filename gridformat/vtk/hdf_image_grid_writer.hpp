@@ -194,9 +194,20 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
             my_specs.extents,
             my_offset
         );
+
+        // in order to avoid overlapping hyperslabs for point data in parallel I/O,
+        // we only write the last entries of the slab (per direction) when our portion
+        // of the image is the last portion of the overall image in that direction.
+        const auto my_point_extents = Ranges::to_array<dim>(
+            std::views::iota(std::size_t{0}, dim)
+            | std::views::transform([&] (std::size_t dir) {
+                const auto overall_end = overall_specs.extents[dir];
+                const auto my_end = my_specs.extents[dir] + my_offset[dir];
+                return my_end < overall_end ? my_specs.extents[dir] : my_specs.extents[dir] + 1;
+        }));
         const auto point_slice_base = _make_slice(
             Ranges::incremented(overall_specs.extents, 1),
-            Ranges::incremented(my_specs.extents, 1),
+            my_point_extents,
             my_offset
         );
 
@@ -217,14 +228,14 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
 
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             auto field_ptr = VTK::make_vtk_field(this->_get_point_field_ptr(name));
-            _visit_field_values<true>(*field_ptr, [&] (auto&& values) {
+            _visit_field_values<true>(*field_ptr, my_point_extents, [&] (auto&& values) {
                 _write_piece_values(file, std::move(values), {"VTKHDF/PointData", name}, point_slice_base);
             });
         });
 
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
             auto field_ptr = VTK::make_vtk_field(this->_get_cell_field_ptr(name));
-            _visit_field_values<false>(*field_ptr, [&] (auto&& values) {
+            _visit_field_values<false>(*field_ptr, my_specs.extents, [&] (auto&& values) {
                 _write_piece_values(file, std::move(values), {"VTKHDF/CellData", name}, cell_slice_base);
             });
         });
@@ -285,28 +296,35 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         return coefficients;
     }
 
-    template<bool is_point_field, typename Visitor>
-    void _visit_field_values(const Field& field, const Visitor& visitor) const {
+    template<bool is_point_field, Concepts::StaticallySizedMDRange<1> SliceExtents, typename Visitor>
+        requires(static_size<SliceExtents> == dim)
+    void _visit_field_values(const Field& field,
+                             const SliceExtents& slice_extents,
+                             const Visitor& visitor) const {
         field.precision().visit([&] <typename T> (const Precision<T>&) {
             using Helper = VTKHDFImageDetail::FieldDataStorage<dim>;
 
             const auto layout = field.layout();
             const auto size = is_point_field ? Ranges::incremented(extents(this->grid()), 1)
                                              : extents(this->grid());
+
             if (layout.dimension() == 1) {
                 typename Helper::template type<T> data;
                 Helper::resize(data, size);
                 field.export_to(data | Views::flat);
+                Helper::resize(data, slice_extents);
                 visitor(std::move(data));
             } else if (layout.dimension() == 2) {
                 typename Helper::template type<Vector<T>> data;
                 Helper::resize(data, size);
                 field.export_to(data | Views::flat);
+                Helper::resize(data, slice_extents);
                 visitor(std::move(data));
             } else if (layout.dimension() == 3) {
                 typename Helper::template type<Tensor<T>> data;
                 Helper::resize(data, size);
                 field.export_to(data | Views::flat);
+                Helper::resize(data, slice_extents);
                 visitor(std::move(data));
             } else {
                 throw NotImplemented("Support for fields with dimension > 3 or < 1");
