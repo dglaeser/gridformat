@@ -90,6 +90,27 @@ inline constexpr std::uint8_t cell_type_number(CellType t) {
     throw NotImplemented("VTK cell type number for the given cell type");
 }
 
+inline constexpr CellType cell_type(std::uint8_t vtk_id) {
+    switch (vtk_id) {
+        case 1: return CellType::vertex;
+        case 3: return CellType::segment;
+        case 5: return CellType::triangle;
+        case 8: return CellType::pixel;
+        case 9: return CellType::quadrilateral;
+        case 7: return CellType::polygon;
+        case 10: return CellType::tetrahedron;
+        case 12: return CellType::hexahedron;
+        case 11: return CellType::voxel;
+        case 68: return CellType::lagrange_segment;
+        case 69: return CellType::lagrange_triangle;
+        case 70: return CellType::lagrange_quadrilateral;
+        case 71: return CellType::lagrange_tetrahedron;
+        case 72: return CellType::lagrange_hexahedron;
+    }
+
+    throw NotImplemented("Cell type for the given VTK cell type number: " + std::to_string(vtk_id));
+}
+
 FieldPtr make_vtk_field(FieldPtr field) {
     // vector/tensor fields must be made 3d
     if (field->layout().dimension() > 1)
