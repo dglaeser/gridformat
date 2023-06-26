@@ -8,7 +8,6 @@
 
 #include "../grid/unstructured_grid.hpp"
 #include "../make_test_data.hpp"
-#include "vtk_writer_tester.hpp"
 
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);

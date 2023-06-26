@@ -10,7 +10,6 @@
 #include "../grid/unstructured_grid.hpp"
 #include "../make_test_data.hpp"
 #include "../testing.hpp"
-#include "vtk_writer_tester.hpp"
 
 int main() {
 

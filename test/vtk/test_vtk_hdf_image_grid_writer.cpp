@@ -9,7 +9,6 @@
 
 #include "../grid/structured_grid.hpp"
 #include "../make_test_data.hpp"
-#include "vtk_writer_tester.hpp"
 
 template<typename Grid>
 void _test(Grid&& grid, const std::string& base_filename) {
