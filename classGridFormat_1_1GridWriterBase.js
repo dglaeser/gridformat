@@ -33,6 +33,8 @@ var classGridFormat_1_1GridWriterBase =
     [ "set_point_field", "classGridFormat_1_1GridWriterBase.html#aafa0e5304df2404fc213f4dc2925286c", null ],
     [ "writer_options", "classGridFormat_1_1GridWriterBase.html#a41f4a7625969230a7e096acc71bc7eb1", null ],
     [ "cell_fields", "classGridFormat_1_1GridWriterBase.html#a29056a3bb505194b4e1d3c2a396947df", null ],
+    [ "cell_fields_of_rank", "classGridFormat_1_1GridWriterBase.html#ad06d765d5f71937cc58c995bba2d14b4", null ],
     [ "meta_data_fields", "classGridFormat_1_1GridWriterBase.html#a5dbf28ab425d301159d39ed0680e9ca0", null ],
-    [ "point_fields", "classGridFormat_1_1GridWriterBase.html#a909fe9b471d5ad4427aec5f37270fce7", null ]
+    [ "point_fields", "classGridFormat_1_1GridWriterBase.html#a909fe9b471d5ad4427aec5f37270fce7", null ],
+    [ "point_fields_of_rank", "classGridFormat_1_1GridWriterBase.html#a8643b28435a99d4f6cad72438718533a", null ]
 ];

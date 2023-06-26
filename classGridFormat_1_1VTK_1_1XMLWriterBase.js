@@ -9,6 +9,7 @@ var classGridFormat_1_1VTK_1_1XMLWriterBase =
     [ "_get_write_context", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#af710aaf99fd961097ad2ecb885272120", null ],
     [ "_set_attribute", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a3d84c7d75056e048a488eb997460ece4", null ],
     [ "_set_data_array", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a477533035474228cd0b2e3121066890a", null ],
+    [ "_set_default_active_fields", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a6e0c773966a9035004a3c34892bf3aba", null ],
     [ "_write_xml", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#af2f3249218f323930ae7605ee860586f", null ],
     [ "requires", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a8b53551a7f2ca36c388b8489e56f93ee", null ],
     [ "with", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a3592ceb495777f77a492296ab4cac64c", null ],

@@ -263,13 +263,14 @@ $(document).ready(function(){initNavTree('pvti__writer_8hpp_source.html',''); in
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;            piece.set_attribute(<span class="stringliteral">&quot;Source&quot;</span>, PVTK::piece_basefilename(filename_with_ext, rank) + <span class="stringliteral">&quot;.vti&quot;</span>);</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        });</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160; </div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    }</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;};</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160; </div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;}  <span class="comment">// namespace GridFormat</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_PVTI_WRITER_HPP_</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        this-&gt;_set_default_active_fields(pvtk_xml.get_child(<span class="stringliteral">&quot;PImageData&quot;</span>));</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    }</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;};</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;}  <span class="comment">// namespace GridFormat</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; </div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_PVTI_WRITER_HPP_</span></div>
 <div class="ttc" id="aclassGridFormat_1_1PVTIWriter_html"><div class="ttname"><a href="classGridFormat_1_1PVTIWriter.html">GridFormat::PVTIWriter</a></div><div class="ttdoc">Writer for parallel .pvti files.</div><div class="ttdef"><b>Definition:</b> pvti_writer.hpp:39</div></div>
 <div class="ttc" id="aclassGridFormat_1_1PVTK_1_1PDataArrayHelper_html"><div class="ttname"><a href="classGridFormat_1_1PVTK_1_1PDataArrayHelper.html">GridFormat::PVTK::PDataArrayHelper</a></div><div class="ttdoc">Helper to add a PDataArray child to an xml element.</div><div class="ttdef"><b>Definition:</b> parallel.hpp:45</div></div>
 <div class="ttc" id="aclassGridFormat_1_1PVTK_1_1StructuredParallelGridHelper_html"><div class="ttname"><a href="classGridFormat_1_1PVTK_1_1StructuredParallelGridHelper.html">GridFormat::PVTK::StructuredParallelGridHelper</a></div><div class="ttdef"><b>Definition:</b> parallel.hpp:237</div></div>

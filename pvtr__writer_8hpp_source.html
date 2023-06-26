@@ -279,13 +279,14 @@ $(document).ready(function(){initNavTree('pvtr__writer_8hpp_source.html',''); in
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;            piece.set_attribute(<span class="stringliteral">&quot;Source&quot;</span>, PVTK::piece_basefilename(filename_with_ext, rank) + <span class="stringliteral">&quot;.vtr&quot;</span>);</div>
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        });</div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; </div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    }</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;};</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160; </div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;}  <span class="comment">// namespace GridFormat</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; </div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_PVTR_WRITER_HPP_</span></div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        this-&gt;_set_default_active_fields(pvtk_xml.get_child(<span class="stringliteral">&quot;PRectilinearGrid&quot;</span>));</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    }</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;};</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160; </div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;}  <span class="comment">// namespace GridFormat</span></div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160; </div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_PVTR_WRITER_HPP_</span></div>
 <div class="ttc" id="aclassGridFormat_1_1PVTK_1_1PDataArrayHelper_html"><div class="ttname"><a href="classGridFormat_1_1PVTK_1_1PDataArrayHelper.html">GridFormat::PVTK::PDataArrayHelper</a></div><div class="ttdoc">Helper to add a PDataArray child to an xml element.</div><div class="ttdef"><b>Definition:</b> parallel.hpp:45</div></div>
 <div class="ttc" id="aclassGridFormat_1_1PVTK_1_1StructuredParallelGridHelper_html"><div class="ttname"><a href="classGridFormat_1_1PVTK_1_1StructuredParallelGridHelper.html">GridFormat::PVTK::StructuredParallelGridHelper</a></div><div class="ttdef"><b>Definition:</b> parallel.hpp:237</div></div>
 <div class="ttc" id="aclassGridFormat_1_1PVTRWriter_html"><div class="ttname"><a href="classGridFormat_1_1PVTRWriter.html">GridFormat::PVTRWriter</a></div><div class="ttdoc">Writer for parallel .pvtr files.</div><div class="ttdef"><b>Definition:</b> pvtr_writer.hpp:38</div></div>
