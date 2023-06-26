@@ -376,6 +376,7 @@ class XMLWriterBase
 
     void _write_xml(WriteContext&& context, std::ostream& s) const {
         Indentation indentation{{.width = 2}};
+        _set_default_active_fields(context.xml_representation.get_child(context.vtk_grid_type));
         std::visit([&] (const auto& encoder) {
             std::visit([&] <typename DataFormat> (const DataFormat&) {
                 if constexpr (std::is_same_v<DataFormat, VTK::DataFormat::Inlined>)
@@ -384,6 +385,28 @@ class XMLWriterBase
                     XML::Detail::write_with_appendix(std::move(context), s, encoder, indentation);
             }, this->_xml_settings.data_format);
         }, this->_xml_settings.encoder);
+    }
+
+    void _set_default_active_fields(XMLElement& xml) const {
+        const auto set = [&] (std::string_view group, const auto& attr, const auto& name) -> void {
+            XMLElement* element = &xml;
+            for (const auto& element_name : _get_element_names(group)) {
+                if (!element->has_child(element_name))
+                    return;
+                element = &element->get_child(element_name);
+            }
+            element->set_attribute(attr, name);
+        };
+
+        for (std::string_view group : {"Piece.PointData", "PPointData"})
+            for (unsigned int i = 0; i <= 2; ++i)
+                for (const auto& [n, _] : point_fields_of_rank(i, *this) | std::views::take(1))
+                    set(group, active_array_attribute_for_rank(i), n);
+
+        for (std::string_view group : {"Piece.CellData", "PCellData"})
+            for (unsigned int i = 0; i <= 2; ++i)
+                for (const auto& [n, _] : cell_fields_of_rank(i, *this) | std::views::take(1))
+                    set(group, active_array_attribute_for_rank(i), n);
     }
 };
 

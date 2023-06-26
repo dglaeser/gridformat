@@ -161,6 +161,7 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
             piece.set_attribute("Source", PVTK::piece_basefilename(filename_with_ext, rank) + ".vtr");
         });
 
+        this->_set_default_active_fields(pvtk_xml.get_child("PRectilinearGrid"));
         write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
     }
 };

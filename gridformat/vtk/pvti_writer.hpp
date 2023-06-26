@@ -145,6 +145,7 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
             piece.set_attribute("Source", PVTK::piece_basefilename(filename_with_ext, rank) + ".vti");
         });
 
+        this->_set_default_active_fields(pvtk_xml.get_child("PImageData"));
         write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
     }
 };

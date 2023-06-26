@@ -154,6 +154,32 @@ class GridWriterBase {
             w.set_cell_field(name, field_ptr);
     }
 
+    //! Return a range over the fields with the given rank (0=scalars, 1=vectors, 2=tensors)
+    friend Concepts::RangeOf<std::pair<std::string, FieldPtr>> auto
+    point_fields_of_rank(unsigned int rank, const GridWriterBase& writer) {
+        return writer._point_field_names()
+            | std::views::filter([&, r=rank] (const std::string& n) {
+                return writer._get_point_field(n).layout().dimension() - 1 == r;
+            })
+            | std::views::transform([&] (std::string n) {
+                auto field_ptr = writer._get_point_field_ptr(n);
+                return std::make_pair(std::move(n), std::move(field_ptr));
+            });
+    }
+
+    //! Return a range over the fields with the given rank (0=scalars, 1=vectors, 2=tensors)
+    friend Concepts::RangeOf<std::pair<std::string, FieldPtr>> auto
+    cell_fields_of_rank(unsigned int rank, const GridWriterBase& writer) {
+        return writer._cell_field_names()
+            | std::views::filter([&, r=rank] (const std::string& n) {
+                return writer._get_cell_field(n).layout().dimension() - 1 == r;
+            })
+            | std::views::transform([&] (std::string n) {
+                auto field_ptr = writer._get_cell_field_ptr(n);
+                return std::make_pair(std::move(n), std::move(field_ptr));
+            });
+    }
+
     friend Concepts::RangeOf<std::pair<std::string, FieldPtr>> auto point_fields(const GridWriterBase& writer) {
         return writer._point_field_names() | std::views::transform([&] (std::string n) {
             auto field_ptr = writer._get_point_field_ptr(n);

@@ -221,6 +221,13 @@ auto make_cell_types_field(const Grid& grid) {
     });
 }
 
+inline auto active_array_attribute_for_rank(unsigned int rank) {
+    if (rank > 2)
+        throw ValueError("Rank must be <= 2");
+    static constexpr std::array attributes{"Scalars", "Vectors", "Tensors"};
+    return attributes[rank];
+}
+
 namespace CommonDetail {
 
     template<Concepts::StaticallySizedRange R>

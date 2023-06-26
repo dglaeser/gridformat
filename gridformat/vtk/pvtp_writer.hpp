@@ -103,6 +103,7 @@ class PVTPWriter : public VTK::XMLWriterBase<Grid, PVTPWriter<Grid, Communicator
             );
         });
 
+        this->_set_default_active_fields(pvtk_xml.get_child("PPolyData"));
         write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
     }
 };

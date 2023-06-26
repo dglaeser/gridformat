@@ -186,6 +186,7 @@ class PVTSWriter : public VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator
             piece.set_attribute("Source", PVTK::piece_basefilename(filename_with_ext, rank) + ".vts");
         });
 
+        this->_set_default_active_fields(pvtk_xml.get_child("PStructuredGrid"));
         write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
     }
 };
