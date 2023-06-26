@@ -235,9 +235,14 @@ class HDF5File {
         auto group = _get_group(path.group_path);
         auto [offset, dataset] = _prepare_dataset<FieldScalar<Values>>(group, path.dataset_name, space);
 
-        const std::vector<std::size_t> ds_size = space.getDimensions();
+        std::vector<std::size_t> ds_size = space.getDimensions();
         std::vector<std::size_t> ds_offset(ds_size.size(), 0);
         ds_offset.at(0) += offset;
+
+        // do the actual write only on rank 0 to avoid clashes
+        if (Parallel::rank(_comm) != 0)
+            std::ranges::fill(ds_size, 0);
+
         _write_to(dataset, values, {.offset = ds_offset, .count = ds_size});
         _file.flush();
         return space.getDimensions()[0];
