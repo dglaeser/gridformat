@@ -72,6 +72,12 @@ concept StaticallySizedMDRange
     and (MDRange<T, dim> or dim == std::numeric_limits<std::size_t>::max());
 
 template<typename T>
+concept ResizableMDRange
+    = std::ranges::range<T>
+    and MDRange<T, mdrange_dimension<T>>
+    and requires(T& t) { { t.resize(std::size_t{}) }; };
+
+template<typename T>
 concept Scalar = is_scalar<T>;
 
 //! \} group Common

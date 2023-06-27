@@ -69,6 +69,11 @@ int main() {
         3>
     );
 
+    static_assert(GridFormat::Concepts::ResizableMDRange<std::vector<int>>);
+    static_assert(GridFormat::Concepts::ResizableMDRange<std::vector<std::vector<double>>>);
+    static_assert(GridFormat::Concepts::ResizableMDRange<std::vector<std::array<double, 2>>>);
+    static_assert(!GridFormat::Concepts::ResizableMDRange<std::array<double, 2>>);
+
     static_assert(GridFormat::Concepts::Interoperable<int, double>);
     static_assert(GridFormat::Concepts::Interoperable<double, int>);
 
