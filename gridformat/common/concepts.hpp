@@ -11,6 +11,7 @@
 #include <concepts>
 #include <cstddef>
 #include <type_traits>
+#include <limits>
 #include <array>
 #include <span>
 
@@ -64,11 +65,11 @@ namespace Detail {
 }  // namespace Detail
 #endif  // DOXYGEN
 
-template<typename T, std::size_t dim>
+template<typename T, std::size_t dim = std::numeric_limits<std::size_t>::max()>
 concept StaticallySizedMDRange
     = StaticallySizedRange<T>
     and Detail::HasStaticallySizedSubRanges<T>::value
-    and MDRange<T, dim>;
+    and (MDRange<T, dim> or dim == std::numeric_limits<std::size_t>::max());
 
 template<typename T>
 concept Scalar = is_scalar<T>;
