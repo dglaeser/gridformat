@@ -14,6 +14,7 @@
 #include <variant>
 #include <concepts>
 #include <type_traits>
+#include <algorithm>
 
 #include <gridformat/common/exceptions.hpp>
 
@@ -45,18 +46,6 @@ inline constexpr bool is_scalar = IsScalar<T>::value;
 
 template<typename T>
 using LVReferenceOrValue = std::conditional_t<std::is_lvalue_reference_v<T>, T&, std::remove_cvref_t<T>>;
-
-
-template<typename T>
-struct DefaultValue;
-
-template<typename T> requires(is_scalar<T>)
-struct DefaultValue<T> {
-    static constexpr T value{0};
-};
-
-template<typename T>
-inline constexpr T default_value = DefaultValue<T>::value;
 
 
 #ifndef DOXYGEN
@@ -383,6 +372,34 @@ inline constexpr std::size_t static_size = Traits::StaticSize<T>::value;
 
 template<typename T>
 inline constexpr bool has_static_size = is_complete<Traits::StaticSize<T>>;
+
+
+#ifndef DOXYGEN
+namespace Detail {
+    template<std::ranges::range T> requires(has_static_size<T>)
+    constexpr T make_range(std::ranges::range_value_t<T> value) {
+        T result;
+        std::ranges::fill(result, value);
+        return result;
+    }
+}  // namespace Detail
+#endif  // DOXYGEN
+
+template<typename T>
+struct DefaultValue;
+
+template<typename T> requires(is_scalar<T>)
+struct DefaultValue<T> {
+    static constexpr T value{0};
+};
+
+template<std::ranges::range T> requires(has_static_size<T>)
+struct DefaultValue<T> {
+    static constexpr T value = Detail::make_range<T>(DefaultValue<std::ranges::range_value_t<T>>::value);
+};
+
+template<typename T>
+inline constexpr T default_value = DefaultValue<T>::value;
 
 //! \} group Common
 
