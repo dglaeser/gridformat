@@ -11,7 +11,9 @@
 
 #include <type_traits>
 #include <algorithm>
+#include <concepts>
 #include <ranges>
+#include <cstdint>
 
 #ifdef GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 #pragma GCC diagnostic push
@@ -32,6 +34,9 @@
 #endif  // GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 
 #include <gridformat/common/logging.hpp>
+#include <gridformat/common/concepts.hpp>
+#include <gridformat/common/md_layout.hpp>
+#include <gridformat/common/buffer_field.hpp>
 #include <gridformat/common/string_conversion.hpp>
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/grid/grid.hpp>
@@ -61,6 +66,20 @@ struct DataSetPath {
     std::string group_path;
     std::string dataset_name;
 };
+
+#ifndef DOXYGEN
+std::pair<std::string, std::string> split_name(const std::string& in) {
+    if (in.ends_with('/'))
+        return {in, ""};
+
+    const auto split_pos = in.find_last_of("/");
+    if (split_pos == std::string::npos )
+        throw ValueError("Could not split name from given path: " + in);
+    return {
+        split_pos > 0 ? in.substr(0, split_pos) : "/",
+        in.substr(split_pos + 1)
+    };
+}
 
 struct IOContext {
     const int my_rank;
@@ -191,10 +210,11 @@ namespace Detail {
 
 }  // namespace Detail
 
+
 template<Concepts::Communicator Communicator>
 class HDF5File {
  public:
-    enum Mode { overwrite, append };
+    enum Mode { overwrite, append, read_only };
 
     HDF5File(const std::string& filename, const Communicator& comm, Mode mode)
     : _comm{comm}
@@ -212,6 +232,7 @@ class HDF5File {
     void set_attribute(const std::string& name,
                        const Attribute& attribute,
                        const std::string& group_name) {
+        _check_writable();
         _clear_attribute(name, group_name);
         _get_group(group_name).createAttribute(name, attribute);
     }
@@ -220,6 +241,7 @@ class HDF5File {
     void set_attribute(const std::string& name,
                        const char (&attribute)[N],
                        const std::string& group_name) {
+        _check_writable();
         _clear_attribute(name, group_name);
         auto type_attr = _get_group(group_name).createAttribute(
             name,
@@ -231,6 +253,7 @@ class HDF5File {
 
     template<typename Values>
     std::size_t write(const Values& values, const DataSetPath& path) {
+        _check_writable();
         const auto space = HighFive::DataSpace::From(values);
         auto group = _get_group(path.group_path);
         auto [offset, dataset] = _prepare_dataset<FieldScalar<Values>>(group, path.dataset_name, space);
@@ -250,6 +273,7 @@ class HDF5File {
 
     template<typename Values>
     std::size_t write(const Values& values, const DataSetPath& path, DataSetSlice slice) {
+        _check_writable();
         const auto space = HighFive::DataSpace(slice.total_size);
         auto group = _get_group(path.group_path);
         auto [offset, dataset] = _prepare_dataset<FieldScalar<Values>>(group, path.dataset_name, space);
@@ -279,17 +303,82 @@ class HDF5File {
         throw ValueError("Given group or dataset does not exist");
     }
 
+    template<Concepts::ResizableMDRange T>
+    T read_dataset_to(const std::string& path) const {
+        return visit_dataset(path, [&] <typename F> (BufferField<F>&& field) {
+            return field.template export_to<T>();
+        });
+    }
+
+    template<std::invocable<BufferField<int>&&> Visitor>
+    decltype(auto) visit_dataset(const std::string& path, Visitor&& visitor) const {
+        auto [group, name] = split_name(path);
+        if (!has_dataset(group, name))
+            throw ValueError("Given data set '" + path + "' does not exist.");
+        return _visit_data(std::forward<Visitor>(visitor), _file.getGroup(group).getDataSet(name));
+    }
+
+    template<Concepts::ResizableMDRange T>
+    T read_attribute_to(const std::string& path) const {
+        return visit_attribute(path, [&] <typename F> (BufferField<F>&& field) {
+            return field.template export_to<T>();
+        });
+    }
+
+    template<std::invocable<BufferField<int>&&> Visitor>
+    decltype(auto) visit_attribute(const std::string& path, Visitor&& visitor) const {
+        auto [group, name] = split_name(path);
+        if (!has_attribute(group, name))
+            throw ValueError("Given attribute '" + path + "' does not exist.");
+        return _visit_data(std::forward<Visitor>(visitor), _file.getGroup(group).getAttribute(name));
+    }
+
     std::optional<std::vector<std::size_t>> get_dimensions(const DataSetPath& path) const {
-        if (_file.exist(path.group_path))
-            if (_file.getGroup(path.group_path).exist(path.dataset_name))
-                return _file.getGroup(path.group_path).getDataSet(path.dataset_name).getDimensions();
+        if (has_dataset(path.group_path, path.dataset_name))
+            return _file.getGroup(path.group_path).getDataSet(path.dataset_name).getDimensions();
         return {};
     }
 
+    Concepts::RangeOf<std::string> auto dataset_names_in(const std::string& group) const {
+        return _file.getGroup(group).listObjectNames()
+            | std::views::filter([&, group=group] (const auto& name) {
+                return _file.getGroup(group).getObjectType(name) == HighFive::ObjectType::Dataset;
+            });
+    }
+
+    bool exists(const std::string& path) const {
+        return _file.exist(path);
+    }
+
+    bool has_dataset(const std::string& path, const std::string& name) const {
+        if (_file.exist(path))
+            if (_file.getGroup(path).exist(name))
+                return _file.getGroup(path).getObjectType(name) == HighFive::ObjectType::Dataset;
+        return false;
+    }
+
+    bool has_attribute(const std::string& path, const std::string& name) const {
+        if (_file.exist(path)) {
+            const auto [group, object] = split_name(path);
+            if (_file.getGroup(group).getObjectType(object) == HighFive::ObjectType::Dataset)
+                return _file.getGroup(group).getDataSet(object).hasAttribute(name);
+            else if (_file.getGroup(group).getObjectType(object) == HighFive::ObjectType::Group)
+                return _file.getGroup(group).getGroup(object).hasAttribute(name);
+            throw NotImplemented("Unsupported object type at '" + path + "'.");
+        }
+        return false;
+    }
+
  private:
+    void _check_writable() const {
+        if (_mode == read_only)
+            throw InvalidState("Cannot modify hdf-file opened in read-only mode");
+    }
+
     HighFive::File _open(const std::string& filename) const {
-        auto open_mode = _mode == overwrite ? HighFive::File::Overwrite
-                                            : HighFive::File::ReadWrite;
+        auto open_mode = _mode == read_only ? HighFive::File::ReadOnly
+                                            : (_mode == overwrite ? HighFive::File::Overwrite
+                                                                  : HighFive::File::ReadWrite);
         if (Parallel::size(_comm) > 1)
             return HighFive::File{filename, open_mode, Detail::parallel_file_access_props(_comm)};
         else
@@ -354,6 +443,49 @@ class HDF5File {
                    const std::optional<HighFive::DataTransferProps> props = {}) {
         props ? dataset.select(slice.offset, slice.count).write(values, *props)
               : dataset.select(slice.offset, slice.count).write(values);
+    }
+
+    template<typename Visitor, typename Source>
+    decltype(auto) _visit_data(Visitor&& visitor, const Source& source) const {
+        const auto datatype = source.getDataType();
+        if (datatype.getClass() == HighFive::DataTypeClass::Float && datatype.getSize() == 8)
+            return visitor(_read_buffer_field<double>(source));
+        else if (datatype.getClass() == HighFive::DataTypeClass::Float && datatype.getSize() == 4)
+            return visitor(_read_buffer_field<float>(source));
+        else if (datatype.getClass() == HighFive::DataTypeClass::Integer && datatype.getSize() == 1)
+            return visitor(_read_buffer_field<std::int_least8_t>(source));
+        else if (datatype.getClass() == HighFive::DataTypeClass::Integer && datatype.getSize() == 2)
+            return visitor(_read_buffer_field<std::int_least16_t>(source));
+        else if (datatype.getClass() == HighFive::DataTypeClass::Integer && datatype.getSize() == 4)
+            return visitor(_read_buffer_field<std::int_least32_t>(source));
+        else if (datatype.getClass() == HighFive::DataTypeClass::Integer && datatype.getSize() == 8)
+            return visitor(_read_buffer_field<std::int_least64_t>(source));
+        else if (datatype.isVariableStr())
+            return visitor(_read_buffer_field<char>(source));
+        else if (datatype.isFixedLenStr()) {
+            static constexpr std::size_t N = 100;
+            HighFive::FixedLenStringArray<N> pre_out;
+            source.read(pre_out);
+            if (pre_out.size() > 1)
+                throw SizeError("Unexpected string array size");
+
+            std::string out;
+            std::ranges::copy(
+                pre_out.getString(0) | std::views::take_while([] (const char c) { return c != '\0'; }),
+                std::back_inserter(out)
+            );
+            MDLayout layout{{out.size()}};
+            return visitor(BufferField{std::move(out), std::move(layout)});
+        } else
+            throw ValueError("Unsupported data type '" + datatype.string() + "'");
+    }
+
+    template<typename T, typename Source>
+    auto _read_buffer_field(const Source& source) const {
+        MDLayout layout{source.getSpace().getDimensions()};
+        std::vector<T> out(layout.number_of_entries());
+        source.read(out.data());
+        return BufferField(std::move(out), std::move(layout));
     }
 
     HighFive::Group _get_group(const std::string& group_name) {
