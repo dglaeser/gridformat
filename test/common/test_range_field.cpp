@@ -5,6 +5,7 @@
 #include <ranges>
 
 #include <gridformat/common/range_field.hpp>
+#include <gridformat/common/exceptions.hpp>
 
 #include "../testing.hpp"
 
@@ -13,6 +14,7 @@ int main() {
     using namespace GridFormat::Testing::Literals;
     using GridFormat::Testing::operator""_test;
     using GridFormat::Testing::expect;
+    using GridFormat::Testing::throws;
     using GridFormat::Testing::eq;
 
     "range_field"_test = [] () {
@@ -81,6 +83,23 @@ int main() {
         field.export_to(out);
         expect(std::ranges::equal(out[0], std::vector<double>{0.0, 1.0, 2.0}));
         expect(std::ranges::equal(out[1], std::vector<double>{3.0, 4.0, 5.0}));
+    };
+
+    "range_field_direct_export"_test = [] () {
+        const GridFormat::RangeField field{
+            std::vector<int>{{0, 1, 2, 3, 4, 5}}
+        };
+
+        const std::vector<double> doublevec = field.template export_to<std::vector<double>>();
+        expect(std::ranges::equal(doublevec, std::vector<double>{0.0, 1.0, 2.0, 3.0, 4.0, 5.0}));
+
+        const std::vector<std::array<double, 3>> arrvec = field.template export_to<std::vector<std::array<double, 3>>>();
+        expect(std::ranges::equal(arrvec[0], std::vector<double>{0.0, 1.0, 2.0}));
+        expect(std::ranges::equal(arrvec[1], std::vector<double>{3.0, 4.0, 5.0}));
+
+        expect(throws<GridFormat::TypeError>([&] () {
+            const auto fail = field.template export_to<std::vector<std::array<double, 4>>>();
+        }));
     };
 
     return 0;

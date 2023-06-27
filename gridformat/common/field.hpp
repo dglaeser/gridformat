@@ -13,11 +13,13 @@
 #include <concepts>
 #include <type_traits>
 #include <utility>
+#include <ranges>
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/concepts.hpp>
 #include <gridformat/common/ranges.hpp>
 
 namespace GridFormat {
@@ -85,6 +87,25 @@ class Field {
                 throw ValueError("Field cannot be exported into a scalar");
             out = static_cast<S>(data[0]);
         });
+    }
+
+    template<Concepts::ResizableMDRange R>
+        requires(Concepts::StaticallySizedMDRange<std::ranges::range_value_t<R>> or
+                 Concepts::Scalar<std::ranges::range_value_t<R>>)
+    R export_to() const {
+        const auto num_scalars = layout().number_of_entries();
+        const auto num_sub_scalars = get_md_layout<std::ranges::range_value_t<R>>().number_of_entries();
+        if (num_scalars%num_sub_scalars != 0)
+            throw TypeError(
+                "Cannot export the field into the given range type. "
+                "Number of entries in the field is not divisible by the "
+                "number of entries in the value_type of the provided range."
+            );
+
+        R range;
+        range.resize(num_scalars/num_sub_scalars);
+        export_to(range);
+        return range;
     }
 
  private:
