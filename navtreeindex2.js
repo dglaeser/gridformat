@@ -1,8 +1,11 @@
 var NAVTREEINDEX2 =
 {
-"structGridFormat_1_1Encoding_1_1Base64.html#acf09995d558e20f7b94e23781d447f5a":[5,0,0,3,1,0],
-"structGridFormat_1_1Encoding_1_1RawBinary.html":[5,0,0,3,2],
-"structGridFormat_1_1Encoding_1_1RawBinary.html#a596b8cd4aa9b1d339e9808e215457faa":[5,0,0,3,2,0],
+"structGridFormat_1_1Encoding_1_1Ascii.html#a6052411ab879536cf9a598a2635b7c0b":[4,1,7,3],
+"structGridFormat_1_1Encoding_1_1Base64.html":[4,1,10],
+"structGridFormat_1_1Encoding_1_1Base64.html#a40cd9b8fb1e7e574666a74c3b36493e7":[4,1,10,1],
+"structGridFormat_1_1Encoding_1_1Base64.html#acf09995d558e20f7b94e23781d447f5a":[4,1,10,0],
+"structGridFormat_1_1Encoding_1_1RawBinary.html":[4,1,13],
+"structGridFormat_1_1Encoding_1_1RawBinary.html#a596b8cd4aa9b1d339e9808e215457faa":[4,1,13,0],
 "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html":[5,0,0,4,0],
 "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html#a553ffa225c0f5f79973787a9a8fc50d5":[5,0,0,4,0,2],
 "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html#a666cf145c27a68b94bed56831ff73ca3":[5,0,0,4,0,3],

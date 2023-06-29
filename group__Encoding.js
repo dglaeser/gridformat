@@ -17,12 +17,22 @@ var group__Encoding =
       [ "write", "classGridFormat_1_1AsciiOutputStream.html#a426cf50b78f47de0206e6f0507badc06", null ],
       [ "_opts", "classGridFormat_1_1AsciiOutputStream.html#a0aa40b7ace71061b5f54ea52a7796d8e", null ]
     ] ],
+    [ "Ascii", "structGridFormat_1_1Encoding_1_1Ascii.html", [
+      [ "Ascii", "structGridFormat_1_1Encoding_1_1Ascii.html#a47c1f1900f2b221d20004048a1622fe8", null ],
+      [ "Ascii", "structGridFormat_1_1Encoding_1_1Ascii.html#a0b9b298174ab5d258c1e5cab53f30904", null ],
+      [ "operator()", "structGridFormat_1_1Encoding_1_1Ascii.html#a34f11d4b786bbc8ff59ee01b0cc85822", null ],
+      [ "options", "structGridFormat_1_1Encoding_1_1Ascii.html#a6052411ab879536cf9a598a2635b7c0b", null ]
+    ] ],
     [ "Base64EncoderOptions", "structGridFormat_1_1Base64EncoderOptions.html", [
       [ "num_cached_buffers", "structGridFormat_1_1Base64EncoderOptions.html#a3a4f39c2fc7f18903b5006d3cbf3381a", null ]
     ] ],
     [ "Base64Stream", "classGridFormat_1_1Base64Stream.html", [
       [ "Base64Stream", "classGridFormat_1_1Base64Stream.html#aac7f7bb86d08b4516bcb653409b74a19", null ],
       [ "write", "classGridFormat_1_1Base64Stream.html#a1bccc03e9812bd5acd93f400934a483b", null ]
+    ] ],
+    [ "Base64", "structGridFormat_1_1Encoding_1_1Base64.html", [
+      [ "operator()", "structGridFormat_1_1Encoding_1_1Base64.html#acf09995d558e20f7b94e23781d447f5a", null ],
+      [ "operator()", "structGridFormat_1_1Encoding_1_1Base64.html#a40cd9b8fb1e7e574666a74c3b36493e7", null ]
     ] ],
     [ "EncodedField", "classGridFormat_1_1EncodedField.html", [
       [ "_encoder", "classGridFormat_1_1EncodedField.html#ab53aef4f9c8d29f933535bf239424b43", null ],
@@ -34,5 +44,11 @@ var group__Encoding =
       [ "RawBinaryStream", "classGridFormat_1_1RawBinaryStream.html#adc8cd745c1818636f576b924d3347a43", null ],
       [ "write", "classGridFormat_1_1RawBinaryStream.html#a8faafe28c65e1e74f79dac856d840314", null ]
     ] ],
-    [ "Encoder", "group__Encoding.html#ga9e7619e8a3a4a8bfc92db78561ff0159", null ]
+    [ "RawBinary", "structGridFormat_1_1Encoding_1_1RawBinary.html", [
+      [ "operator()", "structGridFormat_1_1Encoding_1_1RawBinary.html#a596b8cd4aa9b1d339e9808e215457faa", null ]
+    ] ],
+    [ "ascii", "group__Encoding.html#ga150bd54d1e4f1575af983d6b94965cc2", null ],
+    [ "base64", "group__Encoding.html#ga28e611764de2305f0cbced6c2b6af869", null ],
+    [ "Encoder", "group__Encoding.html#ga9e7619e8a3a4a8bfc92db78561ff0159", null ],
+    [ "raw", "group__Encoding.html#ga3101fa4d6cf7750236e6fec761ede153", null ]
 ];

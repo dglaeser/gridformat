@@ -6,7 +6,7 @@ var searchData=
   ['appendix_3',['Appendix',['../classGridFormat_1_1VTK_1_1Appendix.html',1,'GridFormat::VTK']]],
   ['appendix_2ehpp_4',['appendix.hpp',['../appendix_8hpp.html',1,'']]],
   ['appendixstreamobserver_5',['AppendixStreamObserver',['../classGridFormat_1_1VTK_1_1AppendixStreamObserver.html',1,'GridFormat::VTK']]],
-  ['ascii_6',['ascii',['../ascii_8hpp.html#a150bd54d1e4f1575af983d6b94965cc2',1,'GridFormat::Encoding']]],
+  ['ascii_6',['ascii',['../group__Encoding.html#ga150bd54d1e4f1575af983d6b94965cc2',1,'GridFormat::Encoding']]],
   ['ascii_7',['Ascii',['../structGridFormat_1_1Encoding_1_1Ascii.html',1,'GridFormat::Encoding']]],
   ['ascii_2ehpp_8',['ascii.hpp',['../ascii_8hpp.html',1,'']]],
   ['asciiformatoptions_9',['AsciiFormatOptions',['../structGridFormat_1_1AsciiFormatOptions.html',1,'GridFormat']]],

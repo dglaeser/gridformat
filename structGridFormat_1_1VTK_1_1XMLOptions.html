@@ -134,7 +134,23 @@ $(document).ready(function(){initNavTree('structGridFormat_1_1VTK_1_1XMLOptions.
  <a href="structGridFormat_1_1VTK_1_1XMLOptions.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="xml_8hpp_source.html">xml.hpp</a>&gt;</code></p>
-<table class="memberdecls">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The data format can be</p><ul>
+<li>GridFormat::VTK::DataFormat::inlined</li>
+<li>GridFormat::VTK::DataFormat::appended</li>
+</ul>
+<p>For encoding one can choose between</p><ul>
+<li>GridFormat::Encoding::ascii</li>
+<li>GridFormat::Encoding::base64</li>
+<li>GridFormat::Encoding::raw</li>
+</ul>
+<p>Note, however, that ascii encoding only works with inlined data, and raw binary encoding only works with appended data. Finally, one can choose between three different compressors or GridFormat::none:</p><ul>
+<li>GridFormat::Compression::zlib</li>
+<li>GridFormat::Compression::lz4</li>
+<li>GridFormat::Compression::lzma</li>
+</ul>
+<p>Note that these compressors are only available if the respective libraries were found. All options can also be set to GridFormat::automatic, in which case a suitable option is chosen. </p>
+</div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a5fbf480f296db4735b05e85429b201d1"><td class="memItemLeft" align="right" valign="top"><a id="a5fbf480f296db4735b05e85429b201d1"></a>
@@ -168,23 +184,7 @@ CoordinatePrecisionOption&#160;</td><td class="memItemRight" valign="bottom"><b>
 XML::HeaderPrecision&#160;</td><td class="memItemRight" valign="bottom"><b>header_precision</b> = _from_size_t()</td></tr>
 <tr class="separator:ad64ca5f1c984813f75d6f61d7d797295"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The data format can be</p><ul>
-<li>GridFormat::VTK::DataFormat::inlined</li>
-<li>GridFormat::VTK::DataFormat::appended</li>
-</ul>
-<p>For encoding one can choose between</p><ul>
-<li>GridFormat::Encoding::ascii</li>
-<li>GridFormat::Encoding::base64</li>
-<li>GridFormat::Encoding::raw</li>
-</ul>
-<p>Note, however, that ascii encoding only works with inlined data, and raw binary encoding only works with appended data. Finally, one can choose between three different compressors or GridFormat::none:</p><ul>
-<li>GridFormat::Compression::zlib</li>
-<li>GridFormat::Compression::lz4</li>
-<li>GridFormat::Compression::lzma</li>
-</ul>
-<p>Note that these compressors are only available if the respective libraries were found. All options can also be set to GridFormat::automatic, in which case a suitable option is chosen. </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/__w/gridformat/gridformat/gridformat/vtk/<a class="el" href="xml_8hpp_source.html">xml.hpp</a></li>
 </ul>
 </div><!-- contents -->
