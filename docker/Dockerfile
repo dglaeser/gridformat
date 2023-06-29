@@ -43,9 +43,11 @@ RUN apt-get update \
         libhdf5-mpi-dev \
         build-essential \
         gnupg-agent \
-        # for memcheck/coverage
+        # for memcheck/docu/coverage
         gcovr \
         valgrind \
+        flex \
+        bison \
         # CGAL dependencies
         libgmp-dev \
         libmpfr-dev \
