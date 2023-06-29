@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['raw_166',['raw',['../group__Encoding.html#ga3101fa4d6cf7750236e6fec761ede153',1,'GridFormat::Encoding']]],
-  ['raw_2ehpp_167',['raw.hpp',['../raw_8hpp.html',1,'']]],
-  ['rawbinary_168',['RawBinary',['../structGridFormat_1_1Encoding_1_1RawBinary.html',1,'GridFormat::Encoding']]],
-  ['rawbinarystream_169',['RawBinaryStream',['../classGridFormat_1_1RawBinaryStream.html',1,'GridFormat']]],
-  ['rectilineargrid_170',['RectilinearGrid',['../group__Grid.html#ga29f9b6d3cbf5ecba3504e93817759cbf',1,'GridFormat::Concepts']]],
-  ['requires_171',['requires',['../classGridFormat_1_1Writer.html#a679f5271a5b8447961f3864e43a4a903',1,'GridFormat::Writer::requires()'],['../classGridFormat_1_1ImageGrid.html#a08eefc31fc8ba9ce4b650a9c8c923105',1,'GridFormat::ImageGrid::requires()']]]
+  ['raw_0',['raw',['../group__Encoding.html#ga3101fa4d6cf7750236e6fec761ede153',1,'GridFormat::Encoding']]],
+  ['raw_2ehpp_1',['raw.hpp',['../raw_8hpp.html',1,'']]],
+  ['rawbinary_2',['RawBinary',['../structGridFormat_1_1Encoding_1_1RawBinary.html',1,'GridFormat::Encoding']]],
+  ['rawbinarystream_3',['RawBinaryStream',['../classGridFormat_1_1RawBinaryStream.html',1,'GridFormat']]],
+  ['remove_5fcell_5ffield_4',['remove_cell_field',['../classGridFormat_1_1Writer.html#a78b1f2209c24a3c7da50e65041034bcd',1,'GridFormat::Writer']]],
+  ['remove_5fmeta_5fdata_5',['remove_meta_data',['../classGridFormat_1_1Writer.html#a4d7c7e81634cbb9f0e8fc3304e4de7db',1,'GridFormat::Writer']]],
+  ['remove_5fpoint_5ffield_6',['remove_point_field',['../classGridFormat_1_1Writer.html#ae0ffe4fb8ea43b67baf108a8bbc55763',1,'GridFormat::Writer']]]
 ];

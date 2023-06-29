@@ -25,22 +25,12 @@
 var NAVTREE =
 [
   [ "GridFormat", "index.html", [
-    [ "Introduction", "index.html", [
-      [ "Quick Start", "index.html#quick-start", null ],
-      [ "Installation", "index.html#installation", [
-        [ "Dependencies", "index.html#dependencies", null ]
-      ] ],
-      [ "Compatibility with user-defined grids", "index.html#compatibility-with-userdefined-grids", null ],
-      [ "Predefined traits", "index.html#predefined-traits", null ],
-      [ "Contribution Guidelines", "index.html#contribution-guidelines", [
-        [ "Development and test suite", "index.html#development-and-test-suite", null ]
-      ] ],
-      [ "License", "index.html#license", null ]
-    ] ],
+    [ "Introduction", "index.html", "index" ],
     [ "API", "group__API.html", null ],
     [ "Grid Traits", "grid-traits.html", null ],
     [ "Grid Concepts", "grid-concepts.html", null ],
     [ "Modules", "modules.html", "modules" ],
+    [ "Concepts", "concepts.html", "concepts" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -62,8 +52,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"classGridFormat_1_1VTK_1_1XMLWriterBase.html#a3d84c7d75056e048a488eb997460ece4",
-"structGridFormat_1_1Encoding_1_1Ascii.html#a6052411ab879536cf9a598a2635b7c0b"
+"structGridFormat_1_1Traits_1_1NumberOfCellPoints_3_01DolfinX_1_1LagrangeMesh_00_01DolfinX_1_1Cell_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

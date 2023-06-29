@@ -16,40 +16,34 @@ var hierarchy =
     [ "GridFormat::Traits::CellPoints< Dune::LagrangeMesh< GridView >, typename Dune::LagrangeMesh< GridView >::Cell >", "structGridFormat_1_1Traits_1_1CellPoints_3_01Dune_1_1LagrangeMesh_3_01GridView_01_4_00_01typename22ae572927fdde0eb2d0c89da69664a.html", null ],
     [ "GridFormat::Traits::CellPoints< Grid, GridFormat::CGAL::Cell< Grid > >", "structGridFormat_1_1Traits_1_1CellPoints_3_01Grid_00_01GridFormat_1_1CGAL_1_1Cell_3_01Grid_01_4_01_4.html", null ],
     [ "GridFormat::Traits::CellPoints< mfem::Mesh, GridFormat::MFEM::Cell >", "structGridFormat_1_1Traits_1_1CellPoints_3_01mfem_1_1Mesh_00_01GridFormat_1_1MFEM_1_1Cell_01_4.html", null ],
+    [ "GridFormat::Traits::CellPoints< T, DealII::Cell< T > >", "structGridFormat_1_1Traits_1_1CellPoints_3_01T_00_01DealII_1_1Cell_3_01T_01_4_01_4.html", null ],
     [ "GridFormat::Traits::Cells< DolfinX::LagrangeMesh >", "structGridFormat_1_1Traits_1_1Cells_3_01DolfinX_1_1LagrangeMesh_01_4.html", null ],
     [ "GridFormat::Traits::Cells< dolfinx::mesh::Mesh >", "structGridFormat_1_1Traits_1_1Cells_3_01dolfinx_1_1mesh_1_1Mesh_01_4.html", null ],
     [ "GridFormat::Traits::Cells< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Cells_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
     [ "GridFormat::Traits::Cells< Dune::LagrangeMesh< GridView > >", "structGridFormat_1_1Traits_1_1Cells_3_01Dune_1_1LagrangeMesh_3_01GridView_01_4_01_4.html", null ],
     [ "GridFormat::Traits::Cells< Grid >", "structGridFormat_1_1Traits_1_1Cells_3_01Grid_01_4.html", null ],
     [ "GridFormat::Traits::Cells< mfem::Mesh >", "structGridFormat_1_1Traits_1_1Cells_3_01mfem_1_1Mesh_01_4.html", null ],
+    [ "GridFormat::Traits::Cells< T >", "structGridFormat_1_1Traits_1_1Cells_3_01T_01_4.html", null ],
     [ "GridFormat::Traits::CellType< DolfinX::LagrangeMesh, DolfinX::Cell >", "structGridFormat_1_1Traits_1_1CellType_3_01DolfinX_1_1LagrangeMesh_00_01DolfinX_1_1Cell_01_4.html", null ],
     [ "GridFormat::Traits::CellType< dolfinx::mesh::Mesh, DolfinX::Cell >", "structGridFormat_1_1Traits_1_1CellType_3_01dolfinx_1_1mesh_1_1Mesh_00_01DolfinX_1_1Cell_01_4.html", null ],
     [ "GridFormat::Traits::CellType< Dune::GridView< Traits >, DuneDetail::Element< Dune::GridView< Traits > > >", "structGridFormat_1_1Traits_1_1CellType_3_01Dune_1_1GridView_3_01Traits_01_4_00_01DuneDetail_1_1E709549ea0b505252d35b075ac199bf86.html", null ],
     [ "GridFormat::Traits::CellType< Dune::LagrangeMesh< GridView >, typename Dune::LagrangeMesh< GridView >::Cell >", "structGridFormat_1_1Traits_1_1CellType_3_01Dune_1_1LagrangeMesh_3_01GridView_01_4_00_01typename_431b0e8dc868cf6e17bc8d6903277e7f.html", null ],
     [ "GridFormat::Traits::CellType< Grid, GridFormat::CGAL::Cell< Grid > >", "structGridFormat_1_1Traits_1_1CellType_3_01Grid_00_01GridFormat_1_1CGAL_1_1Cell_3_01Grid_01_4_01_4.html", null ],
     [ "GridFormat::Traits::CellType< mfem::Mesh, GridFormat::MFEM::Cell >", "structGridFormat_1_1Traits_1_1CellType_3_01mfem_1_1Mesh_00_01GridFormat_1_1MFEM_1_1Cell_01_4.html", null ],
+    [ "GridFormat::Traits::CellType< T, DealII::Cell< T > >", "structGridFormat_1_1Traits_1_1CellType_3_01T_00_01DealII_1_1Cell_3_01T_01_4_01_4.html", null ],
     [ "GridFormat::Compression::CompressedBlocks< HeaderType >", "structGridFormat_1_1Compression_1_1CompressedBlocks.html", null ],
     [ "GridFormat::Detail::CRTPBase", null, [
-      [ "GridFormat::VTK::XMLWriterBase< Grid, VTSWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
-        [ "GridFormat::VTSWriter< Grid >", "classGridFormat_1_1VTSWriter.html", null ]
-      ] ],
-      [ "GridFormat::VTK::XMLWriterBase< Grid, VTUWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
-        [ "GridFormat::VTUWriter< Grid >", "classGridFormat_1_1VTUWriter.html", null ]
+      [ "GridFormat::VTK::XMLWriterBase< Grid, PVTIWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
+        [ "GridFormat::PVTIWriter< Grid, Communicator >", "classGridFormat_1_1PVTIWriter.html", null ]
       ] ],
       [ "GridFormat::VTK::XMLWriterBase< Grid, PVTPWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
         [ "GridFormat::PVTPWriter< Grid, Communicator >", "classGridFormat_1_1PVTPWriter.html", null ]
       ] ],
-      [ "GridFormat::VTK::XMLWriterBase< Grid, PVTIWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
-        [ "GridFormat::PVTIWriter< Grid, Communicator >", "classGridFormat_1_1PVTIWriter.html", null ]
-      ] ],
-      [ "GridFormat::VTK::XMLWriterBase< Grid, VTPWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
-        [ "GridFormat::VTPWriter< Grid >", "classGridFormat_1_1VTPWriter.html", null ]
+      [ "GridFormat::VTK::XMLWriterBase< Grid, PVTRWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
+        [ "GridFormat::PVTRWriter< Grid, Communicator >", "classGridFormat_1_1PVTRWriter.html", null ]
       ] ],
       [ "GridFormat::VTK::XMLWriterBase< Grid, PVTSWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
         [ "GridFormat::PVTSWriter< Grid, Communicator >", "classGridFormat_1_1PVTSWriter.html", null ]
-      ] ],
-      [ "GridFormat::VTK::XMLWriterBase< Grid, VTRWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
-        [ "GridFormat::VTRWriter< Grid >", "classGridFormat_1_1VTRWriter.html", null ]
       ] ],
       [ "GridFormat::VTK::XMLWriterBase< Grid, PVTUWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
         [ "GridFormat::PVTUWriter< Grid, Communicator >", "classGridFormat_1_1PVTUWriter.html", null ]
@@ -57,8 +51,17 @@ var hierarchy =
       [ "GridFormat::VTK::XMLWriterBase< Grid, VTIWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
         [ "GridFormat::VTIWriter< Grid >", "classGridFormat_1_1VTIWriter.html", null ]
       ] ],
-      [ "GridFormat::VTK::XMLWriterBase< Grid, PVTRWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
-        [ "GridFormat::PVTRWriter< Grid, Communicator >", "classGridFormat_1_1PVTRWriter.html", null ]
+      [ "GridFormat::VTK::XMLWriterBase< Grid, VTPWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
+        [ "GridFormat::VTPWriter< Grid >", "classGridFormat_1_1VTPWriter.html", null ]
+      ] ],
+      [ "GridFormat::VTK::XMLWriterBase< Grid, VTRWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
+        [ "GridFormat::VTRWriter< Grid >", "classGridFormat_1_1VTRWriter.html", null ]
+      ] ],
+      [ "GridFormat::VTK::XMLWriterBase< Grid, VTSWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
+        [ "GridFormat::VTSWriter< Grid >", "classGridFormat_1_1VTSWriter.html", null ]
+      ] ],
+      [ "GridFormat::VTK::XMLWriterBase< Grid, VTUWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", [
+        [ "GridFormat::VTUWriter< Grid >", "classGridFormat_1_1VTUWriter.html", null ]
       ] ],
       [ "GridFormat::VTK::XMLWriterBase< G, Impl >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ]
     ] ],
@@ -72,12 +75,16 @@ var hierarchy =
     [ "GridFormat::VTRWriter< Grid >::Domain", "structGridFormat_1_1VTRWriter_1_1Domain.html", null ],
     [ "GridFormat::VTSWriter< Grid >::Domain", "structGridFormat_1_1VTSWriter_1_1Domain.html", null ],
     [ "GridFormat::EncodedField< F, Encoder >", "classGridFormat_1_1EncodedField.html", null ],
+    [ "GridFormat::Traits::Extents< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Extents_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
     [ "GridFormat::Field", null, [
       [ "GridFormat::Dune::FunctionField< Function, GridView, T >", "classGridFormat_1_1Dune_1_1FunctionField.html", null ]
     ] ],
     [ "GridFormat::FileFormat::FormatWithOptions< Format, Opts >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", [
       [ "GridFormat::FileFormat::VTKXMLFormatBase< VTI >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
         [ "GridFormat::FileFormat::VTI", "structGridFormat_1_1FileFormat_1_1VTI.html", null ]
+      ] ],
+      [ "GridFormat::FileFormat::VTKXMLFormatBase< VTKXMLTimeSeries< VTX > >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
+        [ "GridFormat::FileFormat::VTKXMLTimeSeries< VTX >", "structGridFormat_1_1FileFormat_1_1VTKXMLTimeSeries.html", null ]
       ] ],
       [ "GridFormat::FileFormat::VTKXMLFormatBase< VTP >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
         [ "GridFormat::FileFormat::VTP", "structGridFormat_1_1FileFormat_1_1VTP.html", null ]
@@ -88,13 +95,11 @@ var hierarchy =
       [ "GridFormat::FileFormat::VTKXMLFormatBase< VTS >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
         [ "GridFormat::FileFormat::VTS", "structGridFormat_1_1FileFormat_1_1VTS.html", null ]
       ] ],
-      [ "GridFormat::FileFormat::VTKXMLFormatBase< VTKXMLTimeSeries< VTX > >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
-        [ "GridFormat::FileFormat::VTKXMLTimeSeries< VTX >", "structGridFormat_1_1FileFormat_1_1VTKXMLTimeSeries.html", null ]
-      ] ],
       [ "GridFormat::FileFormat::VTKXMLFormatBase< VTU >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", [
         [ "GridFormat::FileFormat::VTU", "structGridFormat_1_1FileFormat_1_1VTU.html", null ]
       ] ]
     ] ],
+    [ "GridFormat::FileFormat::FormatWithOptions< VTI, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", null ],
     [ "GridFormat::FileFormat::FormatWithOptions< VTKFormat, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", [
       [ "GridFormat::FileFormat::VTKXMLFormatBase< VTKFormat >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", null ]
     ] ],
@@ -107,18 +112,23 @@ var hierarchy =
     [ "GridFormat::FileFormat::FormatWithOptions< VTKHDFUnstructuredTransient, VTK::HDFTransientOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", [
       [ "GridFormat::FileFormat::VTKHDFUnstructuredTransient", "structGridFormat_1_1FileFormat_1_1VTKHDFUnstructuredTransient.html", null ]
     ] ],
+    [ "GridFormat::FileFormat::FormatWithOptions< VTKXMLTimeSeries< VTX >, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", null ],
+    [ "GridFormat::FileFormat::FormatWithOptions< VTP, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", null ],
+    [ "GridFormat::FileFormat::FormatWithOptions< VTR, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", null ],
+    [ "GridFormat::FileFormat::FormatWithOptions< VTS, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", null ],
+    [ "GridFormat::FileFormat::FormatWithOptions< VTU, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", null ],
     [ "GridFormat::GridWriterBase< Grid >", "classGridFormat_1_1GridWriterBase.html", [
       [ "GridFormat::GridWriter< G >", "classGridFormat_1_1GridWriter.html", [
-        [ "GridFormat::VTK::XMLWriterBase< Grid, VTSWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
-        [ "GridFormat::VTK::XMLWriterBase< Grid, VTUWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
-        [ "GridFormat::VTK::XMLWriterBase< Grid, PVTPWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
         [ "GridFormat::VTK::XMLWriterBase< Grid, PVTIWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
-        [ "GridFormat::VTK::XMLWriterBase< Grid, VTPWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
+        [ "GridFormat::VTK::XMLWriterBase< Grid, PVTPWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
+        [ "GridFormat::VTK::XMLWriterBase< Grid, PVTRWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
         [ "GridFormat::VTK::XMLWriterBase< Grid, PVTSWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
-        [ "GridFormat::VTK::XMLWriterBase< Grid, VTRWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
         [ "GridFormat::VTK::XMLWriterBase< Grid, PVTUWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
         [ "GridFormat::VTK::XMLWriterBase< Grid, VTIWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
-        [ "GridFormat::VTK::XMLWriterBase< Grid, PVTRWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
+        [ "GridFormat::VTK::XMLWriterBase< Grid, VTPWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
+        [ "GridFormat::VTK::XMLWriterBase< Grid, VTRWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
+        [ "GridFormat::VTK::XMLWriterBase< Grid, VTSWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
+        [ "GridFormat::VTK::XMLWriterBase< Grid, VTUWriter< Grid > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
         [ "GridFormat::VTK::XMLWriterBase< G, Impl >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ]
       ] ],
       [ "GridFormat::TimeSeriesGridWriter< VTKWriter::Grid >", "classGridFormat_1_1TimeSeriesGridWriter.html", [
@@ -128,6 +138,8 @@ var hierarchy =
       [ "GridFormat::GridWriter< Grid >", "classGridFormat_1_1GridWriter.html", null ],
       [ "GridFormat::TimeSeriesGridWriter< Grid >", "classGridFormat_1_1TimeSeriesGridWriter.html", null ]
     ] ],
+    [ "GridFormat::GridWriterBase< G >", "classGridFormat_1_1GridWriterBase.html", null ],
+    [ "GridFormat::GridWriterBase< VTKWriter::Grid >", "classGridFormat_1_1GridWriterBase.html", null ],
     [ "GridFormat::VTKHDF::HDF5File< Communicator >", "classGridFormat_1_1VTKHDF_1_1HDF5File.html", null ],
     [ "GridFormat::VTK::HDFTransientOptions", "structGridFormat_1_1VTK_1_1HDFTransientOptions.html", null ],
     [ "GridFormat::ImageGrid< dim, CoordinateType >", "classGridFormat_1_1ImageGrid.html", null ],
@@ -136,6 +148,7 @@ var hierarchy =
     [ "GridFormat::DolfinX::LagrangeMesh", "classGridFormat_1_1DolfinX_1_1LagrangeMesh.html", null ],
     [ "GridFormat::Dune::LagrangeMesh< GV >", "classGridFormat_1_1Dune_1_1LagrangeMesh.html", null ],
     [ "GridFormat::Dune::LagrangeMesh< GridView >", "classGridFormat_1_1Dune_1_1LagrangeMesh.html", null ],
+    [ "GridFormat::Traits::Location< Dune::GridView< Traits >, Entity >", "structGridFormat_1_1Traits_1_1Location_3_01Dune_1_1GridView_3_01Traits_01_4_00_01Entity_01_4.html", null ],
     [ "GridFormat::Compression::LZ4", "classGridFormat_1_1Compression_1_1LZ4.html", null ],
     [ "GridFormat::Compression::LZ4Options", "structGridFormat_1_1Compression_1_1LZ4Options.html", null ],
     [ "GridFormat::Compression::LZMA", "classGridFormat_1_1Compression_1_1LZMA.html", null ],
@@ -146,18 +159,23 @@ var hierarchy =
     [ "GridFormat::Traits::NumberOfCellPoints< Dune::LagrangeMesh< GridView >, typename Dune::LagrangeMesh< GridView >::Cell >", "structGridFormat_1_1Traits_1_1NumberOfCellPoints_3_01Dune_1_1LagrangeMesh_3_01GridView_01_4_00_032c44fdebe570909110931cee423d315.html", null ],
     [ "GridFormat::Traits::NumberOfCellPoints< Grid, GridFormat::CGAL::Cell< Grid > >", "structGridFormat_1_1Traits_1_1NumberOfCellPoints_3_01Grid_00_01GridFormat_1_1CGAL_1_1Cell_3_01Grid_01_4_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfCellPoints< mfem::Mesh, GridFormat::MFEM::Cell >", "structGridFormat_1_1Traits_1_1NumberOfCellPoints_3_01mfem_1_1Mesh_00_01GridFormat_1_1MFEM_1_1Cell_01_4.html", null ],
+    [ "GridFormat::Traits::NumberOfCellPoints< T, DealII::Cell< T > >", "structGridFormat_1_1Traits_1_1NumberOfCellPoints_3_01T_00_01DealII_1_1Cell_3_01T_01_4_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfCells< DolfinX::LagrangeMesh >", "structGridFormat_1_1Traits_1_1NumberOfCells_3_01DolfinX_1_1LagrangeMesh_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfCells< dolfinx::mesh::Mesh >", "structGridFormat_1_1Traits_1_1NumberOfCells_3_01dolfinx_1_1mesh_1_1Mesh_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfCells< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1NumberOfCells_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfCells< Dune::LagrangeMesh< GridView > >", "structGridFormat_1_1Traits_1_1NumberOfCells_3_01Dune_1_1LagrangeMesh_3_01GridView_01_4_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfCells< Grid >", "structGridFormat_1_1Traits_1_1NumberOfCells_3_01Grid_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfCells< mfem::Mesh >", "structGridFormat_1_1Traits_1_1NumberOfCells_3_01mfem_1_1Mesh_01_4.html", null ],
+    [ "GridFormat::Traits::NumberOfCells< T >", "structGridFormat_1_1Traits_1_1NumberOfCells_3_01T_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfPoints< DolfinX::LagrangeMesh >", "structGridFormat_1_1Traits_1_1NumberOfPoints_3_01DolfinX_1_1LagrangeMesh_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfPoints< dolfinx::mesh::Mesh >", "structGridFormat_1_1Traits_1_1NumberOfPoints_3_01dolfinx_1_1mesh_1_1Mesh_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfPoints< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1NumberOfPoints_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfPoints< Dune::LagrangeMesh< GridView > >", "structGridFormat_1_1Traits_1_1NumberOfPoints_3_01Dune_1_1LagrangeMesh_3_01GridView_01_4_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfPoints< Grid >", "structGridFormat_1_1Traits_1_1NumberOfPoints_3_01Grid_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfPoints< mfem::Mesh >", "structGridFormat_1_1Traits_1_1NumberOfPoints_3_01mfem_1_1Mesh_01_4.html", null ],
+    [ "GridFormat::Traits::NumberOfPoints< T >", "structGridFormat_1_1Traits_1_1NumberOfPoints_3_01T_01_4.html", null ],
+    [ "GridFormat::Traits::Ordinates< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Ordinates_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
+    [ "GridFormat::Traits::Origin< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Origin_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
     [ "OutputStreamWrapperBase", null, [
       [ "GridFormat::AsciiOutputStream< OStream >", "classGridFormat_1_1AsciiOutputStream.html", null ],
       [ "GridFormat::Base64Stream< OStream >", "classGridFormat_1_1Base64Stream.html", null ],
@@ -172,42 +190,44 @@ var hierarchy =
     [ "GridFormat::Traits::PointCoordinates< Dune::LagrangeMesh< GridView >, typename Dune::LagrangeMesh< GridView >::Point >", "structGridFormat_1_1Traits_1_1PointCoordinates_3_01Dune_1_1LagrangeMesh_3_01GridView_01_4_00_01t69a4b621c1bdf8e06592817209d545c4.html", null ],
     [ "GridFormat::Traits::PointCoordinates< Grid, typename Grid::Vertex_handle >", "structGridFormat_1_1Traits_1_1PointCoordinates_3_01Grid_00_01typename_01Grid_1_1Vertex__handle_01_4.html", null ],
     [ "GridFormat::Traits::PointCoordinates< mfem::Mesh, GridFormat::MFEM::Point >", "structGridFormat_1_1Traits_1_1PointCoordinates_3_01mfem_1_1Mesh_00_01GridFormat_1_1MFEM_1_1Point_01_4.html", null ],
+    [ "GridFormat::Traits::PointCoordinates< T, DealII::Point< T > >", "structGridFormat_1_1Traits_1_1PointCoordinates_3_01T_00_01DealII_1_1Point_3_01T_01_4_01_4.html", null ],
     [ "GridFormat::Traits::PointId< DolfinX::LagrangeMesh, DolfinX::Point >", "structGridFormat_1_1Traits_1_1PointId_3_01DolfinX_1_1LagrangeMesh_00_01DolfinX_1_1Point_01_4.html", null ],
     [ "GridFormat::Traits::PointId< dolfinx::mesh::Mesh, DolfinX::Point >", "structGridFormat_1_1Traits_1_1PointId_3_01dolfinx_1_1mesh_1_1Mesh_00_01DolfinX_1_1Point_01_4.html", null ],
     [ "GridFormat::Traits::PointId< Dune::GridView< Traits >, DuneDetail::Vertex< Dune::GridView< Traits > > >", "structGridFormat_1_1Traits_1_1PointId_3_01Dune_1_1GridView_3_01Traits_01_4_00_01DuneDetail_1_1Vef291bdc39d1fa1c956557b04cbca52ba.html", null ],
     [ "GridFormat::Traits::PointId< Dune::LagrangeMesh< GridView >, typename Dune::LagrangeMesh< GridView >::Point >", "structGridFormat_1_1Traits_1_1PointId_3_01Dune_1_1LagrangeMesh_3_01GridView_01_4_00_01typename_0a3b5e6baf5fb70cddeeb8d68e6e5cc7c.html", null ],
     [ "GridFormat::Traits::PointId< Grid, typename Grid::Vertex_handle >", "structGridFormat_1_1Traits_1_1PointId_3_01Grid_00_01typename_01Grid_1_1Vertex__handle_01_4.html", null ],
     [ "GridFormat::Traits::PointId< mfem::Mesh, GridFormat::MFEM::Point >", "structGridFormat_1_1Traits_1_1PointId_3_01mfem_1_1Mesh_00_01GridFormat_1_1MFEM_1_1Point_01_4.html", null ],
+    [ "GridFormat::Traits::PointId< T, DealII::Point< T > >", "structGridFormat_1_1Traits_1_1PointId_3_01T_00_01DealII_1_1Point_3_01T_01_4_01_4.html", null ],
     [ "GridFormat::Traits::Points< DolfinX::LagrangeMesh >", "structGridFormat_1_1Traits_1_1Points_3_01DolfinX_1_1LagrangeMesh_01_4.html", null ],
     [ "GridFormat::Traits::Points< dolfinx::mesh::Mesh >", "structGridFormat_1_1Traits_1_1Points_3_01dolfinx_1_1mesh_1_1Mesh_01_4.html", null ],
     [ "GridFormat::Traits::Points< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Points_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
     [ "GridFormat::Traits::Points< Dune::LagrangeMesh< GridView > >", "structGridFormat_1_1Traits_1_1Points_3_01Dune_1_1LagrangeMesh_3_01GridView_01_4_01_4.html", null ],
     [ "GridFormat::Traits::Points< Grid >", "structGridFormat_1_1Traits_1_1Points_3_01Grid_01_4.html", null ],
     [ "GridFormat::Traits::Points< mfem::Mesh >", "structGridFormat_1_1Traits_1_1Points_3_01mfem_1_1Mesh_01_4.html", null ],
+    [ "GridFormat::Traits::Points< T >", "structGridFormat_1_1Traits_1_1Points_3_01T_01_4.html", null ],
     [ "GridFormat::FileFormat::PVD< PieceFormat >", "structGridFormat_1_1FileFormat_1_1PVD.html", null ],
     [ "GridFormat::FileFormat::PVDClosure", "structGridFormat_1_1FileFormat_1_1PVDClosure.html", null ],
     [ "GridFormat::Encoding::RawBinary", "structGridFormat_1_1Encoding_1_1RawBinary.html", null ],
+    [ "GridFormat::Traits::Spacing< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Spacing_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
     [ "GridFormat::PVTK::StructuredGridMapper< dim >", "classGridFormat_1_1PVTK_1_1StructuredGridMapper.html", null ],
     [ "GridFormat::PVTK::StructuredGridMapperHelper< T, dim >", "classGridFormat_1_1PVTK_1_1StructuredGridMapperHelper.html", null ],
     [ "GridFormat::PVTK::StructuredParallelGridHelper< Communicator >", "classGridFormat_1_1PVTK_1_1StructuredParallelGridHelper.html", null ],
     [ "GridFormat::FileFormat::TimeSeriesClosure", "structGridFormat_1_1FileFormat_1_1TimeSeriesClosure.html", null ],
     [ "GridDetail::WriterBase::type", null, [
-      [ "GridFormat::VTKHDFUnstructuredGridWriterImpl< false, G, NullCommunicator >", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html", [
-        [ "GridFormat::VTKHDFUnstructuredGridWriter< G, C >", "classGridFormat_1_1VTKHDFUnstructuredGridWriter.html", null ]
-      ] ],
-      [ "GridFormat::VTKHDFUnstructuredGridWriterImpl< true, G, NullCommunicator >", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html", [
+      [ "GridFormat::VTKHDFUnstructuredGridWriterImpl< false, G, NullCommunicator >", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html", null ],
+      [ "GridFormat::VTKHDFUnstructuredGridWriterImpl< true, G, NullCommunicator >", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html", null ],
+      [ "GridFormat::VTKHDFUnstructuredGridWriterImpl< is_transient, G, Communicator >", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html", [
+        [ "GridFormat::VTKHDFUnstructuredGridWriter< G, C >", "classGridFormat_1_1VTKHDFUnstructuredGridWriter.html", null ],
         [ "GridFormat::VTKHDFUnstructuredTimeSeriesWriter< G, C >", "classGridFormat_1_1VTKHDFUnstructuredTimeSeriesWriter.html", null ]
-      ] ],
-      [ "GridFormat::VTKHDFUnstructuredGridWriterImpl< is_transient, G, Communicator >", "classGridFormat_1_1VTKHDFUnstructuredGridWriterImpl.html", null ]
+      ] ]
     ] ],
     [ "GridDetail::WriterBase::type", null, [
-      [ "GridFormat::VTKHDFImageGridWriterImpl< false, G, NullCommunicator >", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html", [
+      [ "GridFormat::VTKHDFImageGridWriterImpl< true, G, NullCommunicator >", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html", null ],
+      [ "GridFormat::VTKHDFImageGridWriterImpl< false, G, NullCommunicator >", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html", null ],
+      [ "GridFormat::VTKHDFImageGridWriterImpl< is_transient, Grid, Communicator >", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html", [
+        [ "GridFormat::VTKHDFImageGridTimeSeriesWriter< G, C >", "classGridFormat_1_1VTKHDFImageGridTimeSeriesWriter.html", null ],
         [ "GridFormat::VTKHDFImageGridWriter< G, C >", "classGridFormat_1_1VTKHDFImageGridWriter.html", null ]
-      ] ],
-      [ "GridFormat::VTKHDFImageGridWriterImpl< true, G, NullCommunicator >", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html", [
-        [ "GridFormat::VTKHDFImageGridTimeSeriesWriter< G, C >", "classGridFormat_1_1VTKHDFImageGridTimeSeriesWriter.html", null ]
-      ] ],
-      [ "GridFormat::VTKHDFImageGridWriterImpl< is_transient, Grid, Communicator >", "classGridFormat_1_1VTKHDFImageGridWriterImpl.html", null ]
+      ] ]
     ] ],
     [ "VTKHDFDetail::VTKHDFTimeSeriesWriterSelector::type", null, [
       [ "GridFormat::VTKHDFTimeSeriesWriter< Grid, C >", "classGridFormat_1_1VTKHDFTimeSeriesWriter.html", null ]

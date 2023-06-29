@@ -1,26 +1,5 @@
 var classGridFormat_1_1VTK_1_1XMLWriterBase =
 [
-    [ "WriteContext", "structGridFormat_1_1VTK_1_1XMLWriterBase_1_1WriteContext.html", "structGridFormat_1_1VTK_1_1XMLWriterBase_1_1WriteContext" ],
-    [ "Grid", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a995f334d11afd2cd8d66011ca4f4a266", null ],
-    [ "XMLWriterBase", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a4e907a7c318805a1d31746777b90aef9", null ],
-    [ "_access_element", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#abd28b67f5a6665ae29f5ff8effa2e516", null ],
-    [ "_add_meta_data_fields", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a88159add57d90b65b56e9477e82d1f58", null ],
-    [ "_get_element_names", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#aaa46f9496058e66fcb6f35b181d0ef52", null ],
-    [ "_get_write_context", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#af710aaf99fd961097ad2ecb885272120", null ],
-    [ "_set_attribute", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a3d84c7d75056e048a488eb997460ece4", null ],
-    [ "_set_data_array", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a477533035474228cd0b2e3121066890a", null ],
-    [ "_set_default_active_fields", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a6e0c773966a9035004a3c34892bf3aba", null ],
-    [ "_write_xml", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#af2f3249218f323930ae7605ee860586f", null ],
-    [ "requires", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a8b53551a7f2ca36c388b8489e56f93ee", null ],
-    [ "with", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a3592ceb495777f77a492296ab4cac64c", null ],
-    [ "with_compression", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a5e8f7423b0013d548b6df2e1bc2a9bfc", null ],
-    [ "with_coordinate_precision", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#aa7a82598b939ea9c14d4a10059832980", null ],
-    [ "with_data_format", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a238e48474dd9d953efcb46d741a3648e", null ],
-    [ "with_encoding", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a35c64d81d0e81b4d85ecb40684528a30", null ],
-    [ "with_header_precision", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a143301c9958e84e857a1aefe7c5ed746", null ],
-    [ "_xml_opts", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#abc433cd5a7852fd1a764a13cfc5b6a3e", null ],
-    [ "_xml_settings", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#ac2b150e820c8404888393e636d8d51e2", null ],
-    [ "app", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a799a03048a02d37d762a897123927ff4", null ],
-    [ "const", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#aabf96fb7afe22a6c0aeaf65ee7438bcd", null ],
-    [ "e", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a6b7878be043069417e274f12e8efdc96", null ]
+    [ "WriteContext", "structGridFormat_1_1VTK_1_1XMLWriterBase_1_1WriteContext.html", null ],
+    [ "Grid", "classGridFormat_1_1VTK_1_1XMLWriterBase.html#a995f334d11afd2cd8d66011ca4f4a266", null ]
 ];

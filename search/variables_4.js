@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['encoder_511',['Encoder',['../group__Encoding.html#ga9e7619e8a3a4a8bfc92db78561ff0159',1,'GridFormat::Concepts']]],
-  ['entityset_512',['EntitySet',['../group__Grid.html#ga067ea9b0bc3c2c91c814d678344f18fd',1,'GridFormat::Concepts']]]
+  ['lz4_0',['lz4',['../group__Compression.html#ga1390e604123e1b0853a9443a3eb103fb',1,'GridFormat::Compression']]],
+  ['lzma_1',['lzma',['../group__Compression.html#gaae9032c458723426ec234be1f5383930',1,'GridFormat::Compression']]]
 ];
