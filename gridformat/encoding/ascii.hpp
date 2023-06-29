@@ -25,13 +25,8 @@
 #include <gridformat/common/output_stream.hpp>
 #include <gridformat/common/reserved_string.hpp>
 
-namespace GridFormat {
-
-//! \addtogroup Encoding
-//! \{
-
 #ifndef DOXYGEN
-namespace Encoding::Detail {
+namespace GridFormat::Encoding::Detail {
 
     template<typename T>
     struct AsciiPrintType : std::type_identity<T> {};
@@ -40,8 +35,13 @@ namespace Encoding::Detail {
     template<std::unsigned_integral T>
     struct AsciiPrintType<T> : std::type_identity<std::uintmax_t> {};
 
-}  // namespace Encoding::Detail
+}  // namespace GridFormat::Encoding::Detail
 #endif  // DOXYGEN
+
+namespace GridFormat {
+
+//! \addtogroup Encoding
+//! \{
 
 //! Options for fomatted output of ranges with ascii encoding
 struct AsciiFormatOptions {
@@ -154,7 +154,14 @@ class AsciiOutputStream : public OutputStreamWrapperBase<OStream> {
     AsciiFormatOptions _opts;
 };
 
-namespace Encoding {
+//! \} group Encoding
+
+}  // namespace GridFormat
+
+namespace GridFormat::Encoding {
+
+//! \addtogroup Encoding
+//! \{
 
 //! Ascii encoder
 struct Ascii {
@@ -185,12 +192,11 @@ struct Ascii {
     std::optional<AsciiFormatOptions> _opts = {};
 };
 
-inline constexpr Ascii ascii;  //!< Instance of the ascii encoder
-
-}  // namespace Encoding
+//! Instance of the ascii encoder
+inline constexpr Ascii ascii;
 
 //! \} group Encoding
 
-}  // namespace GridFormat
+}  // namespace GridFormat::Encoding
 
 #endif  // GRIDFORMAT_COMMON_ENCODING_ASCII_HPP_

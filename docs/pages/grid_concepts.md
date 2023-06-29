@@ -18,6 +18,8 @@ possibly different geometry types, which are arbitrarly arranged. Therefore, one
 each cell and which corners make up its boundary. The corners have to also be given in a specific order, and in `GridFormat` we
 use the [VTK ordering (scroll down to figures 2/3)](https://examples.vtk.org/site/VTKFileFormats/#legacy-file-examples).
 
+To satisfy the `GridFormat::Concepts::UnstructuredGrid` concept, a grid implementation needs to specialize
+the traits as specified in @ref mandatory-traits and @ref traits-for-unstructured-grids.
 
 ## Structured Grid
 
@@ -28,6 +30,9 @@ A structured grid can be described as a set of $(N_x \times N_y \times N_z )$ ce
 points (in 3D), and one can associate an index tuple $(i_x, i_y, i_z)$ to each point or cell, which describes its location within
 the index space of the grid. The actual coordinates of the points can be chosen arbitrarily to the extent that they still describe
 valid, non self-intersecting hexahedra (or quadrilaterals in 2D; segments in 1D).
+
+To satisfy the `GridFormat::Concepts::StructuredGrid` concept, a grid implementation needs to specialize
+the traits as specified in @ref mandatory-traits and @ref traits-for-structured-grids.
 
 
 ## Rectilinear Grid
@@ -40,6 +45,9 @@ axis-aligned boxes. Along one coordinate direction, the size of the cells can ch
 contrast to the structured grid, it is not necessary to specify the coordinates of all points of the grid, instead it is sufficient
 to specify only the coordinates along the axes.
 
+To satisfy the `GridFormat::Concepts::RectilinearGrid` concept, a grid implementation needs to specialize
+the traits as specified in @ref mandatory-traits and @ref traits-for-rectilinear-grids.
+
 
 ## Image Grid
 
@@ -48,5 +56,8 @@ to specify only the coordinates along the axes.
 An image grid has again the same arrangement of cells as the structured and rectilinear grids, yet it additionally assumes that the
 size of the cells does not change along a coordinate direction. Thus, in this case it suffices to store the size of the domain in each coordinate direction and the number of cells used per direction to discretize the domain. From these numbers the topology of
 the entire grid can be reconstructed.
+
+To satisfy the `GridFormat::Concepts::ImageGrid` concept, a grid implementation needs to specialize
+the traits as specified in @ref mandatory-traits and @ref traits-for-image-grids.
 
 <!-- DOXYGEN_ONLY [TOC] -->

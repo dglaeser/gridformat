@@ -30,7 +30,14 @@ class RawBinaryStream : public OutputStreamWrapperBase<OStream> {
     }
 };
 
-namespace Encoding {
+//! \} group Encoding
+
+}  // namespace GridFormat
+
+namespace GridFormat::Encoding {
+
+//! \addtogroup Encoding
+//! \{
 
 //! Raw binary encoder
 struct RawBinary {
@@ -40,12 +47,11 @@ struct RawBinary {
     }
 };
 
-inline constexpr RawBinary raw;  //!< Instance of the raw binary encoder
-
-}  // namespace Encoding
+//! Instance of the raw binary encoder
+inline constexpr RawBinary raw;
 
 //! \} group Encoding
 
-}  // namespace GridFormat
+}  // namespace GridFormat::Encoding
 
 #endif  // GRIDFORMAT_COMMON_ENCODING_RAW_HPP_
