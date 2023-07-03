@@ -304,17 +304,24 @@ class HDF5File {
     }
 
     template<Concepts::ResizableMDRange T>
-    T read_dataset_to(const std::string& path) const {
+    T read_dataset_to(const std::string& path, const std::optional<DataSetSlice>& slice = {}) const {
         return visit_dataset(path, [&] <typename F> (BufferField<F>&& field) {
             return field.template export_to<T>();
-        });
+        }, slice);
     }
 
     template<std::invocable<BufferField<int>&&> Visitor>
-    decltype(auto) visit_dataset(const std::string& path, Visitor&& visitor) const {
+    decltype(auto) visit_dataset(const std::string& path,
+                                 Visitor&& visitor,
+                                 const std::optional<DataSetSlice>& slice = {}) const {
         auto [group, name] = split_name(path);
         if (!has_dataset(group, name))
             throw ValueError("Given data set '" + path + "' does not exist.");
+        if (slice)
+            return _visit_data(
+                std::forward<Visitor>(visitor),
+                _file.getGroup(group).getDataSet(name).select(slice->offset, slice->count)
+            );
         return _visit_data(std::forward<Visitor>(visitor), _file.getGroup(group).getDataSet(name));
     }
 
@@ -482,7 +489,7 @@ class HDF5File {
 
     template<typename T, typename Source>
     auto _read_buffer_field(const Source& source) const {
-        MDLayout layout{source.getSpace().getDimensions()};
+        MDLayout layout{source.getMemSpace().getDimensions()};
         std::vector<T> out(layout.number_of_entries());
         source.read(out.data());
         return BufferField(std::move(out), std::move(layout));
