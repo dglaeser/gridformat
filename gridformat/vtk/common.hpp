@@ -112,9 +112,15 @@ inline constexpr CellType cell_type(std::uint8_t vtk_id) {
 }
 
 FieldPtr make_vtk_field(FieldPtr field) {
-    // vector/tensor fields must be made 3d
-    if (field->layout().dimension() > 1)
-        return FieldTransformation::extend_all_to(3)(field);
+    const auto layout = field->layout();
+    if (layout.dimension() < 2)
+        return field;
+    // (maybe) make vector/tensor fields 3d
+    if (std::ranges::all_of(
+            std::views::iota(std::size_t{1}, layout.dimension()),
+            [&] (const std::size_t codim) { return layout.extent(codim) < 3; }
+        ))
+        return transform(field, FieldTransformation::extend_all_to(3));
     return field;
 }
 
