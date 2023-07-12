@@ -428,6 +428,12 @@ concept FieldTransformation
 }  // namespace Concepts
 
 
+template<Concepts::FieldTransformation T>
+FieldPtr transform(FieldPtr field, T&& trafo) {
+    return trafo(field);
+}
+
+
 class TransformedField : public Field {
  public:
     template<Concepts::FieldTransformation T>
