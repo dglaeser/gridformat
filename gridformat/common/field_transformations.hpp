@@ -20,11 +20,16 @@
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/md_index.hpp>
 #include <gridformat/common/iterator_facades.hpp>
+#include <gridformat/common/flat_index_mapper.hpp>
 
 namespace GridFormat {
 
 #ifndef DOXYGEN
 namespace FieldTransformationDetail {
+
+    // walks along md indices in the source & target layouts
+    // and exposes the corresponding flat indices within the
+    // layouts according to row-major-ordering (we store data this way)
     class BackwardsMDIndexMapWalk {
      public:
         template<std::convertible_to<MDLayout> _L1,
@@ -134,7 +139,8 @@ namespace FieldTransformationDetail {
         std::size_t _current_flat;
         std::size_t _current_target_flat;
     };
-}
+
+}  // namespace FieldTransformationDetail
 #endif  // DOXYGEN
 
 
@@ -309,6 +315,78 @@ class ExtendedField : public Field {
     }
 };
 
+
+/*!
+ * \ingroup Common
+ * \brief Exposes a field that represents a slice of another field.
+ */
+class SlicedField : public Field {
+ public:
+    struct Slice {
+        std::vector<std::size_t> from;
+        std::vector<std::size_t> to;
+    };
+
+    explicit SlicedField(FieldPtr field, Slice slice)
+    : _field{field}
+    , _slice{std::move(slice)}
+    {}
+
+ private:
+    MDLayout _make_slice_layout() const {
+        if (_slice.from.size() != _slice.to.size())
+            throw SizeError("Slice bounds must have the same dimension");
+        if (_slice.from.size() != _field->layout().dimension())
+            throw SizeError("Slice dimension does not match that of the original field");
+        return MDLayout{
+            std::views::iota(std::size_t{0}, _slice.from.size())
+            | std::views::transform([&] (const std::size_t i) {
+                if (_slice.to[i] < _slice.from[i])
+                    throw SizeError("slice.from must be smaller than slice.to");
+                return _slice.to[i] - _slice.from[i];
+            })
+        };
+    }
+
+    MDLayout _layout() const override {
+        return _make_slice_layout();
+    }
+
+    Serialization _serialized() const override {
+        const auto in_layout = _field->layout();
+        const auto out_layout = _layout();
+        const auto precision = _precision();
+        Serialization in_serialization = _field->serialized();
+        Serialization out_serialization(out_layout.number_of_entries()*precision.size_in_bytes());
+
+        // data is stored row-major, so we reverse the layout here
+        const auto in_offset = FlatIndexMapper{in_layout | std::views::reverse}.map(
+            _slice.from | std::views::reverse
+        );
+
+        auto index_walk = FieldTransformationDetail::BackwardsMDIndexMapWalk{out_layout, in_layout};
+        precision.visit([&] <typename T> (const Precision<T>&) {
+            auto in = in_serialization.template as_span_of<T>();
+            auto out = out_serialization.template as_span_of<T>();
+            while (!index_walk.is_finished()) {
+                assert(index_walk.source_index_flat() < out.size());
+                assert(index_walk.target_index_flat() + in_offset < in.size());
+                out[index_walk.source_index_flat()] = in[index_walk.target_index_flat() + in_offset];
+                index_walk.next();
+            }
+        });
+
+        return out_serialization;
+    }
+
+    DynamicPrecision _precision() const override {
+        return _field->precision();
+    }
+
+    FieldPtr _field;
+    Slice _slice;
+};
+
 namespace FieldTransformation {
 
 #ifndef DOXYGEN
@@ -404,6 +482,26 @@ namespace Detail {
         }
     };
 
+    class SlicedFieldAdapter {
+     public:
+        explicit SlicedFieldAdapter(typename SlicedField::Slice slice)
+        : _slice{std::move(slice)}
+        {}
+
+        auto operator()(FieldPtr f) const {
+            return make_field_ptr(SlicedField{f, _slice});
+        }
+
+     private:
+        typename SlicedField::Slice _slice;
+    };
+
+    struct SlicedFieldAdapterClosure {
+        auto operator()(typename SlicedField::Slice slice) const {
+            return SlicedFieldAdapter{std::move(slice)};
+        }
+    };
+
 }  // namespace Detail
 #endif  // DOXYGEN
 
@@ -413,6 +511,7 @@ inline constexpr Detail::ExtendFieldAdapterClosure extend_to;
 inline constexpr Detail::ExtendAllFieldAdapterClosure extend_all_to;
 inline constexpr Detail::ReshapedFieldAdapterClosure reshape_to;
 inline constexpr Detail::SubFieldAdapter as_sub_field;
+inline constexpr Detail::SlicedFieldAdapterClosure take_slice;
 
 }  // namespace FieldTransformation
 
