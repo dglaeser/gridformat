@@ -33,6 +33,7 @@
 #pragma GCC diagnostic pop
 #endif  // GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 
+#include <gridformat/common/field.hpp>
 #include <gridformat/common/logging.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/md_layout.hpp>
@@ -251,7 +252,7 @@ class HDF5File {
         type_attr.write(attribute);
     }
 
-    template<typename Values>
+    template<std::ranges::range Values>
     std::size_t write(const Values& values, const DataSetPath& path) {
         _check_writable();
         const auto space = HighFive::DataSpace::From(values);
@@ -271,7 +272,35 @@ class HDF5File {
         return space.getDimensions()[0];
     }
 
-    template<typename Values>
+    std::size_t write(const Field& field, const DataSetPath& path) {
+        _check_writable();
+        const auto layout = field.layout();
+        const HighFive::DataSpace space{[&] () {
+            std::vector<std::size_t> dims(layout.dimension());
+            layout.export_to(dims);
+            return dims;
+        } ()};
+
+        auto group = _get_group(path.group_path);
+        return field.precision().visit([&] <typename T> (const Precision<T>&) {
+            auto [offset, dataset] = _prepare_dataset<T>(group, path.dataset_name, space);
+            std::vector<std::size_t> ds_size = space.getDimensions();
+            std::vector<std::size_t> ds_offset(ds_size.size(), 0);
+            ds_offset.at(0) += offset;
+
+            // do the actual write only on rank 0 to avoid clashes
+            if (Parallel::rank(_comm) != 0)
+                std::ranges::fill(ds_size, 0);
+
+            const auto serialization = field.serialized();
+            const std::span<const T> span = serialization.template as_span_of<T>();
+            _write_to(dataset, span.data(), {.offset = ds_offset, .count = ds_size});
+            _file.flush();
+            return layout.extent(0);
+        });
+    }
+
+    template<std::ranges::range Values>
     std::size_t write(const Values& values, const DataSetPath& path, DataSetSlice slice) {
         _check_writable();
         const auto space = HighFive::DataSpace(slice.total_size);
@@ -288,6 +317,35 @@ class HDF5File {
         }
         _file.flush();
         return space.getDimensions()[0];
+    }
+
+    std::size_t write(const Field& field, const DataSetPath& path, DataSetSlice slice) {
+        _check_writable();
+        const auto layout = field.layout();
+        const HighFive::DataSpace space{[&] () {
+            std::vector<std::size_t> dims(layout.dimension());
+            layout.export_to(dims);
+            return dims;
+        } ()};
+
+        auto group = _get_group(path.group_path);
+        return field.precision().visit([&] <typename T> (const Precision<T>&) {
+            auto [offset, dataset] = _prepare_dataset<T>(group, path.dataset_name, space);
+
+            const auto serialization = field.serialized();
+            const std::span<const T> span = serialization.template as_span_of<T>();
+
+            slice.offset[0] += offset;
+            if (Parallel::size(_comm) > 1) {
+                const auto props = Detail::parallel_transfer_props();
+                _write_to(dataset, span.data(), slice, props);
+                Detail::check_successful_collective_io(props);
+            } else {
+                _write_to(dataset, span.data(), slice);
+            }
+            _file.flush();
+            return layout.extent(0);
+        });
     }
 
     template<Concepts::Scalar T>
@@ -450,6 +508,15 @@ class HDF5File {
                    const std::optional<HighFive::DataTransferProps> props = {}) {
         props ? dataset.select(slice.offset, slice.count).write(values, *props)
               : dataset.select(slice.offset, slice.count).write(values);
+    }
+
+    template<Concepts::Scalar T>
+    void _write_to(HighFive::DataSet& dataset,
+                   const T* buffer,
+                   const DataSetSlice& slice,
+                   const std::optional<HighFive::DataTransferProps> props = {}) {
+        props ? dataset.select(slice.offset, slice.count).write_raw(buffer, dataset.getDataType(), *props)
+              : dataset.select(slice.offset, slice.count).write_raw(buffer, dataset.getDataType());
     }
 
     template<typename Visitor, typename Source>
