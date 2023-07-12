@@ -12,6 +12,7 @@
 #include <concepts>
 #include <algorithm>
 #include <type_traits>
+#include <sstream>
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/serialization.hpp>
@@ -191,6 +192,42 @@ class FlattenedField : public Field {
 
 /*!
  * \ingroup Common
+ * \brief Exposes a given field with a different layout.
+ * \note Requires the target layout to have the same number of entries as the original layout.
+ */
+class ReshapedField : public Field {
+ public:
+    explicit ReshapedField(FieldPtr field, MDLayout target_layout)
+    : _field(field)
+    , _target_layout{std::move(target_layout)} {
+        if (_field->layout().number_of_entries() != _target_layout.number_of_entries()) {
+            std::ostringstream in;
+            std::ostringstream target;
+            in << _field->layout();
+            target << _target_layout;
+            throw SizeError("Cannot reshape field with layout " + in.str() + " to " + target.str());
+        }
+    }
+
+ private:
+    FieldPtr _field;
+    MDLayout _target_layout;
+
+    MDLayout _layout() const override {
+        return _target_layout;
+    }
+
+    DynamicPrecision _precision() const override {
+        return _field->precision();
+    }
+
+    Serialization _serialized() const override {
+        return _field->serialized();
+    }
+};
+
+/*!
+ * \ingroup Common
  * \brief Extends a given field with zeros up to the given extents
  * \note This takes the extents of the desired sub-layout as constructor
  *       argument. The extent of the first dimension stays the same.
@@ -337,6 +374,36 @@ namespace Detail {
         }
     };
 
+    class ReshapedFieldAdapter {
+     public:
+        explicit ReshapedFieldAdapter(MDLayout layout)
+        : _layout{std::move(layout)}
+        {}
+
+        auto operator()(FieldPtr f) const {
+            return make_field_ptr(ReshapedField{f, _layout});
+        }
+
+     private:
+        MDLayout _layout;
+    };
+
+    struct ReshapedFieldAdapterClosure {
+        auto operator()(MDLayout sub_layout) const {
+            return ReshapedFieldAdapter{std::move(sub_layout)};
+        }
+    };
+
+    struct SubFieldAdapter {
+        auto operator()(FieldPtr f) const {
+            const auto layout = f->layout();
+            std::vector<std::size_t> new_layout(layout.dimension());
+            layout.export_to(new_layout);
+            new_layout.insert(new_layout.begin(), 1);
+            return ReshapedFieldAdapter{MDLayout{std::move(new_layout)}}(f);
+        }
+    };
+
 }  // namespace Detail
 #endif  // DOXYGEN
 
@@ -344,6 +411,8 @@ inline constexpr Detail::IdentityFieldAdapter identity;
 inline constexpr Detail::FlattenedFieldAdapter flatten;
 inline constexpr Detail::ExtendFieldAdapterClosure extend_to;
 inline constexpr Detail::ExtendAllFieldAdapterClosure extend_all_to;
+inline constexpr Detail::ReshapedFieldAdapterClosure reshape_to;
+inline constexpr Detail::SubFieldAdapter as_sub_field;
 
 }  // namespace FieldTransformation
 
