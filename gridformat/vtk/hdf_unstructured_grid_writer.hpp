@@ -163,10 +163,8 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
                 return _get_last_step_data(file, {"", "PointOffsets"});
         }
         const auto coords_field = VTK::make_coordinates_field<CT>(this->grid(), false);
-        std::vector<std::array<CT, vtk_space_dim>> coords(number_of_points(this->grid()));
-        coords_field->export_to(coords);
         const auto offset = _get_current_offset(file, {"VTKHDF", "Points"});
-        _write_point_field(file, {"VTKHDF", "Points"}, coords, context);
+        _write_point_field(file, {"VTKHDF", "Points"}, *coords_field, context);
         return offset;
     }
 
@@ -227,9 +225,8 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
             }
 
             auto field_ptr = this->_get_meta_data_field_ptr(name);
-            _visit_field_values(*field_ptr, [&] <typename T> (T&& values) {
-                file.write(std::array{std::forward<T>(values)}, {"VTKHDF/FieldData", name});
-            });
+            TransformedField sub{field_ptr, FieldTransformation::as_sub_field};
+            file.write(sub, {"VTKHDF/FieldData", name});
         });
     }
 
@@ -241,8 +238,8 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
                     _get_current_offset(file, {"VTKHDF/PointData", name}),
                     {"VTKHDF/Steps/PointDataOffsets", name}
                 );
-            auto field_ptr = VTK::make_vtk_field(this->_get_point_field_ptr(name));
-            _write_point_field(file, {"VTKHDF/PointData", name}, *field_ptr, context);
+            auto reshaped = _reshape(VTK::make_vtk_field(this->_get_point_field_ptr(name)));
+            _write_point_field(file, {"VTKHDF/PointData", name}, *reshaped, context);
         });
     }
 
@@ -254,9 +251,20 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
                     _get_current_offset(file, {"VTKHDF/CellData", name}),
                     {"VTKHDF/Steps/CellDataOffsets", name}
                 );
-            auto field_ptr = VTK::make_vtk_field(this->_get_cell_field_ptr(name));
-            _write_cell_field(file, {"VTKHDF/CellData", name}, *field_ptr, context);
+            auto reshaped = _reshape(VTK::make_vtk_field(this->_get_cell_field_ptr(name)));
+            _write_cell_field(file, {"VTKHDF/CellData", name}, *reshaped, context);
         });
+    }
+
+    FieldPtr _reshape(FieldPtr field_ptr) const {
+        // VTK requires tensors to be written as flat fields
+        const auto layout = field_ptr->layout();
+        if (layout.dimension() > 2)
+            return make_field_ptr(ReshapedField{
+                field_ptr,
+                MDLayout{{layout.extent(0), layout.number_of_entries(1)}}
+            });
+        return field_ptr;
     }
 
     template<Concepts::Scalar T>
@@ -284,81 +292,40 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
                             const DataSetPath& path,
                             const Field& field,
                             const IOContext& context) const {
-        _visit_field_values(field, [&] <typename T> (const T& values) {
-            _write_field<true>(file, path, values, context);
-        });
+        _write_field(file, path, field, context.is_parallel, context.my_point_offset, context.num_points_total);
     }
 
     void _write_cell_field(HDF5File& file,
                            const DataSetPath& path,
                            const Field& field,
                            const IOContext& context) const {
-        _visit_field_values(field, [&] <typename T> (const T& values) {
-            _write_field<false>(file, path, values, context);
-        });
+        _write_field(file, path, field, context.is_parallel, context.my_cell_offset, context.num_cells_total);
     }
 
-    template<typename FieldValues>
-    void _write_point_field(HDF5File& file,
-                            const DataSetPath& path,
-                            const FieldValues& values,
-                            const IOContext& context) const {
-        _write_field<true>(file, path, values, context);
-    }
-
-    template<typename FieldValues>
-    void _write_cell_field(HDF5File& file,
-                           const DataSetPath& path,
-                           const FieldValues& values,
-                           const IOContext& context) const {
-        _write_field<false>(file, path, values, context);
-    }
-
-    template<bool is_point_field, typename FieldValues>
     void _write_field(HDF5File& file,
                       const DataSetPath& path,
-                      const FieldValues& values,
-                      const IOContext& context) const {
-        if (context.is_parallel) {
-            const auto layout = get_md_layout(values);
+                      const Field& field,
+                      bool is_parallel,
+                      std::size_t main_offset,
+                      std::size_t main_size) const {
+        if (is_parallel) {
+            const auto layout = field.layout();
             std::vector<std::size_t> count(layout.dimension());
             layout.export_to(count);
 
             std::vector<std::size_t> size = count;
             std::vector<std::size_t> offset(layout.dimension(), 0);
-            offset.at(0) = is_point_field ? context.my_point_offset : context.my_cell_offset;
-            size.at(0) = is_point_field ? context.num_points_total : context.num_cells_total;
+            offset.at(0) = main_offset;
+            size.at(0) = main_size;
 
-            file.write(values, path, {
+            file.write(field, path, {
                 .total_size = size,
                 .offset = offset,
                 .count = count
             });
         } else {
-            file.write(values, path);
+            file.write(field, path);
         }
-    }
-
-    template<typename Visitor>
-    void _visit_field_values(const Field& field, const Visitor& visitor) const {
-        field.precision().visit([&] <typename T> (const Precision<T>&) {
-            const auto layout = field.layout();
-            if (layout.dimension() == 1) {
-                std::vector<T> data(layout.extent(0));
-                field.export_to(data);
-                visitor(data);
-            } else if (layout.dimension() == 2) {
-                std::vector<Vector<T>> data(layout.extent(0));
-                field.export_to(data);
-                visitor(data);
-            } else if (layout.dimension() == 3) {
-                std::vector<Tensor<T>> data(layout.extent(0));
-                field.export_to(data);
-                visitor(data);
-            } else {
-                throw NotImplemented("Support for fields with dimension > 3 or < 1");
-            }
-        });
     }
 
     std::size_t _accumulate_rank_offset(std::size_t my_size) const {
