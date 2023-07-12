@@ -34,8 +34,8 @@ namespace GridFormat {
 
 //! Options that writer implementations can pass to the base class.
 struct WriterOptions {
-    bool use_structured_grid_ordering;
-    bool append_null_terminator_to_strings;
+    bool use_structured_grid_ordering;  //!< Use row-major structured grid ordering
+    bool append_null_terminator_to_strings;  //!< If true, '\0' is appended to string meta data
 
     bool operator==(const WriterOptions& other) const {
         return use_structured_grid_ordering == other.use_structured_grid_ordering
