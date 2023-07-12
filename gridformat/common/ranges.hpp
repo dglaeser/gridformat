@@ -136,8 +136,9 @@ inline constexpr auto to_array(const R& r) {
     const std::size_t range_size = size(r);
 
     using ValueType = std::conditional_t<std::is_same_v<T, Automatic>, std::ranges::range_value_t<R>, T>;
-    auto result = filled_array<result_size, ValueType>();
+    std::array<ValueType, result_size> result;
     std::ranges::copy_n(std::ranges::begin(r), std::min(range_size, result_size), result.begin());
+    std::ranges::fill_n(result.begin() + range_size, result_size - range_size, ValueType{0});
     return result;
 }
 
