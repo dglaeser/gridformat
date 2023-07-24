@@ -74,6 +74,23 @@ namespace GridTypeTraitsDetail {
         static constexpr std::size_t value = _dimension();
     };
 
+    template<typename T>
+    struct SpaceDimension;
+
+    template<typename T>
+        requires(is_complete<Dimension<T>>)
+    struct SpaceDimension<T>
+    : public std::integral_constant<std::size_t, Dimension<T>::value>
+    {};
+
+    template<typename T>
+        requires(is_incomplete<Dimension<T>> and
+                 GridDetail::ExposesPointCoordinates<T> and
+                 has_static_size<GridDetail::PointCoordinates<T>>)
+    struct SpaceDimension<T>
+    : public std::integral_constant<std::size_t, static_size<GridDetail::PointCoordinates<T>>>
+    {};
+
 }  // namespace GridTypeTraitsDetail
 #endif  // DOXYGEN
 
@@ -92,8 +109,11 @@ using CoordinateType = typename GridTypeTraitsDetail::CoordinateType<T>::type;
 template<typename T> requires(is_complete<GridTypeTraitsDetail::Dimension<T>>)
 inline constexpr std::size_t dimension = GridTypeTraitsDetail::Dimension<T>::value;
 
+template<typename T> requires(is_complete<GridTypeTraitsDetail::SpaceDimension<T>>)
+inline constexpr std::size_t space_dimension = GridTypeTraitsDetail::SpaceDimension<T>::value;
+
 //! \} group Grid
 
-}
+}  // namespace GridFormat
 
 #endif  // GRIDFORMAT_GRID_TYPE_TRAITS_HPP_
