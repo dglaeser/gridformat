@@ -17,6 +17,15 @@ if (IS_DIRECTORY "${ut_SOURCE_DIR}")
     set_property(DIRECTORY ${ut_SOURCE_DIR} PROPERTY EXCLUDE_FROM_ALL YES)
 endif ()
 
+find_package(Python COMPONENTS Interpreter)
+if (Python_FOUND)
+    message(STATUS "Preparing test vtk files")
+    execute_process(
+        COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/make_test_files.py
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+        COMMAND_ECHO STDOUT
+    )
+endif ()
 
 add_custom_target(build_tests)
 function(gridformat_set_test_props NAME)
@@ -77,7 +86,6 @@ function(gridformat_add_test_if CONDITION NAME SOURCE)
 endfunction()
 
 
-find_package(Python COMPONENTS Interpreter)
 function(gridformat_add_regression_test NAME SOURCE REGEX)
     cmake_parse_arguments(EXTRA_ARGS "" "SCRIPT_ARGS" "" "${ARGN}")
     if (NOT Python_Interpreter_FOUND OR GRIDFORMAT_SKIP_REGRESSION)
