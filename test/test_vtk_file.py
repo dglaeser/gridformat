@@ -1,7 +1,8 @@
 # SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 # SPDX-License-Identifier: MIT
 
-from os.path import splitext
+import sys
+from os.path import splitext, dirname, abspath
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from typing import Callable, Tuple, List
@@ -10,13 +11,15 @@ from xml.etree import ElementTree
 from numpy import array, ndarray, sum as np_sum
 from sys import exit
 
+from test_function import TestFunction
 try:
+    # remove us from the path because there is the test folder 'vtk'
+    sys.path.remove(dirname(abspath(__file__)))
     import vtk
     HAVE_VTK = True
 except ImportError:
     HAVE_VTK = False
 
-from test_function import TestFunction
 
 
 class VTKErrorObserver:
