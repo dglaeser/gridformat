@@ -5,7 +5,7 @@ from os.path import splitext
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from typing import Callable, Tuple, List
-from math import sin, cos, sqrt, isclose
+from math import sqrt, isclose
 from xml.etree import ElementTree
 from numpy import array, ndarray, sum as np_sum
 from sys import exit
@@ -16,21 +16,7 @@ try:
 except ImportError:
     HAVE_VTK = False
 
-
-class _TestFunction:
-    def __init__(self, scaling: float = 1.0) -> None:
-        self._scaling = scaling
-
-    def __call__(self, point: list[float]) -> float:
-        result = 10.0*sin(point[0])
-        if len(point) > 1:
-            result *= cos(point[1])
-        if len(point) > 2:
-            result *= point[2] + 1.0
-        return result*self._scaling
-
-    def set_time(self, value: float) -> None:
-        self._scaling = value
+from test_function import TestFunction
 
 
 class VTKErrorObserver:
@@ -56,15 +42,6 @@ class VTKErrorObserver:
 class _TimeStep:
     filename: str
     time: float
-
-
-def _add_points(p0: tuple, p1: tuple) -> tuple:
-        assert len(p0) == len(p1)
-        return tuple(p0[i] + p1[i] for i in range(len(p0)))
-
-
-def _scale_point(p: tuple, factor: float) -> tuple:
-    return tuple(p[i]*factor for i in range(len(p)))
 
 
 def _restrict_to_space_dim(point: tuple, space_dim: int) -> tuple:
@@ -241,10 +218,10 @@ def test(filename: str, skip_metadata: bool = False) -> int | None:
     if ext == ".pvd":
         for timestep in _read_pvd_pieces(filename):
             print(f"Comparing timestep '{timestep.time}' in file {timestep.filename}")
-            _test_vtk(timestep.filename, skip_metadata, _TestFunction(float(timestep.time)))
+            _test_vtk(timestep.filename, skip_metadata, TestFunction(float(timestep.time)))
     else:
         print(f"Comparing file '{filename}'")
-        _test_vtk(filename, skip_metadata, _TestFunction())
+        _test_vtk(filename, skip_metadata, TestFunction())
 
 
 if __name__ == "__main__":
