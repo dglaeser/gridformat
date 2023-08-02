@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <algorithm>
 #include <span>
+#include <bit>
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
@@ -86,6 +87,32 @@ class Serialization {
 
     std::vector<std::byte> _data;
 };
+
+
+//! Options for converting between byte orders
+struct ByteOrderConversionOptions {
+    std::endian from;
+    std::endian to = std::endian::native;
+};
+
+
+//! Convert the byte order of all values in a span
+template<Concepts::Scalar T>
+void change_byte_order(std::span<T> values, const ByteOrderConversionOptions& opts) {
+    if (opts.from == opts.to)
+        return;
+
+    std::size_t offset = 0;
+    std::array<std::byte, sizeof(T)> buffer;
+    auto bytes = std::as_writable_bytes(values);
+    while (offset < bytes.size()) {
+        std::ranges::copy_n(bytes.data() + offset, sizeof(T), buffer.begin());
+        std::ranges::reverse(buffer);
+        std::ranges::copy(buffer, bytes.data() + offset);
+        offset += sizeof(T);
+    }
+}
+
 
 }  // namespace GridFormat
 
