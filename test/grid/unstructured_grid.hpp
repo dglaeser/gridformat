@@ -10,6 +10,7 @@
 #include <ranges>
 #include <random>
 #include <algorithm>
+#include <optional>
 
 #include <gridformat/grid/traits.hpp>
 #include <gridformat/grid/cell_type.hpp>
@@ -59,10 +60,12 @@ class UnstructuredGrid {
     using Cell = Test::Cell;
 
     UnstructuredGrid(std::vector<Point>&& points,
-                     std::vector<Cell>&& cells)
+                     std::vector<Cell>&& cells,
+                     bool do_shuffle = true)
     : _points(std::move(points))
     , _cells(std::move(cells)) {
-        shuffle();
+        if (do_shuffle)
+            shuffle();
     }
 
     const auto& points() const { return _points; }
@@ -105,27 +108,36 @@ class UnstructuredGrid {
 
 
 template<int space_dim = 1>
-auto make_unstructured_0d() {
+auto make_unstructured_0d(std::optional<int> rank = {}) {
+    if (!rank)
+        return UnstructuredGrid<0, space_dim>{
+            {
+                Point<space_dim>::make_from_value(0.0, 0),
+                Point<space_dim>::make_from_value(1.0, 1),
+                Point<space_dim>::make_from_value(3.0, 2)
+            },
+            {
+                {{0}, CellType::vertex, 0},
+                {{1}, CellType::vertex, 1},
+                {{2}, CellType::vertex, 2}
+            }
+        };
     return UnstructuredGrid<0, space_dim>{
-        {
-            Point<space_dim>::make_from_value(0.0, 0),
-            Point<space_dim>::make_from_value(1.0, 1),
-            Point<space_dim>::make_from_value(3.0, 2)
-        },
-        {
-            {{0}, CellType::vertex, 0},
-            {{1}, CellType::vertex, 1},
-            {{2}, CellType::vertex, 2}
-        }
+        {Point<space_dim>::make_from_value(static_cast<double>(rank.value()), 0)},
+        {{{0}, CellType::vertex, 0}}
     };
 }
 
 template<int space_dim = 1>
-auto make_unstructured_1d(std::size_t num_cells = 10) {
+auto make_unstructured_1d(std::optional<int> rank = {}) {
+    const std::size_t num_cells = 10;
+    const auto dx = 1.0/static_cast<double>(num_cells);
+    const double offset = rank ? static_cast<double>(rank.value()) : 0.0;
+
     std::vector<Point<space_dim>> points;
     points.reserve(num_cells + 1);
     for (std::size_t i = 0; i < num_cells + 1; ++i)
-        points.emplace_back(Point<space_dim>::make_from_value(static_cast<double>(i), i));
+        points.emplace_back(Point<space_dim>::make_from_value(offset + dx*static_cast<double>(i), i));
 
     std::vector<Cell> cells;
     cells.reserve(num_cells);
@@ -136,7 +148,7 @@ auto make_unstructured_1d(std::size_t num_cells = 10) {
 }
 
 template<int space_dim = 2>
-auto make_unstructured_2d() {
+auto make_unstructured_2d(std::optional<int> rank = {}) {
     static_assert(space_dim == 2 || space_dim == 3);
     const auto _make_point = [] (const std::array<double, 2>& vals, std::size_t id) {
         if constexpr (space_dim == 2)
@@ -145,56 +157,83 @@ auto make_unstructured_2d() {
             return Point<space_dim>{{vals[0], vals[1], 0.0}, id};
     };
 
+    if (!rank)
+        return UnstructuredGrid<2, space_dim>{
+            {
+                _make_point({0.0, 0.0}, 0),
+                _make_point({1.0, 0.0}, 1),
+                _make_point({1.0, 1.0}, 2),
+                _make_point({0.0, 1.0}, 3),
+                _make_point({2.0, 1.0}, 4),
+                _make_point({2.0, 0.0}, 5),
+                _make_point({2.5, 0.25}, 6),
+                _make_point({2.75, 0.5}, 7),
+                _make_point({2.5, 0.75}, 8)
+            },
+            {
+                {{0, 1, 2, 3}, CellType::quadrilateral, 0},
+                {{1, 2, 4}, CellType::triangle, 1},
+                {{4, 5, 6, 7, 8}, CellType::polygon, 2}
+            }
+        };
+    const auto offset = static_cast<double>(rank.value());
     return UnstructuredGrid<2, space_dim>{
         {
-            _make_point({0.0, 0.0}, 0),
-            _make_point({1.0, 0.0}, 1),
-            _make_point({1.0, 1.0}, 2),
-            _make_point({0.0, 1.0}, 3),
-            _make_point({2.0, 1.0}, 4),
-            _make_point({2.0, 0.0}, 5),
-            _make_point({2.5, 0.25}, 6),
-            _make_point({2.75, 0.5}, 7),
-            _make_point({2.5, 0.75}, 8)
+            _make_point({offset + 0.0, 0.0}, 0),
+            _make_point({offset + 1.0, 0.0}, 1),
+            _make_point({offset + 1.0, 1.0}, 2),
+            _make_point({offset + 0.0, 1.0}, 3),
         },
-        {
-            {{0, 1, 2, 3}, CellType::quadrilateral, 0},
-            {{1, 2, 4}, CellType::triangle, 1},
-            {{4, 5, 6, 7, 8}, CellType::polygon, 2}
-        }
+        {{{0, 1, 2, 3}, CellType::quadrilateral, 0}}
     };
 }
 
-auto make_unstructured_3d() {
+auto make_unstructured_3d(std::optional<int> rank = {}) {
+    if (!rank)
+        return UnstructuredGrid<3, 3>{
+            {
+                {{0.0, 0.0, 0.0}, 0},
+                {{1.0, 0.0, 0.0}, 1},
+                {{1.0, 1.0, 0.0}, 2},
+                {{0.0, 1.0, 0.0}, 3},
+                {{0.0, 0.0, 1.0}, 4},
+                {{1.0, 0.0, 1.0}, 5},
+                {{1.0, 1.0, 1.0}, 6},
+                {{0.0, 1.0, 1.0}, 7},
+                {{2.0, 1.0, 1.0}, 8},
+                {{1.0, 2.0, 1.0}, 9},
+                {{2.0, 2.0, 2.0}, 10}
+            },
+            {
+                {{0, 1, 2, 3, 4, 5, 6, 7}, CellType::hexahedron, 0},
+                {{6, 8, 9, 10}, CellType::tetrahedron, 1}
+            }
+        };
+    // make one cell in distributed grid
+    const auto offset = static_cast<double>(rank.value());
     return UnstructuredGrid<3, 3>{
         {
-            {{0.0, 0.0, 0.0}, 0},
-            {{1.0, 0.0, 0.0}, 1},
-            {{1.0, 1.0, 0.0}, 2},
-            {{0.0, 1.0, 0.0}, 3},
-            {{0.0, 0.0, 1.0}, 4},
-            {{1.0, 0.0, 1.0}, 5},
-            {{1.0, 1.0, 1.0}, 6},
-            {{0.0, 1.0, 1.0}, 7},
-            {{2.0, 1.0, 1.0}, 8},
-            {{1.0, 2.0, 1.0}, 9},
-            {{2.0, 2.0, 2.0}, 10}
+            {{offset + 0.0, 0.0, 0.0}, 0},
+            {{offset + 1.0, 0.0, 0.0}, 1},
+            {{offset + 1.0, 1.0, 0.0}, 2},
+            {{offset + 0.0, 1.0, 0.0}, 3},
+            {{offset + 0.0, 0.0, 1.0}, 4},
+            {{offset + 1.0, 0.0, 1.0}, 5},
+            {{offset + 1.0, 1.0, 1.0}, 6},
+            {{offset + 0.0, 1.0, 1.0}, 7},
         },
-        {
-            {{0, 1, 2, 3, 4, 5, 6, 7}, CellType::hexahedron, 0},
-            {{6, 8, 9, 10}, CellType::tetrahedron, 1}
-        }
+        {{{0, 1, 2, 3, 4, 5, 6, 7}, CellType::hexahedron, 0}}
     };
 }
 
 template<std::size_t dim, std::size_t space_dim>
-auto make_unstructured() {
+auto make_unstructured(std::optional<int> rank = {}) {
     static_assert(dim >= 0 && dim <= 3);
     static_assert(dim <= space_dim);
-    if constexpr (dim == 0) return make_unstructured_0d<space_dim>();
-    if constexpr (dim == 1) return make_unstructured_1d<space_dim>();
-    if constexpr (dim == 2) return make_unstructured_2d<space_dim>();
-    if constexpr (dim == 3) return make_unstructured_3d();
+    if constexpr (dim == 0) return make_unstructured_0d<space_dim>(rank);
+    if constexpr (dim == 1) return make_unstructured_1d<space_dim>(rank);
+    if constexpr (dim == 2) return make_unstructured_2d<space_dim>(rank);
+    if constexpr (dim == 3) return make_unstructured_3d(rank);
 }
 
 }  // namespace Test

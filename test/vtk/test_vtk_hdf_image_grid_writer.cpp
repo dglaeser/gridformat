@@ -11,18 +11,21 @@
 #include "../make_test_data.hpp"
 
 template<typename Grid>
-void _test(Grid&& grid, const std::string& base_filename) {
-    GridFormat::VTKHDFWriter writer{grid};
-    auto test_data = GridFormat::Test::make_test_data<GridFormat::dimension<Grid>, double>(grid);
+void _test(Grid&& grid, const std::string& filename) {
     // TODO: There is a (fixed) issue in the vtkHDFReader when reading cell arrays from image grids:
     //       see https://gitlab.kitware.com/vtk/vtk/-/issues/18860
     //       Once this is in a release version we should also add cell data
-    // GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
-    GridFormat::Test::add_test_point_data(writer, test_data, GridFormat::Precision<float>{});
-    GridFormat::Test::add_meta_data(writer);
-    std::cout << "Wrote '"
-              << GridFormat::as_highlight(writer.write(base_filename))
-              << "'" << std::endl;
+    // TODO: There is an issue with field data (https://gitlab.kitware.com/vtk/vtk/-/issues/19030)
+    //       Once fixed, add meta data as well
+    GridFormat::VTKHDFWriter writer{grid};
+    GridFormat::Test::write_test_file<GridFormat::dimension<Grid>>(
+        writer,
+        filename,
+        {
+            .write_cell_data = false,
+            .write_meta_data = false
+        }
+    );
 }
 
 int main() {
