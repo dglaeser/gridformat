@@ -106,33 +106,33 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
         FieldStorage vtk_cell_fields;
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             vtk_point_fields.set(name, VTK::make_vtk_field(this->_get_point_field_ptr(name)));
-            this->_set_data_array(context, "Piece.PointData", name, vtk_point_fields.get(name));
+            this->_set_data_array(context, "Piece/PointData", name, vtk_point_fields.get(name));
         });
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
             vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_cell_field_ptr(name)));
-            this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
+            this->_set_data_array(context, "Piece/CellData", name, vtk_cell_fields.get(name));
         });
 
         const FieldPtr coords_field = std::visit([&] <typename T> (const Precision<T>&) {
             return VTK::make_coordinates_field<T>(this->grid(), false);
         }, this->_xml_settings.coordinate_precision);
-        this->_set_data_array(context, "Piece.Points", "Coordinates", *coords_field);
+        this->_set_data_array(context, "Piece/Points", "Coordinates", *coords_field);
 
         const auto point_id_map = make_point_id_map(this->grid());
         const auto verts_connectivity_field = _make_connectivity_field(verts_range, point_id_map);
         const auto verts_offsets_field = _make_offsets_field(verts_range);
-        this->_set_data_array(context, "Piece.Verts", "connectivity", *verts_connectivity_field);
-        this->_set_data_array(context, "Piece.Verts", "offsets", *verts_offsets_field);
+        this->_set_data_array(context, "Piece/Verts", "connectivity", *verts_connectivity_field);
+        this->_set_data_array(context, "Piece/Verts", "offsets", *verts_offsets_field);
 
         const auto lines_connectivity_field = _make_connectivity_field(lines_range, point_id_map);
         const auto lines_offsets_field = _make_offsets_field(lines_range);
-        this->_set_data_array(context, "Piece.Lines", "connectivity", *lines_connectivity_field);
-        this->_set_data_array(context, "Piece.Lines", "offsets", *lines_offsets_field);
+        this->_set_data_array(context, "Piece/Lines", "connectivity", *lines_connectivity_field);
+        this->_set_data_array(context, "Piece/Lines", "offsets", *lines_offsets_field);
 
         const auto polys_connectivity_field = _make_connectivity_field(polys_range, point_id_map);
         const auto polys_offsets_field = _make_offsets_field(polys_range);
-        this->_set_data_array(context, "Piece.Polys", "connectivity", *polys_connectivity_field);
-        this->_set_data_array(context, "Piece.Polys", "offsets", *polys_offsets_field);
+        this->_set_data_array(context, "Piece/Polys", "connectivity", *polys_connectivity_field);
+        this->_set_data_array(context, "Piece/Polys", "offsets", *polys_offsets_field);
 
         this->_write_xml(std::move(context), s);
     }

@@ -285,7 +285,7 @@ class XMLWriterBase
                             auto& array = field_data.add_child("DataArray");
                             array.set_attribute("Name", name);
                             array.set_attribute("format", data_format_name(encoder, data_format));
-                            if (precision.template is<char>()) {
+                            if (precision.template is<char>() && layout.dimension() == 1) {
                                 array.set_attribute("type", "String");
                                 array.set_attribute("NumberOfTuples", 1);
                             } else {
@@ -312,7 +312,7 @@ class XMLWriterBase
                         std::string_view xml_group,
                         const std::string& attr_name,
                         const ValueType& attr_value) const {
-        _access_element(context, _get_element_names(xml_group)).set_attribute(attr_name, attr_value);
+        _access_at(xml_group, context).set_attribute(attr_name, attr_value);
     }
 
     void _set_data_array(WriteContext& context,
@@ -320,7 +320,7 @@ class XMLWriterBase
                          std::string data_array_name,
                          const Field& field) const {
         const auto layout = field.layout();
-        XMLElement& da = _access_element(context, _get_element_names(xml_group)).add_child("DataArray");
+        XMLElement& da = _access_at(xml_group, context).add_child("DataArray");
         da.set_attribute("Name", std::move(data_array_name));
         da.set_attribute("type", attribute_name(field.precision()));
         da.set_attribute("NumberOfComponents", (layout.dimension() == 1 ? 1 : layout.number_of_entries(1)));
@@ -353,25 +353,8 @@ class XMLWriterBase
             app.add(std::move(c));
     }
 
-    XMLElement& _access_element(WriteContext& context, const std::vector<std::string>& sub_elem_names) const {
-        XMLElement* element = &context.xml_representation.get_child(context.vtk_grid_type);
-        for (const auto& element_name : sub_elem_names)
-            element = element->has_child(element_name) ? &element->get_child(element_name)
-                                                       : &element->add_child(element_name);
-        return *element;
-    }
-
-    std::vector<std::string> _get_element_names(std::string_view elements) const {
-        std::vector<std::string> result;
-        std::ranges::for_each(
-            std::views::split(elements, '.'),
-            [&] (const std::ranges::range auto& word) {
-                std::string word_str;
-                std::ranges::copy(word, std::back_inserter(word_str));
-                result.push_back(word_str);
-            }
-        );
-        return result;
+    XMLElement& _access_at(std::string_view path, WriteContext& context) const {
+        return access_or_create_at(path, context.xml_representation.get_child(context.vtk_grid_type));
     }
 
     void _write_xml(WriteContext&& context, std::ostream& s) const {
@@ -389,13 +372,10 @@ class XMLWriterBase
 
     void _set_default_active_fields(XMLElement& xml) const {
         const auto set = [&] (std::string_view group, const auto& attr, const auto& name) -> void {
-            XMLElement* element = &xml;
-            for (const auto& element_name : _get_element_names(group)) {
-                if (!element->has_child(element_name))
-                    return;
-                element = &element->get_child(element_name);
-            }
-            element->set_attribute(attr, name);
+            auto group_element = access_at(group, xml);
+            if (!group_element)
+                return;
+            group_element.unwrap().set_attribute(attr, name);
         };
 
         for (std::string_view group : {"Piece.PointData", "PPointData"})
