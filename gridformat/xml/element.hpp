@@ -14,7 +14,6 @@
 #include <iterator>
 #include <string_view>
 #include <type_traits>
-#include <cassert>
 #include <memory>
 #include <list>
 #include <any>
@@ -118,19 +117,23 @@ class XMLElement : public XMLTag {
     }
 
     XMLElement& get_child(std::string_view child_name) {
-        assert(has_child(child_name));
-        return *std::ranges::find_if(
+        auto it = std::ranges::find_if(
             _children,
             Detail::_child_find_lambda<XMLElement>(child_name)
         );
+        if (it == _children.end())
+            throw ValueError("XMLElement has no child '" + std::string{child_name} + "'");
+        return *it;
     }
 
     const XMLElement& get_child(std::string_view child_name) const {
-        assert(has_child(child_name));
-        return *std::ranges::find_if(
+        auto it = std::ranges::find_if(
             _children,
             Detail::_child_find_lambda<XMLElement>(child_name)
         );
+        if (it == _children.end())
+            throw ValueError("XMLElement has no child '" + std::string{child_name} + "'");
+        return *it;
     }
 
     std::size_t num_children() const {
@@ -152,7 +155,8 @@ class XMLElement : public XMLTag {
 
     template<typename T>
     T get_content() const {
-        assert(has_content());
+        if (!has_content())
+            throw ValueError("XMLElement has no content");
         return std::any_cast<T>(_content->get_as_any());
     }
 
