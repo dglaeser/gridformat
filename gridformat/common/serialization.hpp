@@ -14,6 +14,7 @@
 #include <span>
 
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/precision.hpp>
 #include <gridformat/common/concepts.hpp>
 
 namespace GridFormat {
@@ -41,20 +42,25 @@ class Serialization {
         return result;
     }
 
-    std::size_t size() const { return _data.size(); }
-    void resize(std::size_t size, Byte value = Byte{0}) { _data.resize(size, value); }
-
     std::span<std::byte> as_span() { return {_data}; }
     std::span<const std::byte> as_span() const { return {_data}; }
 
+    std::size_t size() const {
+        return _data.size();
+    }
+
+    void resize(std::size_t size, Byte value = Byte{0}) {
+        _data.resize(size, value);
+    }
+
     template<Concepts::Scalar T>
-    std::span<T> as_span_of() {
+    std::span<T> as_span_of(const Precision<T>& = {}) {
         _check_valid_cast<T>();
         return std::span{reinterpret_cast<T*>(_data.data()), _data.size()/sizeof(T)};
     }
 
     template<Concepts::Scalar T>
-    std::span<std::add_const_t<T>> as_span_of() const {
+    std::span<std::add_const_t<T>> as_span_of(const Precision<T>& = {}) const {
         _check_valid_cast<T>();
         return std::span{reinterpret_cast<std::add_const_t<T>*>(_data.data()), _data.size()/sizeof(T)};
     }
