@@ -53,6 +53,15 @@ class Serialization {
         _data.resize(size, value);
     }
 
+    void cut_front(std::size_t number_of_bytes) {
+        if (number_of_bytes > size())
+            throw ValueError("Cannot cut more bytes than stored");
+        const auto new_size = _data.size() - number_of_bytes;
+        std::span trail{_data.data() + number_of_bytes, new_size};
+        std::ranges::move(trail, _data.begin());
+        _data.resize(new_size);
+    }
+
     template<Concepts::Scalar T>
     std::span<T> as_span_of(const Precision<T>& = {}) {
         _check_valid_cast<T>();
