@@ -11,20 +11,24 @@
 #include <utility>
 #include <string>
 #include <ostream>
+#include <iterator>
 #include <string_view>
+#include <type_traits>
 #include <cassert>
 #include <memory>
 #include <list>
 #include <any>
 
+#include <gridformat/common/path.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/indentation.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/optional_reference.hpp>
 #include <gridformat/xml/tag.hpp>
 
 namespace GridFormat {
 
-#ifndef DOXYGEN_SKIP_DETAILS
+#ifndef DOXYGEN
 namespace Detail {
 
     template<typename Child>
@@ -33,7 +37,7 @@ namespace Detail {
     }
 
 }  // end namespace Detail
-#endif  // DOXYGEN_SKIP_DETAILS
+#endif  // DOXYGEN
 
 /*!
  * \ingroup XML
@@ -171,7 +175,53 @@ class XMLElement : public XMLTag {
     std::unique_ptr<Content> _content{nullptr};
 };
 
-#ifndef DOXYGEN_SKIP_DETAILS
+
+/*!
+ * \ingroup XML
+ * \brief Return a reference to the element resulting from successively
+ *        accessing the child elements as given by the provided path.
+ * \param path The relative path starting from the given element
+ * \param element The element at which to start traversing
+ * \param delimiter The delimiter used to separate path entries.
+ * \note If an element has multiple children with the same (matching) name,
+ *       the first one will be selected.
+ */
+template<typename Element> requires(std::same_as<XMLElement, std::remove_cvref_t<Element>>)
+OptionalReference<Element> access_at(std::string_view path, Element& element, char delimiter = '/') {
+    if (path == "")
+        return OptionalReference<Element>{element};
+    Element* result = &element;
+    for (const auto& name : Path::elements_of(path, delimiter)) {
+        if (!result->has_child(name))
+            return {};
+        result = &result->get_child(name);
+    }
+    return OptionalReference<Element>{*result};
+}
+
+/*!
+ * \ingroup XML
+ * \brief Return a reference to the element resulting from successively
+ *        accessing or creating the child elements as given by the provided path.
+ * \param path The relative path starting from the given element
+ * \param element The element at which to start traversing
+ * \param delimiter The delimiter used to separate path entries.
+ * \note If an element has multiple children with the same (matching) name,
+ *       the first one will be selected.
+ */
+XMLElement& access_or_create_at(std::string_view path, XMLElement& element, char delimiter = '/') {
+    if (path == "")
+        return element;
+    XMLElement* result = &element;
+    std::ranges::for_each(Path::elements_of(path, delimiter), [&] (const auto& name) {
+        result = result->has_child(name) ? &result->get_child(name)
+                                         : &result->add_child(name);
+    });
+    return *result;
+}
+
+
+#ifndef DOXYGEN
 namespace XML::Detail {
 
 void write_xml_tag_open(const XMLElement& e,
@@ -232,7 +282,7 @@ void write_xml_element(const XMLElement& e,
 }
 
 }  // end namespace XML::Detail
-#endif  // DOXYGEN_SKIP_DETAILS
+#endif  // DOXYGEN
 
 inline void write_xml(const XMLElement& e,
                       std::ostream& s,
