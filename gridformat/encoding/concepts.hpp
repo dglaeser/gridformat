@@ -9,9 +9,11 @@
 #define GRIDFORMAT_ENCODING_CONCEPTS_HPP_
 
 #include <cstddef>
+#include <istream>
 #include <span>
 
 #include <gridformat/common/concepts.hpp>
+#include <gridformat/common/serialization.hpp>
 
 namespace GridFormat::Concepts {
 
@@ -23,6 +25,18 @@ namespace GridFormat::Concepts {
 template<typename T, typename S>
 concept Encoder = requires(const T& encoder, S& stream) {
     { encoder(stream) } -> WriterFor<std::span<const std::byte>>;
+};
+
+/*!
+ * \ingroup Encoding
+ * \brief Decoders allow decoding spans of characters or directly from an input stream.
+ */
+template<typename T>
+concept Decoder = requires(const T& decoder,
+                           std::istream& input_stream,
+                           std::span<char> characters) {
+    { decoder.decode(characters) } -> std::convertible_to<std::size_t>;
+    { decoder.decode_from(input_stream, std::size_t{}) } -> std::same_as<Serialization>;
 };
 
 }  // namespace GridFormat::Concepts
