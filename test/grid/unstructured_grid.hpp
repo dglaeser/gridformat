@@ -106,6 +106,39 @@ class UnstructuredGrid {
     std::vector<Cell> _cells;
 };
 
+template<std::size_t max_dim, std::size_t space_dim>
+class UnstructuredGridFactory {
+ public:
+    using ctype = double;
+    using Grid = UnstructuredGrid<max_dim, space_dim>;
+
+    void insert_cell(GridFormat::CellType ct, const std::vector<std::size_t>& corners) {
+        _cells.emplace_back(typename Grid::Cell{
+            .corners = corners,
+            .cell_type = ct,
+            .id = _cells.size()
+        });
+    }
+
+    template<std::size_t dim>
+    void insert_point(const std::array<ctype, dim>& point) {
+        auto p = Ranges::filled_array<space_dim>(ctype{0.0});
+        std::copy_n(point.begin(), std::min(dim, space_dim), p.begin());
+        _points.emplace_back(typename Grid::Point{
+            .coordinates = std::move(p),
+            .id = _points.size()
+        });
+    }
+
+    Grid grid() && {
+        return {std::move(_points), std::move(_cells), false};
+    }
+
+ private:
+    std::vector<typename Grid::Point> _points;
+    std::vector<typename Grid::Cell> _cells;
+};
+
 
 template<int space_dim = 1>
 auto make_unstructured_0d(std::optional<int> rank = {}) {
