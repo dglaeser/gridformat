@@ -44,9 +44,10 @@ struct WriterOptions {
 };
 
 //! Base class for all writer implementations.
-template<typename Grid>
+template<typename G>
 class GridWriterBase {
  public:
+    using Grid = G;
     using Field = typename FieldStorage::Field;
     using FieldPtr = typename FieldStorage::FieldPtr;
 
