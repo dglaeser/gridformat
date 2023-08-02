@@ -22,6 +22,19 @@ gridformat_add_regression_test_if(
     test_vtk_hdf_unstructured_grid_writer.cpp
     "vtk_hdf_unstructured*hdf"
 )
+gridformat_add_regression_test_if(
+    GRIDFORMAT_HAVE_HIGH_FIVE
+    test_vtk_hdf_unstructured_grid_reader
+    test_vtk_hdf_unstructured_grid_reader.cpp
+    "reader_vtk_hdf_unstructured_test*hdf"
+)
+
+gridformat_add_parallel_test_if(
+    GRIDFORMAT_HAVE_HIGH_FIVE
+    test_vtk_hdf_parallel_unstructured_grid_reader
+    test_vtk_hdf_parallel_unstructured_grid_reader.cpp
+    2
+)
 
 # TODO: when vtk 9.2.7 is out (with hdftransient support) do regression
 gridformat_add_test_if(
@@ -45,6 +58,14 @@ gridformat_add_regression_test_if(
     test_vtk_hdf_image_grid_writer
     test_vtk_hdf_image_grid_writer.cpp
     "vtk_hdf_image*hdf"
+    SCRIPT_ARGS "--skip-metadata"
+)
+
+gridformat_add_regression_test_if(
+    GRIDFORMAT_HAVE_HIGH_FIVE
+    test_vtk_hdf_image_grid_reader
+    test_vtk_hdf_image_grid_reader.cpp
+    "reader_vtk_hdf_structured*hdf"
     SCRIPT_ARGS "--skip-metadata"
 )
 
