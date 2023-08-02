@@ -10,6 +10,7 @@
 
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/logging.hpp>
+#include <gridformat/grid/type_traits.hpp>
 
 #include <gridformat/vtk/attributes.hpp>
 #include <gridformat/vtk/common.hpp>
@@ -25,41 +26,30 @@
 
 namespace GridFormat::Test::VTK {
 
-template<typename T>
-std::string _name(const T& t) { return GridFormat::VTK::attribute_name(t); }
-std::string _name(const GridFormat::None&) { return "none"; }
-std::string _name(const GridFormat::Automatic&) { return "auto"; }
-std::string _name(const GridFormat::VTK::DataFormat::Inlined&) { return "inlined"; }
-std::string _name(const GridFormat::VTK::DataFormat::Appended&) { return "appended"; }
-
-template<typename T>
-struct SpaceDimension;
-template<int dim>
-struct SpaceDimension<StructuredGrid<dim>> : public std::integral_constant<int, dim> {};
-template<int dim>
-struct SpaceDimension<OrientedStructuredGrid<dim>> : public std::integral_constant<int, dim> {};
-template<int dim, int space_dim>
-struct SpaceDimension<UnstructuredGrid<dim, space_dim>> : public std::integral_constant<int, space_dim> {};
-
-template<typename T>
-struct Dimension;
-template<int dim>
-struct Dimension<StructuredGrid<dim>> : public std::integral_constant<int, dim> {};
-template<int dim>
-struct Dimension<OrientedStructuredGrid<dim>> : public std::integral_constant<int, dim> {};
-template<int dim, int space_dim>
-struct Dimension<UnstructuredGrid<dim, space_dim>> : public std::integral_constant<int, dim> {};
-
 using namespace GridFormat::Encoding;
 using namespace GridFormat::Compression;
 using namespace GridFormat::VTK::DataFormat;
-using GridFormat::none;
+
+template<typename T>
+std::string _name(const T& t) { return GridFormat::VTK::attribute_name(t); }
+std::string _name(const None&) { return "none"; }
+std::string _name(const Automatic&) { return "auto"; }
+std::string _name(const Inlined&) { return "inlined"; }
+std::string _name(const Appended&) { return "appended"; }
+
+template<typename T>
+struct Dimension;
+template<typename T> requires(is_complete<GridFormat::GridTypeTraitsDetail::Dimension<T>>)
+struct Dimension<T> : public std::integral_constant<int, dimension<T>> {};
+template<int dim, int space_dim>
+struct Dimension<UnstructuredGrid<dim, space_dim>> : public std::integral_constant<int, dim> {};
+
 
 template<typename Grid>
 class WriterTester {
 
     static constexpr int dim = Dimension<Grid>::value;
-    static constexpr int space_dim = SpaceDimension<Grid>::value;
+    static constexpr int space_dim = space_dimension<Grid>;
 
     template<typename T>
     static constexpr bool is_writer_factory = std::is_invocable_v<
@@ -102,79 +92,40 @@ class WriterTester {
 
     template<typename Factory> requires(is_writer_factory<Factory>)
     void test(const Factory& factory) const {
-        _test_default(factory);
-        _test_custom_field_precision(factory);
-        _test_all_options(factory);
-    }
-
- private:
-    template<typename Factory> requires(is_writer_factory<Factory>)
-    void _test_default(const Factory& factory) const {
-        GridFormat::VTK::XMLOptions opts;
-        auto writer = factory(_grid, opts);
-        const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(_grid);
-        GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<double>{});
-        GridFormat::Test::add_meta_data(writer);
-        _write_with(writer, opts);
-        _write_with_header(writer, opts, GridFormat::uint32);
-        _write_with_coordprec(writer, opts, GridFormat::float32);
-        _check_failure_with_invalid_opts(writer);
-    }
-
-    template<typename Factory> requires(is_writer_factory<Factory>)
-    void _test_all_options(const Factory& factory) const {
-        auto writer = factory(_grid, GridFormat::VTK::XMLOptions{});
-        const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(_grid);
-        GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<double>{});
+        {  // default opts
+            GridFormat::VTK::XMLOptions opts{};
+            auto writer = factory(_grid, opts);
+            write_test_file<space_dim>(writer, _make_filename(opts), {}, _verbose);
+        }
+        {  // custom header
+            GridFormat::VTK::XMLOptions opts{.header_precision = uint32};
+            auto writer = factory(_grid, opts);
+            write_test_file<space_dim>(writer, _add_header_prec_suffix(_make_filename(opts), uint32), {}, _verbose);
+        }
+        {  // custom coordinate precision
+            GridFormat::VTK::XMLOptions opts{.coordinate_precision = float32};
+            auto writer = factory(_grid, opts);
+            write_test_file<space_dim>(writer, _add_coord_prec_suffix(_make_filename(opts), float32), {}, _verbose);
+        }
+        {  // custom field precision
+            GridFormat::VTK::XMLOptions opts{.coordinate_precision = float32};
+            auto writer = factory(_grid, opts);
+            write_test_file<space_dim>(writer, _add_coord_prec_suffix(_make_filename(opts), float32), {}, _verbose);
+        }
+        {  // test invalid combinations
+            auto writer = factory(_grid, GridFormat::VTK::XMLOptions{});
+            _check_failure_with_invalid_opts(writer);
+        }
         std::ranges::for_each(_xml_options, [&] (const GridFormat::VTK::XMLOptions& _opts) {
-            auto cpy = writer.with_encoding(GridFormat::Variant::without<Automatic>(_opts.encoder))
-                             .with_compression(GridFormat::Variant::without<Automatic>(_opts.compressor))
-                             .with_data_format(GridFormat::Variant::without<Automatic>(_opts.data_format));
-            GridFormat::Test::add_meta_data(cpy);
-            _write_with(cpy, _opts, "_modified");
+            auto writer = factory(_grid, GridFormat::VTK::XMLOptions{})
+                            .with_encoding(GridFormat::Variant::without<Automatic>(_opts.encoder))
+                            .with_compression(GridFormat::Variant::without<Automatic>(_opts.compressor))
+                            .with_data_format(GridFormat::Variant::without<Automatic>(_opts.data_format));
+            write_test_file<space_dim>(writer, _make_filename(_opts) + "_modified", {}, _verbose);
         });
     }
 
-    template<typename Factory> requires(is_writer_factory<Factory>)
-    void _test_custom_field_precision(const Factory& factory) const {
-        GridFormat::VTK::XMLOptions opts;
-        auto writer = factory(_grid, opts);
-        const auto test_data = GridFormat::Test::make_test_data<space_dim, double>(_grid);
-        GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
-        GridFormat::Test::add_meta_data(writer);
-        _write(writer, _add_field_prec_suffix(_make_filename(opts), GridFormat::Precision<float>{}));
-    }
-
-    template<typename Writer, typename T>
-    void _write_with_header(Writer& w,
-                            GridFormat::VTK::XMLOptions opts,
-                            const Precision<T>& p) const {
-        opts.header_precision = p;
-        _write(w.with(opts), _add_header_prec_suffix(_make_filename(opts), p));
-    }
-
-    template<typename Writer, typename T>
-    void _write_with_coordprec(Writer& w,
-                               GridFormat::VTK::XMLOptions opts,
-                               const Precision<T>& p) const {
-        opts.coordinate_precision = p;
-        _write(w.with(opts), _add_coord_prec_suffix(_make_filename(opts), p));
-    }
-
-    template<typename Writer>
-    void _write_with(Writer& w,
-                     const GridFormat::VTK::XMLOptions& opts,
-                     const std::string& suffix = "") const {
-        _write(w.with(opts), _make_filename(opts) + suffix);
-    }
-
-    template<typename Writer>
-    void _write(const Writer& w, const std::string& filename) const {
-        w.write(filename);
-        if (_verbose)
-            std::cout << GridFormat::as_highlight("Wrote '" + filename + _extension + "'") << std::endl;
-    }
-
+ private:
     template<typename Writer>
     void _check_failure_with_invalid_opts(Writer& w) const {
         GridFormat::VTK::XMLOptions ascii_appended;
@@ -188,11 +139,6 @@ class WriterTester {
         raw_inline.data_format = GridFormat::VTK::DataFormat::inlined;
         try { w.with(raw_inline).write("should_fail"); }
         catch (const GridFormat::ValueError& e) {}
-    }
-
-    template<typename T>
-    std::string _add_field_prec_suffix(const std::string& name, const Precision<T>& p) const {
-        return name + "_fieldprecision_" + _name(DynamicPrecision{p});
     }
 
     template<typename T>

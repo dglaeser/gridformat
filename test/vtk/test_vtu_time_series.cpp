@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: MIT
 
-#include <gridformat/common/logging.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
 #include <gridformat/vtk/xml_time_series_writer.hpp>
 
@@ -14,13 +13,6 @@ int main() {
         GridFormat::VTUWriter{grid},
         "vtu_time_series_2d_in_2d"
     };
-
-    GridFormat::Test::add_meta_data(writer);
-    for (double t : {0.0, 0.25, 0.5, 0.75, 1.0}) {
-        const auto test_data = GridFormat::Test::make_test_data<2, double>(grid, t);
-        GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
-        std::cout << "Wrote '" << GridFormat::as_highlight(writer.write(t)) << "'" << std::endl;
-    }
-
+    GridFormat::Test::write_test_time_series<2>(writer);
     return 0;
 }

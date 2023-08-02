@@ -1,10 +1,8 @@
 // SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: MIT
 
-#include <iostream>
 #include <vector>
 
-#include <gridformat/common/logging.hpp>
 #include <gridformat/vtk/hdf_writer.hpp>
 
 #include "../grid/unstructured_grid.hpp"
@@ -16,19 +14,13 @@ int main() {
     {
         const auto grid = GridFormat::Test::make_unstructured_2d();
         GridFormat::VTKHDFWriter writer{grid};
-        auto test_data = GridFormat::Test::make_test_data<2, double>(grid);
-        GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
-        GridFormat::Test::add_meta_data(writer);
-        std::cout << "Wrote '" << GridFormat::as_highlight(writer.write("vtk_hdf_unstructured_2d_in_2d")) << "'" << std::endl;
+        GridFormat::Test::write_test_file<2>(writer, "vtk_hdf_unstructured_2d_in_2d");
     }
 
     {
         const auto grid = GridFormat::Test::make_unstructured_3d();
         GridFormat::VTKHDFWriter writer{grid};
-        auto test_data = GridFormat::Test::make_test_data<3, double>(grid);
-        GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
-        GridFormat::Test::add_meta_data(writer);
-        std::cout << "Wrote '" << GridFormat::as_highlight(writer.write("vtk_hdf_unstructured_3d_in_3d")) << "'" << std::endl;
+        GridFormat::Test::write_test_file<3>(writer, "vtk_hdf_unstructured_3d_in_3d");
     }
 
     {  // unit-test the IOContext helper class

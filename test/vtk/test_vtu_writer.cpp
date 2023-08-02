@@ -37,19 +37,13 @@ int main() {
     {
         GridFormat::Test::StructuredGrid<2> grid{{1.0, 1.0}, {10, 10}};
         GridFormat::VTUWriter writer{grid};
-        const auto data = GridFormat::Test::make_test_data<2, double>(grid);
-        GridFormat::Test::add_test_data(writer, data, GridFormat::Precision<double>{});
-        GridFormat::Test::add_meta_data(writer);
-        writer.write("vtu_2d_in_2d_from_structured_grid");
+        GridFormat::Test::write_test_file<2>(writer, "vtu_2d_in_2d_from_structured_grid");
     }
 
     {
         GridFormat::Test::StructuredGrid<3> grid{{1.0, 1.0, 1.0}, {3, 3, 3}};
         GridFormat::VTUWriter writer{grid};
-        const auto data = GridFormat::Test::make_test_data<3, double>(grid);
-        GridFormat::Test::add_test_data(writer, data, GridFormat::Precision<double>{});
-        GridFormat::Test::add_meta_data(writer);
-        writer.write("vtu_3d_in_3d_from_structured_grid");
+        GridFormat::Test::write_test_file<3>(writer, "vtu_3d_in_3d_from_structured_grid");
     }
 
     return 0;
