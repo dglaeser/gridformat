@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: MIT
 
+#include <iostream>
+
 #include <gridformat/common/precision.hpp>
 #include "../testing.hpp"
 
@@ -8,6 +10,8 @@ template<typename T>
 void _test(const GridFormat::Precision<T>& prec) {
     GridFormat::DynamicPrecision precision;
     precision = prec;
+
+    std::cout << "Testing precision " << precision << std::endl;
 
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;

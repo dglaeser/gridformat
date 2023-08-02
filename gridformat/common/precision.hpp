@@ -12,6 +12,8 @@
 #include <variant>
 #include <utility>
 #include <type_traits>
+#include <concepts>
+#include <ostream>
 
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/concepts.hpp>
@@ -90,6 +92,20 @@ class DynamicPrecision {
     template<typename Visitor>
     decltype(auto) visit(Visitor&& visitor) const {
         return std::visit(std::forward<Visitor>(visitor), _precision);
+    }
+
+    friend std::ostream& operator<<(std::ostream& s, const DynamicPrecision& prec) {
+        prec.visit([&] <typename T> (Precision<T>) {
+            if constexpr (std::is_same_v<T, char>)
+                s << "char";
+            else if constexpr (std::signed_integral<T>)
+                s << "int" << sizeof(T)*8;
+            else if constexpr (std::unsigned_integral<T>)
+                s << "uint" << sizeof(T)*8;
+            else
+                s << "float" << sizeof(T)*8;
+        });
+        return s;
     }
 
  private:
