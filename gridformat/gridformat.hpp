@@ -14,6 +14,7 @@
 #ifndef GRIDFORMAT_GRIDFORMAT_HPP_
 #define GRIDFORMAT_GRIDFORMAT_HPP_
 
+#include <optional>
 #include <type_traits>
 
 #include <gridformat/writer.hpp>
@@ -75,7 +76,7 @@ namespace FileFormat {
 template<typename Format, typename Opts>
 struct FormatWithOptions {
     using Options = Opts;
-    Options opts = {};
+    std::optional<Options> opts = {};
 
     //! Construct a new instance of this format with the given options
     constexpr Format operator()(Options _opts) const {
@@ -95,21 +96,21 @@ template<typename VTKFormat>
 struct VTKXMLFormatBase : public FormatWithOptions<VTKFormat, VTK::XMLOptions> {
     //! Construct a new instance of this format with modified encoding option
     constexpr auto with_encoding(VTK::XML::Encoder e) const {
-        auto cur_opts = this->opts;
+        auto cur_opts = this->opts.value_or(VTK::XMLOptions{});
         Variant::unwrap_to(cur_opts.encoder, e);
         return this->with(std::move(cur_opts));
     }
 
     //! Construct a new instance of this format with modified data format option
     constexpr auto with_data_format(VTK::XML::DataFormat f) const {
-        auto cur_opts = this->opts;
+        auto cur_opts = this->opts.value_or(VTK::XMLOptions{});
         Variant::unwrap_to(cur_opts.data_format, f);
         return this->with(std::move(cur_opts));
     }
 
     //! Construct a new instance of this format with modified compression option
     constexpr auto with_compression(VTK::XML::Compressor c) const {
-        auto cur_opts = this->opts;
+        auto cur_opts = this->opts.value_or(VTK::XMLOptions{});
         Variant::unwrap_to(cur_opts.compressor, c);
         return this->with(std::move(cur_opts));
     }
@@ -332,13 +333,13 @@ struct TimeSeriesClosure {
 template<> struct WriterFactory<FileFormat::VTI> {
     static auto make(const FileFormat::VTI& format,
                      const Concepts::ImageGrid auto& grid) {
-        return VTIWriter{grid, format.opts};
+        return VTIWriter{grid, format.opts.value_or(VTK::XMLOptions{})};
     }
 
     static auto make(const FileFormat::VTI& format,
                      const Concepts::ImageGrid auto& grid,
                      const Concepts::Communicator auto& comm) {
-        return PVTIWriter{grid, comm, format.opts};
+        return PVTIWriter{grid, comm, format.opts.value_or(VTK::XMLOptions{})};
     }
 };
 
@@ -346,12 +347,12 @@ template<> struct WriterFactory<FileFormat::VTI> {
 template<> struct WriterFactory<FileFormat::VTR> {
     static auto make(const FileFormat::VTR& format,
                      const Concepts::RectilinearGrid auto& grid) {
-        return VTRWriter{grid, format.opts};
+        return VTRWriter{grid, format.opts.value_or(VTK::XMLOptions{})};
     }
     static auto make(const FileFormat::VTR& format,
                      const Concepts::RectilinearGrid auto& grid,
                      const Concepts::Communicator auto& comm) {
-        return PVTRWriter{grid, comm, format.opts};
+        return PVTRWriter{grid, comm, format.opts.value_or(VTK::XMLOptions{})};
     }
 };
 
@@ -359,12 +360,12 @@ template<> struct WriterFactory<FileFormat::VTR> {
 template<> struct WriterFactory<FileFormat::VTS> {
     static auto make(const FileFormat::VTS& format,
                      const Concepts::StructuredGrid auto& grid) {
-        return VTSWriter{grid, format.opts};
+        return VTSWriter{grid, format.opts.value_or(VTK::XMLOptions{})};
     }
     static auto make(const FileFormat::VTS& format,
                      const Concepts::StructuredGrid auto& grid,
                      const Concepts::Communicator auto& comm) {
-        return PVTSWriter{grid, comm, format.opts};
+        return PVTSWriter{grid, comm, format.opts.value_or(VTK::XMLOptions{})};
     }
 };
 
@@ -372,12 +373,12 @@ template<> struct WriterFactory<FileFormat::VTS> {
 template<> struct WriterFactory<FileFormat::VTP> {
     static auto make(const FileFormat::VTP& format,
                      const Concepts::UnstructuredGrid auto& grid) {
-        return VTPWriter{grid, format.opts};
+        return VTPWriter{grid, format.opts.value_or(VTK::XMLOptions{})};
     }
     static auto make(const FileFormat::VTP& format,
                      const Concepts::UnstructuredGrid auto& grid,
                      const Concepts::Communicator auto& comm) {
-        return PVTPWriter{grid, comm, format.opts};
+        return PVTPWriter{grid, comm, format.opts.value_or(VTK::XMLOptions{})};
     }
 };
 
@@ -385,12 +386,12 @@ template<> struct WriterFactory<FileFormat::VTP> {
 template<> struct WriterFactory<FileFormat::VTU> {
     static auto make(const FileFormat::VTU& format,
                      const Concepts::UnstructuredGrid auto& grid) {
-        return VTUWriter{grid, format.opts};
+        return VTUWriter{grid, format.opts.value_or(VTK::XMLOptions{})};
     }
     static auto make(const FileFormat::VTU& format,
                      const Concepts::UnstructuredGrid auto& grid,
                      const Concepts::Communicator auto& comm) {
-        return PVTUWriter{grid, comm, format.opts};
+        return PVTUWriter{grid, comm, format.opts.value_or(VTK::XMLOptions{})};
     }
 };
 
@@ -400,7 +401,7 @@ template<typename F> struct WriterFactory<FileFormat::VTKXMLTimeSeries<F>> {
                      const Concepts::UnstructuredGrid auto& grid,
                      const std::string& base_filename) {
         return VTKXMLTimeSeriesWriter{
-            WriterFactory<F>::make(F{format.opts}, grid),
+            WriterFactory<F>::make(F{format.opts.value_or(VTK::XMLOptions{})}, grid),
             base_filename
         };
     }
@@ -409,7 +410,7 @@ template<typename F> struct WriterFactory<FileFormat::VTKXMLTimeSeries<F>> {
                      const Concepts::Communicator auto& comm,
                      const std::string& base_filename) {
         return VTKXMLTimeSeriesWriter{
-            WriterFactory<F>::make(F{format.opts}, grid, comm),
+            WriterFactory<F>::make(F{format.opts.value_or(VTK::XMLOptions{})}, grid, comm),
             base_filename
         };
     }
@@ -434,13 +435,17 @@ template<> struct WriterFactory<FileFormat::VTKHDFImageTransient> {
     static auto make(const FileFormat::VTKHDFImageTransient& f,
                      const Concepts::ImageGrid auto& grid,
                      const std::string& base_filename) {
-        return VTKHDFImageGridTimeSeriesWriter{grid, base_filename, f.opts};
+        if (f.opts.has_value())
+            return VTKHDFImageGridTimeSeriesWriter{grid, base_filename, f.opts.value()};
+        return VTKHDFImageGridTimeSeriesWriter{grid, base_filename};
     }
     static auto make(const FileFormat::VTKHDFImageTransient& f,
                      const Concepts::ImageGrid auto& grid,
                      const Concepts::Communicator auto& comm,
                      const std::string& base_filename) {
-        return VTKHDFImageGridTimeSeriesWriter{grid, comm, base_filename, f.opts};
+        if (f.opts.has_value())
+            return VTKHDFImageGridTimeSeriesWriter{grid, comm, base_filename, f.opts.value()};
+        return VTKHDFImageGridTimeSeriesWriter{grid, comm, base_filename};
     }
 };
 
@@ -462,13 +467,17 @@ template<> struct WriterFactory<FileFormat::VTKHDFUnstructuredTransient> {
     static auto make(const FileFormat::VTKHDFUnstructuredTransient& f,
                      const Concepts::ImageGrid auto& grid,
                      const std::string& base_filename) {
-        return VTKHDFUnstructuredTimeSeriesWriter{grid, base_filename, f.opts};
+        if (f.opts.has_value())
+            return VTKHDFUnstructuredTimeSeriesWriter{grid, base_filename, f.opts.value()};
+        return VTKHDFUnstructuredTimeSeriesWriter{grid, base_filename};
     }
     static auto make(const FileFormat::VTKHDFUnstructuredTransient& f,
                      const Concepts::ImageGrid auto& grid,
                      const Concepts::Communicator auto& comm,
                      const std::string& base_filename) {
-        return VTKHDFUnstructuredTimeSeriesWriter{grid, comm, base_filename, f.opts};
+        if (f.opts.has_value())
+            return VTKHDFUnstructuredTimeSeriesWriter{grid, comm, base_filename, f.opts.value()};
+        return VTKHDFUnstructuredTimeSeriesWriter{grid, comm, base_filename};
     }
 };
 
