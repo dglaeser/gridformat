@@ -92,7 +92,7 @@ class MDLayout {
     }
 
     template<std::ranges::range R>
-    void export_to(R& out) const {
+    void export_to(R&& out) const {
         if (Ranges::size(out) < dimension())
             throw SizeError("Given output range is too small");
         std::ranges::copy(_extents, std::ranges::begin(out));

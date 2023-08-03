@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <type_traits>
 #include <sstream>
+#include <ranges>
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/serialization.hpp>
@@ -475,9 +476,9 @@ namespace Detail {
     struct SubFieldAdapter {
         auto operator()(FieldPtr f) const {
             const auto layout = f->layout();
-            std::vector<std::size_t> new_layout(layout.dimension());
-            layout.export_to(new_layout);
-            new_layout.insert(new_layout.begin(), 1);
+            std::vector<std::size_t> new_layout(layout.dimension() + 1, 0);
+            layout.export_to(new_layout | std::views::drop(1));
+            new_layout.at(0) = 1;
             return ReshapedFieldAdapter{MDLayout{std::move(new_layout)}}(f);
         }
     };
