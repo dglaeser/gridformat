@@ -29,6 +29,7 @@
 #include <gridformat/common/logging.hpp>
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/lazy_field.hpp>
+#include <gridformat/common/path.hpp>
 
 #include <gridformat/encoding/base64.hpp>
 #include <gridformat/encoding/ascii.hpp>
@@ -648,7 +649,32 @@ class XMLReaderHelper {
     : _filename{filename}
     , _parser{filename, "ROOT", [] (const XMLElement& e) { return e.name() == "AppendedData"; }} {
         if (!_element().has_child("VTKFile"))
-            throw IOError("Could not read " + filename + " as vtk-xml file.");
+            throw IOError("Could not read " + filename + " as vtk-xml file. No root element <VTKFile> found.");
+    }
+
+    static XMLReaderHelper make_from(const std::string& filename, std::string_view vtk_type) {
+        if (!Path::exists(filename))
+            throw IOError("File '" + filename + "' does not exist.");
+        if (!Path::is_file(filename))
+            throw IOError("Given path '" + filename + "' is not a file.");
+
+        std::optional<XMLReaderHelper> helper;
+        try {
+            helper.emplace(XMLReaderHelper{filename});
+        } catch (const std::exception& e) {
+            throw IOError("Could not parse '" + filename + "' as xml file. Error: " + e.what());
+        }
+
+        if (!helper->get().has_attribute("type"))
+            throw IOError("'type' attribute missing in VTKFile root element.");
+        if (helper->get().get_attribute("type") != vtk_type)
+            throw IOError(
+                "Given vtk-xml file has type '"
+                + helper->get().get_attribute("type")
+                + "', expected '" + std::string{vtk_type} + "'"
+            );
+
+        return std::move(helper).value();
     }
 
     const XMLElement& get(std::string_view path = "") const {

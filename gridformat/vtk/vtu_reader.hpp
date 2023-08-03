@@ -8,13 +8,11 @@
 #ifndef GRIDFORMAT_VTK_VTU_READER_HPP_
 #define GRIDFORMAT_VTK_VTU_READER_HPP_
 
-#include <bit>
 #include <string>
 #include <optional>
 #include <iterator>
 
 #include <gridformat/common/string_conversion.hpp>
-#include <gridformat/common/precision.hpp>
 #include <gridformat/common/field.hpp>
 
 #include <gridformat/grid/reader.hpp>
@@ -29,12 +27,7 @@ namespace GridFormat {
 class VTUReader : public GridReader {
  private:
     void _open(const std::string& filename, typename GridReader::FieldNames& fields) override {
-        _filename = filename;
-        VTK::XMLReaderHelper helper{filename};
-
-        const auto grid_type = helper.get().get_attribute("type");
-        if (grid_type != "UnstructuredGrid")
-            throw IOError("Given vtk-xml file has type '" + grid_type + "', expected 'UnstructuredGrid'");
+        auto helper = VTK::XMLReaderHelper::make_from(filename, "UnstructuredGrid");
 
         _num_points = from_string<std::size_t>(helper.get("UnstructuredGrid/Piece").get_attribute("NumberOfPoints"));
         _num_cells = from_string<std::size_t>(helper.get("UnstructuredGrid/Piece").get_attribute("NumberOfCells"));
@@ -123,7 +116,6 @@ class VTUReader : public GridReader {
         return _helper.value().make_data_array_field(name, "UnstructuredGrid/FieldData");
     }
 
-    std::optional<std::string> _filename = "";
     std::optional<VTK::XMLReaderHelper> _helper;
     std::size_t _num_points;
     std::size_t _num_cells;
