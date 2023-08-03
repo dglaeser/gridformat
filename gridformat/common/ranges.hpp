@@ -61,7 +61,7 @@ inline constexpr auto size(R&&) {
  * \brief Return the value at the i-th position of the range.
  */
 template<std::integral I, std::ranges::range R>
-inline constexpr auto at(I i, const R& r) {
+inline constexpr decltype(auto) at(I i, const R& r) {
     auto it = std::ranges::begin(r);
     std::advance(it, i);
     return *it;
