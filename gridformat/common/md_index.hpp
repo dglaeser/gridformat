@@ -161,6 +161,10 @@ class MDIndexRange {
     : MDIndexRange(MDLayout{dimensions})
     {}
 
+    explicit MDIndexRange(const std::initializer_list<std::size_t>& dimensions)
+    : MDIndexRange(MDLayout{dimensions})
+    {}
+
     auto begin() const { return Iterator{_layout}; }
     auto end() const { return Iterator{_layout, true}; }
 
