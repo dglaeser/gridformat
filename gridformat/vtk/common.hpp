@@ -299,16 +299,17 @@ namespace CommonDetail {
 
     template<Concepts::StaticallySizedRange R1,
              Concepts::StaticallySizedRange R2>
-    std::string extents_string(const R1& r1, const R2& r2) {
+    std::string extents_string(const R1& from, const R2& to) {
         static_assert(static_size<R1> == static_size<R2>);
-        int i = 0;
+        static_assert(static_size<R1> > 0);
+
         std::string result;
-        auto it1 = std::ranges::begin(r1);
-        auto it2 = std::ranges::begin(r2);
-        for (; it1 != std::ranges::end(r1) && it2 != std::ranges::end(r2); ++it1, ++it2, ++i)
-            result += (i > 0 ? " " : "") + as_string(*it1) + " " + as_string(*it2);
-        for (i = static_size<R1>; i < 3; ++i)
-            result += " 0 0";
+        std::ranges::for_each(from, [&, i=0] (const auto& ex0) mutable {
+            result += as_string(ex0) + " " + as_string(Ranges::at(i++, to)) + " ";
+        });
+        for (unsigned int i = static_size<R1>; i < 3; ++i)
+            result += " 0 0 ";
+        result.pop_back();
         return result;
     }
 
