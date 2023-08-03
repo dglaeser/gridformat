@@ -320,14 +320,19 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
                       FieldPtr field,
                       const std::string& path,
                       const HDF5::Slice& slice) const {
-        std::vector<std::size_t> size{slice.total_size.value().begin(), slice.total_size.value().end()};
-        std::vector<std::size_t> count{slice.count.begin(), slice.count.end()};
-        std::vector<std::size_t> offset{slice.offset.begin(), slice.offset.end()};
+        const std::size_t dimension_offset = is_transient ? 1 : 0;
+        std::vector<std::size_t> size(slice.total_size.value().size() + dimension_offset);
+        std::vector<std::size_t> count(slice.count.size() + dimension_offset);
+        std::vector<std::size_t> offset(slice.offset.size() + dimension_offset);
+        std::ranges::copy(slice.total_size.value(), std::ranges::begin(size | std::views::drop(dimension_offset)));
+        std::ranges::copy(slice.count, std::ranges::begin(count | std::views::drop(dimension_offset)));
+        std::ranges::copy(slice.offset, std::ranges::begin(offset | std::views::drop(dimension_offset)));
 
         const auto layout = field->layout();
-        if (layout.dimension() > size.size())
+        const bool is_vector_field = layout.dimension() > size.size() - dimension_offset;
+        if (is_vector_field)
             std::ranges::for_each(
-                std::views::iota(size.size(), layout.dimension()),
+                std::views::iota(size.size() - dimension_offset, layout.dimension()),
                 [&] (const std::size_t codim) {
                     size.push_back(layout.extent(codim));
                     count.push_back(layout.extent(codim));
@@ -336,20 +341,20 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
             );
 
         if constexpr (is_transient) {
-            size.insert(size.begin(), 1);
-            offset.insert(offset.begin(), 0);
-            count.insert(count.begin(), 1);
+            size.at(0) = 1;
+            count.at(0) = 1;
+            offset.at(0) = 0;
             FieldPtr sub_field = transform(field, FieldTransformation::as_sub_field);
             file.write(*sub_field, path, HDF5::Slice{
-                .offset = offset,
-                .count = count,
-                .total_size = size
+                .offset = std::move(offset),
+                .count = std::move(count),
+                .total_size = std::move(size)
             });
         } else {
             file.write(*field, path, HDF5::Slice{
-                .offset = offset,
-                .count = count,
-                .total_size = size
+                .offset = std::move(offset),
+                .count = std::move(count),
+                .total_size = std::move(size)
             });
         }
     }
