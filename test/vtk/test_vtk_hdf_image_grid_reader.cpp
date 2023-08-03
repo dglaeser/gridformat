@@ -5,20 +5,23 @@
 #include <ranges>
 #include <cmath>
 
+#include <gridformat/vtk/hdf_unstructured_grid_writer.hpp>
 #include <gridformat/vtk/hdf_image_grid_writer.hpp>
 #include <gridformat/vtk/hdf_image_grid_reader.hpp>
+#include <gridformat/vtk/hdf_reader.hpp>
 
 #include "../grid/structured_grid.hpp"
 #include "../reader_tests.hpp"
 #include "../testing.hpp"
 
-int main() {
+
+template<typename Reader>
+void test(Reader&& reader, const std::string& suffix = "") {
     const GridFormat::Test::StructuredGrid<2> grid{{1.0, 1.0}, {4, 5}};
     GridFormat::VTKHDFImageGridWriter writer{grid};
-    GridFormat::VTKHDFImageGridReader reader;
 
     // TODO: Test cell&field data once a new VTK version is released that fixes issues
-    test_reader<2, 2>(writer, reader, "reader_vtk_hdf_structured_image_test_file_2d_in_2d", {
+    test_reader<2, 2>(writer, reader, "reader_vtk_hdf_structured_image_test_file_2d_in_2d" + suffix, {
         .write_cell_data = false,
         .write_meta_data = false
     });
@@ -61,5 +64,21 @@ int main() {
         }
     };
 
+    {  // test time series as well
+        // TODO: use filenames that include these in the regression tests once the VTK fixes are available
+        GridFormat::VTKHDFImageGridTimeSeriesWriter writer{
+            grid,
+            "reader_vtk_hdf_structured_time_series_image_2d_in_2d" + suffix
+        };
+        test_reader<2, 2>(writer, reader, [] (const auto& grid, const auto& filename) {
+            return GridFormat::VTKHDFUnstructuredTimeSeriesWriter{grid, filename};
+        });
+    }
+}
+
+
+int main() {
+    test(GridFormat::VTKHDFImageGridReader{});
+    test(GridFormat::VTKHDFReader{}, "_from_generic");
     return 0;
 }

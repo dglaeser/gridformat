@@ -22,6 +22,8 @@ gridformat_add_regression_test_if(
     test_vtk_hdf_unstructured_grid_writer.cpp
     "vtk_hdf_unstructured*hdf"
 )
+
+# TODO: when vtk 9.2.7 is out (with hdftransient support) do regression with time series also
 gridformat_add_regression_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_unstructured_grid_reader
@@ -61,11 +63,12 @@ gridformat_add_regression_test_if(
     SCRIPT_ARGS "--skip-metadata"
 )
 
+# TODO: when vtk 9.2.7 is out (with hdftransient support) do regression with time series also
 gridformat_add_regression_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_image_grid_reader
     test_vtk_hdf_image_grid_reader.cpp
-    "reader_vtk_hdf_structured*hdf"
+    "reader_vtk_hdf_structured_image_test*hdf"
     SCRIPT_ARGS "--skip-metadata"
 )
 
