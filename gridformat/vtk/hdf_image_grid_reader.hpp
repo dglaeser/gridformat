@@ -43,9 +43,11 @@ class VTKHDFImageGridReader : public GridReader {
     explicit VTKHDFImageGridReader() = default;
 
     template<Concepts::Communicator C>
-        requires(!std::is_same_v<std::remove_cvref_t<C>, NullCommunicator>)
     explicit VTKHDFImageGridReader(C&&) {
-        static_assert(false, "Cannot read vtk-hdf image grid files in parallel");
+        static_assert(
+            std::is_same_v<std::remove_cvref_t<C>, NullCommunicator>,
+            "Cannot read vtk-hdf image grid files in parallel"
+        );
     }
 
  private:
