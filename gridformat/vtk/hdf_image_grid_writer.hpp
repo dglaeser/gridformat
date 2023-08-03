@@ -151,8 +151,8 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
                 const auto my_end = my_specs.extents[dir] + my_offset[dir];
                 return my_end < overall_end ? my_specs.extents[dir] : my_specs.extents[dir] + 1;
         }));
-        const auto point_slice_base = _make_slice(
-            Ranges::incremented(overall_specs.extents, 1),
+        const auto point_slice_base = _make_slice<true>(
+            overall_specs.extents,
             my_point_extents,
             my_offset
         );
@@ -182,10 +182,16 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
 
         });
 
+        std::vector<std::size_t> non_zero_extents;
+        std::ranges::copy(
+            my_specs.extents | std::views::filter([] (auto e) { return e != 0; }),
+            std::back_inserter(non_zero_extents)
+        );
+
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             auto field_ptr = _reshape(
                 VTK::make_vtk_field(this->_get_point_field_ptr(name)),
-                Ranges::incremented(extents(this->grid()), 1) | std::views::reverse,
+                Ranges::incremented(non_zero_extents, 1) | std::views::reverse,
                 point_slice_base.count
             );
             _write_field(file, field_ptr, "/VTKHDF/PointData/" + name, point_slice_base);
@@ -194,7 +200,7 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
             auto field_ptr = _reshape(
                 VTK::make_vtk_field(this->_get_cell_field_ptr(name)),
-                extents(this->grid()) | std::views::reverse,
+                non_zero_extents | std::views::reverse,
                 cell_slice_base.count
             );
             _write_field(file, field_ptr, "/VTKHDF/CellData/" + name, cell_slice_base);
@@ -262,16 +268,37 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         }
     }
 
-    template<typename TotalExtents, typename Extents, typename Offsets>
+    template<bool increment = false, typename TotalExtents, typename Extents, typename Offsets>
     HDF5::Slice _make_slice(const TotalExtents& total_extents,
                             const Extents& extents,
                             const Offsets& offsets) const {
         HDF5::Slice result;
         result.total_size.emplace();
+
+        // use only those dimensions that are not zero
+        std::vector<bool> is_nonzero;
+        std::ranges::copy(
+            total_extents | std::views::transform([] (const auto& v) { return v != 0; }),
+            std::back_inserter(is_nonzero)
+        );
+        std::ranges::for_each(total_extents, [&, i=0] (const auto& value) mutable {
+            if (is_nonzero[i++])
+                result.total_size.value().push_back(value + (increment ? 1 : 0));
+        });
+        std::ranges::for_each(extents, [&, i=0] (const auto& value) mutable {
+            if (is_nonzero[i++])
+                result.count.push_back(value);
+        });
+        std::ranges::for_each(offsets, [&, i=0] (const auto& value) mutable {
+            if (is_nonzero[i++])
+                result.offset.push_back(value);
+        });
+
         // slices in VTK are accessed with the last coordinate first (i.e. values[z][y][x])
-        std::ranges::copy(total_extents | std::views::reverse, std::back_inserter(result.total_size.value()));
-        std::ranges::copy(extents | std::views::reverse, std::back_inserter(result.count));
-        std::ranges::copy(offsets | std::views::reverse, std::back_inserter(result.offset));
+        std::ranges::reverse(result.total_size.value());
+        std::ranges::reverse(result.count);
+        std::ranges::reverse(result.offset);
+
         return result;
     }
 
