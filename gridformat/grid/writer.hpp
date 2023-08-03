@@ -28,6 +28,12 @@
 #include <gridformat/grid/entity_fields.hpp>
 
 namespace GridFormat {
+namespace Traits {
+
+//! Can be specialized by writers in case the file format does not contain connectivity information
+template<typename Writer> struct WritesConnectivity : public std::true_type {};
+
+}  // namespace Traits
 
 //! \addtogroup Grid
 //! \{

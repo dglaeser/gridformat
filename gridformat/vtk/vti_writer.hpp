@@ -117,6 +117,12 @@ class VTIWriter : public VTK::XMLWriterBase<Grid, VTIWriter<Grid>> {
     std::optional<Offset> _offset;
 };
 
+namespace Traits {
+
+template<typename... Args>
+struct WritesConnectivity<VTIWriter<Args...>> : public std::false_type {};
+
+}  // namespace Traits
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_VTK_VTI_WRITER_HPP_

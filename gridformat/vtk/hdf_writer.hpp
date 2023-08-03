@@ -83,6 +83,16 @@ VTKHDFTimeSeriesWriter(const Grid&, std::string, VTK::HDFTransientOptions = {}) 
 template<Concepts::Grid Grid, Concepts::Communicator C>
 VTKHDFTimeSeriesWriter(const Grid&, C, std::string, VTK::HDFTransientOptions = {}) -> VTKHDFTimeSeriesWriter<Grid, C>;
 
+namespace Traits {
+
+template<Concepts::ImageGrid Grid, typename... Args>
+struct WritesConnectivity<VTKHDFWriter<Grid, Args...>> : public std::false_type {};
+
+template<Concepts::ImageGrid Grid, typename... Args>
+struct WritesConnectivity<VTKHDFTimeSeriesWriter<Grid, Args...>> : public std::false_type {};
+
+}  // namespace Traits
+
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE

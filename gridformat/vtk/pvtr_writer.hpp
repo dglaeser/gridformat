@@ -166,6 +166,12 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
     }
 };
 
+namespace Traits {
+
+template<typename... Args>
+struct WritesConnectivity<PVTRWriter<Args...>> : public std::false_type {};
+
+}  // namespace Traits
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_VTK_PVTR_WRITER_HPP_

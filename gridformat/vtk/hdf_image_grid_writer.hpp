@@ -396,6 +396,15 @@ template<Concepts::ImageGrid G, Concepts::Communicator C>
 VTKHDFImageGridTimeSeriesWriter(const G&, const C&, std::string, VTK::HDFTransientOptions = {}) -> VTKHDFImageGridTimeSeriesWriter<G, C>;
 
 
+namespace Traits {
+
+template<typename... Args>
+struct WritesConnectivity<VTKHDFImageGridWriter<Args...>> : public std::false_type {};
+
+template<typename... Args>
+struct WritesConnectivity<VTKHDFImageGridTimeSeriesWriter<Args...>> : public std::false_type {};
+
+}  // namespace Traits
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE
