@@ -103,7 +103,10 @@ void test_reader(Writer& writer,
 template<std::size_t dim, std::size_t space_dim, typename Writer, typename WriterFactory>
     requires(std::derived_from<Writer, TimeSeriesGridWriter<typename Writer::Grid>> and
              std::invocable<WriterFactory, const typename Writer::Grid&, const std::string&> and
-             std::same_as<Writer, std::invoke_result_t<WriterFactory, const typename Writer::Grid&, const std::string&>>)
+             std::derived_from<
+                std::invoke_result_t<WriterFactory, const typename Writer::Grid&, const std::string&>,
+                TimeSeriesGridWriter<typename Writer::Grid>
+            >)
 void test_reader(Writer& writer,
                  GridReader& reader,
                  const WriterFactory& writer_factory,
