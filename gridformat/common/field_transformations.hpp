@@ -8,6 +8,7 @@
 #ifndef GRIDFORMAT_COMMON_FIELD_TRANSFORMATIONS_HPP_
 #define GRIDFORMAT_COMMON_FIELD_TRANSFORMATIONS_HPP_
 
+#include <vector>
 #include <utility>
 #include <concepts>
 #include <algorithm>
@@ -17,6 +18,7 @@
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/serialization.hpp>
+#include <gridformat/common/string_conversion.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/md_index.hpp>
@@ -386,6 +388,82 @@ class SlicedField : public Field {
 
     FieldPtr _field;
     Slice _slice;
+};
+
+/*!
+ * \ingroup Common
+ * \brief Exposes a field that is the result of merging the given fields.
+ */
+class MergedField : public Field {
+ public:
+    template<typename... Ptrs>
+        requires(std::same_as<Ptrs, FieldPtr> && ...)
+    explicit MergedField(FieldPtr first, Ptrs&&... fields)
+    : MergedField(_as_vector(first, std::forward<Ptrs>(fields)...))
+    {}
+
+    explicit MergedField(std::vector<FieldPtr>&& fields)
+    : _fields{std::move(fields)} {
+        if (_fields.empty())
+            throw ValueError("Need at least one field for merging");
+        _merged_layout = _merge_layouts(_fields.front()->layout());
+        if (std::ranges::any_of(_fields | std::views::drop(1), [&] (const FieldPtr& ptr) {
+            return ptr->precision() != _fields.front()->precision();
+        }))
+            throw ValueError("Can only merge fields with matching precision");
+    }
+
+ private:
+    template<typename... Ptrs>
+    static std::vector<FieldPtr> _as_vector(Ptrs&&... ptrs) {
+        std::vector<FieldPtr> result;
+        (result.push_back(ptrs), ...);
+        return result;
+    }
+
+    MDLayout _merge_layouts(const MDLayout& first_layout) const {
+        if (first_layout.dimension() == 0)
+            throw ValueError("Cannot merge layouts with zero dimension");
+
+        std::vector<std::size_t> merged_layout(first_layout.dimension());
+        first_layout.export_to(merged_layout);
+        std::ranges::for_each(_fields | std::views::drop(1), [&] (const FieldPtr& ptr) {
+            MDLayout layout = ptr->layout();
+            if (!_are_compatible(first_layout, layout))
+                throw ValueError(
+                    "Fields to be merged have incompatible layouts: ("
+                    + as_string(first_layout) + ") and ("
+                    + as_string(layout) + ")."
+                );
+            merged_layout.at(0) += layout.extent(0);
+        });
+        return MDLayout{merged_layout};
+    }
+
+    bool _are_compatible(const MDLayout& first, const MDLayout& second) const {
+        if (first.dimension() != second.dimension())
+            return false;
+        return std::ranges::equal(first | std::views::drop(1), second | std::views::drop(1));
+    }
+
+    MDLayout _layout() const override {
+        return _merged_layout;
+    }
+
+    Serialization _serialized() const override {
+        Serialization result = _fields.front()->serialized();
+        std::ranges::for_each(_fields | std::views::drop(1), [&] (const FieldPtr& ptr) {
+            result.push_back(ptr->serialized().data());
+        });
+        return result;
+    }
+
+    DynamicPrecision _precision() const override {
+        return _fields.front()->precision();
+    }
+
+    std::vector<FieldPtr> _fields;
+    MDLayout _merged_layout;
 };
 
 namespace FieldTransformation {

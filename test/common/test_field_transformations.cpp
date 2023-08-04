@@ -15,6 +15,7 @@
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/field.hpp>
+#include <gridformat/common/scalar_field.hpp>
 #include <gridformat/common/field_transformations.hpp>
 
 #include "../testing.hpp"
@@ -101,6 +102,13 @@ class MyField : public GridFormat::Field {
         );
         return result;
     }
+};
+
+class ZeroField : public GridFormat::Field {
+ private:
+    GridFormat::MDLayout _layout() const override { return GridFormat::MDLayout{}; }
+    GridFormat::DynamicPrecision _precision() const override { return GridFormat::Precision<int>{}; }
+    GridFormat::Serialization _serialized() const override { return GridFormat::Serialization{}; }
 };
 
 int main() {
@@ -212,6 +220,70 @@ int main() {
         expect(throws<GridFormat::SizeError>([&] () { ExtendedField{field_ptr, GridFormat::MDLayout{{3, 3}}}.layout(); }));
         expect(throws<GridFormat::SizeError>([&] () { TransformedField{field_ptr, extend_to(GridFormat::MDLayout{{3, 3}})}.layout(); }));
         TransformedField{field_ptr, extend_to(GridFormat::MDLayout{{4}})}.layout();
+    };
+
+    "merged_scalar_fields"_test = [] () {
+        GridFormat::MergedField merged{
+            GridFormat::make_field_ptr(GridFormat::ScalarField{42}),
+            GridFormat::make_field_ptr(GridFormat::ScalarField{43})
+        };
+        expect(eq(merged.layout().dimension(), 1_ul));
+        expect(eq(merged.layout().extent(0), 2_ul));
+        expect(std::ranges::equal(
+            merged.serialized().template as_span_of<int>(),
+            std::vector<int>{42, 43}
+        ));
+    };
+
+    "merged_scalar_fields_from_vec"_test = [] () {
+        GridFormat::MergedField merged{
+            GridFormat::make_field_ptr(GridFormat::ScalarField{42}),
+            GridFormat::make_field_ptr(RangeField{std::vector<int>{43}})
+        };
+        expect(eq(merged.layout().dimension(), 1_ul));
+        expect(eq(merged.layout().extent(0), 2_ul));
+        expect(std::ranges::equal(
+            merged.serialized().template as_span_of<int>(),
+            std::vector<int>{42, 43}
+        ));
+    };
+
+    "merged_2d_fields"_test = [] () {
+        GridFormat::MergedField merged{
+            GridFormat::make_field_ptr(RangeField{std::vector<std::array<int, 1>>{{42}}}),
+            GridFormat::make_field_ptr(RangeField{std::vector<std::array<int, 1>>{{43}}})
+        };
+        expect(eq(merged.layout().dimension(), 2_ul));
+        expect(eq(merged.layout().extent(0), 2_ul));
+        expect(eq(merged.layout().extent(1), 1_ul));
+        expect(std::ranges::equal(
+            merged.serialized().template as_span_of<int>(),
+            std::vector<int>{42, 43}
+        ));
+    };
+
+    "merged_fields_throw_with_non_matching_layouts"_test = [] () {
+        expect(throws<GridFormat::ValueError>([] () {
+            GridFormat::MergedField merged{
+                GridFormat::make_field_ptr(RangeField{std::vector<int>{42}}),
+                GridFormat::make_field_ptr(RangeField{std::vector<std::array<int, 1>>{{43}}})
+            };
+        }));
+    };
+
+    "merged_fields_throw_with_non_matching_precision"_test = [] () {
+        expect(throws<GridFormat::ValueError>([] () {
+            GridFormat::MergedField merged{
+                GridFormat::make_field_ptr(RangeField{std::vector<double>{42}}),
+                GridFormat::make_field_ptr(RangeField{std::vector<int>{43}})
+            };
+        }));
+    };
+
+    "merged_fields_throw_with_zero_dimension"_test = [] () {
+        expect(throws<GridFormat::ValueError>([] () {
+            GridFormat::MergedField merged{GridFormat::make_field_ptr(ZeroField{})};
+        }));
     };
 
     return 0;
