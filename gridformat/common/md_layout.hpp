@@ -83,10 +83,6 @@ class MDLayout {
         }};
     }
 
-    bool is_scalar() const {
-        return _extents.size() == 0;
-    }
-
     bool operator==(const MDLayout& other) const {
         return std::ranges::equal(_extents, other._extents);
     }
