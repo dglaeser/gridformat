@@ -9,10 +9,12 @@
 #define GRIDFORMAT_COMMON_LOGGING_HPP_
 
 #include <array>
+#include <ranges>
 #include <utility>
 #include <concepts>
 #include <iostream>
 #include <string_view>
+#include <algorithm>
 #include <string>
 
 namespace GridFormat {
@@ -81,7 +83,23 @@ std::string as_highlight(std::string_view msg) {
 
 //! Log a warning message.
 void log_warning(std::string_view msg, std::ostream& s = std::cout) {
-    s << "[GFMT] " << as_warning("Warning") << ": " << msg << "\n";
+    if (msg.empty())
+        return;
+
+    constexpr std::string_view context = "[GFMT]";
+    constexpr std::string_view prefix = "Warning";
+    constexpr std::size_t indentation = context.size() + 1 + prefix.size() + 2;
+    s << context << " " << as_warning(prefix) << ": ";
+    std::ranges::for_each(
+        std::views::split(msg, '\n') | std::views::transform([] (const auto& line_chars) {
+            std::string line;
+            std::ranges::copy(line_chars, std::back_inserter(line));
+            return line;
+        }),
+        [&, i=0] (const std::string& line) mutable {
+            s << (i++ == 0 ? "" : std::string(indentation, ' ')) << line << std::endl;
+        }
+    );
 }
 
 //! \} group Common
