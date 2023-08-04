@@ -13,6 +13,8 @@
 #include <utility>
 #include <type_traits>
 #include <algorithm>
+#include <array>
+#include <cmath>
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/concepts.hpp>
@@ -351,6 +353,12 @@ namespace CommonDetail {
             result.begin()
         );
         return result;
+    }
+
+    std::size_t number_of_entities(const std::array<std::size_t, 6>& extents) {
+        return std::max(extents[1] - extents[0], std::size_t{1})
+                *std::max(extents[3] - extents[2], std::size_t{1})
+                *std::max(extents[5] - extents[4], std::size_t{1});
     }
 
 }  // namespace CommonDetail

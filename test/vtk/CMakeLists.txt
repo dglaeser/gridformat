@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: MIT
 
 gridformat_add_regression_test(test_vti_writer test_vti_writer.cpp "vti_*")
+gridformat_add_regression_test(test_vti_reader test_vti_reader.cpp "reader_vti_*")
+target_compile_definitions(test_vti_reader PRIVATE TEST_DATA_PATH="${CMAKE_CURRENT_LIST_DIR}/test_data")
+
 gridformat_add_regression_test(test_vtr_writer test_vtr_writer.cpp "vtr_*")
 gridformat_add_regression_test(test_vts_writer test_vts_writer.cpp "vts_*")
 
