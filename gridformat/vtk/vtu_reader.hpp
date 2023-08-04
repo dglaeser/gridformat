@@ -31,26 +31,7 @@ class VTUReader : public GridReader {
 
         _num_points = from_string<std::size_t>(helper.get("UnstructuredGrid/Piece").get_attribute("NumberOfPoints"));
         _num_cells = from_string<std::size_t>(helper.get("UnstructuredGrid/Piece").get_attribute("NumberOfCells"));
-
-        if (helper.get("UnstructuredGrid/Piece").has_child("PointData"))
-            std::ranges::copy(
-                helper.data_arrays_at("UnstructuredGrid/Piece/PointData")
-                    | std::views::transform([] (const auto& data_array) { return data_array.get_attribute("Name"); }),
-                std::back_inserter(fields.point_fields)
-            );
-        if (helper.get("UnstructuredGrid/Piece").has_child("CellData"))
-            std::ranges::copy(
-                helper.data_arrays_at("UnstructuredGrid/Piece/CellData")
-                    | std::views::transform([] (const auto& data_array) { return data_array.get_attribute("Name"); }),
-                std::back_inserter(fields.cell_fields)
-            );
-        if (helper.get("UnstructuredGrid").has_child("FieldData"))
-            std::ranges::copy(
-                helper.data_arrays_at("UnstructuredGrid/FieldData")
-                    | std::views::transform([] (const auto& data_array) { return data_array.get_attribute("Name"); }),
-                std::back_inserter(fields.meta_data_fields)
-            );
-
+        VTK::XMLDetail::copy_field_names_from(helper.get("UnstructuredGrid"), fields);
         _helper.emplace(std::move(helper));
     }
 

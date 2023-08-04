@@ -622,11 +622,22 @@ namespace XML {
 
 /*!
  * \ingroup VTK
- * \brief Filter all data array elements in the given xml section.
+ * \brief Return a range over all data array elements in the given xml section.
  */
 std::ranges::range auto data_arrays(const XMLElement& e) {
-    return children(e)
-        | std::views::filter([] (const XMLElement& child) { return child.name() == "DataArray"; });
+    return children(e) | std::views::filter([] (const XMLElement& child) {
+        return child.name() == "DataArray";
+    });
+}
+
+/*!
+ * \ingroup VTK
+ * \brief Return a range over the names of all data array elements in the given xml section.
+ */
+std::ranges::range auto data_array_names(const XMLElement& e) {
+    return data_arrays(e) | std::views::transform([] (const XMLElement& data_array) {
+        return data_array.get_attribute("Name");
+    });
 }
 
 /*!
@@ -645,6 +656,36 @@ const XMLElement& get_data_array(std::string_view name, const XMLElement& sectio
 }
 
 }  // namespace XML
+
+
+#ifndef DOXYGEN
+namespace XMLDetail {
+
+    // can be reused by readers to copy read field names into the storage container
+    template<typename FieldNameContainer>
+    void copy_field_names_from(const XMLElement& vtk_grid, FieldNameContainer& names) {
+        if (vtk_grid.has_child("Piece")) {
+            const XMLElement& piece = vtk_grid.get_child("Piece");
+            if (piece.has_child("PointData"))
+                std::ranges::copy(
+                    XML::data_array_names(piece.get_child("PointData")),
+                    std::back_inserter(names.point_fields)
+                );
+            if (piece.has_child("CellData"))
+                std::ranges::copy(
+                    XML::data_array_names(piece.get_child("CellData")),
+                    std::back_inserter(names.cell_fields)
+                );
+        }
+        if (vtk_grid.has_child("FieldData"))
+            std::ranges::copy(
+                XML::data_array_names(vtk_grid.get_child("FieldData")),
+                std::back_inserter(names.meta_data_fields)
+            );
+    }
+
+}  // namespace XMLDetail
+#endif  // DOXYGEN
 
 
 /*!
@@ -694,15 +735,11 @@ class XMLReaderHelper {
         return opt_ref.unwrap();
     }
 
-    std::ranges::range auto data_arrays_at(std::string_view path) const {
-        return XML::data_arrays(get(path));
-    }
-
     //! Returns the field representing the points of the grid
     FieldPtr make_points_field(std::string_view section_path, std::size_t num_expected_points) const {
         std::size_t visited = 0;
         FieldPtr result{nullptr};
-        for (const auto& data_array : data_arrays_at(section_path)) {
+        for (const auto& data_array : XML::data_arrays(get(section_path))) {
             if (!result)
                 result = make_data_array_field(data_array.get_attribute("Name"), section_path, num_expected_points);
             else {

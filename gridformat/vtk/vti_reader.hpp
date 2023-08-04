@@ -10,7 +10,6 @@
 
 #include <string>
 #include <optional>
-#include <iterator>
 #include <sstream>
 #include <ranges>
 #include <array>
@@ -66,25 +65,7 @@ class VTIReader : public GridReader {
             std::string{"1 0 0 0 1 0 0 0 1"}, "Direction"
         ));
 
-        if (helper.get("ImageData/Piece").has_child("PointData"))
-            std::ranges::copy(
-                helper.data_arrays_at("ImageData/Piece/PointData")
-                    | std::views::transform([] (const auto& data_array) { return data_array.get_attribute("Name"); }),
-                std::back_inserter(fields.point_fields)
-            );
-        if (helper.get("ImageData/Piece").has_child("CellData"))
-            std::ranges::copy(
-                helper.data_arrays_at("ImageData/Piece/CellData")
-                    | std::views::transform([] (const auto& data_array) { return data_array.get_attribute("Name"); }),
-                std::back_inserter(fields.cell_fields)
-            );
-        if (helper.get("ImageData").has_child("FieldData"))
-            std::ranges::copy(
-                helper.data_arrays_at("ImageData/FieldData")
-                    | std::views::transform([] (const auto& data_array) { return data_array.get_attribute("Name"); }),
-                std::back_inserter(fields.meta_data_fields)
-            );
-
+        VTK::XMLDetail::copy_field_names_from(helper.get("ImageData"), fields);
         _helper.emplace(std::move(helper));
         _image_specs.emplace(std::move(specs));
     }

@@ -40,25 +40,7 @@ class VTPReader : public GridReader {
         if (_num_strips > 0)
             throw NotImplemented("Triangle strips are not (yet) supported");
 
-        if (helper.get("PolyData/Piece").has_child("PointData"))
-            std::ranges::copy(
-                helper.data_arrays_at("PolyData/Piece/PointData")
-                    | std::views::transform([] (const auto& data_array) { return data_array.get_attribute("Name"); }),
-                std::back_inserter(fields.point_fields)
-            );
-        if (helper.get("PolyData/Piece").has_child("CellData"))
-            std::ranges::copy(
-                helper.data_arrays_at("PolyData/Piece/CellData")
-                    | std::views::transform([] (const auto& data_array) { return data_array.get_attribute("Name"); }),
-                std::back_inserter(fields.cell_fields)
-            );
-        if (helper.get("PolyData").has_child("FieldData"))
-            std::ranges::copy(
-                helper.data_arrays_at("PolyData/FieldData")
-                    | std::views::transform([] (const auto& data_array) { return data_array.get_attribute("Name"); }),
-                std::back_inserter(fields.meta_data_fields)
-            );
-
+        VTK::XMLDetail::copy_field_names_from(helper.get("PolyData"), fields);
         _helper.emplace(std::move(helper));
     }
 
