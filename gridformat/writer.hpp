@@ -292,6 +292,13 @@ class Writer {
         });
     }
 
+    //! Ignore/consider warnings (default: true)
+    void set_ignore_warnings(bool value) {
+        _visit_writer([&] (auto& writer) {
+            writer.set_ignore_warnings(value);
+        });
+    }
+
     /*!
      * \brief Copy all inserted fields into another writer.
      * \param out The writer into which to copy all fields of this writer.

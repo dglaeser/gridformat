@@ -22,6 +22,7 @@
 #include <gridformat/common/field_storage.hpp>
 #include <gridformat/common/range_field.hpp>
 #include <gridformat/common/scalar_field.hpp>
+#include <gridformat/common/logging.hpp>
 
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/grid/_detail.hpp>
@@ -138,6 +139,10 @@ class GridWriterBase {
         _cell_fields.clear();
     }
 
+    void set_ignore_warnings(bool value) {
+        _ignore_warnings = value;
+    }
+
     const Grid& grid() const {
         return _grid;
     }
@@ -209,6 +214,15 @@ class GridWriterBase {
     }
 
  protected:
+    void _log_warning(std::string_view warning) const {
+        if (!_ignore_warnings)
+            log_warning(
+                std::string{warning}
+                + (warning.ends_with("\n") ? "" : "\n")
+                + "To deactivate this warning, call set_ignore_warnings(true);"
+            );
+    }
+
     template<typename EntityFunction, Concepts::Scalar T>
     auto _make_point_field(EntityFunction&& f, const Precision<T>& prec) const {
         if (_opts.has_value())
@@ -265,6 +279,7 @@ class GridWriterBase {
     FieldStorage _cell_fields;
     FieldStorage _meta_data;
     std::optional<WriterOptions> _opts;
+    bool _ignore_warnings = false;
 };
 
 //! Abstract base class for grid file writers.

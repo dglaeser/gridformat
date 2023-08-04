@@ -17,7 +17,6 @@
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/filtered_range.hpp>
 #include <gridformat/common/field_storage.hpp>
-#include <gridformat/common/logging.hpp>
 
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/common.hpp>
@@ -89,7 +88,18 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
         );
 
         if (Ranges::size(unsupported_range) > 0)
-            std::cout << as_warning("Grid contains cell types not supported by .vtp; These will be ignored.") << std::endl;
+            this->_log_warning("Grid contains cell types not supported by .vtp; These will be ignored.");
+        if (!std::ranges::empty(this->_cell_field_names())
+            && !std::ranges::empty(verts_range)
+                + !std::ranges::empty(lines_range)
+                + !std::ranges::empty(polys_range)
+                > 1)
+            this->_log_warning(
+                "You appear to have cell data defined and your grid consists of multiple cell types "
+                "(vertices, lines, polys).\nNote that for correct cell data visualization with vtk, "
+                "your cell iterator must be such that it iterates over the cell types in order "
+                "(vertices -> lines -> polys)."
+            );
 
         const auto num_verts = Ranges::size(verts_range);
         const auto num_lines = Ranges::size(lines_range);
