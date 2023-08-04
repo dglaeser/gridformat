@@ -94,6 +94,10 @@ class DynamicPrecision {
         return std::visit(std::forward<Visitor>(visitor), _precision);
     }
 
+    bool operator==(const DynamicPrecision& other) const {
+        return _precision.index() == other._precision.index();
+    }
+
     friend std::ostream& operator<<(std::ostream& s, const DynamicPrecision& prec) {
         prec.visit([&] <typename T> (Precision<T>) {
             if constexpr (std::is_same_v<T, char>)

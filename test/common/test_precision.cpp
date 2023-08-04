@@ -18,8 +18,11 @@ void _test(const GridFormat::Precision<T>& prec) {
     expect(eq(precision.is_integral(), std::is_integral_v<T>));
     expect(eq(precision.is_signed(), std::is_signed_v<T>));
     expect(eq(precision.size_in_bytes(), sizeof(T)));
-    precision.visit([] <typename _T> (const GridFormat::Precision<_T>&) {
+    precision.visit([&] <typename _T> (const GridFormat::Precision<_T>& _p) {
         expect(std::is_same_v<T, _T>);
+        expect(precision == _p);
+        if constexpr (!std::is_same_v<_T, double>)
+            expect(precision != GridFormat::DynamicPrecision{GridFormat::Precision<double>{}});
     });
 }
 
