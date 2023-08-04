@@ -8,6 +8,10 @@
 #include <concepts>
 #include <type_traits>
 
+#include <gridformat/common/string_conversion.hpp>
+#include <gridformat/common/logging.hpp>
+#include <gridformat/common/ranges.hpp>
+
 #include <gridformat/grid/writer.hpp>
 #include <gridformat/grid/reader.hpp>
 #include <gridformat/grid/concepts.hpp>
@@ -62,11 +66,11 @@ bool check_equal_fields(const Writer& writer, const Reader& reader, const bool v
 
 template<std::size_t dim, std::size_t space_dim, typename Writer>
     requires(std::derived_from<Writer, GridWriter<typename Writer::Grid>>)
-void test_reader(Writer& writer,
-                 GridReader& reader,
-                 const std::string& base_filename,
-                 const TestFileOptions& opts = {},
-                 const bool verbose = true) {
+std::string test_reader(Writer& writer,
+                        GridReader& reader,
+                        const std::string& base_filename,
+                        const TestFileOptions& opts = {},
+                        const bool verbose = true) {
     const auto filename = write_test_file<space_dim>(writer, base_filename, opts, verbose);
 
     if (verbose)
@@ -98,6 +102,8 @@ void test_reader(Writer& writer,
 
     if (verbose)
         std::cout << "Wrote '" << GridFormat::as_highlight(out_filename) << "'" << std::endl;
+
+    return filename;
 }
 
 template<std::size_t dim, std::size_t space_dim, typename Writer, typename WriterFactory>
@@ -107,11 +113,11 @@ template<std::size_t dim, std::size_t space_dim, typename Writer, typename Write
                 std::invoke_result_t<WriterFactory, const typename Writer::Grid&, const std::string&>,
                 TimeSeriesGridWriter<typename Writer::Grid>
             >)
-void test_reader(Writer& writer,
-                 GridReader& reader,
-                 const WriterFactory& writer_factory,
-                 const TestFileOptions& opts = {},
-                 const bool verbose = true) {
+std::string test_reader(Writer& writer,
+                        GridReader& reader,
+                        const WriterFactory& writer_factory,
+                        const TestFileOptions& opts = {},
+                        const bool verbose = true) {
     const std::size_t num_steps = 5;
     const auto filename = write_test_time_series<space_dim>(writer, num_steps, opts, verbose);
 
@@ -157,7 +163,56 @@ void test_reader(Writer& writer,
 
     if (verbose)
         std::cout << "Wrote '" << GridFormat::as_highlight(out_filename) << "'" << std::endl;
+
+    return filename;
 }
+
+
+template<unsigned int orig_space_dim, typename Grid, std::ranges::range EntityRange>
+bool test_field_values(std::string_view name,
+                       GridFormat::FieldPtr field_ptr,
+                       const Grid& grid,
+                       const EntityRange& entities) {
+    std::cout << "Testing field '" << name << "'" << std::endl;
+
+    const auto layout = field_ptr->layout();
+    if (layout.extent(0) != Ranges::size(entities)) {
+        std::cout << "Size mismatch between field and number of entities" << std::endl;
+        return false;
+    }
+
+    static constexpr std::size_t space_dim = space_dimension<Grid>;
+    return field_ptr->precision().visit([&] <typename T> (const Precision<T>& precision) {
+        if constexpr (std::floating_point<T>) {
+            std::size_t i = 0;
+            auto field_data = field_ptr->serialized();
+            auto field_values = field_data.as_span_of(precision);
+            const auto ncomps = layout.dimension() > 1 ? layout.number_of_entries(1) : 1;
+            for (const auto& e : entities) {
+                const auto eval_pos = evaluation_position(grid, e);
+                const auto test_value = test_function<T>(eval_pos);
+                for (unsigned int comp = 0; comp < ncomps; ++comp) {
+                    const bool use_zero = comp/space_dim >= orig_space_dim || comp%space_dim >= orig_space_dim;
+                    const T expected_value = use_zero ? 0 : test_value;
+                    if (field_values.size() < i)
+                        throw SizeError("Field values too short");
+                    if (std::abs(field_values[i] - expected_value) > T{1e-6}) {
+                        std::cout << "Found deviation at " << as_string(eval_pos) << ": "
+                                  << field_values[i] << " - " << expected_value
+                                  << std::endl;
+                        return false;
+                    }
+                    i++;
+                }
+            }
+        } else {
+            log_warning("Unsupported field value type, skipping test...");
+        }
+
+        return true;
+    });
+}
+
 
 }  // namespace GridFormat::Test
 

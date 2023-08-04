@@ -20,33 +20,6 @@
 #endif
 
 
-template<typename Grid, std::ranges::range EntityRange>
-void _test_scalar_field_values(std::string_view name,
-                               GridFormat::FieldPtr field_ptr,
-                               const Grid& grid,
-                               const EntityRange& entities) {
-    std::cout << "Testing field '" << name << "'" << std::endl;
-    using GridFormat::Testing::expect;
-    field_ptr->precision().visit([&] <typename T> (const GridFormat::Precision<T>& precision) {
-        if constexpr (std::floating_point<T>) {
-            std::size_t i = 0;
-            auto field_data = field_ptr->serialized();
-            auto field_values = field_data.as_span_of(precision);
-            for (const auto& e : entities) {
-                const auto eval_pos = GridFormat::Test::evaluation_position(grid, e);
-                const auto expected_value = GridFormat::Test::test_function<T>(eval_pos);
-                if (field_values.size() < i)
-                    throw GridFormat::SizeError("Field values too short");
-                expect(std::abs(field_values[i] - expected_value) < T{1e-6});
-                i++;
-            }
-        } else {
-            GridFormat::log_warning("Unsupported field value type");
-        }
-    });
-}
-
-
 int main() {
     const auto grid = GridFormat::Test::make_unstructured_2d();
     GridFormat::VTUWriter writer{grid};
@@ -82,6 +55,7 @@ int main() {
     }
 
     using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
     "vtk_written_vtu_files"_test = [&] () {
         for (const std::string& vtu_filepath : vtu_files) {
             std::cout << "Testing '" << GridFormat::as_highlight(vtu_filepath) << "'" << std::endl;
@@ -93,17 +67,10 @@ int main() {
                 return std::move(factory).grid();
             } ();
 
-            for (const auto& [name, field_ptr] : point_fields(reader)) {
-                const auto layout = field_ptr->layout();
-                if (layout.dimension() == 1 || (layout.dimension() == 2 && layout.extent(1) == 1))
-                    _test_scalar_field_values(name, field_ptr, grid, GridFormat::points(grid));
-            }
-
-            for (const auto& [name, field_ptr] : cell_fields(reader)) {
-                const auto layout = field_ptr->layout();
-                if (layout.dimension() == 1 || (layout.dimension() == 2 && layout.extent(1) == 1))
-                    _test_scalar_field_values(name, field_ptr, grid, GridFormat::cells(grid));
-            }
+            for (const auto& [name, field_ptr] : point_fields(reader))
+                expect(GridFormat::Test::test_field_values<2>(name, field_ptr, grid, GridFormat::points(grid)));
+            for (const auto& [name, field_ptr] : cell_fields(reader))
+                expect(GridFormat::Test::test_field_values<2>(name, field_ptr, grid, GridFormat::cells(grid)));
         }
     };
 
