@@ -12,10 +12,14 @@ target_compile_definitions(test_vtu_reader PRIVATE TEST_DATA_PATH="${CMAKE_CURRE
 gridformat_add_parallel_regression_test(test_pvtu_writer test_pvtu_writer.cpp 2 "pvtu_*.pvtu")
 gridformat_add_parallel_regression_test(test_pvtu_reader test_pvtu_reader.cpp 2 "reader_pvtu_*.pvtu")
 
-gridformat_add_regression_test(test_pvd_writer test_pvd_writer.cpp "pvd_time_series*.pvd")
 gridformat_add_regression_test(test_vtp_writer test_vtp_writer.cpp "vtp_*")
-gridformat_add_regression_test(test_vtu_time_series test_vtu_time_series.cpp "vtu_time_series*vtu")
+gridformat_add_regression_test(test_vtp_reader test_vtp_reader.cpp "reader_vtp_*")
+target_compile_definitions(test_vtp_reader PRIVATE TEST_DATA_PATH="${CMAKE_CURRENT_LIST_DIR}/test_data")
+
 gridformat_add_parallel_regression_test(test_pvtp_writer test_pvtp_writer.cpp 2 "pvtp_*.pvtp")
+
+gridformat_add_regression_test(test_pvd_writer test_pvd_writer.cpp "pvd_time_series*.pvd")
+gridformat_add_regression_test(test_vtu_time_series test_vtu_time_series.cpp "vtu_time_series*vtu")
 gridformat_add_parallel_regression_test(test_parallel_pvd_writer test_parallel_pvd_writer.cpp 2 "pvd_parallel_*.pvd")
 
 gridformat_add_regression_test_if(
