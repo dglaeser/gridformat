@@ -11,6 +11,7 @@
 #include <vector>
 #include <cstddef>
 #include <algorithm>
+#include <iterator>
 #include <span>
 #include <bit>
 
@@ -54,6 +55,12 @@ class Serialization {
         _data.resize(size, value);
     }
 
+    void push_back(std::vector<std::byte>&& bytes) {
+        const auto size_before = size();
+        _data.reserve(size_before + bytes.size());
+        std::ranges::move(std::move(bytes), std::back_inserter(_data));
+    }
+
     void cut_front(std::size_t number_of_bytes) {
         if (number_of_bytes > size())
             throw ValueError("Cannot cut more bytes than stored");
@@ -77,6 +84,8 @@ class Serialization {
 
     operator std::span<const std::byte>() const { return {_data}; }
     operator std::span<std::byte>() { return {_data}; }
+
+    std::vector<std::byte>&& data() && { return std::move(_data); }
 
  private:
     template<typename T>
