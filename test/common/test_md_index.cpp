@@ -129,8 +129,9 @@ int main() {
         expect(std::ranges::equal(
             MDIndexRange{{2, 3}},
             std::vector{
-                MDIndex{0, 0}, MDIndex{0, 1}, MDIndex{0, 2},
-                MDIndex{1, 0}, MDIndex{1, 1}, MDIndex{1, 2}
+                MDIndex{0, 0}, MDIndex{1, 0},
+                MDIndex{0, 1}, MDIndex{1, 1},
+                MDIndex{0, 2}, MDIndex{1, 2}
             }
         ));
     };
@@ -141,8 +142,8 @@ int main() {
             MDIndexRange{{2, 2, 1}},
             std::vector{
                 MDIndex{0, 0, 0},
-                MDIndex{0, 1, 0},
                 MDIndex{1, 0, 0},
+                MDIndex{0, 1, 0},
                 MDIndex{1, 1, 0},
             }
         ));
