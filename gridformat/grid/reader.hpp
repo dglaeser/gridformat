@@ -49,16 +49,18 @@ namespace GridFormat {
 //! Abstract base class for all readers, defines the common interface.
 class GridReader {
  public:
+    using Vector = std::array<double, 3>;
     using CellVisitor = std::function<void(CellType, const std::vector<std::size_t>&)>;
+
+    //! Describes the location of a piece within a distributed structured grid
+    struct PieceLocation {
+        std::array<std::size_t, 3> lower_left;
+        std::array<std::size_t, 3> upper_right;
+    };
 
     GridReader() = default;
     explicit GridReader(const std::string& filename) { open(filename); }
-
     virtual ~GridReader() = default;
-
-    const std::string& filename() const {
-        return _filename;
-    }
 
     //! Open the given grid file
     void open(const std::string& filename) {
@@ -74,6 +76,11 @@ class GridReader {
         _filename.clear();
     }
 
+    //! Return the name of the opened grid file (empty string until open() is called)
+    const std::string& filename() const {
+        return _filename;
+    }
+
     //! Return the number of cells in the grid read from the file
     std::size_t number_of_cells() const {
         return _number_of_cells();
@@ -86,7 +93,17 @@ class GridReader {
 
     //! Return the extents of the grid (only available for structured grid formats)
     std::array<std::size_t, 3> extents() const {
-        return _extents();
+        const auto loc = location();
+        return {
+            loc.upper_right.at(0) - loc.lower_left.at(0),
+            loc.upper_right.at(1) - loc.lower_left.at(1),
+            loc.upper_right.at(2) - loc.lower_left.at(2)
+        };
+    }
+
+    //! Return the location of this piece in a structured grid (only available for structured grid formats)
+    PieceLocation location() const {
+        return _location();
     }
 
     //! Return the ordinates of the grid (only available for rectilinear grid formats)
@@ -95,17 +112,17 @@ class GridReader {
     }
 
     //! Return the spacing of the grid (only available for image grid formats)
-    std::array<double, 3> spacing() const {
+    Vector spacing() const {
         return _spacing();
     }
 
     //! Return the origin of the grid (only available for image grid formats)
-    std::array<double, 3> origin() const {
+    Vector origin() const {
         return _origin();
     }
 
     //! Return the basis vector of the grid in the given direction (only available for image grid formats)
-    std::array<double, 3> basis_vector(unsigned int i = 0) const {
+    Vector basis_vector(unsigned int i = 0) const {
         return _basis_vector(i);
     }
 
@@ -253,23 +270,23 @@ class GridReader {
         throw TypeError("'" + _name() + "' does not implement points()");
     }
 
-    virtual std::array<std::size_t, 3> _extents() const {
-        throw NotImplemented("Extents are only available with structured grid formats");
+    virtual PieceLocation _location() const {
+        throw NotImplemented("Extents/Location are only available with structured grid formats");
     }
 
     virtual std::vector<double> _ordinates(unsigned int) const {
         throw NotImplemented("Ordinates are only available with rectilinear grid formats.");
     }
 
-    virtual std::array<double, 3> _spacing() const {
+    virtual Vector _spacing() const {
         throw NotImplemented("Spacing is only available with image grid formats.");
     }
 
-    virtual std::array<double, 3> _origin() const {
+    virtual Vector _origin() const {
         throw NotImplemented("Origin is only available with image grid formats.");
     }
 
-    virtual std::array<double, 3> _basis_vector(unsigned int i) const {
+    virtual Vector _basis_vector(unsigned int i) const {
         std::array<double, 3> result{0., 0., 0.};
         result[i] = 1.0;
         return result;

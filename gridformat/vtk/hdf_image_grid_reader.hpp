@@ -99,15 +99,93 @@ class VTKHDFImageGridReader : public GridReader {
         auto extents = _file.value().template read_attribute_to<std::vector<std::size_t>>("/VTKHDF/WholeExtent");
         if (extents.size() != 6)
             throw SizeError("Unexpected 'WholeExtents' attribute (size = " + as_string(extents.size()) + ").");
-        _cell_extents = {extents[1], extents[3], extents[5]};
+        _piece_location.lower_left = {extents[0], extents[2], extents[4]};
+        _piece_location.upper_right = {extents[1], extents[3], extents[5]};
     }
 
     void _close() override {
         _file = {};
-        _cell_extents = {};
+        _piece_location = {};
         _cell_spacing = {};
         _point_origin = {};
         _direction = {};
+    }
+
+    typename GridReader::PieceLocation _location() const override {
+        return _piece_location;
+    }
+
+    typename GridReader::Vector _spacing() const override {
+        return _cell_spacing;
+    }
+
+    typename GridReader::Vector _origin() const override {
+        return _point_origin;
+    }
+
+    std::size_t _number_of_cells() const override {
+        const auto counts = _get_extents();
+        auto actives = counts | std::views::filter([] (auto e) { return e != 0; });
+        return std::accumulate(
+            std::ranges::begin(actives),
+            std::ranges::end(actives),
+            std::size_t{1},
+            std::multiplies{}
+        );
+    }
+
+    std::size_t _number_of_points() const override {
+        auto counts = Ranges::incremented(_get_extents(), 1);
+        return std::accumulate(
+            std::ranges::begin(counts),
+            std::ranges::end(counts),
+            std::size_t{1},
+            std::multiplies{}
+        );
+    }
+
+    void _visit_cells(const typename GridReader::CellVisitor& visitor) const override {
+        VTK::CommonDetail::visit_structured_cells(visitor, _make_vtk_extents_array());
+    }
+
+    FieldPtr _points() const override {
+        std::array<std::size_t, 6> extents = _make_vtk_extents_array();
+        extents[1] += 1;
+        extents[3] += 1;
+        extents[5] += 1;
+        return make_field_ptr(LazyField{
+            int{},  // dummy source
+            MDLayout{{VTK::CommonDetail::number_of_entities(extents), std::size_t{vtk_space_dim}}},
+            Precision<double>{},
+            [ex=extents, o=_point_origin, s=_cell_spacing, d=_direction] (const int&) {
+                return VTK::CommonDetail::serialize_structured_points(ex, o, s, d);
+            }
+        });
+    }
+
+    bool _is_sequence() const override {
+        return _is_transient();
+    }
+
+    std::size_t _number_of_steps() const override {
+        if (!_num_steps.has_value())
+            throw ValueError("Read file is not a sequence");
+        return _num_steps.value();
+    }
+
+    double _time_at_step(std::size_t step_idx) const override {
+        if (step_idx >= _number_of_steps())
+            throw ValueError("Only " + as_string(_number_of_steps()) + " available");
+        return _file.value().template read_dataset_to<double>("/VTKHDF/Steps/Values", HDF5::Slice{
+            .offset = {step_idx},
+            .count = {1}
+        });
+    }
+
+    void _set_step(std::size_t step_idx, typename GridReader::FieldNames&) override {
+        if (step_idx >= _number_of_steps())
+            throw ValueError("Only " + as_string(_number_of_steps()) + " available");
+        _step_index = step_idx;
     }
 
     auto _serialization_callback(std::string path, std::size_t target_size) const {
@@ -133,72 +211,6 @@ class VTKHDFImageGridReader : public GridReader {
                 throw InvalidState("Unexpected field layout: " + as_string(layout));
             }, HDF5::Slice{.offset = offset, .count = count});
         };
-    }
-
-    auto _point_extents() const {
-        return _cell_extents | std::views::transform([] (std::size_t e) {
-            return e == 0 ? 0 : e + 1;
-        });
-    }
-
-    template<std::ranges::range R>
-    auto _actives(R&& r) const {
-        return r | std::views::filter([] (auto e) { return e != 0; });
-    }
-
-    std::array<std::size_t, 3> _extents() const override {
-        return _cell_extents;
-    }
-
-    std::array<double, 3> _spacing() const override {
-        return _cell_spacing;
-    }
-
-    std::array<double, 3> _origin() const override {
-        return _point_origin;
-    }
-
-    std::size_t _number_of_cells() const override {
-        auto actives = _actives(_cell_extents);
-        return std::accumulate(
-            std::ranges::begin(actives),
-            std::ranges::end(actives),
-            std::size_t{1},
-            std::multiplies{}
-        );
-    }
-
-    std::size_t _number_of_points() const override {
-        auto actives = _actives(_point_extents());
-        return std::accumulate(
-            std::ranges::begin(actives),
-            std::ranges::end(actives),
-            std::size_t{1},
-            std::multiplies{}
-        );
-    }
-
-    void _visit_cells(const typename GridReader::CellVisitor& visitor) const override {
-        std::array<std::size_t, 6> extents = Ranges::filled_array<6>(std::size_t{0});
-        extents[1] = _cell_extents[0];
-        extents[3] = _cell_extents[1];
-        extents[5] = _cell_extents[2];
-        VTK::CommonDetail::visit_structured_cells(visitor, extents);
-    }
-
-    FieldPtr _points() const override {
-        std::array<std::size_t, 6> extents = Ranges::filled_array<6>(std::size_t{0});
-        std::ranges::for_each(_cell_extents, [&, i=0] (const auto ex) mutable {
-            extents.at((i++)*2 + 1) = ex + 1;
-        });
-        return make_field_ptr(LazyField{
-            int{},  // dummy source
-            MDLayout{{VTK::CommonDetail::number_of_entities(extents), std::size_t{vtk_space_dim}}},
-            Precision<double>{},
-            [ex=extents, o=_point_origin, s=_cell_spacing, d=_direction] (const int&) {
-                return VTK::CommonDetail::serialize_structured_points(ex, o, s, d);
-            }
-        });
     }
 
     FieldPtr _cell_field(std::string_view name) const override {
@@ -254,6 +266,17 @@ class VTKHDFImageGridReader : public GridReader {
         });
     }
 
+    std::array<std::size_t, 6> _make_vtk_extents_array() const {
+        std::array<std::size_t, 6> extents;
+        extents[0] = _piece_location.lower_left[0];
+        extents[2] = _piece_location.lower_left[1];
+        extents[4] = _piece_location.lower_left[2];
+        extents[1] = _piece_location.upper_right[0];
+        extents[3] = _piece_location.upper_right[1];
+        extents[5] = _piece_location.upper_right[2];
+        return extents;
+    }
+
     std::optional<std::size_t> _get_number_of_components(std::string_view path) const {
         const auto layout = _file.value().get_dimensions(std::string{path}).value();
         const std::size_t step_offset = _is_transient() ? 1 : 0;
@@ -262,33 +285,16 @@ class VTKHDFImageGridReader : public GridReader {
         return {};
     }
 
-    bool _is_sequence() const override {
-        return _is_transient();
-    }
-
-    std::size_t _number_of_steps() const override {
-        if (!_num_steps.has_value())
-            throw ValueError("Read file is not a sequence");
-        return _num_steps.value();
-    }
-
-    double _time_at_step(std::size_t step_idx) const override {
-        if (step_idx >= _number_of_steps())
-            throw ValueError("Only " + as_string(_number_of_steps()) + " available");
-        return _file.value().template read_dataset_to<double>("/VTKHDF/Steps/Values", HDF5::Slice{
-            .offset = {step_idx},
-            .count = {1}
-        });
-    }
-
-    void _set_step(std::size_t step_idx, typename GridReader::FieldNames&) override {
-        if (step_idx >= _number_of_steps())
-            throw ValueError("Only " + as_string(_number_of_steps()) + " available");
-        _step_index = step_idx;
-    }
-
     std::size_t _grid_dimension() const {
-        return VTK::CommonDetail::structured_grid_dimension(_cell_extents);
+        return VTK::CommonDetail::structured_grid_dimension(_get_extents());
+    }
+
+    std::array<std::size_t, 3> _get_extents() const {
+        return {
+            _piece_location.upper_right[0] - _piece_location.lower_left[0],
+            _piece_location.upper_right[1] - _piece_location.lower_left[1],
+            _piece_location.upper_right[2] - _piece_location.lower_left[2]
+        };
     }
 
     bool _is_transient() const {
@@ -297,9 +303,9 @@ class VTKHDFImageGridReader : public GridReader {
 
     Communicator _comm;
     std::optional<HDF5File> _file;
-    std::array<std::size_t, 3> _cell_extents;
-    std::array<double, 3> _cell_spacing;
+    typename GridReader::PieceLocation _piece_location;
     std::array<double, 9> _direction;
+    std::array<double, 3> _cell_spacing;
     std::array<double, 3> _point_origin;
     std::optional<std::size_t> _num_steps;
     std::optional<std::size_t> _step_index;

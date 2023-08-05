@@ -87,6 +87,31 @@ class VTIReader : public GridReader {
         return VTK::CommonDetail::number_of_entities(_point_extents());
     }
 
+    typename GridReader::Vector _origin() const override {
+        return _specs().origin;
+    }
+
+    typename GridReader::Vector _spacing() const override {
+        return _specs().spacing;
+    }
+
+    typename GridReader::Vector _basis_vector(unsigned int i) const override {
+        const auto specs = _specs();
+        return {
+            specs.direction.at(i),
+            specs.direction.at(i+3),
+            specs.direction.at(i+6)
+        };
+    }
+
+    typename GridReader::PieceLocation _location() const override {
+        const auto& specs = _specs();
+        typename GridReader::PieceLocation result;
+        result.lower_left = {specs.extents[0], specs.extents[2], specs.extents[4]};
+        result.upper_right = {specs.extents[1], specs.extents[3], specs.extents[5]};
+        return result;
+    }
+
     bool _is_sequence() const override {
         return false;
     }

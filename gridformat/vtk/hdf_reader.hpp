@@ -100,8 +100,8 @@ class VTKHDFReader : public GridReader {
         return _access().number_of_points();
     }
 
-    std::array<std::size_t, 3> _extents() const override {
-        return _access().extents();
+    typename GridReader::PieceLocation _location() const override {
+        return _access().location();
     }
 
     std::vector<double> _ordinates(unsigned int i) const override {
