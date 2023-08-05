@@ -18,10 +18,10 @@ namespace GridFormat {
 /*!
  * \ingroup VTK
  * \brief Reader for .pvtu file format
- * \copydetails VTK::PXMLReader
+ * \copydetails VTK::PXMLUnstructuredGridReader
  */
-class PVTUReader : public VTK::PXMLReader<VTUReader> {
-    using ParentType = VTK::PXMLReader<VTUReader>;
+class PVTUReader : public VTK::PXMLUnstructuredGridReader<VTUReader> {
+    using ParentType = VTK::PXMLUnstructuredGridReader<VTUReader>;
 
  public:
     PVTUReader()

@@ -32,25 +32,25 @@ namespace GridFormat::VTK {
 
 /*!
  * \ingroup VTK
- * \brief Reader for parallel vtk-xml file formats for unstructured grids.
+ * \brief Base class for readers of parallel vtk-xml file formats.
  * \details TODO
  */
 template<std::derived_from<GridReader> PieceReader>
-class PXMLReader : public GridReader {
+class PXMLReaderBase : public GridReader {
  public:
-    PXMLReader(std::string vtk_grid_type)
+    PXMLReaderBase(std::string vtk_grid_type)
     : _vtk_grid_type{std::move(vtk_grid_type)}
     {}
 
-    explicit PXMLReader(std::string vtk_grid_type, const NullCommunicator&)
-    : PXMLReader(std::move(vtk_grid_type))
+    explicit PXMLReaderBase(std::string vtk_grid_type, const NullCommunicator&)
+    : PXMLReaderBase(std::move(vtk_grid_type))
     {}
 
     template<Concepts::Communicator C>
-    explicit PXMLReader(std::string vtk_grid_type,
-                        const C& comm,
-                        std::optional<bool> merge_exceeding_pieces = {})
-    : PXMLReader(std::move(vtk_grid_type)) {
+    explicit PXMLReaderBase(std::string vtk_grid_type,
+                            const C& comm,
+                            std::optional<bool> merge_exceeding_pieces = {})
+    : PXMLReaderBase(std::move(vtk_grid_type)) {
         _num_ranks = Parallel::size(comm);
         _rank = Parallel::rank(comm);
         _merge_exceeding = merge_exceeding_pieces;
@@ -134,10 +134,6 @@ class PXMLReader : public GridReader {
         _piece_readers.clear();
     }
 
-    std::string _name() const override {
-        return "VTK::PXMLReader";
-    }
-
     std::size_t _number_of_cells() const override {
         auto num_cells_view = _piece_readers | std::views::transform([] (const auto& reader) {
             return reader.number_of_cells();
@@ -164,13 +160,37 @@ class PXMLReader : public GridReader {
         return false;
     }
 
+ protected:
+    std::string _vtk_grid_type;
+
+    std::optional<unsigned int> _num_ranks;
+    std::optional<unsigned int> _rank;
+    std::optional<bool> _merge_exceeding;
+
+    std::optional<std::string> _filename;
+    std::vector<PieceReader> _piece_readers;
+};
+
+
+/*!
+ * \ingroup VTK
+ * \brief Base class for readers of parallel vtk-xml file formats for unstructured grids.
+ * \copydetails PXMLReaderBase
+ */
+template<std::derived_from<GridReader> PieceReader>
+class PXMLUnstructuredGridReader : public PXMLReaderBase<PieceReader> {
+    using ParentType = PXMLReaderBase<PieceReader>;
+ public:
+    using ParentType::ParentType;
+
+ private:
     FieldPtr _points() const override {
         return _merge([] (const PieceReader& reader) { return reader.points(); });
     }
 
     void _visit_cells(const typename GridReader::CellVisitor& visitor) const override {
         std::size_t offset = 0;
-        std::ranges::for_each(_piece_readers, [&] (const PieceReader& reader) {
+        std::ranges::for_each(this->_piece_readers, [&] (const PieceReader& reader) {
             reader.visit_cells([&] (CellType ct, std::vector<std::size_t> corners) {
                 std::ranges::for_each(corners, [&] (auto& value) { value += offset; });
                 visitor(ct, corners);
@@ -188,34 +208,25 @@ class PXMLReader : public GridReader {
     }
 
     FieldPtr _meta_data_field(std::string_view name) const override {
-        return _piece_readers.front().meta_data_field(name);
+        return this->_piece_readers.front().meta_data_field(name);
     }
 
     template<std::invocable<const PieceReader&> FieldGetter>
         requires(std::same_as<std::invoke_result_t<FieldGetter, const PieceReader&>, FieldPtr>)
     FieldPtr _merge(const FieldGetter& get_field) const {
-        if (_piece_readers.empty())
+        if (this->_piece_readers.empty())
             return make_field_ptr(EmptyField{float64});
-        if (_piece_readers.size() == 1)
-            return get_field(_piece_readers.front());
+        if (this->_piece_readers.size() == 1)
+            return get_field(this->_piece_readers.front());
 
         std::vector<FieldPtr> result;
         std::ranges::copy(
-            _piece_readers
+            this->_piece_readers
             | std::views::transform([&] (const PieceReader& reader) { return get_field(reader); }),
             std::back_inserter(result)
         );
         return make_field_ptr(MergedField{std::move(result)});
     }
-
-    std::string _vtk_grid_type;
-
-    std::optional<unsigned int> _num_ranks;
-    std::optional<unsigned int> _rank;
-    std::optional<bool> _merge_exceeding;
-
-    std::optional<std::string> _filename;
-    std::vector<PieceReader> _piece_readers;
 };
 
 }  // namespace GridFormat::VTK
