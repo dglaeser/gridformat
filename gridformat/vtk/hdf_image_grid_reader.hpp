@@ -21,8 +21,8 @@
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/field_transformations.hpp>
 #include <gridformat/common/exceptions.hpp>
-#include <gridformat/common/md_index.hpp>
-#include <gridformat/common/flat_index_mapper.hpp>
+#include <gridformat/common/lazy_field.hpp>
+#include <gridformat/common/ranges.hpp>
 
 #include <gridformat/grid/reader.hpp>
 #include <gridformat/parallel/concepts.hpp>
@@ -100,8 +100,6 @@ class VTKHDFImageGridReader : public GridReader {
         if (extents.size() != 6)
             throw SizeError("Unexpected 'WholeExtents' attribute (size = " + as_string(extents.size()) + ").");
         _cell_extents = {extents[1], extents[3], extents[5]};
-
-        _make_grid_dim_to_space_dim_map();
     }
 
     void _close() override {
@@ -181,54 +179,26 @@ class VTKHDFImageGridReader : public GridReader {
     }
 
     void _visit_cells(const typename GridReader::CellVisitor& visitor) const override {
-        const MDLayout point_layout{_actives(_point_extents())};
-        const FlatIndexMapper point_mapper{point_layout};
-        std::vector<std::size_t> corners;
-        for (const auto& md_index : MDIndexRange{MDLayout{_actives(_cell_extents)}}) {
-            const auto p0 = point_mapper.map(md_index);
-            if (point_layout.dimension() == 1) {
-                corners.resize(2);
-                corners = {p0, p0 + 1};
-                visitor(CellType::segment, corners);
-            } else if (point_layout.dimension() == 2) {
-                const auto x_offset = point_layout.extent(0);
-                corners.resize(4);
-                corners = {p0, p0 + 1, p0 + x_offset, p0 + 1 + x_offset};
-                visitor(CellType::pixel, corners);
-            } else {
-                const auto x_offset = point_layout.extent(0);
-                const auto y_offset = point_layout.number_of_entries(0)*point_layout.number_of_entries(1);
-                corners.resize(4);
-                corners = {
-                    p0, p0 + 1, p0 + x_offset, p0 + 1 + x_offset,
-                    p0 + y_offset, p0 + y_offset + 1, p0 + y_offset + x_offset, p0 + 1 + y_offset + x_offset
-                };
-                visitor(CellType::voxel, corners);
-            }
-        }
+        std::array<std::size_t, 6> extents = Ranges::filled_array<6>(std::size_t{0});
+        extents[1] = _cell_extents[0];
+        extents[3] = _cell_extents[1];
+        extents[5] = _cell_extents[2];
+        VTK::CommonDetail::visit_structured_cells(visitor, extents);
     }
 
     FieldPtr _points() const override {
-        const MDLayout point_layout{_actives(_point_extents())};
-        const FlatIndexMapper point_mapper{point_layout};
-
-        std::vector<double> buffer(_number_of_points()*vtk_space_dim, 0.0);
-        for (const auto& md_index : MDIndexRange{point_layout}) {
-            const auto offset = point_mapper.map(md_index)*vtk_space_dim;
-            std::copy_n(_point_origin.begin(), vtk_space_dim, buffer.data() + offset);
-            for (std::size_t i = 0; i < _grid_dimension(); ++i) {
-                const auto space_dir = _grid_to_space_dim_map.at(i);
-                const double deltaX = md_index.get(i)*_cell_spacing.at(space_dir);
-                const auto basis_vec = _direction
-                    | std::views::drop(space_dir*vtk_space_dim)
-                    | std::views::take(vtk_space_dim);
-                std::ranges::for_each(basis_vec, [&, j=0] (double bij) mutable {
-                    buffer.at(offset + j++) += bij*deltaX;
-                });
+        std::array<std::size_t, 6> extents = Ranges::filled_array<6>(std::size_t{0});
+        std::ranges::for_each(_cell_extents, [&, i=0] (const auto ex) mutable {
+            extents.at((i++)*2 + 1) = ex + 1;
+        });
+        return make_field_ptr(LazyField{
+            int{},  // dummy source
+            MDLayout{{VTK::CommonDetail::number_of_entities(extents), std::size_t{vtk_space_dim}}},
+            Precision<double>{},
+            [ex=extents, o=_point_origin, s=_cell_spacing, d=_direction] (const int&) {
+                return VTK::CommonDetail::serialize_structured_points(ex, o, s, d);
             }
-        }
-
-        return make_field_ptr(BufferField{std::move(buffer), MDLayout{{_number_of_points(), vtk_space_dim}}});
+        });
     }
 
     FieldPtr _cell_field(std::string_view name) const override {
@@ -317,23 +287,8 @@ class VTKHDFImageGridReader : public GridReader {
         _step_index = step_idx;
     }
 
-    void _make_grid_dim_to_space_dim_map() {
-        const auto actives = Ranges::to_array<vtk_space_dim>(
-            _cell_extents | std::views::transform([] (auto e) { return e != 0; })
-        );
-
-        std::array<unsigned int, vtk_space_dim> zero_count;
-        for (unsigned int i = 0; i < vtk_space_dim; ++i)
-            zero_count[i] = std::accumulate(actives.begin(), actives.begin() + i, 0);
-
-        _grid_to_space_dim_map.clear();
-        for (unsigned int i = 0; i < vtk_space_dim; ++i)
-            if (actives[i])
-                _grid_to_space_dim_map.push_back(zero_count[i]);
-    }
-
     std::size_t _grid_dimension() const {
-        return _grid_to_space_dim_map.size();
+        return VTK::CommonDetail::structured_grid_dimension(_cell_extents);
     }
 
     bool _is_transient() const {
@@ -346,7 +301,6 @@ class VTKHDFImageGridReader : public GridReader {
     std::array<double, 3> _cell_spacing;
     std::array<double, 9> _direction;
     std::array<double, 3> _point_origin;
-    std::vector<std::size_t> _grid_to_space_dim_map;
     std::optional<std::size_t> _num_steps;
     std::optional<std::size_t> _step_index;
 };

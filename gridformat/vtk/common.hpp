@@ -20,10 +20,13 @@
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
+#include <gridformat/common/serialization.hpp>
+#include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/matrix.hpp>
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/string_conversion.hpp>
+#include <gridformat/common/flat_index_mapper.hpp>
 #include <gridformat/common/field_transformations.hpp>
 #include <gridformat/common/field.hpp>
 
@@ -359,6 +362,85 @@ namespace CommonDetail {
         return std::max(extents[1] - extents[0], std::size_t{1})
                 *std::max(extents[3] - extents[2], std::size_t{1})
                 *std::max(extents[5] - extents[4], std::size_t{1});
+    }
+
+    unsigned int structured_grid_dimension(const std::array<std::size_t, 3>& cells_per_direction) {
+        return std::ranges::count_if(cells_per_direction, [] (const std::size_t e) { return e > 0; });
+    }
+
+    template<typename T>
+    Serialization serialize_structured_points(const std::array<std::size_t, 6>& extents,
+                                              const std::array<T, 3>& origin,
+                                              const std::array<T, 3>& spacing,
+                                              const std::array<T, 9>& direction) {
+        const MDLayout layout{{
+            extents[1] - extents[0],
+            extents[3] - extents[2],
+            extents[5] - extents[4]
+        }};
+        const FlatIndexMapper mapper{layout};
+
+        static constexpr unsigned int vtk_space_dim = 3;
+        Serialization result(layout.number_of_entries()*sizeof(T)*vtk_space_dim);
+        auto span_out = result.as_span_of(Precision<T>{});
+        for (const auto& md_index : MDIndexRange{layout}) {
+            const auto offset = mapper.map(md_index)*vtk_space_dim;
+            assert(offset < span_out.size() - 3);
+
+            const T dx = static_cast<T>(md_index.get(0))*spacing[0];
+            const T dy = static_cast<T>(md_index.get(1))*spacing[1];
+            const T dz = static_cast<T>(md_index.get(2))*spacing[2];
+            span_out[offset + 0] = origin[0] + dx*direction[0] + dy*direction[1] + dz*direction[2];
+            span_out[offset + 1] = origin[1] + dx*direction[3] + dy*direction[4] + dz*direction[5];
+            span_out[offset + 2] = origin[2] + dx*direction[6] + dy*direction[7] + dz*direction[8];
+        }
+        return result;
+    }
+
+    template<typename Visitor>
+    void visit_structured_cells(const Visitor& visitor, const std::array<std::size_t, 6>& extents) {
+        std::array<std::size_t, 3> counts{
+            extents[1] - extents[0],
+            extents[3] - extents[2],
+            extents[5] - extents[4]
+        };
+
+        const std::size_t grid_dim = structured_grid_dimension(counts);
+        if (grid_dim == 0)
+            throw ValueError("Grid must be at least 1d");
+
+        const MDLayout point_layout{Ranges::incremented(counts, 1)};
+        const FlatIndexMapper point_mapper{point_layout};
+        const auto x_offset = grid_dim > 1 ? point_layout.extent(0) : std::size_t{0};
+        const auto y_offset = grid_dim > 2 ? point_layout.extent(0)*point_layout.extent(1) : std::size_t{0};
+
+        // avoid zero counts s.t. the index range does not degenerate
+        std::ranges::for_each(counts, [] (std::size_t& count) { count = std::max(count, std::size_t{1}); });
+        std::vector<std::size_t> corners(std::pow(2, grid_dim), 0);
+
+        const MDIndexRange index_range{MDLayout{counts}};
+        if (grid_dim == 1) {
+            std::ranges::for_each(index_range, [&] (const auto& md_index) {
+                const auto p0 = point_mapper.map(md_index);
+                corners = {p0, p0 + 1};
+                visitor(CellType::segment, corners);
+            });
+        } else if (grid_dim == 2) {
+            std::ranges::for_each(index_range, [&] (const auto& md_index) {
+                const auto p0 = point_mapper.map(md_index);
+                corners = {p0, p0 + 1, p0 + x_offset, p0 + 1 + x_offset};
+                visitor(CellType::pixel, corners);
+            });
+        } else {
+            std::ranges::for_each(index_range, [&] (const auto& md_index) {
+                const auto p0 = point_mapper.map(md_index);
+                corners = {
+                    p0, p0 + 1, p0 + x_offset, p0 + 1 + x_offset,
+                    p0 + y_offset, p0 + y_offset + 1, p0 + y_offset + x_offset, p0 + 1 + y_offset + x_offset
+                };
+                visitor(CellType::voxel, corners);
+            });
+        }
     }
 
 }  // namespace CommonDetail

@@ -84,11 +84,7 @@ class VTIReader : public GridReader {
     }
 
     std::size_t _number_of_points() const override {
-        auto point_extents = _specs().extents;
-        point_extents[1] += 1;
-        point_extents[3] += 1;
-        point_extents[5] += 1;
-        return VTK::CommonDetail::number_of_entities(point_extents);
+        return VTK::CommonDetail::number_of_entities(_point_extents());
     }
 
     bool _is_sequence() const override {
@@ -96,89 +92,25 @@ class VTIReader : public GridReader {
     }
 
     FieldPtr _points() const override {
+        const auto pextents = _point_extents();
+        const auto num_points = VTK::CommonDetail::number_of_entities(_point_extents());
         return make_field_ptr(LazyField{
             int{},  // dummy "source"
-            MDLayout{{_number_of_points(), std::size_t{3}}},
+            MDLayout{{num_points, std::size_t{3}}},
             Precision<double>{},
-            [specs=_specs(), n=_number_of_points()] (const int&) {
-                Serialization result(sizeof(double)*n*3);
-                auto span_out = result.as_span_of(Precision<double>{});
-                const std::size_t n_z = specs.extents[5] + 1 - specs.extents[4];
-                const std::size_t n_y = specs.extents[3] + 1 - specs.extents[2];
-                const std::size_t n_x = specs.extents[1] + 1 - specs.extents[0];
-                if (n_z*n_y*n_x != n)
-                    throw SizeError("Number of points doesn't match");
-                for (std::size_t z = 0; z < n_z; ++z)
-                    for (std::size_t y = 0; y < n_y; ++y)
-                        for (std::size_t x = 0; x < n_x; ++x) {
-                            const std::size_t offset = (z*n_y*n_x + y*n_x + x)*3;
-                            const auto dx = x*specs.spacing[0];
-                            const auto dy = y*specs.spacing[1];
-                            const auto dz = z*specs.spacing[2];
-                            span_out[offset + 0] += dx*specs.direction[0] + dy*specs.direction[1] + dz*specs.direction[2];
-                            span_out[offset + 1] += dx*specs.direction[3] + dy*specs.direction[4] + dz*specs.direction[5];
-                            span_out[offset + 2] += dx*specs.direction[6] + dy*specs.direction[7] + dz*specs.direction[8];
-                        }
-                return result;
+            [specs=_specs(), pextents=pextents, n=num_points] (const int&) {
+                return VTK::CommonDetail::serialize_structured_points(
+                    pextents,
+                    specs.origin,
+                    specs.spacing,
+                    specs.direction
+                );
             }
         });
     }
 
     void _visit_cells(const typename GridReader::CellVisitor& visitor) const override {
-        const auto& specs = _specs();
-        const std::size_t n_z = specs.extents[5] - specs.extents[4];
-        const std::size_t n_y = specs.extents[3] - specs.extents[2];
-        const std::size_t n_x = specs.extents[1] - specs.extents[0];
-        const unsigned int dim = (n_x > 0) + (n_y > 0) + (n_z > 0);
-        if (dim < 1 || dim > 3)
-            throw ValueError("Unsupported image dimension (" + std::to_string(dim) + ")");
-
-        std::vector<std::size_t> corners;
-        if (dim == 1) {
-            const std::size_t n = std::max(n_x, std::max(n_y, n_z));
-            for (std::size_t x = 0; x < n; ++x) {
-                corners.clear();
-                corners = {x, x+1};
-                visitor(CellType::segment, corners);
-            }
-        } else if (dim == 2) {
-            const std::size_t nx = (n_x == 0 ? n_y : n_x);
-            const std::size_t ny = (n_x == 0 || n_y == 0 ? n_z : n_y);
-            for (std::size_t y = 0; y < ny; ++y)
-                for (std::size_t x = 0; x < nx; ++x) {
-                    corners.clear();
-                    const std::size_t pidx_offset = y*(nx+1) + x;
-                    const std::size_t layer_offset = nx + 1;
-                    corners = {
-                        pidx_offset,
-                        pidx_offset + 1,
-                        pidx_offset + 1 + layer_offset,
-                        pidx_offset + layer_offset
-                    };
-                    visitor(CellType::pixel, corners);
-                }
-        } else {
-            for (std::size_t z = 0; z < n_z; ++z)
-                for (std::size_t y = 0; y < n_y; ++y)
-                    for (std::size_t x = 0; x < n_x; ++x) {
-                        corners.clear();
-                        const std::size_t y_layer_offset = (n_x + 1);
-                        const std::size_t z_layer_offset = (n_y + 1)*(n_x + 1);
-                        const std::size_t pidx_offset = z*z_layer_offset + y*y_layer_offset + x;
-                        corners = {
-                            pidx_offset,
-                            pidx_offset + 1,
-                            pidx_offset + 1 + y_layer_offset,
-                            pidx_offset + y_layer_offset,
-                        };
-                        corners.resize(corners.size() + 4);
-                        corners[5] = corners[0] + z_layer_offset;
-                        corners[6] = corners[1] + z_layer_offset;
-                        corners[7] = corners[2] + z_layer_offset;
-                        corners[8] = corners[3] + z_layer_offset;
-                        visitor(CellType::voxel, corners);
-                    }
-        }
+        VTK::CommonDetail::visit_structured_cells(visitor, _specs().extents);
     }
 
     FieldPtr _cell_field(std::string_view name) const override {
@@ -191,6 +123,14 @@ class VTIReader : public GridReader {
 
     FieldPtr _meta_data_field(std::string_view name) const override {
         return _helper.value().make_data_array_field(name, "ImageData/FieldData");
+    }
+
+    std::array<std::size_t, 6> _point_extents() const {
+        auto result = _specs().extents;
+        result[1] += 1;
+        result[3] += 1;
+        result[5] += 1;
+        return result;
     }
 
     const ImageSpecs& _specs() const {
