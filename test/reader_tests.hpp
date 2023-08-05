@@ -28,6 +28,56 @@ auto make_grid_from_reader(Factory&& factory, GridFormat::GridReader& reader) {
     return std::move(factory).grid();
 }
 
+template<unsigned int orig_space_dim,
+         unsigned int vector_space_dim = 3,
+         typename Grid,
+         std::ranges::range EntityRange>
+bool test_field_values(std::string_view name,
+                       GridFormat::FieldPtr field_ptr,
+                       const Grid& grid,
+                       const EntityRange& entities,
+                       double time_at_step = 1.0) {
+    std::cout << "Testing field '" << name << "' (at t = " << time_at_step << ")" << std::endl;
+
+    const auto layout = field_ptr->layout();
+    if (layout.extent(0) != Ranges::size(entities)) {
+        std::cout << "Size mismatch between field and number of entities" << std::endl;
+        return false;
+    }
+
+    return field_ptr->precision().visit([&] <typename T> (const Precision<T>& precision) {
+        if constexpr (std::floating_point<T>) {
+            std::size_t i = 0;
+            auto field_data = field_ptr->serialized();
+            auto field_values = field_data.as_span_of(precision);
+            const auto ncomps = layout.dimension() > 1 ? layout.number_of_entries(1) : 1;
+            for (const auto& e : entities) {
+                const auto eval_pos = evaluation_position(grid, e);
+                const auto test_value = test_function<T>(eval_pos, time_at_step);
+                for (unsigned int comp = 0; comp < ncomps; ++comp) {
+                    const bool use_zero = comp/vector_space_dim >= orig_space_dim
+                                            || comp%vector_space_dim >= orig_space_dim;
+                    const T expected_value = use_zero ? 0 : test_value;
+                    if (field_values.size() < i)
+                        throw SizeError("Field values too short");
+                    if (std::abs(field_values[i] - expected_value) > T{1e-6}) {
+                        std::cout << "Found deviation at " << as_string(eval_pos) << ": "
+                                  << field_values[i] << " - " << expected_value << " "
+                                  << "(comp = " << comp << "; vector_space_dim = " << vector_space_dim << ")"
+                                  << std::endl;
+                        return false;
+                    }
+                    i++;
+                }
+            }
+        } else {
+            log_warning("Unsupported field value type, skipping test...");
+        }
+
+        return true;
+    });
+}
+
 template<typename Writer, typename Reader>
 bool check_equal_fields(const Writer& writer, const Reader& reader, const bool verbose = true) {
     std::vector<std::string> writer_pfields, writer_cfields, writer_mfields;
@@ -64,7 +114,10 @@ bool check_equal_fields(const Writer& writer, const Reader& reader, const bool v
     return true;
 }
 
-template<std::size_t dim, std::size_t space_dim, typename Writer>
+template<std::size_t dim,
+         std::size_t space_dim,
+         std::size_t vector_space_dim = 3,
+         typename Writer>
     requires(std::derived_from<Writer, GridWriter<typename Writer::Grid>>)
 std::string test_reader(Writer& writer,
                         GridReader& reader,
@@ -91,22 +144,32 @@ std::string test_reader(Writer& writer,
         expect(eq(number_of_points(writer.grid()), reader.number_of_points()));
     };
 
-    writer.clear();
-    for (auto [name, fieldptr] : cell_fields(reader))
-        writer.set_cell_field(name, fieldptr);
-    for (auto [name, fieldptr] : point_fields(reader))
-        writer.set_point_field(name, fieldptr);
-    for (auto [name, fieldptr] : meta_data_fields(reader))
-        writer.set_meta_data(name, fieldptr);
-    const auto out_filename = writer.write(base_filename + "_rewritten");
-
-    if (verbose)
-        std::cout << "Wrote '" << GridFormat::as_highlight(out_filename) << "'" << std::endl;
+    // test field values and also write out a new file which can be regression-tested
+    "reader_field_values"_test = [&] () {
+        writer.clear();
+        for (auto [name, fieldptr] : cell_fields(reader)) {
+            writer.set_cell_field(name, fieldptr);
+            expect(test_field_values<space_dim, vector_space_dim>(name, fieldptr, in_grid, cells(in_grid)));
+        }
+        for (auto [name, fieldptr] : point_fields(reader)) {
+            writer.set_point_field(name, fieldptr);
+            expect(test_field_values<space_dim, vector_space_dim>(name, fieldptr, in_grid, points(in_grid)));
+        }
+        for (auto [name, fieldptr] : meta_data_fields(reader))
+            writer.set_meta_data(name, fieldptr);
+        const auto out_filename = writer.write(base_filename + "_rewritten");
+        if (verbose)
+            std::cout << "Wrote '" << GridFormat::as_highlight(out_filename) << "'" << std::endl;
+    };
 
     return filename;
 }
 
-template<std::size_t dim, std::size_t space_dim, typename Writer, typename WriterFactory>
+template<std::size_t dim,
+         std::size_t space_dim,
+         std::size_t vector_space_dim = 3,
+         typename Writer,
+         typename WriterFactory>
     requires(std::derived_from<Writer, TimeSeriesGridWriter<typename Writer::Grid>> and
              std::invocable<WriterFactory, const typename Writer::Grid&, const std::string&> and
              std::derived_from<
@@ -146,73 +209,41 @@ std::string test_reader(Writer& writer,
         });
     };
 
-    std::string out_filename;
-    auto out_grid = make_grid_from_reader(UnstructuredGridFactory<dim, space_dim>{}, reader);
-    auto out_writer = writer_factory(out_grid, filename + "_rewritten");
-    for (std::size_t step = 0; step < reader.number_of_steps(); ++step) {
-        reader.set_step(step);
-        out_grid = make_grid_from_reader(UnstructuredGridFactory<dim, space_dim>{}, reader);
-        for (auto [name, fieldptr] : cell_fields(reader))
-            out_writer.set_cell_field(name, fieldptr);
-        for (auto [name, fieldptr] : point_fields(reader))
-            out_writer.set_point_field(name, fieldptr);
-        for (auto [name, fieldptr] : meta_data_fields(reader))
-            out_writer.set_meta_data(name, fieldptr);
-        out_filename = out_writer.write(reader.time_at_step(step));
-    }
+    // test field values and also write out a new file which can be regression-tested
+    "reader_field_values"_test = [&] () {
+        std::string out_filename;
+        auto out_grid = make_grid_from_reader(UnstructuredGridFactory<dim, space_dim>{}, reader);
+        auto out_writer = writer_factory(out_grid, filename + "_rewritten");
+        for (std::size_t step = 0; step < reader.number_of_steps(); ++step) {
+            const auto time_at_step = reader.time_at_step(step);
+            if (verbose)
+                std::cout << "Testing field values at time = " << time_at_step << std::endl;
 
-    if (verbose)
-        std::cout << "Wrote '" << GridFormat::as_highlight(out_filename) << "'" << std::endl;
+            reader.set_step(step);
+            out_grid = make_grid_from_reader(UnstructuredGridFactory<dim, space_dim>{}, reader);
+            for (auto [name, fieldptr] : cell_fields(reader)) {
+                out_writer.set_cell_field(name, fieldptr);
+                expect(test_field_values<space_dim, vector_space_dim>(
+                    name, fieldptr, out_grid, cells(out_grid), time_at_step
+                ));
+            }
+            for (auto [name, fieldptr] : point_fields(reader)) {
+                out_writer.set_point_field(name, fieldptr);
+                expect(test_field_values<space_dim, vector_space_dim>(
+                    name, fieldptr, out_grid, points(out_grid), time_at_step
+                ));
+            }
+            for (auto [name, fieldptr] : meta_data_fields(reader))
+                out_writer.set_meta_data(name, fieldptr);
+            out_filename = out_writer.write(time_at_step);
+        }
+
+        if (verbose)
+            std::cout << "Wrote '" << GridFormat::as_highlight(out_filename) << "'" << std::endl;
+    };
 
     return filename;
 }
-
-
-template<unsigned int orig_space_dim, typename Grid, std::ranges::range EntityRange>
-bool test_field_values(std::string_view name,
-                       GridFormat::FieldPtr field_ptr,
-                       const Grid& grid,
-                       const EntityRange& entities) {
-    std::cout << "Testing field '" << name << "'" << std::endl;
-
-    const auto layout = field_ptr->layout();
-    if (layout.extent(0) != Ranges::size(entities)) {
-        std::cout << "Size mismatch between field and number of entities" << std::endl;
-        return false;
-    }
-
-    static constexpr std::size_t space_dim = space_dimension<Grid>;
-    return field_ptr->precision().visit([&] <typename T> (const Precision<T>& precision) {
-        if constexpr (std::floating_point<T>) {
-            std::size_t i = 0;
-            auto field_data = field_ptr->serialized();
-            auto field_values = field_data.as_span_of(precision);
-            const auto ncomps = layout.dimension() > 1 ? layout.number_of_entries(1) : 1;
-            for (const auto& e : entities) {
-                const auto eval_pos = evaluation_position(grid, e);
-                const auto test_value = test_function<T>(eval_pos);
-                for (unsigned int comp = 0; comp < ncomps; ++comp) {
-                    const bool use_zero = comp/space_dim >= orig_space_dim || comp%space_dim >= orig_space_dim;
-                    const T expected_value = use_zero ? 0 : test_value;
-                    if (field_values.size() < i)
-                        throw SizeError("Field values too short");
-                    if (std::abs(field_values[i] - expected_value) > T{1e-6}) {
-                        std::cout << "Found deviation at " << as_string(eval_pos) << ": "
-                                  << field_values[i] << " - " << expected_value
-                                  << std::endl;
-                        return false;
-                    }
-                    i++;
-                }
-            }
-        } else {
-            log_warning("Unsupported field value type, skipping test...");
-        }
-
-        return true;
-    });
-}
-
 
 }  // namespace GridFormat::Test
 
