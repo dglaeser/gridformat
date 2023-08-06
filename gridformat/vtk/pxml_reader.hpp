@@ -288,12 +288,14 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
     };
 
     void _open(const std::string& filename, typename GridReader::FieldNames& names) override {
-        // TODO: throw on ghost level
-        auto helper = ParentType::_read_pvtk_file(filename, names);
         if (this->_merge_exceeding_pieces_option().value_or(false))
-            throw IOError("Parallel I/O of structured grids does not support the 'merge_exceeding_pieces' option");
+            throw IOError("Parallel I/O of structured vtk files does not support the 'merge_exceeding_pieces' option");
 
+        auto helper = ParentType::_read_pvtk_file(filename, names);
         const XMLElement& vtk_grid = helper.get(this->_grid_type());
+        if (vtk_grid.get_attribute_or(std::size_t{0}, "GhostLevel") > 0)
+            throw IOError("GhostLevel > 0 not yet supported for parallel I/O of structured vtk files.");
+
         ImageSpecs& specs = _image_specs.emplace();
         specs.extents = Ranges::array_from_string<std::size_t, 6>(vtk_grid.get_attribute("WholeExtent"));
         specs.origin = Ranges::array_from_string<double, 3>(vtk_grid.get_attribute("Origin"));
