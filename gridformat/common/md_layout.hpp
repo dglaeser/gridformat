@@ -46,13 +46,11 @@ class MDLayout {
         std::ranges::copy(extents, std::back_inserter(_extents));
     }
 
-    auto begin() const {
-        return _extents.begin();
-    }
+    auto begin() const { return _extents.begin(); }
+    auto begin() { return _extents.begin(); }
 
-    auto end() const {
-        return _extents.end();
-    }
+    auto end() const { return _extents.end(); }
+    auto end() { return _extents.end(); }
 
     std::size_t dimension() const {
         return _extents.size();
