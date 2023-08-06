@@ -15,6 +15,7 @@
 #include <iterator>
 #include <algorithm>
 #include <initializer_list>
+#include <functional>
 #include <numeric>
 
 #include <gridformat/common/concepts.hpp>
@@ -31,6 +32,7 @@ namespace GridFormat {
 //! Represents a multi-dimensional index.
 class MDIndex {
     static constexpr std::size_t buffered_dimensions = 5;
+    using Indices = ReservedVector<std::size_t, buffered_dimensions>;
 
  public:
     MDIndex() = default;
@@ -59,13 +61,11 @@ class MDIndex {
     : MDIndex(layout.dimension())
     {}
 
-    auto begin() const {
-        return _indices.begin();
-    }
+    auto begin() const { return _indices.begin(); }
+    auto begin() { return _indices.begin(); }
 
-    auto end() const {
-        return _indices.end();
-    }
+    auto end() const { return _indices.end(); }
+    auto end() { return _indices.end(); }
 
     std::size_t size() const {
         return _indices.size();
@@ -83,6 +83,25 @@ class MDIndex {
         return std::ranges::equal(_indices, other._indices);
     }
 
+    MDIndex& operator+=(const MDIndex& other) {
+        if (size() != other.size())
+            throw ValueError("MDIndex size mismatch");
+        std::transform(
+            begin(),
+            end(),
+            other.begin(),
+            begin(),
+            std::plus<std::size_t>{}
+        );
+        return *this;
+    }
+
+    MDIndex operator+(const MDIndex& other) const {
+        MDIndex result(*this);
+        result += other;
+        return result;
+    }
+
     friend std::ostream& operator<<(std::ostream& s, const MDIndex& md_index) {
         s << "(";
         if (md_index._indices.size() > 0) {
@@ -96,7 +115,7 @@ class MDIndex {
     }
 
  private:
-    ReservedVector<std::size_t, buffered_dimensions> _indices;
+    Indices _indices;
 };
 
 
