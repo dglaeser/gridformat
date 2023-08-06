@@ -17,6 +17,7 @@
 #include <functional>
 #include <type_traits>
 #include <optional>
+#include <sstream>
 
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/exceptions.hpp>
@@ -140,6 +141,22 @@ inline constexpr auto to_array(const R& r) {
     std::ranges::copy_n(std::ranges::begin(r), std::min(range_size, result_size), result.begin());
     if (range_size < result_size)
         std::ranges::fill_n(result.begin() + range_size, result_size - range_size, ValueType{0});
+    return result;
+}
+
+/*!
+ * \ingroup Common
+ * \brief Create an array of given type and size from a string.
+ */
+template<typename T, std::size_t N>
+std::array<T, N> array_from_string(const std::string& values) {
+    auto result = Ranges::filled_array<N>(T{0});
+    std::stringstream stream;
+    stream << values;
+    auto stream_view = std::ranges::istream_view<T>(stream);
+    const auto [_, out] = std::ranges::copy(stream_view, result.begin());
+    if (std::ranges::distance(result.begin(), out) != N)
+        throw IOError("Could not read " + std::to_string(N) + " values from '" + values + "'");
     return result;
 }
 

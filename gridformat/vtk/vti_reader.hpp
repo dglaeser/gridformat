@@ -43,25 +43,13 @@ class VTIReader : public GridReader {
         std::array<double, 9> direction;
     };
 
-    template<typename T, std::size_t N>
-    std::array<T, N> _array_from_string(const std::string& values) const {
-        auto result = Ranges::filled_array<N>(T{0});
-        std::stringstream stream;
-        stream << values;
-        auto stream_view = std::ranges::istream_view<T>(stream);
-        const auto [_, out] = std::ranges::copy(stream_view, result.begin());
-        if (std::ranges::distance(result.begin(), out) != N)
-            throw IOError("Could not read " + std::to_string(N) + " values from '" + values + "'");
-        return result;
-    }
-
     void _open(const std::string& filename, typename GridReader::FieldNames& fields) override {
         auto helper = VTK::XMLReaderHelper::make_from(filename, "ImageData");
         auto specs = ImageSpecs{};
-        specs.extents = _array_from_string<std::size_t, 6>(helper.get("ImageData/Piece").get_attribute("Extent"));
-        specs.spacing = _array_from_string<double, 3>(helper.get("ImageData").get_attribute("Spacing"));
-        specs.origin = _array_from_string<double, 3>(helper.get("ImageData").get_attribute("Origin"));
-        specs.direction = _array_from_string<double, 9>(helper.get("ImageData").get_attribute_or(
+        specs.extents = Ranges::array_from_string<std::size_t, 6>(helper.get("ImageData/Piece").get_attribute("Extent"));
+        specs.spacing = Ranges::array_from_string<double, 3>(helper.get("ImageData").get_attribute("Spacing"));
+        specs.origin = Ranges::array_from_string<double, 3>(helper.get("ImageData").get_attribute("Origin"));
+        specs.direction = Ranges::array_from_string<double, 9>(helper.get("ImageData").get_attribute_or(
             std::string{"1 0 0 0 1 0 0 0 1"}, "Direction"
         ));
 
@@ -118,7 +106,7 @@ class VTIReader : public GridReader {
 
     FieldPtr _points() const override {
         const auto pextents = _point_extents();
-        const auto num_points = VTK::CommonDetail::number_of_entities(_point_extents());
+        const auto num_points = VTK::CommonDetail::number_of_entities(pextents);
         return make_field_ptr(LazyField{
             int{},  // dummy "source"
             MDLayout{{num_points, std::size_t{3}}},
@@ -160,7 +148,7 @@ class VTIReader : public GridReader {
 
     const ImageSpecs& _specs() const {
         if (!_image_specs.has_value())
-            throw ValueError("No data read");
+            throw ValueError("No data has been read");
         return _image_specs.value();
     }
 
