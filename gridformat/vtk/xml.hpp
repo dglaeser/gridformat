@@ -757,7 +757,12 @@ class XMLReaderHelper {
     FieldPtr make_data_array_field(std::string_view name,
                                    std::string_view section_path,
                                    const std::optional<std::size_t> number_of_tuples = {}) const {
-        const auto& element = XML::get_data_array(name, get(section_path));
+        return make_data_array_field(XML::get_data_array(name, get(section_path)), number_of_tuples);
+    }
+
+    //! Returns a field which draws the actual field values from the file upon request
+    FieldPtr make_data_array_field(const XMLElement& element,
+                                   const std::optional<std::size_t> number_of_tuples = {}) const {
         if (element.name() != "DataArray")
             throw ValueError("Given path is not a DataArray element");
         if (!element.has_attribute("type"))
@@ -765,10 +770,8 @@ class XMLReaderHelper {
         if (!element.has_attribute("format"))
             throw ValueError("Data array element does not specify its format (e.g. ascii/binary)");
         if (number_of_tuples.has_value())
-            return _make_data_array_field(name, section_path, number_of_tuples.value());
-        return _make_data_array_field(name, section_path, _number_of_tuples(
-            XML::get_data_array(name, get(section_path)))
-        );
+            return _make_data_array_field(element, number_of_tuples.value());
+        return _make_data_array_field(element, _number_of_tuples(element));
     }
 
  private:
@@ -782,10 +785,8 @@ class XMLReaderHelper {
         return _element().get_child("VTKFile").get_child("AppendedData");
     }
 
-    FieldPtr _make_data_array_field(std::string_view name,
-                                    std::string_view section_path,
+    FieldPtr _make_data_array_field(const XMLElement& element,
                                     const std::size_t number_of_tuples) const {
-        const auto& element = XML::get_data_array(name, get(section_path));
         if (element.name() != "DataArray")
             throw ValueError("Given xml element does not describe a data array");
         if (!element.has_attribute("format"))
@@ -849,8 +850,9 @@ class XMLReaderHelper {
     }
 
     MDLayout _expected_layout(const XMLElement& e, const std::size_t num_tuples) const {
-        if (e.get_attribute_or(std::size_t{1}, "NumberOfComponents") > 1)
-            return MDLayout{{num_tuples, e.get_attribute_or(std::size_t{1}, "NumberOfComponents")}};
+        const auto num_comps = e.get_attribute_or(std::size_t{1}, "NumberOfComponents");
+        if (num_comps > 1)
+            return MDLayout{{num_tuples, num_comps}};
         return MDLayout{{num_tuples}};
     }
 
