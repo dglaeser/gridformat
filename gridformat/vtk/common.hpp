@@ -364,19 +364,25 @@ namespace CommonDetail {
         }};
         const FlatIndexMapper mapper{layout};
 
+        std::array<T, 3> piece_origin{
+            origin[0] + spacing[0]*extents[0],
+            origin[1] + spacing[1]*extents[2],
+            origin[2] + spacing[2]*extents[4]
+        };
+
         static constexpr unsigned int vtk_space_dim = 3;
         Serialization result(layout.number_of_entries()*sizeof(T)*vtk_space_dim);
         auto span_out = result.as_span_of(Precision<T>{});
         for (const auto& md_index : MDIndexRange{layout}) {
             const auto offset = mapper.map(md_index)*vtk_space_dim;
-            assert(offset < span_out.size() - 3);
+            assert(offset + 2 < span_out.size());
 
             const T dx = static_cast<T>(md_index.get(0))*spacing[0];
             const T dy = static_cast<T>(md_index.get(1))*spacing[1];
             const T dz = static_cast<T>(md_index.get(2))*spacing[2];
-            span_out[offset + 0] = origin[0] + dx*direction[0] + dy*direction[1] + dz*direction[2];
-            span_out[offset + 1] = origin[1] + dx*direction[3] + dy*direction[4] + dz*direction[5];
-            span_out[offset + 2] = origin[2] + dx*direction[6] + dy*direction[7] + dz*direction[8];
+            span_out[offset + 0] = piece_origin[0] + dx*direction[0] + dy*direction[1] + dz*direction[2];
+            span_out[offset + 1] = piece_origin[1] + dx*direction[3] + dy*direction[4] + dz*direction[5];
+            span_out[offset + 2] = piece_origin[2] + dx*direction[6] + dy*direction[7] + dz*direction[8];
         }
         return result;
     }
