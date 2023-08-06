@@ -289,52 +289,19 @@ namespace CommonDetail {
         return result;
     }
 
-    template<Concepts::StaticallySizedRange R>
-    std::string extents_string(const R& r) {
-        int i = 0;
-        std::string result;
-        std::ranges::for_each(r, [&] (const auto& entry) {
-            result += (i > 0 ? " 0 " : "0 ") + as_string(entry);
-            ++i;
-        });
-        for (i = static_size<R>; i < 3; ++i)
-            result += " 0 0";
-        return result;
-    }
-
     template<Concepts::StaticallySizedRange R1,
              Concepts::StaticallySizedRange R2>
-    std::string extents_string(const R1& from, const R2& to) {
+        requires(std::integral<std::ranges::range_value_t<R1>> and
+                 std::integral<std::ranges::range_value_t<R2>>)
+    std::array<std::size_t, 6> get_extents(const R1& from, const R2& to) {
         static_assert(static_size<R1> == static_size<R2>);
-        static_assert(static_size<R1> > 0);
+        static_assert(static_size<R1> <= 3);
 
-        std::string result;
-        std::ranges::for_each(from, [&, i=0] (const auto& ex0) mutable {
-            result += as_string(ex0) + " " + as_string(Ranges::at(i++, to)) + " ";
-        });
-        for (unsigned int i = static_size<R1>; i < 3; ++i)
-            result += " 0 0 ";
-        result.pop_back();
-        return result;
-    }
-
-    template<Concepts::StructuredEntitySet Grid>
-        requires(!Concepts::StaticallySizedRange<Grid>)
-    std::string extents_string(const Grid& grid) {
-        return extents_string(extents(grid));
-    }
-
-    template<Concepts::StaticallySizedRange R1,
-             Concepts::StaticallySizedRange R2>
-    std::array<std::size_t, 6> get_extents(const R1& r1, const R2& r2) {
-        static_assert(static_size<R1> == static_size<R2>);
         int i = 0;
-        std::array<std::size_t, 6> result;
-        std::ranges::fill(result, 0);
-
-        auto it1 = std::ranges::begin(r1);
-        auto it2 = std::ranges::begin(r2);
-        for (; it1 != std::ranges::end(r1); ++it1, ++it2, ++i) {
+        auto result = Ranges::filled_array<6>(std::size_t{0});
+        auto it1 = std::ranges::begin(from);
+        auto it2 = std::ranges::begin(to);
+        for (; it1 != std::ranges::end(from); ++it1, ++it2, ++i) {
             result[i*2 + 0] = *it1;
             result[i*2 + 1] = *it2;
         }
@@ -342,10 +309,27 @@ namespace CommonDetail {
     }
 
     template<Concepts::StaticallySizedRange R>
-    std::array<std::size_t, 6> get_extents(const R& r1) {
-        std::array<std::size_t, static_size<R>> origin;
-        std::ranges::fill(origin, 0);
-        return get_extents(origin, r1);
+    std::array<std::size_t, 6> get_extents(const R& to) {
+        using T = std::ranges::range_value_t<R>;
+        return get_extents(Ranges::filled_array<static_size<R>>(T{0}), to);
+    }
+
+    template<Concepts::StaticallySizedRange R1,
+             Concepts::StaticallySizedRange R2>
+    std::string extents_string(const R1& from, const R2& to) {
+        return as_string(get_extents(from, to));
+    }
+
+    template<Concepts::StaticallySizedRange R>
+    std::string extents_string(const R& r) {
+        using T = std::ranges::range_value_t<R>;
+        return extents_string(Ranges::filled_array<static_size<R>>(T{0}), r);
+    }
+
+    template<Concepts::StructuredEntitySet Grid>
+        requires(!Concepts::StaticallySizedRange<Grid>)
+    std::string extents_string(const Grid& grid) {
+        return extents_string(extents(grid));
     }
 
     template<Concepts::StaticallySizedRange Spacing>
