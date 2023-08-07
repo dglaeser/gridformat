@@ -465,6 +465,10 @@ namespace XMLDetail {
         static constexpr Precision<TargetType> target_precision{};
         static constexpr Precision<HeaderType> header_precision{};
 
+        static constexpr bool is_too_small_integral = std::integral<TargetType> && sizeof(TargetType) < 4;
+        static constexpr bool is_signed_integral = std::signed_integral<TargetType>;
+        using BufferedType = std::conditional_t<is_signed_integral, short, unsigned short>;
+
      public:
         using Header = std::vector<HeaderType>;
 
@@ -479,14 +483,19 @@ namespace XMLDetail {
         void read_ascii(std::size_t number_of_values, Serialization& out_values) {
             out_values.resize(number_of_values*sizeof(TargetType));
             std::span<TargetType> out_span = out_values.as_span_of(target_precision);
-            const auto [in, out] = std::ranges::copy(
-                std::ranges::istream_view<TargetType>{_stream}
-                | std::views::take(number_of_values),
-                out_span.begin()
-            );
-            const auto number_of_values_read = std::ranges::distance(out_span.begin(), out);
-            if (number_of_values_read < 0 || static_cast<std::size_t>(number_of_values_read) < number_of_values)
-                throw SizeError("Could not read the requested number of values from the stream");
+
+            // istream_view uses operator>>, which seems to do weird stuff for e.g. uint8_t.
+            // The smallest supported integral type seems to be short. In case we deal with
+            // small integral types, we first read into a vector and then cast into the desired type.
+            if constexpr (is_too_small_integral) {
+                std::vector<BufferedType> buffer(number_of_values);
+                _read_ascii_to(std::span{buffer}, number_of_values);
+                std::ranges::copy(buffer | std::views::transform([] <typename T> (const T& value) {
+                    return static_cast<TargetType>(value);
+                }), out_span.begin());
+            } else {
+                _read_ascii_to(out_span, number_of_values);
+            }
         }
 
         template<Concepts::Decoder Decoder>
@@ -504,6 +513,18 @@ namespace XMLDetail {
         }
 
      private:
+        template<typename T, std::size_t size>
+        void _read_ascii_to(std::span<T, size> buffer, std::size_t expected_num_values) const {
+            const auto [_, out] = std::ranges::copy(
+                std::ranges::istream_view<T>{_stream}
+                | std::views::take(expected_num_values),
+                buffer.begin()
+            );
+            const auto number_of_values_read = std::ranges::distance(buffer.begin(), out);
+            if (number_of_values_read < 0 || static_cast<std::size_t>(number_of_values_read) < expected_num_values)
+                throw SizeError("Could not read the requested number of values from the stream");
+        }
+
         template<typename Decoder>
         void _read_encoded(const Decoder& decoder,
                            OptionalReference<Header> out_header = {},
