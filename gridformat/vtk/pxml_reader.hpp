@@ -8,6 +8,7 @@
 #ifndef GRIDFORMAT_VTK_PXML_READER_HPP_
 #define GRIDFORMAT_VTK_PXML_READER_HPP_
 
+#include <array>
 #include <string>
 #include <optional>
 #include <iterator>
@@ -15,7 +16,6 @@
 #include <algorithm>
 #include <iterator>
 #include <utility>
-#include <sstream>
 #include <cmath>
 
 #include <gridformat/common/ranges.hpp>
@@ -25,13 +25,12 @@
 #include <gridformat/common/flat_index_mapper.hpp>
 #include <gridformat/common/empty_field.hpp>
 #include <gridformat/common/field_transformations.hpp>
-#include <gridformat/common/string_conversion.hpp>
+#include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/logging.hpp>
 
 #include <gridformat/grid/reader.hpp>
 #include <gridformat/parallel/communication.hpp>
 
-#include <gridformat/vtk/vtu_reader.hpp>
 #include <gridformat/vtk/common.hpp>
 #include <gridformat/vtk/xml.hpp>
 

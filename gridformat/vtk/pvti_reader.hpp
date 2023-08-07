@@ -8,8 +8,6 @@
 #ifndef GRIDFORMAT_VTK_PVTI_READER_HPP_
 #define GRIDFORMAT_VTK_PVTI_READER_HPP_
 
-#include <optional>
-
 #include <gridformat/vtk/vti_reader.hpp>
 #include <gridformat/vtk/pxml_reader.hpp>
 

@@ -11,21 +11,15 @@
 #include <string>
 #include <optional>
 #include <algorithm>
-#include <sstream>
-#include <ranges>
+#include <utility>
 #include <array>
-#include <cmath>
 
-#include <gridformat/common/string_conversion.hpp>
 #include <gridformat/common/exceptions.hpp>
-#include <gridformat/common/precision.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/lazy_field.hpp>
 
-#include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/reader.hpp>
-
 #include <gridformat/vtk/common.hpp>
 #include <gridformat/vtk/xml.hpp>
 

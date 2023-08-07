@@ -11,6 +11,8 @@
 #include <string>
 #include <optional>
 #include <iterator>
+#include <algorithm>
+#include <utility>
 
 #include <gridformat/common/string_conversion.hpp>
 #include <gridformat/common/field.hpp>
