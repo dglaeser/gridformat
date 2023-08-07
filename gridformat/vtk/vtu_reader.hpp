@@ -66,10 +66,10 @@ class VTUReader : public GridReader {
     void _visit_cells(const typename GridReader::CellVisitor& visitor) const override {
         const auto types = _helper.value().make_data_array_field(
             "types", "UnstructuredGrid/Piece/Cells", _number_of_cells()
-        )->template export_to<std::vector<std::uint8_t>>();
+        )->template export_to<std::vector<std::uint_least8_t>>();
         const auto offsets = _helper.value().make_data_array_field(
             "offsets", "UnstructuredGrid/Piece/Cells", _number_of_cells()
-        )->template export_to<std::vector<std::uint8_t>>();
+        )->template export_to<std::vector<std::size_t>>();
         const auto connectivity = _helper.value().make_data_array_field(
             "connectivity", "UnstructuredGrid/Piece/Cells"
         )->template export_to<std::vector<std::size_t>>();

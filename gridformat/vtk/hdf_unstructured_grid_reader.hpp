@@ -252,7 +252,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
             "VTKHDF/Types",
             HDF5::Slice{.offset = {_get_cells_offset() + _cell_offset}, .count = {_num_cells}}
         );
-        auto connectivity = _file.value().template read_dataset_to<std::vector<int>>(
+        auto connectivity = _file.value().template read_dataset_to<std::vector<std::size_t>>(
             "VTKHDF/Connectivity",
             HDF5::Slice{.offset = {my_id_offset}, .count = {my_num_connectivity_ids}}
         );

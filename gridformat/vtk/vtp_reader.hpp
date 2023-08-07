@@ -102,7 +102,7 @@ class VTPReader : public GridReader {
         const std::string path = "PolyData/Piece/" + std::string{type_name};
         const auto offsets = _helper.value().make_data_array_field(
             "offsets", path, expected_size
-        )->template export_to<std::vector<std::uint8_t>>();
+        )->template export_to<std::vector<std::size_t>>();
         const auto connectivity = _helper.value().make_data_array_field(
             "connectivity", path
         )->template export_to<std::vector<std::size_t>>();
