@@ -388,7 +388,16 @@ namespace CommonDetail {
     }
 
     template<typename Visitor>
-    void visit_structured_cells(const Visitor& visitor, const std::array<std::size_t, 6>& extents) {
+    void visit_structured_cells(const Visitor& visitor,
+                                const std::array<std::size_t, 6>& extents,
+                                const bool is_axis_aligned = true) {
+        std::array<CellType, 4> grid_dim_to_cell_type{
+            CellType::vertex,
+            CellType::segment,
+            (is_axis_aligned ? CellType::pixel : CellType::quadrilateral),
+            (is_axis_aligned ? CellType::voxel : CellType::hexahedron)
+        };
+
         std::array<std::size_t, 3> counts{
             extents[1] - extents[0],
             extents[3] - extents[2],
@@ -413,13 +422,13 @@ namespace CommonDetail {
             std::ranges::for_each(index_range, [&] (const auto& md_index) {
                 const auto p0 = point_mapper.map(md_index);
                 corners = {p0, p0 + 1};
-                visitor(CellType::segment, corners);
+                visitor(grid_dim_to_cell_type[grid_dim], corners);
             });
         } else if (grid_dim == 2) {
             std::ranges::for_each(index_range, [&] (const auto& md_index) {
                 const auto p0 = point_mapper.map(md_index);
                 corners = {p0, p0 + 1, p0 + x_offset, p0 + 1 + x_offset};
-                visitor(CellType::pixel, corners);
+                visitor(grid_dim_to_cell_type[grid_dim], corners);
             });
         } else {
             std::ranges::for_each(index_range, [&] (const auto& md_index) {
@@ -428,7 +437,7 @@ namespace CommonDetail {
                     p0, p0 + 1, p0 + x_offset, p0 + 1 + x_offset,
                     p0 + y_offset, p0 + y_offset + 1, p0 + y_offset + x_offset, p0 + 1 + y_offset + x_offset
                 };
-                visitor(CellType::voxel, corners);
+                visitor(grid_dim_to_cell_type[grid_dim], corners);
             });
         }
     }
