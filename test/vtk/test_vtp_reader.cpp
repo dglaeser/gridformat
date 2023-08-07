@@ -33,12 +33,12 @@ int main() {
     const std::string test_data_path_name{TEST_DATA_PATH};
     if (test_data_path_name.empty()) {
         std::cout << "No test data folder defined, skipping further tests" << std::endl;
-        return 0;
+        return 42;
     }
 
     if (!std::filesystem::directory_entry{std::filesystem::path{test_data_path_name}}.exists()) {
         std::cout << "Test data folder does not exist, skipping further tests" << std::endl;
-        return 0;
+        return 42;
     }
 
     std::vector<std::string> vtp_files;
@@ -51,7 +51,7 @@ int main() {
     );
     if (vtp_files.empty()) {
         std::cout << "No test vtp files found in folder " << test_data_path_name << ". Skipping..." << std::endl;
-        return 0;
+        return 42;
     }
 
     using GridFormat::Testing::operator""_test;

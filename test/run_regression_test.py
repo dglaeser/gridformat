@@ -8,6 +8,15 @@ from subprocess import run, CalledProcessError
 from fnmatch import fnmatch
 from sys import exit
 
+
+def run_and_catch_error_code(cmd: list) -> int:
+    try:
+        run(cmd, check=True)
+    except CalledProcessError as e:
+        return e.returncode
+    return 0
+
+
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-c", "--command", required=True)
@@ -21,25 +30,19 @@ if __name__ == "__main__":
     if not exists(vtk_check_script):
         raise RuntimeError("Could not find vtk test script")
 
-    run(args["command"].split(" "), check=True)
-
-    ret_code = 0
+    ret_code = run_and_catch_error_code(args["command"].split(" "))
     env_variable_control_name = "GRIDFORMAT_REGRESSION_SAMPLES_ONLY"
     take_single_sample = True if getenv(env_variable_control_name, "false").lower() in ["true", "1"] else False
     for _file in filter(lambda _f: isfile(_f), listdir(".")):
         if fnmatch(_file, f"{args['regex']}"):
             print(f"Regression testing '{_file}'")
-            try:
-                run(
-                    ["python3", vtk_check_script, "-p", _file] + (
-                        ["--skip-metadata"] if args["skip_metadata"] else []
-                    ),
-                    check=True
+            ret_code = max(ret_code, run_and_catch_error_code(
+                ["python3", vtk_check_script, "-p", _file] + (
+                    ["--skip-metadata"] if args["skip_metadata"] else []
                 )
-            except CalledProcessError as e:
-                ret_code = max(ret_code, e.returncode)
+            ))
 
             if take_single_sample:
                 print(f"Stopping after first file because '{env_variable_control_name}' was set")
-                break;
+                break
     exit(ret_code)
