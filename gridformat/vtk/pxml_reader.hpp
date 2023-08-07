@@ -280,11 +280,13 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
     using ParentType::ParentType;
 
  private:
-    struct ImageSpecs {
+    struct StructuredGridSpecs {
         std::array<std::size_t, 6> extents;
-        std::array<double, 3> spacing;
-        std::array<double, 3> origin;
-        std::array<double, 9> direction;
+        std::optional<std::array<double, 3>> spacing;   // for image grids
+        std::optional<std::array<double, 3>> origin;    // for image grids
+        std::array<double, 9> direction{                // for image grids
+            1., 0., 0., 0., 1., 0., 0., 0., 1.
+        };
     };
 
     void _open(const std::string& filename, typename GridReader::FieldNames& names) override {
@@ -296,38 +298,38 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
         if (vtk_grid.get_attribute_or(std::size_t{0}, "GhostLevel") > 0)
             throw IOError("GhostLevel > 0 not yet supported for parallel I/O of structured vtk files.");
 
-        ImageSpecs& specs = _image_specs.emplace();
+        StructuredGridSpecs& specs = _grid_specs.emplace();
         specs.extents = Ranges::array_from_string<std::size_t, 6>(vtk_grid.get_attribute("WholeExtent"));
-        specs.origin = Ranges::array_from_string<double, 3>(vtk_grid.get_attribute("Origin"));
-        specs.spacing = Ranges::array_from_string<double, 3>(vtk_grid.get_attribute("Spacing"));
-        specs.direction = vtk_grid.has_attribute("Direction")
-            ? Ranges::array_from_string<double, 9>(vtk_grid.get_attribute("Direction"))
-            : std::array<double, 9>{1., 0., 0., 0., 1., 0., 0., 0., 1.};
-
         if (specs.extents[0] != 0 || specs.extents[2] != 0 || specs.extents[4] != 0)
             throw ValueError("'WholeExtent' is expected to have no offset (e.g. have the shape 0 X 0 Y 0 Z)");
+        if (vtk_grid.has_attribute("Origin"))
+            specs.origin = Ranges::array_from_string<double, 3>(vtk_grid.get_attribute("Origin"));
+        if (vtk_grid.has_attribute("Spacing"))
+            specs.spacing = Ranges::array_from_string<double, 3>(vtk_grid.get_attribute("Spacing"));
+        if (vtk_grid.has_attribute("Direction"))
+            specs.direction = Ranges::array_from_string<double, 9>(vtk_grid.get_attribute("Direction"));
     }
 
     void _close() override {
         ParentType::_close_pvtk_file();
-        _image_specs.reset();
+        _grid_specs.reset();
     }
 
     typename GridReader::Vector _origin() const override {
-        return _specs().origin;
+        if (!_specs().origin.has_value())
+            throw ValueError("PVTK file does not define the origin for '" + this->_grid_type() + "'");
+        return _specs().origin.value();
     }
 
     typename GridReader::Vector _spacing() const override {
-        return _specs().spacing;
+        if (!_specs().spacing.has_value())
+            throw ValueError("PVTK file does not define the spacing for '" + this->_grid_type() + "'");
+        return _specs().spacing.value();
     }
 
     typename GridReader::Vector _basis_vector(unsigned int i) const override {
-        const auto specs = _specs();
-        return {
-            specs.direction.at(i),
-            specs.direction.at(i+3),
-            specs.direction.at(i+6)
-        };
+        const auto& direction = _specs().direction;
+        return {direction.at(i), direction.at(i+3), direction.at(i+6)};
     }
 
     typename GridReader::PieceLocation _location() const override {
@@ -461,13 +463,13 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
         return result;
     }
 
-    const ImageSpecs& _specs() const {
-        if (!_image_specs.has_value())
+    const StructuredGridSpecs& _specs() const {
+        if (!_grid_specs.has_value())
             throw InvalidState("No data has been read");
-        return _image_specs.value();
+        return _grid_specs.value();
     }
 
-    std::optional<ImageSpecs> _image_specs;
+    std::optional<StructuredGridSpecs> _grid_specs;
 };
 
 }  // namespace GridFormat::VTK
