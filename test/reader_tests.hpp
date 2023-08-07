@@ -36,8 +36,10 @@ bool test_field_values(std::string_view name,
                        GridFormat::FieldPtr field_ptr,
                        const Grid& grid,
                        const EntityRange& entities,
-                       double time_at_step = 1.0) {
-    std::cout << "Testing field '" << name << "' (at t = " << time_at_step << ")" << std::endl;
+                       double time_at_step = 1.0,
+                       const int verbose = 1) {
+    if (verbose > 1)
+        std::cout << "Testing field '" << name << "' (at t = " << time_at_step << ")" << std::endl;
 
     const auto layout = field_ptr->layout();
     if (layout.extent(0) != Ranges::size(entities)) {
@@ -61,7 +63,9 @@ bool test_field_values(std::string_view name,
                     if (field_values.size() < i)
                         throw SizeError("Field values too short");
                     if (std::abs(field_values[i] - expected_value) > T{1e-6}) {
-                        std::cout << "Found deviation at " << as_string(eval_pos) << ": "
+                        std::cout << "Found deviation for field " << name
+                                  << " (at time step t = " << time_at_step << "), "
+                                  << "at " << as_string(eval_pos) << ": "
                                   << field_values[i] << " - " << expected_value << " "
                                   << "(comp = " << comp << "; vector_space_dim = " << vector_space_dim << ")"
                                   << std::endl;
@@ -123,10 +127,10 @@ std::string test_reader(Writer& writer,
                         GridReader& reader,
                         const std::string& base_filename,
                         const TestFileOptions& opts = {},
-                        const bool verbose = true) {
+                        const int verbose = 1) {
     const auto filename = write_test_file<space_dim>(writer, base_filename, opts, verbose);
 
-    if (verbose)
+    if (verbose > 0)
         std::cout << "Opening '" << as_highlight(filename) << "'" << std::endl;
     reader.open(filename);
     const auto in_grid = make_grid_from_reader(UnstructuredGridFactory<dim, space_dim>{}, reader);
@@ -149,16 +153,16 @@ std::string test_reader(Writer& writer,
         writer.clear();
         for (auto [name, fieldptr] : cell_fields(reader)) {
             writer.set_cell_field(name, fieldptr);
-            expect(test_field_values<space_dim, vector_space_dim>(name, fieldptr, in_grid, cells(in_grid)));
+            expect(test_field_values<space_dim, vector_space_dim>(name, fieldptr, in_grid, cells(in_grid), 1.0, verbose));
         }
         for (auto [name, fieldptr] : point_fields(reader)) {
             writer.set_point_field(name, fieldptr);
-            expect(test_field_values<space_dim, vector_space_dim>(name, fieldptr, in_grid, points(in_grid)));
+            expect(test_field_values<space_dim, vector_space_dim>(name, fieldptr, in_grid, points(in_grid), 1.0, verbose));
         }
         for (auto [name, fieldptr] : meta_data_fields(reader))
             writer.set_meta_data(name, fieldptr);
         const auto out_filename = writer.write(base_filename + "_rewritten");
-        if (verbose)
+        if (verbose > 0)
             std::cout << "Wrote '" << GridFormat::as_highlight(out_filename) << "'" << std::endl;
     };
 
@@ -180,11 +184,11 @@ std::string test_reader(Writer& writer,
                         GridReader& reader,
                         const WriterFactory& writer_factory,
                         const TestFileOptions& opts = {},
-                        const bool verbose = true) {
+                        const int verbose = 1) {
     const std::size_t num_steps = 5;
     const auto filename = write_test_time_series<space_dim>(writer, num_steps, opts, verbose);
 
-    if (verbose)
+    if (verbose > 0)
         std::cout << "Opening '" << as_highlight(filename) << "'" << std::endl;
     reader.open(filename);
     using Testing::operator""_test;
@@ -216,7 +220,7 @@ std::string test_reader(Writer& writer,
         auto out_writer = writer_factory(out_grid, filename + "_rewritten");
         for (std::size_t step = 0; step < reader.number_of_steps(); ++step) {
             const auto time_at_step = reader.time_at_step(step);
-            if (verbose)
+            if (verbose > 2)
                 std::cout << "Testing field values at time = " << time_at_step << std::endl;
 
             reader.set_step(step);
@@ -224,13 +228,13 @@ std::string test_reader(Writer& writer,
             for (auto [name, fieldptr] : cell_fields(reader)) {
                 out_writer.set_cell_field(name, fieldptr);
                 expect(test_field_values<space_dim, vector_space_dim>(
-                    name, fieldptr, out_grid, cells(out_grid), time_at_step
+                    name, fieldptr, out_grid, cells(out_grid), time_at_step, verbose
                 ));
             }
             for (auto [name, fieldptr] : point_fields(reader)) {
                 out_writer.set_point_field(name, fieldptr);
                 expect(test_field_values<space_dim, vector_space_dim>(
-                    name, fieldptr, out_grid, points(out_grid), time_at_step
+                    name, fieldptr, out_grid, points(out_grid), time_at_step, verbose
                 ));
             }
             for (auto [name, fieldptr] : meta_data_fields(reader))
@@ -238,7 +242,7 @@ std::string test_reader(Writer& writer,
             out_filename = out_writer.write(time_at_step);
         }
 
-        if (verbose)
+        if (verbose > 0)
             std::cout << "Wrote '" << GridFormat::as_highlight(out_filename) << "'" << std::endl;
     };
 
