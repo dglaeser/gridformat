@@ -7,6 +7,8 @@
 #include <utility>
 #include <concepts>
 #include <type_traits>
+#include <limits>
+#include <cmath>
 
 #include <gridformat/common/string_conversion.hpp>
 #include <gridformat/common/logging.hpp>
@@ -21,6 +23,21 @@
 #include "testing.hpp"
 
 namespace GridFormat::Test {
+
+template<typename T1, typename T2, typename T3 = double, typename T4 = double>
+bool equals(const T1& _a,
+            const T2& _b,
+            const T3& _rel_tol = 1e-6,
+            const T4& _abs_tol = std::numeric_limits<T4>::epsilon()) {
+    using CommonType = std::common_type_t<T1, T2, T3, T4>;
+    const auto a = static_cast<CommonType>(_a);
+    const auto b = static_cast<CommonType>(_b);
+    const auto rel_tol = static_cast<CommonType>(_rel_tol);
+    const auto abs_tol = static_cast<CommonType>(_abs_tol);
+    using std::abs;
+    using std::max;
+    return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol);
+}
 
 template<typename Factory>
 auto make_grid_from_reader(Factory&& factory, GridFormat::GridReader& reader) {
@@ -62,7 +79,7 @@ bool test_field_values(std::string_view name,
                     const T expected_value = use_zero ? 0 : test_value;
                     if (field_values.size() < i)
                         throw SizeError("Field values too short");
-                    if (std::abs(field_values[i] - expected_value) > T{1e-6}) {
+                    if (!equals(field_values[i], expected_value)) {
                         std::cout << "Found deviation for field " << name
                                   << " (at time step t = " << time_at_step << "), "
                                   << "at " << as_string(eval_pos) << ": "
