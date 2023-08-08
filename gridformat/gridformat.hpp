@@ -4,7 +4,7 @@
  * \file
  * \ingroup API
  * \brief This file is the entrypoint to the high-level API exposing all provided
- *        writers through a unified interface.
+ *        readers/writers through a unified interface.
  *
  *        The individual writer can also be used directly, for instance, if one
  *        wants to minimize compile times. All available writers can be seen in
@@ -17,37 +17,48 @@
 #include <optional>
 #include <type_traits>
 
+#include <gridformat/reader.hpp>
 #include <gridformat/writer.hpp>
 #include <gridformat/grid/image_grid.hpp>
 
+#include <gridformat/vtk/vti_reader.hpp>
 #include <gridformat/vtk/vti_writer.hpp>
-#include <gridformat/vtk/vtr_writer.hpp>
-#include <gridformat/vtk/vts_writer.hpp>
-#include <gridformat/vtk/vtp_writer.hpp>
-#include <gridformat/vtk/vtu_writer.hpp>
-
 #include <gridformat/vtk/pvti_writer.hpp>
-#include <gridformat/vtk/pvtr_writer.hpp>
-#include <gridformat/vtk/pvts_writer.hpp>
-#include <gridformat/vtk/pvtp_writer.hpp>
-#include <gridformat/vtk/pvtu_writer.hpp>
-#include <gridformat/vtk/xml_time_series_writer.hpp>
 
+#include <gridformat/vtk/vtr_reader.hpp>
+#include <gridformat/vtk/vtr_writer.hpp>
+#include <gridformat/vtk/pvtr_writer.hpp>
+
+#include <gridformat/vtk/vts_reader.hpp>
+#include <gridformat/vtk/vts_writer.hpp>
+#include <gridformat/vtk/pvts_writer.hpp>
+
+#include <gridformat/vtk/vtp_reader.hpp>
+#include <gridformat/vtk/vtp_writer.hpp>
+#include <gridformat/vtk/pvtp_writer.hpp>
+
+#include <gridformat/vtk/vtu_writer.hpp>
+#include <gridformat/vtk/vtu_reader.hpp>
+#include <gridformat/vtk/pvtu_writer.hpp>
+
+#include <gridformat/vtk/pvd_reader.hpp>
 #include <gridformat/vtk/pvd_writer.hpp>
 
+#include <gridformat/vtk/xml_time_series_writer.hpp>
 
 #ifndef DOXYGEN
 namespace GridFormat::APIDetail {
     class Unavailable {
         template<typename... Args>
         Unavailable(Args&&...) {
-            throw NotImplemented("Required writer is not available due to missing dependency");
+            throw NotImplemented("Requested reader/writer is not available due to missing dependency");
         }
     };
 }  // namespace GridFormat::APIDetail
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE
 #include <gridformat/vtk/hdf_writer.hpp>
+#include <gridformat/vtk/hdf_reader.hpp>
 inline constexpr bool _gfmt_api_have_high_five = true;
 #else
 inline constexpr bool _gfmt_api_have_high_five = false;
@@ -60,6 +71,10 @@ using VTKHDFUnstructuredGridWriter = APIDetail::Unavailable;
 using VTKHDFImageGridTimeSeriesWriter = APIDetail::Unavailable;
 using VTKHDFUnstructuredGridTimeSeriesWriter = APIDetail::Unavailable;
 
+using VTKHDFImageGridReader = APIDetail::Unavailable;
+template<typename...> using VTKHDFUnstructuredGridReader = APIDetail::Unavailable;
+template<typename...> using VTKHDFReader = APIDetail::Unavailable;
+
 }  // namespace GridFormat
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE
 #endif  // DOXYGEN
@@ -67,8 +82,14 @@ using VTKHDFUnstructuredGridTimeSeriesWriter = APIDetail::Unavailable;
 
 namespace GridFormat {
 
+//! Null communicator that can be used e.g. to read parallel file formats sequentially
+inline constexpr GridFormat::NullCommunicator null_communicator;
+
 //! Factory class to create a writer for the given file format
 template<typename FileFormat> struct WriterFactory;
+
+//! Factory class to create a reader for the given file format
+template<typename FileFormat> struct ReaderFactory;
 
 namespace FileFormat {
 
@@ -281,8 +302,10 @@ namespace Detail {
  * \tparam PieceFormat The underlying file format used for each time step.
  * \note ParaView only supports reading .pvd series if the file format for pieces is one of the VTK-XML formats.
  */
-template<typename PieceFormat>
-struct PVD { PieceFormat piece_format; };
+template<typename PieceFormat = None>
+struct PVD {
+    std::optional<PieceFormat> piece_format;
+};
 
 /*!
  * \ingroup API
@@ -329,6 +352,26 @@ struct TimeSeriesClosure {
 }  // namespace FileFormat
 
 
+#ifndef DOXYGEN
+namespace APIDetail {
+
+    template<typename Format, typename SequentialReader, typename ParallelReader>
+    struct DefaultReaderFactory {
+        static auto make(const Format&) { return SequentialReader{}; }
+        static auto make(const Format&, const Concepts::Communicator auto& comm) { return ParallelReader{comm}; }
+    };
+
+    // Specialization for cases where the parallel reader is templated on the communicator
+    template<typename F, typename S, template<typename> typename P>
+    struct DefaultTemplatedReaderFactory {
+        static auto make(const F&) { return S{}; }
+        template<Concepts::Communicator Communicator>
+        static auto make(const F&, const Communicator& comm) { return P<Communicator>{comm}; }
+    };
+
+}  // namespace APIDetail
+#endif  // DOXYGEN
+
 //! Specialization of the WriterFactory for the .vti format
 template<> struct WriterFactory<FileFormat::VTI> {
     static auto make(const FileFormat::VTI& format,
@@ -343,6 +386,10 @@ template<> struct WriterFactory<FileFormat::VTI> {
     }
 };
 
+//! Specialization of the ReaderFactory for the .vti format
+template<>
+struct ReaderFactory<FileFormat::VTI> : APIDetail::DefaultReaderFactory<FileFormat::VTI, VTIReader, PVTIReader> {};
+
 //! Specialization of the WriterFactory for the .vtr format
 template<> struct WriterFactory<FileFormat::VTR> {
     static auto make(const FileFormat::VTR& format,
@@ -355,6 +402,10 @@ template<> struct WriterFactory<FileFormat::VTR> {
         return PVTRWriter{grid, comm, format.opts.value_or(VTK::XMLOptions{})};
     }
 };
+
+//! Specialization of the ReaderFactory for the .vtr format
+template<>
+struct ReaderFactory<FileFormat::VTR> : APIDetail::DefaultReaderFactory<FileFormat::VTR, VTRReader, PVTRReader> {};
 
 //! Specialization of the WriterFactory for the .vts format
 template<> struct WriterFactory<FileFormat::VTS> {
@@ -369,6 +420,10 @@ template<> struct WriterFactory<FileFormat::VTS> {
     }
 };
 
+//! Specialization of the ReaderFactory for the .vts format
+template<>
+struct ReaderFactory<FileFormat::VTS> : APIDetail::DefaultReaderFactory<FileFormat::VTS, VTSReader, PVTSReader> {};
+
 //! Specialization of the WriterFactory for the .vtp format
 template<> struct WriterFactory<FileFormat::VTP> {
     static auto make(const FileFormat::VTP& format,
@@ -382,6 +437,10 @@ template<> struct WriterFactory<FileFormat::VTP> {
     }
 };
 
+//! Specialization of the ReaderFactory for the .vtp format
+template<>
+struct ReaderFactory<FileFormat::VTP> : APIDetail::DefaultReaderFactory<FileFormat::VTP, VTPReader, PVTPReader> {};
+
 //! Specialization of the WriterFactory for the .vtu format
 template<> struct WriterFactory<FileFormat::VTU> {
     static auto make(const FileFormat::VTU& format,
@@ -394,6 +453,10 @@ template<> struct WriterFactory<FileFormat::VTU> {
         return PVTUWriter{grid, comm, format.opts.value_or(VTK::XMLOptions{})};
     }
 };
+
+//! Specialization of the ReaderFactory for the .vtu format
+template<>
+struct ReaderFactory<FileFormat::VTU> : APIDetail::DefaultReaderFactory<FileFormat::VTU, VTUReader, PVTUReader> {};
 
 //! Specialization of the WriterFactory for vtk-xml time series.
 template<typename F> struct WriterFactory<FileFormat::VTKXMLTimeSeries<F>> {
@@ -430,6 +493,14 @@ template<> struct WriterFactory<FileFormat::VTKHDFImage> {
     }
 };
 
+//! Specialization of the ReaderFactory for the vtk-hdf image grid format
+template<>
+struct ReaderFactory<FileFormat::VTKHDFImage>
+: APIDetail::DefaultReaderFactory<FileFormat::VTKHDFImage,
+                                  VTKHDFImageGridReader,
+                                  VTKHDFImageGridReader>
+{};
+
 //! Specialization of the WriterFactory for the transient vtk-hdf image grid format
 template<> struct WriterFactory<FileFormat::VTKHDFImageTransient> {
     static auto make(const FileFormat::VTKHDFImageTransient& f,
@@ -449,6 +520,14 @@ template<> struct WriterFactory<FileFormat::VTKHDFImageTransient> {
     }
 };
 
+//! Specialization of the ReaderFactory for the transient vtk-hdf image grid format
+template<>
+struct ReaderFactory<FileFormat::VTKHDFImageTransient>
+: APIDetail::DefaultReaderFactory<FileFormat::VTKHDFImageTransient,
+                                  VTKHDFImageGridReader,
+                                  VTKHDFImageGridReader>
+{};
+
 //! Specialization of the WriterFactory for the vtk-hdf unstructured grid format
 template<> struct WriterFactory<FileFormat::VTKHDFUnstructured> {
     static auto make(const FileFormat::VTKHDFUnstructured&,
@@ -461,6 +540,14 @@ template<> struct WriterFactory<FileFormat::VTKHDFUnstructured> {
         return VTKHDFUnstructuredGridWriter{grid, comm};
     }
 };
+
+//! Specialization of the ReaderFactory for the vtk-hdf unstructured grid format
+template<>
+struct ReaderFactory<FileFormat::VTKHDFUnstructured>
+: APIDetail::DefaultTemplatedReaderFactory<FileFormat::VTKHDFUnstructured,
+                                           VTKHDFUnstructuredGridReader<>,
+                                           VTKHDFUnstructuredGridReader>
+{};
 
 //! Specialization of the WriterFactory for the transient vtk-hdf unstructured grid format
 template<> struct WriterFactory<FileFormat::VTKHDFUnstructuredTransient> {
@@ -481,6 +568,14 @@ template<> struct WriterFactory<FileFormat::VTKHDFUnstructuredTransient> {
     }
 };
 
+//! Specialization of the ReaderFactory for the vtk-hdf unstructured grid format
+template<>
+struct ReaderFactory<FileFormat::VTKHDFUnstructuredTransient>
+: APIDetail::DefaultTemplatedReaderFactory<FileFormat::VTKHDFUnstructuredTransient,
+                                           VTKHDFUnstructuredGridReader<>,
+                                           VTKHDFUnstructuredGridReader>
+{};
+
 //! Specialization of the WriterFactory for the vtk-hdf file format with automatic flavour selection.
 template<> struct WriterFactory<FileFormat::VTKHDF> {
     static auto make(const FileFormat::VTKHDF& format,
@@ -498,6 +593,12 @@ template<> struct WriterFactory<FileFormat::VTKHDF> {
         return WriterFactory<F>::make(format, std::forward<Args>(args)...);
     }
 };
+
+//! Specialization of the ReaderFactory for the vtk-hdf file format with automatic flavour selection
+template<>
+struct ReaderFactory<FileFormat::VTKHDF>
+: APIDetail::DefaultTemplatedReaderFactory<FileFormat::VTKHDF, VTKHDFReader<>, VTKHDFReader>
+{};
 
 //! Specialization of the WriterFactory for the transient vtk-hdf file format with automatic flavour selection.
 template<> struct WriterFactory<FileFormat::VTKHDFTransient> {
@@ -518,6 +619,13 @@ template<> struct WriterFactory<FileFormat::VTKHDFTransient> {
         return WriterFactory<F>::make(format, std::forward<Args>(args)...);
     }
 };
+
+//! Specialization of the ReaderFactory for the transient vtk-hdf file format with automatic flavour selection
+template<>
+struct ReaderFactory<FileFormat::VTKHDFTransient>
+: APIDetail::DefaultTemplatedReaderFactory<FileFormat::VTKHDFTransient, VTKHDFReader<>, VTKHDFReader>
+{};
+
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE
 
 //! Specialization of the WriterFactory for the .pvd time series format.
@@ -526,15 +634,25 @@ struct WriterFactory<FileFormat::PVD<F>> {
     static auto make(const FileFormat::PVD<F>& format,
                      const Concepts::Grid auto& grid,
                      const std::string& base_filename) {
-        return PVDWriter{WriterFactory<F>::make(format.piece_format, grid), base_filename};
+        if (!format.piece_format.has_value())
+            throw ValueError("No PVD piece format has been set");
+        return PVDWriter{WriterFactory<F>::make(format.piece_format.value(), grid), base_filename};
     }
     static auto make(const FileFormat::PVD<F>& format,
                      const Concepts::Grid auto& grid,
                      const Concepts::Communicator auto& comm,
                      const std::string& base_filename) {
-        return PVDWriter{WriterFactory<F>::make(format.piece_format, grid, comm), base_filename};
+        if (!format.piece_format.has_value())
+            throw ValueError("No PVD piece format has been set");
+        return PVDWriter{WriterFactory<F>::make(format.piece_format.value(), grid, comm), base_filename};
     }
 };
+
+//! Specialization of the ReaderFactory for the .pvd time series file format.
+template<typename PieceFormat>
+struct ReaderFactory<FileFormat::PVD<PieceFormat>>
+: APIDetail::DefaultTemplatedReaderFactory<FileFormat::PVD<PieceFormat>, PVDReader<>, PVDReader>
+{};
 
 // We place the format instances in a namespace different from FileFormats, in which
 // the format types are defined above. Further below, we make these instances available
