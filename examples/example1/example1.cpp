@@ -5,6 +5,7 @@
 #include <array>
 #include <ranges>
 #include <numbers>
+#include <iostream>
 #include <cmath>
 
 #include <gridformat/gridformat.hpp>
@@ -133,7 +134,7 @@ struct Location<VoxelData, int> {
 
 
 int main() {
-    // Let us check against the concept to see if we implemented the traits correctly
+    // Let us check against the concept to see if we implemented the traits correctly.
     // When implementing the grid traits for a data structure, it is helpful to make
     // such static_asserts pass before actually using the GridFormat API.
     static_assert(GridFormat::Concepts::ImageGrid<VoxelData>);
@@ -163,33 +164,49 @@ int main() {
         });
         const auto written_filename = writer.write(filename);
         std::cout << "Wrote '" << written_filename << "'" << std::endl;
+        return written_filename;
+    };
+
+    // we also illustrate how data can be read back in with this convenience function.
+    const auto echo_meta_data = [&] (auto&& reader, const std::string& filename) {
+        reader.open(filename);
+        for (const auto& [name, field_ptr] : meta_data_fields(reader))
+            std::cout << "Echoing the meta data '" << name << "': \""
+                      << field_ptr->template export_to<std::string>() << "\""
+                      << std::endl;
     };
 
     // First, let Gridformat select a suitable default file format for us
+    // and use a generic reader that can read any of the supported file formats.
     {
         GridFormat::Writer writer{
             GridFormat::default_for(voxel_data),
             voxel_data
         };
-        add_data_and_write(writer, "voxel_data_default_format");
+        const auto filename = add_data_and_write(writer, "voxel_data_default_format");
+        echo_meta_data(GridFormat::Reader{}, filename);
     }
 
-    // Let's explicitly ask for the .vti image grid format
+    // Let's explicitly ask for the .vti image grid format. The reader we construct here
+    // is specifically for .vti files and would fail to open other file formats.
     {
         GridFormat::Writer writer{
             GridFormat::vti,
             voxel_data
         };
-        add_data_and_write(writer, "voxel_data_explicit_format");
+        const auto filename = add_data_and_write(writer, "voxel_data_explicit_format");
+        echo_meta_data(GridFormat::Reader{GridFormat::vti}, filename);
     }
 
-    // Let's explicitly ask for .vti format with raw encoding
+    // Let's explicitly ask for .vti format with raw encoding. Note that on the reader side
+    // we don't need to define any format options. It will read whatever it finds in the .vti file.
     {
         GridFormat::Writer writer{
             GridFormat::vti({.encoder = GridFormat::Encoding::raw}),
             voxel_data
         };
-        add_data_and_write(writer, "voxel_data_explicit_encoding");
+        const auto filename = add_data_and_write(writer, "voxel_data_explicit_encoding");
+        echo_meta_data(GridFormat::Reader{GridFormat::vti}, filename);
     }
 
     // Let's explicitly ask for .vti format without compression
@@ -198,7 +215,8 @@ int main() {
             GridFormat::vti({.compressor = GridFormat::none}),
             voxel_data
         };
-        add_data_and_write(writer, "voxel_data_no_compression");
+        const auto filename = add_data_and_write(writer, "voxel_data_no_compression");
+        echo_meta_data(GridFormat::Reader{GridFormat::vti}, filename);
     }
 
     return 0;
