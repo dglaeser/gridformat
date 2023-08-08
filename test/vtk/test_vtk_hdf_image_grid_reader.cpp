@@ -17,11 +17,11 @@
 
 template<typename Reader>
 void test(Reader&& reader, const std::string& suffix = "") {
-    const GridFormat::Test::StructuredGrid<2> grid{{1.0, 1.0}, {4, 5}};
+    const GridFormat::Test::StructuredGrid<3> grid{{1.0, 1.0, 1.0}, {4, 5, 6}};
     GridFormat::VTKHDFImageGridWriter writer{grid};
 
     // TODO: Test cell&field data once a new VTK version is released that fixes issues
-    test_reader<2, 2>(writer, reader, "reader_vtk_hdf_structured_image_test_file_2d_in_2d" + suffix, {
+    test_reader<3, 3>(writer, reader, "reader_vtk_hdf_structured_image_test_file_3d_in_3d" + suffix, {
         .write_cell_data = false,
         .write_meta_data = false
     });
@@ -44,10 +44,10 @@ void test(Reader&& reader, const std::string& suffix = "") {
     };
 
     "vtk_hdf_image_grid_reader_point_field"_test = [&] () {
-        GridFormat::Test::StructuredGrid<2> grid_in{
-            {spacing[0]*extents[0], spacing[1]*extents[1]},
-            {extents[0], extents[1]},
-            {0.0, 0.0},
+        GridFormat::Test::StructuredGrid<3> grid_in{
+            {spacing[0]*extents[0], spacing[1]*extents[1], spacing[2]*extents[2]},
+            {extents[0], extents[1], extents[2]},
+            {0.0, 0.0, 0.0},
             false // do not shuffle, vtk file is "ordered"
         };
 
@@ -68,9 +68,9 @@ void test(Reader&& reader, const std::string& suffix = "") {
         // TODO: use filenames that include these in the regression tests once the VTK fixes are available
         GridFormat::VTKHDFImageGridTimeSeriesWriter writer{
             grid,
-            "reader_vtk_hdf_structured_time_series_image_2d_in_2d" + suffix
+            "reader_vtk_hdf_structured_time_series_image_3d_in_3d" + suffix
         };
-        test_reader<2, 2>(writer, reader, [] (const auto& grid, const auto& filename) {
+        test_reader<3, 3>(writer, reader, [] (const auto& grid, const auto& filename) {
             return GridFormat::VTKHDFUnstructuredTimeSeriesWriter{grid, filename};
         });
     }
