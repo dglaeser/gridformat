@@ -15,6 +15,7 @@
 #include <concepts>
 #include <numeric>
 #include <utility>
+#include <cassert>
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/field_transformations.hpp>
@@ -236,14 +237,14 @@ class VTKHDFUnstructuredGridReader : public GridReader {
             num_connectivity_ids.begin() + Parallel::rank(_comm),
             std::size_t{0}
         );
-
         auto offsets = _file.value().template read_dataset_to<std::vector<std::size_t>>(
             "VTKHDF/Offsets",
             HDF5::Slice{
                 // offsets have length num_cells+1, so we need to add +1 per rank to the cell offsets
                 .offset = {
-                    _get_cells_offset() + Parallel::size(_comm)*_step_index.value_or(0) +
-                    _cell_offset + Parallel::rank(_comm)
+                    _get_cells_offset() + _cell_offset
+                    + Parallel::size(_comm)*_step_index.value_or(0) +
+                    + Parallel::rank(_comm)
                 },
                 .count = {_num_cells + 1}
             }
@@ -259,6 +260,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
 
         std::vector<std::size_t> corners;
         for (std::size_t i = 0; i < types.size(); ++i) {
+            assert(offsets.at(i+1) > offsets.at(i));
             const auto num_corners = offsets.at(i+1) - offsets.at(i);
             corners.resize(num_corners);
             for (std::size_t c = 0; c < num_corners; ++c)
