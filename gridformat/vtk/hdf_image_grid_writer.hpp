@@ -35,10 +35,6 @@
 
 namespace GridFormat {
 
-/*!
- * \ingroup VTK
- * \brief TODO: Doc me
- */
 template<bool is_transient, Concepts::ImageGrid Grid, Concepts::Communicator Communicator = NullCommunicator>
 class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Grid>::type {
     static constexpr int root_rank = 0;
@@ -376,6 +372,10 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
     VTK::HDFTransientOptions _transient_opts;
 };
 
+/*!
+ * \ingroup VTK
+ * \brief Writer for the VTK HDF file format for image grids.
+ */
 template<Concepts::ImageGrid G, Concepts::Communicator C = NullCommunicator>
 class VTKHDFImageGridWriter : public VTKHDFImageGridWriterImpl<false, G, C> {
     using ParentType = VTKHDFImageGridWriterImpl<false, G, C>;
@@ -383,6 +383,10 @@ class VTKHDFImageGridWriter : public VTKHDFImageGridWriterImpl<false, G, C> {
     using ParentType::ParentType;
 };
 
+/*!
+ * \ingroup VTK
+ * \brief Writer for the transient VTK HDF file format for image grids.
+ */
 template<Concepts::ImageGrid G, Concepts::Communicator C = NullCommunicator>
 class VTKHDFImageGridTimeSeriesWriter : public VTKHDFImageGridWriterImpl<true, G, C> {
     using ParentType = VTKHDFImageGridWriterImpl<true, G, C>;

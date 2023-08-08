@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup API
- * \brief TODO: Doc me
+ * \brief Includes the encoding API.
  */
 #ifndef GRIDFORMAT_ENCODING_HPP_
 #define GRIDFORMAT_ENCODING_HPP_

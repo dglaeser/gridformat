@@ -24,7 +24,8 @@ namespace GridFormat {
 
 /*!
  * \ingroup VTK
- * \brief TODO: Doc me
+ * \brief Convenience reader for the vtk-hdf file format that supports both the
+ *        image & unstructured grid file formats.
  */
 template<typename Communicator = GridFormat::NullCommunicator>
 class VTKHDFReader : public GridReader {

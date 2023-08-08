@@ -27,10 +27,6 @@
 
 namespace GridFormat {
 
-/*!
- * \ingroup VTK
- * \brief TODO: Doc me
- */
 template<bool is_transient,
          Concepts::UnstructuredGrid G,
          Concepts::Communicator Communicator = NullCommunicator>
@@ -377,6 +373,10 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
     VTK::HDFTransientOptions _transient_opts;
 };
 
+/*!
+ * \ingroup VTK
+ * \brief Writer for the VTK HDF file format for unstructured grids.
+ */
 template<Concepts::UnstructuredGrid G, Concepts::Communicator C = NullCommunicator>
 class VTKHDFUnstructuredGridWriter : public VTKHDFUnstructuredGridWriterImpl<false, G, C> {
     using ParentType = VTKHDFUnstructuredGridWriterImpl<false, G, C>;
@@ -384,6 +384,10 @@ class VTKHDFUnstructuredGridWriter : public VTKHDFUnstructuredGridWriterImpl<fal
     using ParentType::ParentType;
 };
 
+/*!
+ * \ingroup VTK
+ * \brief Writer for the transient VTK HDF file format for unstructured grids.
+ */
 template<Concepts::UnstructuredGrid G, Concepts::Communicator C = NullCommunicator>
 class VTKHDFUnstructuredTimeSeriesWriter : public VTKHDFUnstructuredGridWriterImpl<true, G, C> {
     using ParentType = VTKHDFUnstructuredGridWriterImpl<true, G, C>;

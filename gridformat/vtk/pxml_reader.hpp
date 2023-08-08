@@ -39,7 +39,13 @@ namespace GridFormat::VTK {
 /*!
  * \ingroup VTK
  * \brief Base class for readers of parallel vtk-xml file formats.
- * \details TODO
+ * \details Constructors of derived classes for readers of unstructured
+ *          grids may expose the `merge_exceeding_pieces` option. If set
+ *          to true, then parallel I/O with less ranks than pieces in the
+ *          PVTK file is done such that the last rank reads in and merges
+ *          all remaining pieces. Otherwise, only as many pieces as ranks
+ *          are read. On the other hand, if there are more ranks than pieces,
+ *          some ranks will not read in any data (i.e. the grids are empty).
  */
 template<std::derived_from<GridReader> PieceReader>
 class PXMLReaderBase : public GridReader {

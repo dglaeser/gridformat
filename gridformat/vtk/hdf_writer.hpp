@@ -48,7 +48,8 @@ namespace VTKHDFDetail {
 
 /*!
  * \ingroup VTK
- * \brief TODO: Doc me
+ * \brief Convenience writer for the vtk-hdf file format, automatically selecting the image
+ *        or unstructured grid format depending on the given grid type.
  */
 template<Concepts::Grid Grid, typename Communicator = GridFormat::NullCommunicator>
 class VTKHDFWriter : public VTKHDFDetail::VTKHDFWriterSelector<Grid, Communicator>::type {
@@ -67,8 +68,8 @@ VTKHDFWriter(const Grid&, const Comm&) -> VTKHDFWriter<Grid, Comm>;
 
 /*!
  * \ingroup VTK
- * \brief TODO: Doc me
- * \todo TODO: deduce format from grid
+ * \brief Convenience writer for the vtk-hdf file format, automatically selecting the image
+ *        or unstructured grid format depending on the given grid type.
  */
 template<Concepts::Grid Grid, Concepts::Communicator C = GridFormat::NullCommunicator>
 class VTKHDFTimeSeriesWriter : public VTKHDFDetail::VTKHDFTimeSeriesWriterSelector<Grid, C>::type {
