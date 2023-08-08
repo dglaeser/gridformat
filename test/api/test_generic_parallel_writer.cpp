@@ -67,6 +67,11 @@ int main(int argc, char** argv) {
         GridFormat::Writer{GridFormat::vtp({}), grid, MPI_COMM_WORLD},
         MPI_COMM_WORLD
     );
+    write(
+        GridFormat::Writer{GridFormat::any, grid, MPI_COMM_WORLD},
+        MPI_COMM_WORLD,
+        "from_any"
+    );
 #if GRIDFORMAT_HAVE_HIGH_FIVE
     write(
         GridFormat::Writer{GridFormat::vtk_hdf, grid, MPI_COMM_WORLD},

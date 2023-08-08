@@ -7,4 +7,11 @@ gridformat_add_parallel_regression_test(test_generic_parallel_writer test_generi
 gridformat_add_parallel_regression_test(test_generic_parallel_time_series_writer test_generic_parallel_time_series_writer.cpp 2 "generic_parallel_time_series_2d_in_2d*pvd*")
 
 gridformat_add_test(test_generic_reader test_generic_reader.cpp)
+gridformat_add_parallel_test(test_generic_reader_parallel test_generic_reader.cpp 2)
 target_compile_definitions(test_generic_reader PRIVATE TEST_VTK_DATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../vtk/test_data")
+target_compile_definitions(
+    test_generic_reader_parallel
+    PRIVATE
+        TEST_VTK_DATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../vtk/test_data"
+        RUN_PARALLEL=1
+)

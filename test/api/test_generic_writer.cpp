@@ -47,6 +47,7 @@ int main() {
     write(GridFormat::Writer{GridFormat::vtr({.data_format = GridFormat::VTK::DataFormat::appended}), grid});
     write(GridFormat::Writer{GridFormat::vts({.compressor = GridFormat::none}), grid});
     write(GridFormat::Writer{GridFormat::vtp({}), grid});
+    write(GridFormat::Writer{GridFormat::any, grid}, "any");
     write(GridFormat::Writer{GridFormat::default_for(grid), grid}, "default");
     write(
         GridFormat::Writer{GridFormat::default_for(grid).with({.encoder = GridFormat::Encoding::ascii}), grid},

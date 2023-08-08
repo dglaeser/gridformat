@@ -14,12 +14,15 @@
 #ifndef GRIDFORMAT_GRIDFORMAT_HPP_
 #define GRIDFORMAT_GRIDFORMAT_HPP_
 
+#include <memory>
 #include <optional>
 #include <type_traits>
 
 #include <gridformat/reader.hpp>
 #include <gridformat/writer.hpp>
 #include <gridformat/grid/image_grid.hpp>
+#include <gridformat/common/exceptions.hpp>
+#include <gridformat/parallel/communication.hpp>
 
 #include <gridformat/vtk/vti_reader.hpp>
 #include <gridformat/vtk/vti_writer.hpp>
@@ -54,6 +57,10 @@ namespace GridFormat::APIDetail {
             throw NotImplemented("Requested reader/writer is not available due to missing dependency");
         }
     };
+
+    template<typename T>
+    inline constexpr bool always_false = false;
+
 }  // namespace GridFormat::APIDetail
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE
@@ -136,6 +143,14 @@ struct VTKXMLFormatBase : public FormatWithOptions<VTKFormat, VTK::XMLOptions> {
         return this->with(std::move(cur_opts));
     }
 };
+
+
+/*!
+ * \ingroup API
+ * \brief Selector for an unspecified file format. When using this format, GridFormat will
+ *        automatically select a format or deduce from a file being read, for instance.
+ */
+struct Any {};
 
 
 /*!
@@ -289,9 +304,6 @@ namespace Detail {
     template<> struct IsVTKXMLFormat<VTS> : public std::true_type {};
     template<> struct IsVTKXMLFormat<VTP> : public std::true_type {};
     template<> struct IsVTKXMLFormat<VTU> : public std::true_type {};
-
-    template<typename T>
-    inline constexpr bool always_false = false;
 }  // namespace Detail
 #endif  // DOXYGEN
 
@@ -341,7 +353,7 @@ struct TimeSeriesClosure {
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE
         else {
             static_assert(
-                Detail::always_false<Format>,
+                APIDetail::always_false<Format>,
                 "Cannot create a time series variant for the given format. This means the format does not "
                 "define a variant for time series, or, the selected format is already time series format."
             );
@@ -654,6 +666,91 @@ struct ReaderFactory<FileFormat::PVD<PieceFormat>>
 : APIDetail::DefaultTemplatedReaderFactory<FileFormat::PVD<PieceFormat>, PVDReader<>, PVDReader>
 {};
 
+//! Specialization of the ReaderFactory for the .pvd time series closure type.
+template<>
+struct ReaderFactory<FileFormat::PVDClosure>
+: APIDetail::DefaultTemplatedReaderFactory<FileFormat::PVDClosure, PVDReader<>, PVDReader>
+{};
+
+
+//! Specialization of the WriterFactory for the any format selector.
+template<> struct WriterFactory<FileFormat::Any> {
+ private:
+    template<typename F, typename... Args>
+    static auto _make(F&& format, Args&&... args) {
+        return WriterFactory<F>::make(format, std::forward<Args>(args)...);
+    }
+
+ public:
+    template<Concepts::Grid G>
+    static constexpr auto default_format_for() {
+        if constexpr (Concepts::ImageGrid<G>)
+            return FileFormat::VTI{};
+        else if constexpr (Concepts::RectilinearGrid<G>)
+            return FileFormat::VTR{};
+        else if constexpr (Concepts::StructuredGrid<G>)
+            return FileFormat::VTS{};
+        else if constexpr (Concepts::UnstructuredGrid<G>)
+            return FileFormat::VTU{};
+        else
+            static_assert(APIDetail::always_false<G>, "Cannot deduce a default format for the given grid");
+    }
+
+    template<Concepts::Grid G>
+    static auto make(const FileFormat::Any&, const G& grid) {
+        return _make(default_format_for<G>(), grid);
+    }
+
+    template<Concepts::Grid G, Concepts::Communicator C>
+    static auto make(const FileFormat::Any&, const G& grid, const C& comm) {
+        return _make(default_format_for<G>(), grid, comm);
+    }
+};
+
+#ifndef DOXYGEN
+namespace APIDetail {
+    bool has_hdf_file_extension(const std::string& filename) {
+        return filename.ends_with(".hdf")
+            || filename.ends_with(".hdf5")
+            || filename.ends_with(".he5")
+            || filename.ends_with(".h5");
+    }
+
+    template<std::derived_from<GridReader> Reader, typename Communicator = NullCommunicator>
+    std::unique_ptr<Reader> make_reader(const Communicator& c = {}) {
+        if constexpr (std::is_same_v<Communicator, NullCommunicator> ||
+                        !std::is_constructible_v<Reader, const Communicator&>) {
+            // if we get here although the communicator size is > 1, something probably went wrong
+            if (Parallel::size(c) > 1)
+                throw ValueError("Cannot construct given reader for parallel I/O");
+            return std::make_unique<Reader>();
+        } else {
+            return std::make_unique<Reader>(c);
+        }
+    }
+
+    template<Concepts::Communicator C>
+    std::unique_ptr<GridReader> make_reader_for(const std::string& filename, const C& c) {
+        if (filename.ends_with(".vtu")) return make_reader<VTUReader>(c);
+        else if (filename.ends_with(".vtp")) return make_reader<VTPReader>(c);
+        else if (filename.ends_with(".vti")) return make_reader<VTIReader>(c);
+        else if (filename.ends_with(".vtr")) return make_reader<VTRReader>(c);
+        else if (filename.ends_with(".vts")) return make_reader<VTSReader>(c);
+        else if (filename.ends_with(".pvd")) return make_reader<PVDReader<C>>(c);
+        else if (has_hdf_file_extension(filename)) return make_reader<VTKHDFReader<C>>(c);
+        throw IOError("Could not deduce file format for '" + filename + "'");
+    }
+
+}  // namespace APIDetail
+#endif  // DOXYGEN
+
+// Implementation of the AnyReaderFactory function
+template<Concepts::Communicator C>
+std::unique_ptr<GridReader> AnyReaderFactory<C>::make_for(const std::string& filename) const {
+    return APIDetail::make_reader_for(filename, _comm);
+}
+
+
 // We place the format instances in a namespace different from FileFormats, in which
 // the format types are defined above. Further below, we make these instances available
 // in the GridFormat namespace directly. Having a separate namespace allows downstream ´
@@ -667,6 +764,7 @@ namespace Formats {
 //! \name File Format Selectors
 //! \{
 
+inline constexpr FileFormat::Any any;
 inline constexpr FileFormat::VTI vti;
 inline constexpr FileFormat::VTR vtr;
 inline constexpr FileFormat::VTS vts;
@@ -683,9 +781,13 @@ inline constexpr FileFormat::VTKHDFTransient vtk_hdf_transient;
 //! \} name File Format Selectors
 //! \} group API
 
-#ifndef DOXYGEN
-namespace APIDetail { template<typename T> struct False : public std::false_type {}; }
-#endif  // DOXYGEN
+/*!
+ * \ingroup API
+ * \brief Selects a default format suitable to write the given grid
+ * \tparam G The grid type for which to select a file format.
+ */
+template<Concepts::Grid G>
+constexpr auto default_for() { return WriterFactory<FileFormat::Any>::template default_format_for<G>(); }
 
 /*!
  * \ingroup API
@@ -693,28 +795,7 @@ namespace APIDetail { template<typename T> struct False : public std::false_type
  * \tparam G The grid type for which to select a file format.
  */
 template<Concepts::Grid G>
-constexpr auto default_for() {
-    if constexpr (Concepts::ImageGrid<G>)
-        return vti;
-    else if constexpr (Concepts::RectilinearGrid<G>)
-        return vtr;
-    else if constexpr (Concepts::StructuredGrid<G>)
-        return vts;
-    else if constexpr (Concepts::UnstructuredGrid<G>)
-        return vtu;
-    else
-        static_assert(APIDetail::False<G>::value, "Cannot deduce a default format for the given grid");
-}
-
-/*!
- * \ingroup API
- * \brief Selects a default format suitable to write the given grid
- * \tparam G The grid type for which to select a file format.
- */
-template<Concepts::Grid G>
-constexpr auto default_for(const G&) {
-    return default_for<G>();
-}
+constexpr auto default_for(const G&) { return default_for<G>(); }
 
 }  // namespace Formats
 

@@ -13,6 +13,8 @@
 #include <memory>
 #include <utility>
 #include <concepts>
+#include <functional>
+#include <optional>
 #include <algorithm>
 #include <iterator>
 #include <string>
@@ -24,8 +26,21 @@
 
 namespace GridFormat {
 
+namespace FileFormat { struct Any; }
+
 template<typename FileFormat>
 struct ReaderFactory;
+
+// Forward declaration, implementation in main API header.
+template<Concepts::Communicator C = NullCommunicator>
+class AnyReaderFactory {
+ public:
+    AnyReaderFactory() = default;
+    explicit AnyReaderFactory(const C& comm) : _comm{comm} {}
+    std::unique_ptr<GridReader> make_for(const std::string& filename) const;
+ private:
+    C _comm;
+};
 
 #ifndef DOXYGEN
 namespace Detail {
@@ -56,13 +71,24 @@ namespace Detail {
  *          \code{.cpp}
  *            GridFormat::Reader reader{GridFormat::vtu};
  *          \endcode
+ * \note This requires the AnyReaderFactory to be defined. Thus, this header cannot
+ *       be included without the general API header gridformat.hpp which defines all
+ *       formats.
  */
 class Reader : public GridReader {
+    using AnyFactoryFunctor = std::function<std::unique_ptr<GridReader>(const std::string&)>;
+
  public:
-    template<Detail::SequentiallyConstructible FileFormat>
-    explicit Reader(const FileFormat& f)
-    : _reader{_make_unique(ReaderFactory<FileFormat>::make(f))}
+    Reader() : _any_factory{[fac = AnyReaderFactory<>{}] (const std::string& f) { return fac.make_for(f); }} {}
+    explicit Reader(const FileFormat::Any&) : Reader() {}
+
+    template<Concepts::Communicator C>
+    explicit Reader(const FileFormat::Any&, const C& c)
+    : _any_factory{[factory = AnyReaderFactory{c}] (const std::string& f) { return factory.make_for(f); }}
     {}
+
+    template<Detail::SequentiallyConstructible FileFormat>
+    explicit Reader(const FileFormat& f) : _reader{_make_unique(ReaderFactory<FileFormat>::make(f))} {}
 
     template<typename FileFormat,
              Concepts::Communicator Communicator>
@@ -82,6 +108,8 @@ class Reader : public GridReader {
     }
 
     void _open(const std::string& filename, typename GridReader::FieldNames& names) override {
+        if (_any_factory)
+            _reader = (*_any_factory)(filename);
         _reader->close();
         _reader->open(filename);
         _copy_field_names(names);
@@ -163,6 +191,7 @@ class Reader : public GridReader {
     }
 
     std::unique_ptr<GridReader> _reader;
+    std::optional<AnyFactoryFunctor> _any_factory;
 };
 
 }  // namespace GridFormat
