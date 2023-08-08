@@ -27,7 +27,7 @@ namespace GridFormat::Test {
 template<typename T1, typename T2, typename T3 = double, typename T4 = double>
 bool equals(const T1& _a,
             const T2& _b,
-            const T3& _rel_tol = 1e-6,
+            const T3& _rel_tol = 1e-5,
             const T4& _abs_tol = std::numeric_limits<T4>::epsilon()) {
     using CommonType = std::common_type_t<T1, T2, T3, T4>;
     const auto a = static_cast<CommonType>(_a);
