@@ -15,6 +15,7 @@
 #include <string>
 #include <ranges>
 #include <type_traits>
+#include <filesystem>
 
 #include <gridformat/xml/element.hpp>
 #include <gridformat/grid/writer.hpp>
@@ -64,7 +65,6 @@ class PVDWriter : public Detail::WriterStorage<VTKWriter>,
         this->_writer().clear();
     }
 
-
  private:
     std::string _write(double _time) override {
         const auto time_step_index = _xml.get_child("Collection").num_children();
@@ -96,12 +96,12 @@ class PVDWriter : public Detail::WriterStorage<VTKWriter>,
         dataset.set_attribute("group", "");
         dataset.set_attribute("part", "0");
         dataset.set_attribute("name", "");
-        dataset.set_attribute("file", filename);
+        dataset.set_attribute("file", std::filesystem::path{filename}.filename());
         return dataset;
     }
 
     std::string _base_filename;
-    std::string _pvd_filename;
+    std::filesystem::path _pvd_filename;
     XMLElement _xml;
 };
 

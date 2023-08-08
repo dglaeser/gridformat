@@ -12,6 +12,7 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
+#include <filesystem>
 #include <array>
 #include <tuple>
 #include <cmath>
@@ -142,7 +143,9 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
 
             auto& piece = grid.add_child("Piece");
             piece.set_attribute("Extent", VTK::CommonDetail::extents_string(extents_begin, extents_end));
-            piece.set_attribute("Source", PVTK::piece_basefilename(filename_with_ext, rank) + ".vti");
+            piece.set_attribute("Source", std::filesystem::path{
+                PVTK::piece_basefilename(filename_with_ext, rank) + ".vti"
+            }.filename());
         });
 
         this->_set_default_active_fields(pvtk_xml.get_child("PImageData"));

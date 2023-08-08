@@ -11,6 +11,7 @@
 #include <ostream>
 #include <string>
 #include <fstream>
+#include <filesystem>
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/parallel/communication.hpp>
@@ -97,10 +98,9 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
         }, this->_xml_settings.coordinate_precision);
 
         std::ranges::for_each(Parallel::ranks(_comm), [&] (int rank) {
-            grid.add_child("Piece").set_attribute(
-                "Source",
+            grid.add_child("Piece").set_attribute("Source", std::filesystem::path{
                 PVTK::piece_basefilename(filename_with_ext, rank) + ".vtu"
-            );
+            }.filename());
         });
 
         this->_set_default_active_fields(pvtk_xml.get_child("PUnstructuredGrid"));
