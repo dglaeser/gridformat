@@ -60,6 +60,8 @@ namely `Dune`, `Deal.II`, `FenicsX`, `MFEM`, and `CGAL` [@cgal; @cgal_web].
 
 Three key requirements govern the design of `GridFormat`: seamless integration, minimal runtime and memory overhead, and support for `MPI`. Given that C++ is widely used in grid-based simulation codes for performance reasons, we selected C++ as the programming language such that `GridFormat` can be adopted and used natively. It is lightweight, header-only, free of dependencies (unless opt-in features such as HDF5 output is desired), and supports CMake [@cmake_web] features that allow for automatic integration of `GridFormat` in downstream projects.
 
+A comparable project in Python is `meshio` [@meshio], which supports reading from and writing to a wide range of grid file formats. However, accessing it from within simulators written in C++ would introduce an undesirable performance penalty, as well as memory overhead since `meshio` operates on an internal mesh representation that users have to convert their data into. `Dune` users can employ `dune-vtk` [@dune_vtk], which supports I/O for a number VTK-XML file formats and flavours, however, its implementation is strongly coupled to the `dune-grid` interface and can therefore not be easily reused in other contexts. To the best of our knowledge, a framework-independent solution that fulfills the above-mentioned requirements does not exist.
+
 # Concept
 
 Following the distinct [VTK-XML](https://examples.vtk.org/site/VTKFileFormats/#xml-file-formats) file formats, `GridFormat`
