@@ -24,7 +24,7 @@
 template<typename PieceReader,
          template<typename...> typename PieceWriter,
          typename Communicator>
-void test_pvd(const std::string& acronym, const Communicator& comm) {
+std::string test_pvd(const std::string& acronym, const Communicator& comm) {
     const auto size = GridFormat::Parallel::size(comm);
     const auto rank = GridFormat::Parallel::rank(comm);
     if (size%2 != 0)
@@ -97,16 +97,37 @@ void test_pvd(const std::string& acronym, const Communicator& comm) {
     }
 
     GridFormat::Parallel::barrier(comm);
+    return test_filename;
 }
 
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
 
-    test_pvd<GridFormat::PVTUReader, GridFormat::PVTUWriter>("pvtu", MPI_COMM_WORLD);
-    test_pvd<GridFormat::PVTPReader, GridFormat::PVTPWriter>("pvtp", MPI_COMM_WORLD);
+    const auto pvd_vtu_file = test_pvd<GridFormat::PVTUReader, GridFormat::PVTUWriter>("pvtu", MPI_COMM_WORLD);
+    const auto pvd_vtp_file = test_pvd<GridFormat::PVTPReader, GridFormat::PVTPWriter>("pvtp", MPI_COMM_WORLD);
     test_pvd<GridFormat::PVTIReader, GridFormat::PVTIWriter>("pvti", MPI_COMM_WORLD);
     test_pvd<GridFormat::PVTRReader, GridFormat::PVTRWriter>("pvtr", MPI_COMM_WORLD);
     test_pvd<GridFormat::PVTSReader, GridFormat::PVTSWriter>("pvts", MPI_COMM_WORLD);
+
+    // test if pvd reader bound to a specific piece reader fails upon read
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::throws;
+    using GridFormat::Testing::eq;
+
+    GridFormat::PVDReader pvd_vtu_reader{MPI_COMM_WORLD, [] (const auto& communicator, const std::string&) {
+        return std::make_unique<GridFormat::PVTUReader>(communicator);
+    }};
+
+    "bound_parallel_pvd_reader_throws_with_wrong_piece_format"_test = [&] () {
+        expect(throws([&] () { pvd_vtu_reader.open(pvd_vtp_file); }));
+    };
+
+    "bound_parallel_pvd_reader_reads_matching_piece_format"_test = [&] () {
+        pvd_vtu_reader.open(pvd_vtu_file);
+        expect(eq(pvd_vtu_reader.number_of_cells(), std::size_t{20}));
+        expect(eq(pvd_vtu_reader.number_of_points(), std::size_t{30}));
+    };
 
     MPI_Finalize();
     return 0;

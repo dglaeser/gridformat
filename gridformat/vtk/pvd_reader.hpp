@@ -11,6 +11,8 @@
 #include <memory>
 #include <optional>
 #include <filesystem>
+#include <functional>
+#include <type_traits>
 #include <iterator>
 
 #include <gridformat/common/string_conversion.hpp>
@@ -43,11 +45,71 @@ class PVDReader : public GridReader {
         double time;
     };
 
+    static constexpr bool is_parallel = !std::is_same_v<NullCommunicator, C>;
+
  public:
-    PVDReader() requires(std::same_as<C, NullCommunicator>) {}
-    explicit PVDReader(const C& comm) : _communicator{comm} {}
+    using StepReaderFactory = std::conditional_t<
+        is_parallel,
+        std::function<std::unique_ptr<GridReader>(const C&, const std::string&)>,
+        std::function<std::unique_ptr<GridReader>(const std::string&)>
+    >;
+
+
+    PVDReader() requires(std::same_as<C, NullCommunicator>)
+    : _step_reader_factory{_make_default_step_reader_factory()}
+    {}
+
+    explicit PVDReader(StepReaderFactory&& f) requires(std::same_as<C, NullCommunicator>)
+    : _step_reader_factory{std::move(f)}
+    {}
+
+    explicit PVDReader(const C& comm)
+    : _communicator{comm}
+    , _step_reader_factory{_make_default_step_reader_factory()}
+    {}
+
+    explicit PVDReader(const C& comm, StepReaderFactory&& f)
+    : _communicator{comm}
+    , _step_reader_factory{std::move(f)}
+    {}
 
  private:
+    StepReaderFactory _make_default_step_reader_factory() const {
+        if constexpr (is_parallel)
+            return [&] (const C& comm, const std::string& filename) {
+                return _make_reader_from_file(comm, filename);
+            };
+        else
+            return [&] (const std::string& filename) {
+                return _make_reader_from_file(NullCommunicator{}, filename);
+            };
+    }
+
+    static std::unique_ptr<GridReader> _make_reader_from_file(const C& comm, const std::string& filename) {
+        std::filesystem::path path{filename};
+        if (path.extension() == ".vtu")
+            return std::make_unique<VTUReader>();
+        else if (path.extension() == ".vtp")
+            return std::make_unique<VTPReader>();
+        else if (path.extension() == ".vts")
+            return std::make_unique<VTSReader>();
+        else if (path.extension() == ".vtr")
+            return std::make_unique<VTRReader>();
+        else if (path.extension() == ".vti")
+            return std::make_unique<VTIReader>();
+        else if (path.extension() == ".pvtu")
+            return std::make_unique<PVTUReader>(comm);
+        else if (path.extension() == ".pvtp")
+            return std::make_unique<PVTPReader>(comm);
+        else if (path.extension() == ".pvts")
+            return std::make_unique<PVTSReader>(comm);
+        else if (path.extension() == ".pvtr")
+            return std::make_unique<PVTRReader>(comm);
+        else if (path.extension() == ".pvti")
+            return std::make_unique<PVTIReader>(comm);
+        throw IOError("Could not find reader for format with extension " + std::string{path.extension()});
+    }
+
     std::string _name() const override {
         return "PVDReader";
     }
@@ -149,30 +211,16 @@ class PVDReader : public GridReader {
     }
 
     void _make_step_reader() {
-        std::filesystem::path path{_steps.at(_step_index).filename};
-        if (path.extension() == ".vtu")
-            _step_reader = std::make_unique<VTUReader>();
-        else if (path.extension() == ".vtp")
-            _step_reader = std::make_unique<VTPReader>();
-        else if (path.extension() == ".vts")
-            _step_reader = std::make_unique<VTSReader>();
-        else if (path.extension() == ".vtr")
-            _step_reader = std::make_unique<VTRReader>();
-        else if (path.extension() == ".vti")
-            _step_reader = std::make_unique<VTIReader>();
-        else if (path.extension() == ".pvtu")
-            _step_reader = std::make_unique<PVTUReader>(_communicator);
-        else if (path.extension() == ".pvtp")
-            _step_reader = std::make_unique<PVTPReader>(_communicator);
-        else if (path.extension() == ".pvts")
-            _step_reader = std::make_unique<PVTSReader>(_communicator);
-        else if (path.extension() == ".pvtr")
-            _step_reader = std::make_unique<PVTRReader>(_communicator);
-        else if (path.extension() == ".pvti")
-            _step_reader = std::make_unique<PVTIReader>(_communicator);
+        const std::string& filename = _steps.at(_step_index).filename;
+        _step_reader = _invoke_reader_factory(filename);
+        _step_reader->open(filename);
+    }
+
+    std::unique_ptr<GridReader> _invoke_reader_factory(const std::string& filename) const {
+        if constexpr (is_parallel)
+            return _step_reader_factory(_communicator, filename);
         else
-            throw IOError("Could not find reader for format with extension " + std::string{path.extension()});
-        _step_reader->open(path);
+            return _step_reader_factory(filename);
     }
 
     void _read_current_field_names(typename GridReader::FieldNames& names) const {
@@ -194,6 +242,7 @@ class PVDReader : public GridReader {
     }
 
     C _communicator;
+    StepReaderFactory _step_reader_factory;
     std::unique_ptr<GridReader> _step_reader;
     std::vector<Step> _steps;
     std::size_t _step_index = 0;
