@@ -107,7 +107,7 @@ class VTIReader : public GridReader {
             int{},  // dummy "source"
             MDLayout{{num_points, std::size_t{3}}},
             Precision<double>{},
-            [specs=_specs(), pextents=pextents, n=num_points] (const int&) {
+            [specs=_specs(), pextents=pextents] (const int&) {
                 return VTK::CommonDetail::serialize_structured_points(
                     pextents,
                     specs.origin,
