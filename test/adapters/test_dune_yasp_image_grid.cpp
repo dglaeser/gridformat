@@ -49,14 +49,16 @@ int main(int argc, char** argv) {
         using Grid = Dune::YaspGrid<2, Dune::EquidistantCoordinates<double, 2>>;
         static_assert(GridFormat::Concepts::ImageGrid<typename Grid::LeafGridView>);
         Grid grid{{1.0, 2.0}, {3, 4}};
-        GridFormat::VTIWriter writer{grid.leafGridView()};
+        const auto& grid_view = grid.leafGridView();
+        GridFormat::VTIWriter writer{grid_view};
         write<Grid>(writer, "dune_vti_equidistant");
     }
     {
         using Grid = Dune::YaspGrid<3, Dune::EquidistantCoordinates<double, 3>>;
         static_assert(GridFormat::Concepts::ImageGrid<typename Grid::LeafGridView>);
         Grid grid{{1.0, 2.0, 3.0}, {3, 4, 5}};
-        GridFormat::VTIWriter writer{grid.leafGridView()};
+        const auto& grid_view = grid.leafGridView();
+        GridFormat::VTIWriter writer{grid_view};
         write<Grid>(writer, "dune_vti_equidistant");
     }
 
@@ -64,14 +66,16 @@ int main(int argc, char** argv) {
         using Grid = Dune::YaspGrid<2, Dune::EquidistantOffsetCoordinates<double, 2>>;
         static_assert(GridFormat::Concepts::ImageGrid<typename Grid::LeafGridView>);
         Grid grid{{0.5, 0.25}, {1.0, 2.0}, {4, 3}};
-        GridFormat::VTIWriter writer{grid.leafGridView()};
+        const auto& grid_view = grid.leafGridView();
+        GridFormat::VTIWriter writer{grid_view};
         write<Grid>(writer, "dune_vti_offset");
     }
     {
         using Grid = Dune::YaspGrid<3, Dune::EquidistantOffsetCoordinates<double, 3>>;
         static_assert(GridFormat::Concepts::ImageGrid<typename Grid::LeafGridView>);
         Grid grid{{0.5, 0.25, 0.1}, {1.0, 2.0, 0.5}, {4, 3, 3}};
-        GridFormat::VTIWriter writer{grid.leafGridView()};
+        const auto& grid_view = grid.leafGridView();
+        GridFormat::VTIWriter writer{grid_view};
         write<Grid>(writer, "dune_vti_offset");
     }
 

@@ -14,6 +14,7 @@
 #include <filesystem>
 
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/parallel/helpers.hpp>
 
@@ -34,10 +35,10 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
     using ParentType = VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator>>;
 
  public:
-    explicit PVTUWriter(const Grid& grid,
+    explicit PVTUWriter(LValueReferenceOf<const Grid> grid,
                         Communicator comm,
                         VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".pvtu", false, xml_opts)
+    : ParentType(grid.get(), ".pvtu", false, xml_opts)
     , _comm(comm)
     {}
 
@@ -107,6 +108,9 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
         write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
     }
 };
+
+template<typename G, Concepts::Communicator C>
+PVTUWriter(G&&, const C&, VTK::XMLOptions = {}) -> PVTUWriter<std::remove_cvref_t<G>, C>;
 
 }  // namespace GridFormat
 

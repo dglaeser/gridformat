@@ -17,6 +17,7 @@
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/filtered_range.hpp>
 #include <gridformat/common/field_storage.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/common.hpp>
@@ -65,9 +66,9 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
     };
 
  public:
-    explicit VTPWriter(const Grid& grid,
+    explicit VTPWriter(LValueReferenceOf<const Grid> grid,
                        VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".vtp", false, std::move(xml_opts))
+    : ParentType(grid.get(), ".vtp", false, std::move(xml_opts))
     {}
 
  private:
@@ -166,6 +167,9 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
         }, this->_xml_settings.header_precision);
     }
 };
+
+template<typename G>
+VTPWriter(G&&, VTK::XMLOptions = {}) -> VTPWriter<std::remove_cvref_t<G>>;
 
 }  // namespace GridFormat
 

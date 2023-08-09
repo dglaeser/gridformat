@@ -14,6 +14,7 @@
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/field_storage.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/common.hpp>
@@ -30,9 +31,9 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, VTUWriter<Grid>> {
     using ParentType = VTK::XMLWriterBase<Grid, VTUWriter<Grid>>;
 
  public:
-    explicit VTUWriter(const Grid& grid,
+    explicit VTUWriter(LValueReferenceOf<const Grid> grid,
                        VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".vtu", false, std::move(xml_opts))
+    : ParentType(grid.get(), ".vtu", false, std::move(xml_opts))
     {}
 
  private:
@@ -74,6 +75,9 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, VTUWriter<Grid>> {
         this->_write_xml(std::move(context), s);
     }
 };
+
+template<typename G>
+VTUWriter(G&&, VTK::XMLOptions = {}) -> VTUWriter<std::remove_cvref_t<G>>;
 
 }  // namespace GridFormat
 

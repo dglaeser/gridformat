@@ -54,7 +54,8 @@ int main(int argc, char** argv) {
             std::bitset<2>{0ULL},  // no periodic boundaries
             int{0}                 // no overlap
         };
-        GridFormat::PVTIWriter writer{grid.leafGridView(), mpi_helper.getCommunicator()};
+        const auto& grid_view = grid.leafGridView();
+        GridFormat::PVTIWriter writer{grid_view, mpi_helper.getCommunicator()};
         write<Grid>(writer, "dune_pvti_no_overlap", mpi_helper.rank());
     }
     {
@@ -65,7 +66,8 @@ int main(int argc, char** argv) {
             std::bitset<3>{0ULL},  // no periodic boundaries
             int{0}                 // no overlap
         };
-        GridFormat::PVTIWriter writer{grid.leafGridView(), mpi_helper.getCommunicator()};
+        const auto& grid_view = grid.leafGridView();
+        GridFormat::PVTIWriter writer{grid_view, mpi_helper.getCommunicator()};
         write<Grid>(writer, "dune_pvti_no_overlap", mpi_helper.rank());
     }
 
@@ -77,7 +79,8 @@ int main(int argc, char** argv) {
             std::bitset<2>{0ULL},  // no periodic boundaries
             int{1}                 // with overlap
         };
-        GridFormat::PVTIWriter writer{grid.leafGridView(), mpi_helper.getCommunicator()};
+        const auto& grid_view = grid.leafGridView();
+        GridFormat::PVTIWriter writer{grid_view, mpi_helper.getCommunicator()};
         write<Grid>(writer, "dune_pvti_with_overlap", mpi_helper.rank());
     }
     {
@@ -88,7 +91,8 @@ int main(int argc, char** argv) {
             std::bitset<3>{0ULL},  // no periodic boundaries
             int{1}                 // with overlap
         };
-        GridFormat::PVTIWriter writer{grid.leafGridView(), mpi_helper.getCommunicator()};
+        const auto& grid_view = grid.leafGridView();
+        GridFormat::PVTIWriter writer{grid_view, mpi_helper.getCommunicator()};
         write<Grid>(writer, "dune_pvti_no_overlap", mpi_helper.rank());
     }
 

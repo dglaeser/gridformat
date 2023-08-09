@@ -20,6 +20,7 @@
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/parallel/helpers.hpp>
@@ -46,10 +47,10 @@ class PVTSWriter : public VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator
     static constexpr int root_rank = 0;
 
  public:
-    explicit PVTSWriter(const Grid& grid,
+    explicit PVTSWriter(LValueReferenceOf<const Grid> grid,
                         Communicator comm,
                         VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".pvts", true, xml_opts)
+    : ParentType(grid.get(), ".pvts", true, xml_opts)
     , _comm(comm)
     {}
 
@@ -193,6 +194,9 @@ class PVTSWriter : public VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator
         write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
     }
 };
+
+template<typename G, Concepts::Communicator C>
+PVTSWriter(G&&, const C&, VTK::XMLOptions = {}) -> PVTSWriter<std::remove_cvref_t<G>, C>;
 
 }  // namespace GridFormat
 

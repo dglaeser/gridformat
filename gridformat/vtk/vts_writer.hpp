@@ -17,6 +17,7 @@
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/field_storage.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/grid/concepts.hpp>
@@ -44,8 +45,9 @@ class VTSWriter : public VTK::XMLWriterBase<Grid, VTSWriter<Grid>> {
 
     using Offset = std::array<std::size_t, dim>;
 
-    explicit VTSWriter(const Grid& grid, VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".vts", true, std::move(xml_opts))
+    explicit VTSWriter(LValueReferenceOf<const Grid> grid,
+                       VTK::XMLOptions xml_opts = {})
+    : ParentType(grid.get(), ".vts", true, std::move(xml_opts))
     {}
 
     VTSWriter as_piece_for(Domain domain) const {
@@ -118,6 +120,9 @@ class VTSWriter : public VTK::XMLWriterBase<Grid, VTSWriter<Grid>> {
     std::optional<Domain> _domain;
     std::optional<Offset> _offset;
 };
+
+template<typename G>
+VTSWriter(G&&, VTK::XMLOptions = {}) -> VTSWriter<std::remove_cvref_t<G>>;
 
 }  // namespace GridFormat
 

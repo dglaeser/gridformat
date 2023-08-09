@@ -21,6 +21,7 @@
 #include <gridformat/common/matrix.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/type_traits.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 #include <gridformat/common/field_transformations.hpp>
 
 #include <gridformat/parallel/communication.hpp>
@@ -65,28 +66,28 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
     };
 
  public:
-    explicit VTKHDFImageGridWriterImpl(const Grid& grid)
+    explicit VTKHDFImageGridWriterImpl(LValueReferenceOf<const Grid> grid)
         requires(std::is_same_v<Communicator, NullCommunicator>)
-    : GridWriter<Grid>(grid, ".hdf", writer_opts)
+    : GridWriter<Grid>(grid.get(), ".hdf", writer_opts)
     {}
 
-    explicit VTKHDFImageGridWriterImpl(const Grid& grid, const Communicator& comm)
+    explicit VTKHDFImageGridWriterImpl(LValueReferenceOf<const Grid> grid, const Communicator& comm)
         requires(std::is_copy_constructible_v<Communicator>)
-    : GridWriter<Grid>(grid, ".hdf", writer_opts)
+    : GridWriter<Grid>(grid.get(), ".hdf", writer_opts)
     , _comm{comm}
     {}
 
-    explicit VTKHDFImageGridWriterImpl(const Grid& grid,
+    explicit VTKHDFImageGridWriterImpl(LValueReferenceOf<const Grid> grid,
                                        std::string filename_without_extension,
                                        VTK::HDFTransientOptions opts = {
                                             .static_grid = true,
                                             .static_meta_data = false
                                        })
         requires(is_transient && std::is_same_v<Communicator, NullCommunicator>)
-    : VTKHDFImageGridWriterImpl(grid, NullCommunicator{}, filename_without_extension, std::move(opts))
+    : VTKHDFImageGridWriterImpl(grid.get(), NullCommunicator{}, filename_without_extension, std::move(opts))
     {}
 
-    explicit VTKHDFImageGridWriterImpl(const Grid& grid,
+    explicit VTKHDFImageGridWriterImpl(LValueReferenceOf<const Grid> grid,
                                        const Communicator& comm,
                                        std::string filename_without_extension,
                                        VTK::HDFTransientOptions opts = {
@@ -94,7 +95,7 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
                                             .static_meta_data = false
                                        })
         requires(is_transient && std::is_copy_constructible_v<Communicator>)
-    : TimeSeriesGridWriter<Grid>(grid, writer_opts)
+    : TimeSeriesGridWriter<Grid>(grid.get(), writer_opts)
     , _comm{comm}
     , _timeseries_filename{std::move(filename_without_extension) + ".hdf"}
     , _transient_opts{std::move(opts)} {

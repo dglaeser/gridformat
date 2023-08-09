@@ -246,11 +246,13 @@ void write() {
             dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_vertex)
         ));
 
-        if (is_sequential())
+        if (is_sequential()) {
+            const auto& mesh = higher_order_mesh<dim>();
             write_with(
-                GridFormat::VTUWriter{higher_order_mesh<dim>()},
+                GridFormat::VTUWriter{mesh},
                 get_filename(dolfinx::mesh::CellType::interval, "higher_order")
             );
+        }
     }
     if constexpr (dim == 2) {
         auto min = GridFormat::Ranges::filled_array<dim>(0.0);
@@ -266,11 +268,13 @@ void write() {
                 dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_vertex)
             ), "shared_vertex");
 
-            if (is_sequential())
+            if (is_sequential()) {
+                const auto& mesh = higher_order_mesh<dim>(ct);
                 write_with(
-                    GridFormat::VTUWriter{higher_order_mesh<dim>(ct)},
+                    GridFormat::VTUWriter{mesh},
                     get_filename(ct, "higher_order")
                 );
+            }
         }
     }
     if constexpr (dim == 3) {
@@ -287,11 +291,13 @@ void write() {
                 dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_vertex)
             ), "shared_vertex");
 
-            if (is_sequential())
+            if (is_sequential()) {
+                const auto mesh = higher_order_mesh<dim>(ct);
                 write_with(
-                    GridFormat::VTUWriter{higher_order_mesh<dim>(ct)}.with_encoding(GridFormat::Encoding::ascii),
+                    GridFormat::VTUWriter{mesh}.with_encoding(GridFormat::Encoding::ascii),
                     get_filename(ct, "higher_order")
                 );
+            }
         }
     }
 }
