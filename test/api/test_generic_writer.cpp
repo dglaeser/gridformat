@@ -1,17 +1,11 @@
 // SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: MIT
 
+#include <iostream>
 #include <algorithm>
 
 #include <gridformat/common/ranges.hpp>
-
-// In the GitHub action runner we run into a compiler warning from
-// the VTIWriter when using release flags. Locally, this could not
-// be reproduced. For now, we simply ignore those warnings here.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wrestrict"
 #include <gridformat/gridformat.hpp>
-#pragma GCC diagnostic pop
 
 #include "../make_test_data.hpp"
 #include "../testing.hpp"

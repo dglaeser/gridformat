@@ -12,16 +12,10 @@
 #pragma GCC diagnostic pop
 
 #include <gridformat/common/logging.hpp>
+#include <gridformat/vtk/vti_writer.hpp>
+
 #include <gridformat/grid/concepts.hpp>
 #include <gridformat/grid/grid.hpp>
-
-// In the GitHub action runner we run into a compiler warning when
-// using release flags. Locally, this could not be reproduced. For
-// now, we simply ignore those warnings here.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wrestrict"
-#include <gridformat/vtk/vti_writer.hpp>
-#pragma GCC diagnostic pop
 
 #include "../make_test_data.hpp"
 
