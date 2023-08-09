@@ -27,9 +27,6 @@ namespace GridFormat {
 namespace ConverterDetail {
 
     struct ConverterGrid {
-        struct Cell { std::size_t i; };
-        struct Point { std::size_t i; };
-
         const GridReader& reader;
         std::vector<std::array<double, 3>> points;
         std::vector<std::pair<CellType, std::vector<std::size_t>>> cells;
@@ -111,16 +108,14 @@ namespace Traits {
 template<>
 struct Points<ConverterDetail::ConverterGrid> {
     static std::ranges::range auto get(const ConverterDetail::ConverterGrid& grid) {
-        return std::views::iota(std::size_t{0}, grid.reader.number_of_points())
-            | std::views::transform([] (std::size_t i) { return ConverterDetail::ConverterGrid::Point{i}; });
+        return std::views::iota(std::size_t{0}, grid.reader.number_of_points());
     }
 };
 
 template<>
 struct Cells<ConverterDetail::ConverterGrid> {
     static std::ranges::range auto get(const ConverterDetail::ConverterGrid& grid) {
-        return std::views::iota(std::size_t{0}, grid.reader.number_of_cells())
-            | std::views::transform([] (std::size_t i) { return ConverterDetail::ConverterGrid::Cell{i}; });
+        return std::views::iota(std::size_t{0}, grid.reader.number_of_cells());
     }
 };
 
@@ -139,49 +134,37 @@ struct NumberOfCells<ConverterDetail::ConverterGrid> {
 };
 
 template<>
-struct CellPoints<ConverterDetail::ConverterGrid,
-                  typename ConverterDetail::ConverterGrid::Cell> {
-    static std::ranges::range auto get(const ConverterDetail::ConverterGrid& grid,
-                                       const typename ConverterDetail::ConverterGrid::Cell& cell) {
-        return grid.cells.at(cell.i).second | std::views::transform([] (std::size_t i) {
-            return ConverterDetail::ConverterGrid::Point{i};
-        });
+struct CellPoints<ConverterDetail::ConverterGrid, std::size_t> {
+    static std::ranges::range auto get(const ConverterDetail::ConverterGrid& grid, const std::size_t i) {
+        return grid.cells.at(i).second | std::views::all;
     }
 };
 
 template<>
-struct CellType<ConverterDetail::ConverterGrid,
-                typename ConverterDetail::ConverterGrid::Cell> {
-    static GridFormat::CellType get(const ConverterDetail::ConverterGrid& grid,
-                                    const typename ConverterDetail::ConverterGrid::Cell& cell) {
-        return grid.cells.at(cell.i).first;
+struct CellType<ConverterDetail::ConverterGrid, std::size_t> {
+    static GridFormat::CellType get(const ConverterDetail::ConverterGrid& grid, const std::size_t i) {
+        return grid.cells.at(i).first;
     }
 };
 
 template<>
-struct PointCoordinates<ConverterDetail::ConverterGrid,
-                        typename ConverterDetail::ConverterGrid::Point> {
-    static std::array<double, 3> get(const ConverterDetail::ConverterGrid& grid,
-                                     const typename ConverterDetail::ConverterGrid::Point& point) {
-        return grid.points.at(point.i);
+struct PointCoordinates<ConverterDetail::ConverterGrid, std::size_t> {
+    static std::array<double, 3> get(const ConverterDetail::ConverterGrid& grid, const std::size_t i) {
+        return grid.points.at(i);
     }
 };
 
 template<>
-struct PointId<ConverterDetail::ConverterGrid,
-               typename ConverterDetail::ConverterGrid::Point> {
-    static std::size_t get(const ConverterDetail::ConverterGrid&,
-                           const typename ConverterDetail::ConverterGrid::Point& point) {
-        return point.i;
+struct PointId<ConverterDetail::ConverterGrid, std::size_t> {
+    static std::size_t get(const ConverterDetail::ConverterGrid&, const std::size_t i) {
+        return i;
     }
 };
 
 template<>
-struct NumberOfCellPoints<ConverterDetail::ConverterGrid,
-                          typename ConverterDetail::ConverterGrid::Cell> {
-    static std::size_t get(const ConverterDetail::ConverterGrid& grid,
-                           const typename ConverterDetail::ConverterGrid::Cell& cell) {
-        return grid.cells.at(cell.i).second.size();
+struct NumberOfCellPoints<ConverterDetail::ConverterGrid, std::size_t> {
+    static std::size_t get(const ConverterDetail::ConverterGrid& grid, const std::size_t i) {
+        return grid.cells.at(i).second.size();
     }
 };
 
@@ -223,57 +206,10 @@ struct Ordinates<ConverterDetail::ConverterGrid> {
     }
 };
 
-// TODO: Maybe let this throw? Should not be needed?
 template<typename Entity>
 struct Location<ConverterDetail::ConverterGrid, Entity> {
-    static std::array<std::size_t, 3> get(const ConverterDetail::ConverterGrid& grid,
-                                          const typename ConverterDetail::ConverterGrid::Point& point) {
-        return _get(Ranges::incremented(Extents<ConverterDetail::ConverterGrid>::get(grid), 1), point.i);
-    }
-
-    static std::array<std::size_t, 3> get(const ConverterDetail::ConverterGrid& grid,
-                                          const typename ConverterDetail::ConverterGrid::Cell& cell) {
-        return _get(Extents<ConverterDetail::ConverterGrid>::get(grid), cell.i);
-    }
-
- private:
-    static std::array<std::size_t, 3> _get(const std::ranges::range auto& extents, std::size_t index) {
-        const auto num_actives = std::ranges::count_if(extents, [] (auto e) { return e != 0; });
-        const auto accumulator = [] (const auto& range, int non_zero_count) {
-            std::vector<std::size_t> filtered;
-            std::ranges::copy(
-                range | std::views::filter([] (auto v) { return v != 0; })
-                      | std::views::take(non_zero_count),
-                std::back_inserter(filtered)
-            );
-            return std::accumulate(
-                std::ranges::begin(filtered),
-                std::ranges::end(filtered),
-                std::size_t{1},
-                std::multiplies{}
-            );
-        };
-
-        if (num_actives == 1)
-            return {index, 0, 0};
-        if (num_actives == 2) {
-            const auto divisor = accumulator(extents, 1);
-            return {
-                index%divisor,
-                index/divisor,
-                0
-            };
-        }
-        if (num_actives == 3) {
-            const auto divisor1 = accumulator(extents, 1);
-            const auto divisor2 = accumulator(extents, 2);
-            return {
-                index%divisor2%divisor1,
-                index&divisor2/divisor1,
-                index/divisor2
-            };
-        }
-        throw InvalidState("Unexpected number of active extents");
+    static std::array<std::size_t, 3> get(const ConverterDetail::ConverterGrid&, const Entity&) {
+        throw NotImplemented("Entity location for converter grid");
     }
 };
 
