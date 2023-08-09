@@ -39,6 +39,7 @@ INPUT                 += @CMAKE_SOURCE_DIR@/README.md \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/common/field.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/image_grid.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/concepts.hpp \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/converter.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/writer.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/vtk/ \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/encoding/ \
