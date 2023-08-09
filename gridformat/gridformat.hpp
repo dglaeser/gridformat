@@ -317,9 +317,9 @@ namespace Detail {
  * \tparam PieceFormat The underlying file format used for each time step.
  * \note ParaView only supports reading .pvd series if the file format for pieces is one of the VTK-XML formats.
  */
-template<typename PieceFormat = None>
+template<typename PieceFormat = Any>
 struct PVD {
-    std::optional<PieceFormat> piece_format;
+    PieceFormat piece_format;
 };
 
 /*!
@@ -649,17 +649,13 @@ struct WriterFactory<FileFormat::PVD<F>> {
     static auto make(const FileFormat::PVD<F>& format,
                      const Concepts::Grid auto& grid,
                      const std::string& base_filename) {
-        if (!format.piece_format.has_value())
-            throw ValueError("No PVD piece format has been set");
-        return PVDWriter{WriterFactory<F>::make(format.piece_format.value(), grid), base_filename};
+        return PVDWriter{WriterFactory<F>::make(format.piece_format, grid), base_filename};
     }
     static auto make(const FileFormat::PVD<F>& format,
                      const Concepts::Grid auto& grid,
                      const Concepts::Communicator auto& comm,
                      const std::string& base_filename) {
-        if (!format.piece_format.has_value())
-            throw ValueError("No PVD piece format has been set");
-        return PVDWriter{WriterFactory<F>::make(format.piece_format.value(), grid, comm), base_filename};
+        return PVDWriter{WriterFactory<F>::make(format.piece_format, grid, comm), base_filename};
     }
 };
 
@@ -827,7 +823,8 @@ inline constexpr FileFormat::VTR vtr;
 inline constexpr FileFormat::VTS vts;
 inline constexpr FileFormat::VTP vtp;
 inline constexpr FileFormat::VTU vtu;
-inline constexpr FileFormat::PVDClosure pvd;
+inline constexpr FileFormat::PVD pvd;
+inline constexpr FileFormat::PVDClosure pvd_with;
 inline constexpr FileFormat::TimeSeriesClosure time_series;
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE

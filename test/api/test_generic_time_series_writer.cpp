@@ -31,10 +31,11 @@ int main() {
     using GridFormat::Test::test_function;
 
     GridFormat::ImageGrid<2, double> grid{{1.0, 1.0}, {4, 5}};
-    write(GridFormat::Writer{GridFormat::pvd(GridFormat::vtu), grid, "generic_time_series_2d_in_2d_vtu"});
-    write(GridFormat::Writer{GridFormat::pvd(GridFormat::vti), grid, "generic_time_series_2d_in_2d_vti"});
-    write(GridFormat::Writer{GridFormat::pvd(GridFormat::vtr), grid, "generic_time_series_2d_in_2d_vtr"});
-    write(GridFormat::Writer{GridFormat::pvd(GridFormat::vts({.encoder = GridFormat::Encoding::ascii})), grid, "generic_time_series_2d_in_2d_vts"});
+    write(GridFormat::Writer{GridFormat::pvd, grid, "generic_time_series_2d_in_2d_default"});
+    write(GridFormat::Writer{GridFormat::pvd_with(GridFormat::vtu), grid, "generic_time_series_2d_in_2d_vtu"});
+    write(GridFormat::Writer{GridFormat::pvd_with(GridFormat::vti), grid, "generic_time_series_2d_in_2d_vti"});
+    write(GridFormat::Writer{GridFormat::pvd_with(GridFormat::vtr), grid, "generic_time_series_2d_in_2d_vtr"});
+    write(GridFormat::Writer{GridFormat::pvd_with(GridFormat::vts({.encoder = GridFormat::Encoding::ascii})), grid, "generic_time_series_2d_in_2d_vts"});
     // add pvd to make the regression script include the files (see CMakeLists.txt)
     write(GridFormat::Writer{GridFormat::time_series(GridFormat::vtu), grid, "generic_time_series_2d_in_2d_pvd"});
 

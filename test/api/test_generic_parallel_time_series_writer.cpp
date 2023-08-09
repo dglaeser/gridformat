@@ -50,7 +50,17 @@ int main(int argc, char** argv) {
 
     write(
         GridFormat::Writer{
-            GridFormat::pvd(GridFormat::vtu),
+            GridFormat::pvd,
+            grid,
+            MPI_COMM_WORLD,
+            "generic_parallel_time_series_2d_in_2d_default"
+        },
+        MPI_COMM_WORLD
+    );
+
+    write(
+        GridFormat::Writer{
+            GridFormat::pvd_with(GridFormat::vtu),
             grid,
             MPI_COMM_WORLD,
             "generic_parallel_time_series_2d_in_2d_vtu"
@@ -59,7 +69,7 @@ int main(int argc, char** argv) {
     );
     write(
         GridFormat::Writer{
-            GridFormat::pvd(GridFormat::vti),
+            GridFormat::pvd_with(GridFormat::vti),
             grid,
             MPI_COMM_WORLD,
             "generic_parallel_time_series_2d_in_2d_vti"
@@ -68,7 +78,7 @@ int main(int argc, char** argv) {
     );
     write(
         GridFormat::Writer{
-            GridFormat::pvd(GridFormat::vtr),
+            GridFormat::pvd_with(GridFormat::vtr),
             grid,
             MPI_COMM_WORLD,
             "generic_parallel_time_series_2d_in_2d_vtr"
@@ -77,7 +87,7 @@ int main(int argc, char** argv) {
     );
     write(
         GridFormat::Writer{
-            GridFormat::pvd(GridFormat::vts),
+            GridFormat::pvd_with(GridFormat::vts),
             grid,
             MPI_COMM_WORLD,
             "generic_parallel_time_series_2d_in_2d_vts"
@@ -86,7 +96,7 @@ int main(int argc, char** argv) {
     );
     write(
         GridFormat::Writer{
-            GridFormat::pvd(GridFormat::vtp),
+            GridFormat::pvd_with(GridFormat::vtp),
             grid,
             MPI_COMM_WORLD,
             "generic_parallel_time_series_2d_in_2d_vtp"
