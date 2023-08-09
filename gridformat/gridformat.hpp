@@ -745,8 +745,10 @@ namespace APIDetail {
         else if (filename.ends_with(".pvtr")) return make_reader<PVTRReader>(c);
         else if (filename.ends_with(".pvts")) return make_reader<PVTSReader>(c);
         else if (filename.ends_with(".pvd")) return make_reader<PVDReader<C>>(c);
+#if GRIDFORMAT_HAVE_HIGH_FIVE
         else if (has_hdf_file_extension(filename)) return make_reader<VTKHDFReader<C>>(c);
-        throw IOError("Could not deduce file format for '" + filename + "'");
+#endif
+        throw IOError("Could not deduce an available file format for '" + filename + "'");
     }
 
 }  // namespace APIDetail
