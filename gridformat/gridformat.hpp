@@ -20,7 +20,10 @@
 
 #include <gridformat/reader.hpp>
 #include <gridformat/writer.hpp>
+
+#include <gridformat/grid/converter.hpp>
 #include <gridformat/grid/image_grid.hpp>
+
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/parallel/communication.hpp>
 
@@ -736,6 +739,11 @@ namespace APIDetail {
         else if (filename.ends_with(".vti")) return make_reader<VTIReader>(c);
         else if (filename.ends_with(".vtr")) return make_reader<VTRReader>(c);
         else if (filename.ends_with(".vts")) return make_reader<VTSReader>(c);
+        else if (filename.ends_with(".pvtu")) return make_reader<PVTUReader>(c);
+        else if (filename.ends_with(".pvtp")) return make_reader<PVTPReader>(c);
+        else if (filename.ends_with(".pvti")) return make_reader<PVTIReader>(c);
+        else if (filename.ends_with(".pvtr")) return make_reader<PVTRReader>(c);
+        else if (filename.ends_with(".pvts")) return make_reader<PVTSReader>(c);
         else if (filename.ends_with(".pvd")) return make_reader<PVDReader<C>>(c);
         else if (has_hdf_file_extension(filename)) return make_reader<VTKHDFReader<C>>(c);
         throw IOError("Could not deduce file format for '" + filename + "'");
@@ -748,6 +756,53 @@ namespace APIDetail {
 template<Concepts::Communicator C>
 std::unique_ptr<GridReader> AnyReaderFactory<C>::make_for(const std::string& filename) const {
     return APIDetail::make_reader_for(filename, _comm);
+}
+
+/*!
+ * \ingroup API
+ * \brief Convert between grid file formats.
+ * \param in The input filename.
+ * \param out The output filename.
+ * \param out_format The desired output format.
+ * \param in_format (optional) The format of the input file.
+ * \note Converting into .vtp file format does not work yet.
+ */
+template<typename OutFormat, typename InFormat = FileFormat::Any>
+    requires(!Concepts::Communicator<InFormat>)
+std::string convert(const std::string& in,
+                    const std::string& out,
+                    const OutFormat& out_format,
+                    const InFormat& in_format = {}) {
+    Reader reader{in_format};
+    reader.open(in);
+    return convert(reader, out, [&] (const auto& grid) {
+        return WriterFactory<OutFormat>::make(out_format, grid);
+    });
+}
+
+/*!
+ * \ingroup API
+ * \brief Convert between parallel grid file formats.
+ * \param in The input filename.
+ * \param out The output filename.
+ * \param out_format The desired output format.
+ * \param communicator The communicator.
+ * \param in_format (optional) The format of the input file.
+ * \note Converting into .vtp file format does not work yet.
+ */
+template<typename OutFormat,
+         Concepts::Communicator C,
+         typename InFormat = FileFormat::Any>
+std::string convert(const std::string& in,
+                    const std::string& out,
+                    const OutFormat& out_format,
+                    const C& communicator,
+                    const InFormat& in_format = {}) {
+    Reader reader{in_format, communicator};
+    reader.open(in);
+    return convert(reader, out, [&] (const auto& grid) {
+        return WriterFactory<OutFormat>::make(out_format, grid, communicator);
+    });
 }
 
 
