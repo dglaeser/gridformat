@@ -287,7 +287,7 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
  public:
     using ParentType::ParentType;
 
- private:
+ protected:
     struct StructuredGridSpecs {
         std::array<std::size_t, 6> extents;
         std::optional<std::array<double, 3>> spacing;   // for image grids
@@ -297,6 +297,13 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
         };
     };
 
+    const StructuredGridSpecs& _specs() const {
+        if (!_grid_specs.has_value())
+            throw InvalidState("No data has been read");
+        return _grid_specs.value();
+    }
+
+ private:
     void _open(const std::string& filename, typename GridReader::FieldNames& names) override {
         if (this->_merge_exceeding_pieces_option().value_or(false))
             throw IOError("Parallel I/O of structured vtk files does not support the 'merge_exceeding_pieces' option");
@@ -469,12 +476,6 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
         result[3] += 1;
         result[5] += 1;
         return result;
-    }
-
-    const StructuredGridSpecs& _specs() const {
-        if (!_grid_specs.has_value())
-            throw InvalidState("No data has been read");
-        return _grid_specs.value();
     }
 
     std::optional<StructuredGridSpecs> _grid_specs;

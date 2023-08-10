@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <iterator>
 #include <ranges>
+#include <cmath>
 
 #include <gridformat/common/logging.hpp>
 #include <gridformat/vtk/vti_reader.hpp>
@@ -79,6 +80,16 @@ int main() {
                 expect(GridFormat::Test::test_field_values<2>(name, field_ptr, grid, GridFormat::points(grid)));
             for (const auto& [name, field_ptr] : cell_fields(reader))
                 expect(GridFormat::Test::test_field_values<2>(name, field_ptr, grid, GridFormat::cells(grid)));
+
+            const auto spacing = reader.spacing();
+            const auto origin = reader.origin();
+            for (unsigned int dir = 0; dir < 3; ++dir) {
+                expect(std::ranges::all_of(reader.ordinates(dir), [&, i=0] (const double& x) mutable {
+                    return std::abs(x - spacing.at(dir)*i++ + origin.at(dir)) < 1e-6;
+                }));
+                if (dir == 2)
+                    expect(eq(reader.ordinates(dir).size(), std::size_t{1}));
+            }
         }
     };
 

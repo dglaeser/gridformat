@@ -10,7 +10,9 @@
 
 #include <string>
 #include <optional>
+#include <algorithm>
 #include <utility>
+#include <ranges>
 #include <array>
 #include <cmath>
 
@@ -98,6 +100,21 @@ class VTIReader : public GridReader {
         result.lower_left = {specs.extents[0], specs.extents[2], specs.extents[4]};
         result.upper_right = {specs.extents[1], specs.extents[3], specs.extents[5]};
         return result;
+    }
+
+    std::vector<double> _ordinates(unsigned int direction) const override {
+        const auto& specs = _specs();
+        const auto extents = _point_extents();
+        const auto extent_begin = extents[direction*2];
+        const std::size_t num_ordinates = extents[2*direction + 1] - extent_begin;
+        std::vector<double> ordinates(num_ordinates);
+        std::ranges::copy(
+            std::views::iota(std::size_t{0}, num_ordinates) | std::views::transform([&] (std::size_t i) {
+                return specs.origin[direction] + (extent_begin + i)*specs.spacing[direction];
+            }),
+            ordinates.begin()
+        );
+        return ordinates;
     }
 
     bool _is_sequence() const override {

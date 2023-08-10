@@ -112,8 +112,10 @@ class GridReader {
     }
 
     //! Return the ordinates of the grid (only available for rectilinear grid formats)
-    std::vector<double> ordinates(unsigned int i) const {
-        return _ordinates(i);
+    std::vector<double> ordinates(unsigned int direction) const {
+        if (direction >= 3)
+            throw ValueError("direction must be < 3");
+        return _ordinates(direction);
     }
 
     //! Return the spacing of the grid (only available for image grid formats)
@@ -127,8 +129,10 @@ class GridReader {
     }
 
     //! Return the basis vector of the grid in the given direction (only available for image grid formats)
-    Vector basis_vector(unsigned int i = 0) const {
-        return _basis_vector(i);
+    Vector basis_vector(unsigned int direction) const {
+        if (direction >= 3)
+            throw ValueError("direction must be < 3");
+        return _basis_vector(direction);
     }
 
     //! Return true if the read file is a sequence

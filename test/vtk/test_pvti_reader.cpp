@@ -7,6 +7,7 @@
 #include <iterator>
 #include <vector>
 #include <ranges>
+#include <cmath>
 
 #include <gridformat/common/logging.hpp>
 #include <gridformat/vtk/pvti_reader.hpp>
@@ -64,6 +65,19 @@ int main(int argc, char** argv) {
         expect(eq(reader.number_of_pieces(), static_cast<std::size_t>(size)));
     };
 
+    "parallel_pvti_read_ordinates"_test = [&] () {
+        for (unsigned int i = 0; i < 3; ++i) {
+            auto ordinates = reader.ordinates(i);
+            const auto expected_size = std::array{nx+1, ny+1, std::size_t{1}}.at(i);
+            const auto expected_offset = std::array{xoffset, yoffset, 0.}.at(i);
+            expect(std::ranges::is_sorted(ordinates));
+            expect(eq(ordinates.size(), expected_size));
+            std::ranges::unique(ordinates);
+            expect(eq(ordinates.size(), expected_size));
+            expect(std::abs(ordinates.at(0) - expected_offset) < 1e-6);
+        }
+    };
+
     // test that sequential I/O yields the expected results
     if (rank == 0) {
         std::cout << "Opening '" << GridFormat::as_highlight(test_filename) << "'" << std::endl;
@@ -83,6 +97,23 @@ int main(int argc, char** argv) {
             expect(std::ranges::equal(point_field_names(sequential_reader), pfield_names));
             expect(std::ranges::equal(cell_field_names(sequential_reader), cfield_names));
             expect(std::ranges::equal(meta_data_field_names(sequential_reader), mfield_names));
+        };
+
+        "sequential_pvti_read_ordinates"_test = [&] () {
+            for (unsigned int i = 0; i < 3; ++i) {
+                auto ordinates = sequential_reader.ordinates(i);
+                const auto expected_size = std::array{
+                    nx*num_domains_x + 1,
+                    ny*num_domains_y + 1,
+                    std::size_t{1}
+                }.at(i);
+                const auto expected_offset = 0.0;
+                expect(std::ranges::is_sorted(ordinates));
+                expect(eq(ordinates.size(), expected_size));
+                std::ranges::unique(ordinates);
+                expect(eq(ordinates.size(), expected_size));
+                expect(std::abs(ordinates.at(0) - expected_offset) < 1e-6);
+            }
         };
 
         const auto sequential_grid = [&] () {
