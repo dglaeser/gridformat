@@ -103,6 +103,10 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
             throw ValueError("Transient VTK-HDF ImageData files do not support evolving grids");
     }
 
+    const Communicator& communicator() const {
+        return _comm;
+    }
+
  private:
     void _write(std::ostream&) const {
         throw InvalidState("VTKHDFImageGridWriter does not support export into stream");

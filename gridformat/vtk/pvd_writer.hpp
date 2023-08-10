@@ -17,6 +17,7 @@
 #include <type_traits>
 #include <filesystem>
 
+#include <gridformat/parallel/communication.hpp>
 #include <gridformat/xml/element.hpp>
 #include <gridformat/grid/writer.hpp>
 #include <gridformat/grid.hpp>
@@ -24,7 +25,7 @@
 namespace GridFormat {
 
 #ifndef DOXYGEN
-namespace Detail {
+namespace PVDDetail {
 
     template<typename W>
     class WriterStorage {
@@ -39,7 +40,7 @@ namespace Detail {
         W _w;
     };
 
-}  // namespace Detail
+}  // namespace PVDDetail
 #endif  // DOXYGEN
 
 /*!
@@ -47,9 +48,9 @@ namespace Detail {
  * \brief Writer for .pvd time-series file format
  */
 template<typename VTKWriter>
-class PVDWriter : public Detail::WriterStorage<VTKWriter>,
+class PVDWriter : public PVDDetail::WriterStorage<VTKWriter>,
                   public TimeSeriesGridWriter<typename VTKWriter::Grid> {
-    using Storage = Detail::WriterStorage<VTKWriter>;
+    using Storage = PVDDetail::WriterStorage<VTKWriter>;
     using ParentType = TimeSeriesGridWriter<typename VTKWriter::Grid>;
 
  public:
@@ -70,8 +71,14 @@ class PVDWriter : public Detail::WriterStorage<VTKWriter>,
         const auto time_step_index = _xml.get_child("Collection").num_children();
         const auto vtk_filename = _write_time_step_file(time_step_index);
         _add_dataset(_time, vtk_filename);
-        std::ofstream pvd_file(_pvd_filename, std::ios::out);
-        write_xml_with_version_header(_xml, pvd_file, Indentation{{.width = 2}});
+
+        const auto& communicator = Traits::CommunicatorAccess<VTKWriter>::get(this->_writer());
+        if (Parallel::rank(communicator) == 0) {
+            std::ofstream pvd_file(_pvd_filename, std::ios::out);
+            write_xml_with_version_header(_xml, pvd_file, Indentation{{.width = 2}});
+        }
+        Parallel::barrier(communicator);  // make sure all process exit here after the pvd file is written
+
         return _pvd_filename;
     }
 

@@ -88,6 +88,10 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
     , _transient_opts{std::move(opts)}
     {}
 
+    const Communicator& communicator() const {
+        return _comm;
+    }
+
  private:
     void _write(std::ostream&) const {
         throw InvalidState("VTKHDFUnstructuredGridWriter does not support export into stream");

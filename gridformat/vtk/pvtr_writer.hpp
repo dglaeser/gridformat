@@ -53,6 +53,10 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
     , _comm(comm)
     {}
 
+    const Communicator& communicator() const {
+        return _comm;
+    }
+
  private:
     Communicator _comm;
 

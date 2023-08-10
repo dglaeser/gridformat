@@ -16,6 +16,7 @@
 #include <concepts>
 #include <type_traits>
 
+#include <gridformat/parallel/communication.hpp>
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/concepts.hpp>
@@ -33,6 +34,21 @@ namespace Traits {
 
 //! Can be specialized by writers in case the file format does not contain connectivity information
 template<typename Writer> struct WritesConnectivity : public std::true_type {};
+
+//! Can be specialized by parallel writers to expose their underlying communicator
+template<typename Writer>
+struct CommunicatorAccess {
+    static constexpr auto get(const Writer&) { return NullCommunicator{}; }
+};
+
+//! Default specialization for writers that have a communicator() function
+template<typename Writer>
+    requires( requires(const Writer& w) { { w.communicator() }; } )
+struct CommunicatorAccess<Writer> {
+    static constexpr Concepts::Communicator decltype(auto) get(const Writer& w) {
+        return w.communicator();
+    }
+};
 
 }  // namespace Traits
 
