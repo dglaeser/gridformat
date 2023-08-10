@@ -92,9 +92,11 @@ class PXMLReaderBase : public GridReader {
          auto helper = XMLReaderHelper::make_from(filename, _vtk_grid_type);
 
         _read_pieces(helper);
-        std::ranges::copy(point_field_names(_piece_readers.front()), std::back_inserter(fields.point_fields));
-        std::ranges::copy(cell_field_names(_piece_readers.front()), std::back_inserter(fields.cell_fields));
-        std::ranges::copy(meta_data_field_names(_piece_readers.front()), std::back_inserter(fields.meta_data_fields));
+        if (_piece_readers.size() > 0) {
+            std::ranges::copy(point_field_names(_piece_readers.front()), std::back_inserter(fields.point_fields));
+            std::ranges::copy(cell_field_names(_piece_readers.front()), std::back_inserter(fields.cell_fields));
+            std::ranges::copy(meta_data_field_names(_piece_readers.front()), std::back_inserter(fields.meta_data_fields));
+        }
 
         if (std::ranges::any_of(_piece_readers | std::views::drop(1), [&] (const auto& reader) {
             return !std::ranges::equal(point_field_names(reader), fields.point_fields);
