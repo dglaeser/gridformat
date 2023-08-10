@@ -141,7 +141,7 @@ namespace XML::Detail {
             s << "\"";
         };
 
-        if (!e.has_content() && e.num_children() == 0) {
+        if (!e.has_content() && e.number_of_children() == 0) {
             s << ind;
             GridFormat::XML::Detail::write_xml_tag_open(e, s, "");
             if (e.name() == "DataArray")

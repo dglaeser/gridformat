@@ -31,7 +31,7 @@ int main () {
         expect(tag.has_attribute("some_double"));
         expect(tag.has_attribute("some_int_key"));
         expect(!tag.has_attribute("non_existing"));
-        expect(eq(tag.num_attributes(), std::size_t{3}));
+        expect(eq(tag.number_of_attributes(), std::size_t{3}));
 
         expect(eq(tag.get_attribute("some_int"), std::string{"42"}));
         expect(eq(tag.get_attribute<std::string>("some_int"), std::string{"42"}));
@@ -52,11 +52,11 @@ int main () {
         expect(tag.remove_attribute("some_int"));
         expect(!tag.remove_attribute("some_int"));
         expect(!tag.has_attribute("some_int"));
-        expect(eq(tag.num_attributes(), std::size_t{2}));
+        expect(eq(tag.number_of_attributes(), std::size_t{2}));
 
         std::vector<std::string> to_remove{{{"some_other_int"}, {"some_yet_other_int"}}};
         expect(eq(tag.remove_attributes(to_remove), std::size_t{2}));
-        expect(eq(tag.num_attributes(), std::size_t{0}));
+        expect(eq(tag.number_of_attributes(), std::size_t{0}));
     };
 
     "xml_tag_attributes_iterator"_test = [] () {

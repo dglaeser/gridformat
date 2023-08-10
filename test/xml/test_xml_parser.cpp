@@ -54,14 +54,14 @@ int main() {
             expect(child.get_attribute("attr1") == "attr1");
             expect(child.has_attribute("attr2"));
             expect(child.get_attribute("attr2") == "attr2");
-            expect(eq(child.num_children(), std::size_t{1}));
+            expect(eq(child.number_of_children(), std::size_t{1}));
             for (const auto& sub_child : children(child)) {
                 expect(sub_child.name() == "subchild");
                 expect(sub_child.has_attribute("sc_attr1"));
                 expect(sub_child.get_attribute("sc_attr1") == "sc_attr1");
                 expect(sub_child.has_attribute("sc_attr2"));
                 expect(sub_child.get_attribute("sc_attr2") == "sc_attr2");
-                expect(eq(sub_child.num_children(), std::size_t{3}));
+                expect(eq(sub_child.number_of_children(), std::size_t{3}));
                 for (const auto& sub_sub_child : children(sub_child)) {
                     expect(sub_sub_child.name().starts_with("child_with_content"));
                     auto content = parser.read_content_for(sub_sub_child);
@@ -69,7 +69,7 @@ int main() {
                     content = content.substr(0, content.find_last_not_of(" \t\n") + 1);
                     expect(eq(content, std::string{"I am content"}));
                     if (sub_sub_child.name().find("_and_child_") != std::string::npos) {
-                        expect(eq(sub_sub_child.num_children(), std::size_t{1}));
+                        expect(eq(sub_sub_child.number_of_children(), std::size_t{1}));
                         expect(sub_sub_child.has_child("child_besides_content"));
                     }
                 }

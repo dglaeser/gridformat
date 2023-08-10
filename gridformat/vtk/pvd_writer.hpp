@@ -68,7 +68,7 @@ class PVDWriter : public PVDDetail::WriterStorage<VTKWriter>,
 
  private:
     std::string _write(double _time) override {
-        const auto time_step_index = _xml.get_child("Collection").num_children();
+        const auto time_step_index = _xml.get_child("Collection").number_of_children();
         const auto vtk_filename = _write_time_step_file(time_step_index);
         _add_dataset(_time, vtk_filename);
 

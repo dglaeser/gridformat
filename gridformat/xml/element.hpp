@@ -136,7 +136,7 @@ class XMLElement : public XMLTag {
         return *it;
     }
 
-    std::size_t num_children() const {
+    std::size_t number_of_children() const {
         return _children.size();
     }
 
@@ -260,7 +260,7 @@ void write_xml_tag_close(const XMLElement& e,
 void write_xml_element(const XMLElement& e,
                        std::ostream& s,
                        Indentation& ind) {
-    if (!e.has_content() && e.num_children() == 0) {
+    if (!e.has_content() && e.number_of_children() == 0) {
         s << ind;
         write_empty_xml_tag(e, s);
     } else {

@@ -52,7 +52,7 @@ class XMLTag {
         return _name;
     }
 
-    std::size_t num_attributes() const noexcept {
+    std::size_t number_of_attributes() const noexcept {
         return _attributes.size();
     }
 
