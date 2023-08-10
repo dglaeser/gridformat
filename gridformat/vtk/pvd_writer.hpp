@@ -115,6 +115,12 @@ class PVDWriter : public PVDDetail::WriterStorage<VTKWriter>,
 template<typename VTKWriter>
 PVDWriter(VTKWriter&&) -> PVDWriter<std::remove_cvref_t<VTKWriter>>;
 
+namespace Traits {
+
+template<typename VTKWriter>
+struct WritesConnectivity<PVDWriter<VTKWriter>> : public WritesConnectivity<VTKWriter> {};
+
+}  // namespace Traits
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_VTK_PVD_WRITER_HPP_

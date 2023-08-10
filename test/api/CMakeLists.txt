@@ -6,7 +6,7 @@ gridformat_add_regression_test(test_generic_time_series_writer test_generic_time
 gridformat_add_regression_test(
     test_generic_converter
     test_generic_converter.cpp
-    "generic_converter*out*"
+    "generic_converter*out*||generic_time_series_converter*.pvd"
     SCRIPT_ARGS "--skip-metadata"
 )
 
@@ -16,7 +16,7 @@ gridformat_add_parallel_regression_test(
     test_generic_parallel_converter
     test_generic_converter.cpp
     2
-    "generic_parallel_converter*out*"
+    "generic_parallel_converter*out*||generic_parallel_time_series_converter*pvd"
     SCRIPT_ARGS "--skip-metadata"
 )
 target_compile_definitions(test_generic_parallel_converter PRIVATE RUN_PARALLEL=1)

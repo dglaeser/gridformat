@@ -17,6 +17,8 @@
 #include <optional>
 
 #include <gridformat/common/field.hpp>
+#include <gridformat/common/exceptions.hpp>
+
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/reader.hpp>
 #include <gridformat/grid/writer.hpp>
@@ -34,6 +36,8 @@ namespace ConverterDetail {
         explicit ConverterGrid(const GridReader& r) : reader{r} {}
 
         void make_grid() {
+            points.clear();
+            cells.clear();
             _make_points();
             _make_cells();
         }
@@ -74,9 +78,46 @@ namespace ConverterDetail {
         and std::derived_from<std::remove_cvref_t<T>, GridWriterBase<typename T::Grid>>;
 
     template<typename T>
-    concept WriterFactory = requires (const T& factory, const ConverterGrid& grid) {
-        { factory(grid) } -> Writer;
+    concept PieceWriter = Writer<T> and std::derived_from<std::remove_cvref_t<T>, GridWriter<typename T::Grid>>;
+
+    template<typename T>
+    concept TimeSeriesWriter = Writer<T> and std::derived_from<std::remove_cvref_t<T>, TimeSeriesGridWriter<typename T::Grid>>;
+
+    template<typename T>
+    concept PieceWriterFactory = requires (const T& factory, const ConverterGrid& grid) {
+        { factory(grid) } -> PieceWriter;
     };
+
+    template<typename T>
+    concept TimeSeriesWriterFactory = requires (const T& factory, const ConverterGrid& grid, const std::string& filename) {
+        { factory(grid) } -> TimeSeriesWriter;
+    };
+
+    template<typename T>
+    concept WriterFactory = PieceWriterFactory<T> or TimeSeriesWriterFactory<T>;
+
+    template<typename Reader, Writer Writer>
+    void add_piece_fields(const Reader& reader, Writer& writer) {
+        writer.clear();
+        for (auto [name, field_ptr] : cell_fields(reader))
+            writer.set_cell_field(std::move(name), std::move(field_ptr));
+        for (auto [name, field_ptr] : point_fields(reader))
+            writer.set_point_field(std::move(name), std::move(field_ptr));
+        for (auto [name, field_ptr] : meta_data_fields(reader))
+            writer.set_meta_data(std::move(name), std::move(field_ptr));
+    }
+
+    template<typename Reader, PieceWriter Writer>
+    std::string write_piece(const Reader& reader, Writer& writer, const std::string& filename) {
+        add_piece_fields(reader, writer);
+        return writer.write(filename);
+    }
+
+    template<typename Reader, TimeSeriesWriter Writer>
+    std::string write_piece(const Reader& reader, Writer& writer, double time_step) {
+        add_piece_fields(reader, writer);
+        return writer.write(time_step);
+    }
 
 }  // namespace ConverterDetail
 #endif  // DOXYGEN
@@ -94,13 +135,30 @@ std::string convert(const Reader& reader, const std::string& filename, const Fac
     auto writer = factory(grid);
     if constexpr (Traits::WritesConnectivity<std::remove_cvref_t<decltype(writer)>>::value)
         grid.make_grid();
-    for (auto [name, field_ptr] : cell_fields(reader))
-        writer.set_cell_field(std::move(name), std::move(field_ptr));
-    for (auto [name, field_ptr] : point_fields(reader))
-        writer.set_point_field(std::move(name), std::move(field_ptr));
-    for (auto [name, field_ptr] : meta_data_fields(reader))
-        writer.set_meta_data(std::move(name), std::move(field_ptr));
-    return writer.write(filename);
+    return ConverterDetail::write_piece(reader, writer, filename);
+}
+
+/*!
+ * \ingroup Grid
+ * \brief Overload for time series formats.
+ * \param reader A grid reader on which a file was opened.
+ * \param factory A factory to construct a time series writer with the desired output format.
+ */
+template<std::derived_from<GridReader> Reader, ConverterDetail::TimeSeriesWriterFactory Factory>
+std::string convert(Reader& reader, const Factory& factory) {
+    if (!reader.is_sequence())
+        throw ValueError("Cannot convert data from reader to a sequence as reader is no sequence.");
+
+    ConverterDetail::ConverterGrid grid{reader};
+    auto writer = factory(grid);
+    std::string filename;
+    for (std::size_t step = 0; step < reader.number_of_steps(); ++step) {
+        reader.set_step(step);
+        if constexpr (Traits::WritesConnectivity<std::remove_cvref_t<decltype(writer)>>::value)
+            grid.make_grid();
+        filename = ConverterDetail::write_piece(reader, writer, reader.time_at_step(step));
+    }
+    return filename;
 }
 
 namespace Traits {

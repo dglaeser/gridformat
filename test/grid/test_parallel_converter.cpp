@@ -9,6 +9,9 @@
 #include <gridformat/vtk/vtu_reader.hpp>
 #include <gridformat/vtk/vtu_writer.hpp>
 #include <gridformat/vtk/pvtu_writer.hpp>
+#include <gridformat/vtk/pvti_writer.hpp>
+#include <gridformat/vtk/pvd_writer.hpp>
+#include <gridformat/vtk/pvd_reader.hpp>
 
 #include "unstructured_grid.hpp"
 #include "../make_test_data.hpp"
@@ -39,6 +42,32 @@ int main(int argc, char** argv) {
     std::cout << "Converting to .pvtu" << std::endl;
     GridFormat::convert(reader, "parallel_converter_pvtu_2d_in_2d_out", [&] (const auto& grid) {
         return GridFormat::PVTUWriter{grid, comm};
+    });
+
+    // test a time series
+    GridFormat::PVDWriter time_series_writer{
+        GridFormat::PVTIWriter{struct_grid, comm},
+        "parallel_time_series_pvti_2d_in_2d_in"
+    };
+    const auto test_ts_filename = [&] () {
+        std::string ts_filename;
+        for (std::size_t i = 0; i < 5; ++i) {
+            const auto time_step = static_cast<double>(i)*0.2;
+            const auto test_data = GridFormat::Test::make_test_data<2>(struct_grid, GridFormat::float64, time_step);
+            GridFormat::Test::add_test_data(time_series_writer, test_data, GridFormat::float32);
+            ts_filename = time_series_writer.write(time_step);
+        }
+        return ts_filename;
+    } ();
+
+    std::cout << "Converting parallel pvd/vti to parallel pvd/vtu time series" << std::endl;
+    GridFormat::PVDReader time_series_reader{comm};
+    time_series_reader.open(test_ts_filename);
+    GridFormat::convert(time_series_reader, [&] (const auto& grid) {
+        return GridFormat::PVDWriter{
+            GridFormat::PVTUWriter{grid, comm},
+            "parallel_converter_time_series_pvtu_2d_in_2d"
+        };
     });
 
     MPI_Finalize();

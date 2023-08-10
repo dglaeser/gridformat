@@ -106,6 +106,38 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     };
 #endif
 
+    // test time series conversion
+    const auto parallel_suffix = is_parallel ? std::string{"parallel_"} : std::string{""};
+    const auto ts_in_filename = "generic_" + parallel_suffix + "ts_converter_in";
+    auto ts_writer = is_parallel
+        ? GridFormat::Writer{GridFormat::pvd, grid, comm, ts_in_filename}
+        : GridFormat::Writer{GridFormat::pvd, grid, ts_in_filename};
+
+    const std::string ts_filename = [&] () {
+        std::string _ts_filename;
+        for (unsigned int step = 0; step < 5; step++) {
+            const auto time_step = static_cast<double>(step)*0.2;
+            ts_writer.set_point_field("pscalar", [&] (const auto& p) {
+                const auto eval_pos = GridFormat::Test::evaluation_position(grid, p);
+                return GridFormat::Test::test_function<double>(eval_pos, time_step);
+            });
+            ts_writer.set_cell_field("cscalar", [&] (const auto& c) {
+                const auto eval_pos = GridFormat::Test::evaluation_position(grid, c);
+                return GridFormat::Test::test_function<double>(eval_pos, time_step);
+            });
+            _ts_filename = ts_writer.write(time_step);
+        }
+        return _ts_filename;
+    } ();
+
+    const auto ts_converted_filename_base = "generic_" + parallel_suffix + "time_series_converter_2d_in_2d";
+    const auto ts_converted_filename = is_parallel
+        ? GridFormat::convert(ts_filename, ts_converted_filename_base, GridFormat::pvd_with(GridFormat::vtu), comm)
+        : GridFormat::convert(ts_filename, ts_converted_filename_base, GridFormat::pvd_with(GridFormat::vtu));
+
+    if (rank == 0)
+        std::cout << "Wrote converted time series to '" << ts_converted_filename << "'" << std::endl;
+
 #if RUN_PARALLEL
     MPI_Finalize();
 #endif

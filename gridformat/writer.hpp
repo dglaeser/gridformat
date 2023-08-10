@@ -27,7 +27,7 @@ struct WriterFactory;
 
 
 #ifndef DOXYGEN
-namespace Detail {
+namespace WriterDetail {
 
     template<typename FileFormat, typename Grid>
     static constexpr bool has_sequential_factory
@@ -66,7 +66,7 @@ namespace Detail {
     template<typename _Grid, typename Grid>
     concept Compatible = std::same_as<std::remove_cvref_t<_Grid>, Grid> and std::is_lvalue_reference_v<_Grid>;
 
-}  // namespace Detail
+}  // namespace WriterDetail
 #endif  // DOXYGEN
 
 
@@ -96,8 +96,8 @@ class Writer {
      * \param f The file format which should be written.
      * \param grid The grid which should be written out.
      */
-    template<typename FileFormat, Detail::Compatible<Grid> _Grid>
-        requires(Detail::has_sequential_factory<FileFormat, Grid>)
+    template<typename FileFormat, WriterDetail::Compatible<Grid> _Grid>
+        requires(WriterDetail::has_sequential_factory<FileFormat, Grid>)
     Writer(const FileFormat& f, _Grid&& grid)
     : Writer(WriterFactory<FileFormat>::make(f, grid))
     {}
@@ -108,8 +108,8 @@ class Writer {
      * \param grid The grid which should be written out.
      * \param base_filename The name of the file (without extension) into which to write.
      */
-    template<typename FileFormat, Detail::Compatible<Grid> _Grid>
-        requires(Detail::has_sequential_time_series_factory<FileFormat, Grid>)
+    template<typename FileFormat, WriterDetail::Compatible<Grid> _Grid>
+        requires(WriterDetail::has_sequential_time_series_factory<FileFormat, Grid>)
     Writer(const FileFormat& f, _Grid&& grid, const std::string& base_filename)
     : Writer(WriterFactory<FileFormat>::make(f, grid, base_filename))
     {}
@@ -120,8 +120,8 @@ class Writer {
      * \param grid The grid which should be written out.
      * \param comm The communicator for parallel communication.
      */
-    template<typename FileFormat, Detail::Compatible<Grid> _Grid, Concepts::Communicator Comm>
-        requires(Detail::has_parallel_factory<FileFormat, Grid, Comm>)
+    template<typename FileFormat, WriterDetail::Compatible<Grid> _Grid, Concepts::Communicator Comm>
+        requires(WriterDetail::has_parallel_factory<FileFormat, Grid, Comm>)
     Writer(const FileFormat& f, _Grid&& grid, const Comm& comm)
     : Writer(WriterFactory<FileFormat>::make(f, grid, comm))
     {}
@@ -133,8 +133,8 @@ class Writer {
      * \param comm The communicator for parallel communication.
      * \param base_filename The name of the file (without extension) into which to write.
      */
-    template<typename FileFormat, Detail::Compatible<Grid> _Grid, Concepts::Communicator Comm>
-        requires(Detail::has_parallel_time_series_factory<FileFormat, Grid, Comm>)
+    template<typename FileFormat, WriterDetail::Compatible<Grid> _Grid, Concepts::Communicator Comm>
+        requires(WriterDetail::has_parallel_time_series_factory<FileFormat, Grid, Comm>)
     Writer(const FileFormat& f, _Grid&& grid, const Comm& comm, const std::string& base_filename)
     : Writer(WriterFactory<FileFormat>::make(f, grid, comm, base_filename))
     {}

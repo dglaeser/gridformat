@@ -9,13 +9,13 @@ gridformat_add_regression_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_converter
     test_converter.cpp
-    "converter_*out*"
+    "converter_test_file*out*||converter_time_series_*.pvd"
     SCRIPT_ARGS "--skip-metadata"
 )
 gridformat_add_parallel_regression_test(
     test_parallel_converter
     test_parallel_converter.cpp
     2
-    "parallel_converter_*out*"
+    "parallel_converter_*out*||converter_parallel_time_series*.pvd"
     SCRIPT_ARGS "--skip-metadata"
 )

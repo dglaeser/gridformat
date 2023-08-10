@@ -816,9 +816,23 @@ std::string convert(const std::string& in,
                     const InFormat& in_format = {}) {
     Reader reader{in_format};
     reader.open(in);
-    return convert(reader, out, [&] (const auto& grid) {
-        return WriterFactory<OutFormat>::make(out_format, grid);
-    });
+
+    using WriterDetail::has_sequential_factory;
+    using WriterDetail::has_sequential_time_series_factory;
+    using CG = ConverterDetail::ConverterGrid;
+    if constexpr (has_sequential_factory<OutFormat, CG>)
+        return convert(reader, out, [&] (const auto& grid) {
+            return WriterFactory<OutFormat>::make(out_format, grid);
+        });
+    else if constexpr (has_sequential_time_series_factory<OutFormat, CG>)
+        return convert(reader, [&] (const auto& grid) {
+            return WriterFactory<OutFormat>::make(out_format, grid, out);
+        });
+    else
+        static_assert(
+            APIDetail::always_false<OutFormat>,
+            "No viable factory found for the requested format"
+        );
 }
 
 /*!
@@ -847,9 +861,23 @@ std::string convert(const std::string& in,
             "the number of processes that were used to write the original file "
             "(" + std::to_string(reader.number_of_pieces()) + ")"
         );
-    return convert(reader, out, [&] (const auto& grid) {
-        return WriterFactory<OutFormat>::make(out_format, grid, communicator);
-    });
+
+    using WriterDetail::has_parallel_factory;
+    using WriterDetail::has_parallel_time_series_factory;
+    using CG = ConverterDetail::ConverterGrid;
+    if constexpr (has_parallel_factory<OutFormat, CG, C>)
+        return convert(reader, out, [&] (const auto& grid) {
+            return WriterFactory<OutFormat>::make(out_format, grid, communicator);
+        });
+    else if constexpr (has_parallel_time_series_factory<OutFormat, CG, C>)
+        return convert(reader, [&] (const auto& grid) {
+            return WriterFactory<OutFormat>::make(out_format, grid, communicator, out);
+        });
+    else
+        static_assert(
+            APIDetail::always_false<OutFormat>,
+            "No viable factory found for the requested format"
+        );
 }
 
 
