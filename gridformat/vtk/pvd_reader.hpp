@@ -133,6 +133,10 @@ class PVDReader : public GridReader {
         return _access_reader().number_of_points();
     }
 
+    std::size_t _number_of_pieces() const override {
+        return _access_reader().number_of_pieces();
+    }
+
     virtual FieldPtr _cell_field(std::string_view name) const override {
         return _access_reader().cell_field(name);
     }

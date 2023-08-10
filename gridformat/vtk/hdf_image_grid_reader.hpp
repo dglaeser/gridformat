@@ -146,6 +146,10 @@ class VTKHDFImageGridReader : public GridReader {
         );
     }
 
+    std::size_t _number_of_pieces() const override {
+        return 1;
+    }
+
     void _visit_cells(const typename GridReader::CellVisitor& visitor) const override {
         VTK::CommonDetail::visit_structured_cells(visitor, _make_vtk_extents_array());
     }

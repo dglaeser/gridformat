@@ -33,6 +33,10 @@ void test(Reader&& reader, const std::string& suffix = "") {
     const auto spacing = reader.spacing();
     const auto extents = reader.extents();
 
+    "vtk_hdf_image_grid_reader"_test  = [&] () {
+        expect(eq(reader.number_of_pieces(), std::size_t{1}));
+    };
+
     "vtk_hdf_image_grid_reader_spacing"_test = [&] () {
         expect(std::abs(spacing[0] - 1.0/4.0) < 1e-6);
         expect(std::abs(spacing[1] - 1.0/5.0) < 1e-6);

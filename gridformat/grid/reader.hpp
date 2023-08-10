@@ -91,6 +91,11 @@ class GridReader {
         return _number_of_points();
     }
 
+    //! Return the number of pieces read from the file (may be > 1 for parallel file formats)
+    std::size_t number_of_pieces() const {
+        return _number_of_pieces();
+    }
+
     //! Return the extents of the grid (only available for structured grid formats)
     std::array<std::size_t, 3> extents() const {
         const auto loc = location();
@@ -257,6 +262,7 @@ class GridReader {
 
     virtual std::size_t _number_of_cells() const = 0;
     virtual std::size_t _number_of_points() const = 0;
+    virtual std::size_t _number_of_pieces() const = 0;
 
     virtual FieldPtr _cell_field(std::string_view) const = 0;
     virtual FieldPtr _point_field(std::string_view) const = 0;

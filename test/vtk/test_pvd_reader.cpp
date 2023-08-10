@@ -61,5 +61,9 @@ int main() {
         expect(eq(pvd_vtu_reader.number_of_points(), std::size_t{30}));
     };
 
+    "pvd_reader_number_of_pieces"_test = [&] () {
+        expect(eq(pvd_vtu_reader.number_of_pieces(), std::size_t{1}));
+    };
+
     return 0;
 }

@@ -101,6 +101,10 @@ class VTKHDFReader : public GridReader {
         return _access().number_of_points();
     }
 
+    std::size_t _number_of_pieces() const override {
+        return _access().number_of_pieces();
+    }
+
     typename GridReader::PieceLocation _location() const override {
         return _access().location();
     }

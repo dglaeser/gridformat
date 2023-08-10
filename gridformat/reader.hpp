@@ -110,77 +110,81 @@ class Reader : public GridReader {
     void _open(const std::string& filename, typename GridReader::FieldNames& names) override {
         if (_any_factory)
             _reader = (*_any_factory)(filename);
-        _reader->close();
-        _reader->open(filename);
+        _access_reader().close();
+        _access_reader().open(filename);
         _copy_field_names(names);
     };
 
     void _close() override {
-        _reader->close();
+        _access_reader().close();
     }
 
     std::size_t _number_of_cells() const override {
-        return _reader->number_of_cells();
+        return _access_reader().number_of_cells();
     }
 
     std::size_t _number_of_points() const override {
-        return _reader->number_of_points();
+        return _access_reader().number_of_points();
+    }
+
+    std::size_t _number_of_pieces() const override {
+        return _access_reader().number_of_pieces();
     }
 
     FieldPtr _cell_field(std::string_view name) const override {
-        return _reader->cell_field(name);
+        return _access_reader().cell_field(name);
     }
 
     FieldPtr _point_field(std::string_view name) const override {
-        return _reader->point_field(name);
+        return _access_reader().point_field(name);
     }
 
     FieldPtr _meta_data_field(std::string_view name) const override {
-        return _reader->meta_data_field(name);
+        return _access_reader().meta_data_field(name);
     }
 
     void _visit_cells(const CellVisitor& v) const override {
-        _reader->visit_cells(v);
+        _access_reader().visit_cells(v);
     }
 
     FieldPtr _points() const override {
-        return _reader->points();
+        return _access_reader().points();
     }
 
     typename GridReader::PieceLocation _location() const override {
-        return _reader->location();
+        return _access_reader().location();
     }
 
     std::vector<double> _ordinates(unsigned int dir) const override {
-        return _reader->ordinates(dir);
+        return _access_reader().ordinates(dir);
     }
 
     std::array<double, 3> _spacing() const override {
-        return _reader->spacing();
+        return _access_reader().spacing();
     }
 
     std::array<double, 3> _origin() const override {
-        return _reader->origin();
+        return _access_reader().origin();
     }
 
     std::array<double, 3> _basis_vector(unsigned int dir) const override {
-        return _reader->basis_vector(dir);
+        return _access_reader().basis_vector(dir);
     }
 
     bool _is_sequence() const override {
-        return _reader->is_sequence();
+        return _access_reader().is_sequence();
     }
 
     std::size_t _number_of_steps() const override {
-        return _reader->number_of_steps();
+        return _access_reader().number_of_steps();
     }
 
     double _time_at_step(std::size_t step) const override {
-        return _reader->time_at_step(step);
+        return _access_reader().time_at_step(step);
     }
 
     void _set_step(std::size_t step, typename GridReader::FieldNames& field_names) override {
-        _reader->set_step(step);
+        _access_reader().set_step(step);
         _copy_field_names(field_names);
     }
 
@@ -188,6 +192,21 @@ class Reader : public GridReader {
         std::ranges::copy(cell_field_names(*_reader), std::back_inserter(names.cell_fields));
         std::ranges::copy(point_field_names(*_reader), std::back_inserter(names.point_fields));
         std::ranges::copy(meta_data_field_names(*_reader), std::back_inserter(names.meta_data_fields));
+    }
+
+    const GridReader& _access_reader() const {
+        _check_reader_access();
+        return *_reader;
+    }
+
+    GridReader& _access_reader() {
+        _check_reader_access();
+        return *_reader;
+    }
+
+    void _check_reader_access() const {
+        if (!_reader)
+            throw InvalidState("No file has been read");
     }
 
     std::unique_ptr<GridReader> _reader;

@@ -55,6 +55,10 @@ class VTUReader : public GridReader {
         return _num_points;
     }
 
+    std::size_t _number_of_pieces() const override {
+        return 1;
+    }
+
     bool _is_sequence() const override {
         return false;
     }

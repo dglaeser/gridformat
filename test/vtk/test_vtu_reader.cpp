@@ -56,10 +56,14 @@ int main() {
 
     using GridFormat::Testing::operator""_test;
     using GridFormat::Testing::expect;
+    using GridFormat::Testing::eq;
+
     "vtk_written_vtu_files"_test = [&] () {
         for (const std::string& vtu_filepath : vtu_files) {
             std::cout << "Testing '" << GridFormat::as_highlight(vtu_filepath) << "'" << std::endl;
             reader.open(vtu_filepath);
+
+            expect(eq(reader.number_of_pieces(), std::size_t{1}));
 
             const auto grid = [&] () {
                 GridFormat::Test::UnstructuredGridFactory<2, 2> factory;

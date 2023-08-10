@@ -55,6 +55,10 @@ class VTSReader : public GridReader {
         return VTK::CommonDetail::number_of_entities(pextents);
     }
 
+    std::size_t _number_of_pieces() const override {
+        return 1;
+    }
+
     typename GridReader::PieceLocation _location() const override {
         const auto& ex = _extents.value();
         typename GridReader::PieceLocation result;

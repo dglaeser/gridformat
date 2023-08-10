@@ -71,6 +71,10 @@ class VTIReader : public GridReader {
         return VTK::CommonDetail::number_of_entities(_point_extents());
     }
 
+    std::size_t _number_of_pieces() const override {
+        return 1;
+    }
+
     typename GridReader::Vector _origin() const override {
         return _specs().origin;
     }

@@ -56,15 +56,24 @@ int main(int argc, char** argv) {
     const std::size_t num_total_cells = (num_domains_x*nx)*(num_domains_y*ny);
     const std::size_t num_total_points = (num_domains_x*nx + 1)*(num_domains_y*ny + 1);
 
-    if (rank == 0) {
-        // test that sequential I/O yields the expected results
-        using GridFormat::Testing::operator""_test;
-        using GridFormat::Testing::expect;
-        using GridFormat::Testing::eq;
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::eq;
 
+    "parallel_pvti_read_number_of_pieces"_test = [&] () {
+        expect(eq(reader.number_of_pieces(), static_cast<std::size_t>(size)));
+    };
+
+    // test that sequential I/O yields the expected results
+    if (rank == 0) {
         std::cout << "Opening '" << GridFormat::as_highlight(test_filename) << "'" << std::endl;
         GridFormat::PVTIReader sequential_reader{};
         sequential_reader.open(test_filename);
+
+        "sequential_pvti_read_number_of_pieces"_test = [&] () {
+            expect(eq(sequential_reader.number_of_pieces(), std::size_t{1}));
+        };
+
         "sequential_pvti_read_number_of_entities"_test = [&] () {
             expect(eq(sequential_reader.number_of_cells(), num_total_cells));
             expect(eq(sequential_reader.number_of_points(), num_total_points));

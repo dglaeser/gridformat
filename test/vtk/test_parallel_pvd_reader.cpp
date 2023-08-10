@@ -59,6 +59,10 @@ std::string test_pvd(const std::string& acronym, const Communicator& comm) {
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;
 
+    "pvd_reader_parallel_number_of_pieces"_test = [&] () {
+        expect(eq(reader.number_of_pieces(), static_cast<std::size_t>(size)));
+    };
+
     if (rank == 0) {
         "pvd_reader_parallel_file_as_sequential"_test = [&] () {
             std::cout << "Testing to read rewritten test file '" << test_filename << "' sequentially" << std::endl;
@@ -74,6 +78,7 @@ std::string test_pvd(const std::string& acronym, const Communicator& comm) {
 
             expect(eq(GridFormat::number_of_cells(sequential_grid), GridFormat::number_of_cells(grid)*size));
             expect(eq(sequential_reader.number_of_cells(), GridFormat::number_of_cells(grid)*size));
+            expect(eq(sequential_reader.number_of_pieces(), std::size_t{1}));
 
             for (unsigned int step = 0; step < sequential_reader.number_of_steps(); ++step) {
                 sequential_reader.set_step(step);

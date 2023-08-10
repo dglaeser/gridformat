@@ -841,6 +841,12 @@ std::string convert(const std::string& in,
                     const InFormat& in_format = {}) {
     Reader reader{in_format, communicator};
     reader.open(in);
+    if (reader.number_of_pieces() != static_cast<unsigned>(Parallel::size(communicator)))
+        throw IOError(
+            "Can only convert parallel files if the number of processes matches "
+            "the number of processes that were used to write the original file "
+            "(" + std::to_string(reader.number_of_pieces()) + ")"
+        );
     return convert(reader, out, [&] (const auto& grid) {
         return WriterFactory<OutFormat>::make(out_format, grid, communicator);
     });

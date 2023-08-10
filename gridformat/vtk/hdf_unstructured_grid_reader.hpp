@@ -102,7 +102,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
 
     std::size_t _get_part_offset() const {
         return _is_transient()
-            ? _file.value().template read_dataset_to<std::size_t>(
+            ? _access_file().template read_dataset_to<std::size_t>(
                 "/VTKHDF/Steps/PartOffsets",
                 HDF5::Slice{
                     .offset = {_step_index.value()},
@@ -113,7 +113,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
 
     std::size_t _get_cells_offset() const {
         return _is_transient()
-            ? _file.value().template read_dataset_to<std::size_t>(
+            ? _access_file().template read_dataset_to<std::size_t>(
                 "VTKHDF/Steps/CellOffsets",
                 HDF5::Slice{
                     .offset = {_step_index.value(), 0},
@@ -124,7 +124,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
 
     std::size_t _get_points_offset() const {
         return _is_transient()
-            ? _file.value().template read_dataset_to<std::size_t>(
+            ? _access_file().template read_dataset_to<std::size_t>(
                 "VTKHDF/Steps/PointOffsets",
                 HDF5::Slice{
                     .offset = {_step_index.value()},
@@ -135,7 +135,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
 
     std::size_t _get_connectivity_id_offset() const {
         return _is_transient()
-            ? _file.value().template read_dataset_to<std::size_t>(
+            ? _access_file().template read_dataset_to<std::size_t>(
                 "VTKHDF/Steps/ConnectivityIdOffsets",
                     HDF5::Slice{
                     .offset = {_step_index.value(), 0},
@@ -146,7 +146,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
 
     std::size_t _get_cell_data_offset(std::string_view name) const {
         return _is_transient()
-            ? _file.value().template read_dataset_to<std::size_t>(
+            ? _access_file().template read_dataset_to<std::size_t>(
                 "VTKHDF/Steps/CellDataOffsets/" + std::string{name},
                 HDF5::Slice{
                     .offset = {_step_index.value()},
@@ -157,7 +157,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
 
     std::size_t _get_point_data_offset(std::string_view name) const {
         return _is_transient()
-            ? _file.value().template read_dataset_to<std::size_t>(
+            ? _access_file().template read_dataset_to<std::size_t>(
                 "VTKHDF/Steps/PointDataOffsets/" + std::string{name},
                 HDF5::Slice{
                     .offset = {_step_index.value()},
@@ -168,7 +168,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
 
     std::size_t _get_field_data_offset(std::string_view name) const {
         return _is_transient()
-            ? _file.value().template read_dataset_to<std::size_t>(
+            ? _access_file().template read_dataset_to<std::size_t>(
                 "VTKHDF/Steps/FieldDataOffsets/" + std::string{name},
                 HDF5::Slice{
                     .offset = {_step_index.value()},
@@ -190,7 +190,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
     double _time_at_step(std::size_t step_idx) const override {
         if (step_idx >= _number_of_steps())
             throw ValueError("Only " + as_string(_number_of_steps()) + " available");
-        return _file.value().template read_dataset_to<double>("/VTKHDF/Steps/Values", HDF5::Slice{
+        return _access_file().template read_dataset_to<double>("/VTKHDF/Steps/Values", HDF5::Slice{
             .offset = {step_idx},
             .count = {1}
         });
@@ -213,15 +213,27 @@ class VTKHDFUnstructuredGridReader : public GridReader {
         return _num_points;
     }
 
+    std::size_t _number_of_pieces() const override {
+        if (Parallel::size(_comm) > 1)
+            return _number_of_pieces_in_file();
+        return 1;
+    }
+
+    std::size_t _number_of_pieces_in_file() const {
+        using V = std::vector<std::size_t>;
+        return _is_transient()
+            ? _access_file().template read_dataset_to<V>("/VTKHDF/Steps/NumberOfParts").at(_step_index.value())
+            : _access_file().template read_dataset_to<V>("/VTKHDF/NumberOfCells").size();
+    }
+
     void _check_communicator_size() const {
-        const std::size_t num_procs = _is_transient()
-            ? _file.value().template read_dataset_to<std::vector<std::size_t>>("/VTKHDF/Steps/NumberOfParts").at(_step_index.value())
-            : _file.value().template read_dataset_to<std::vector<std::size_t>>("/VTKHDF/NumberOfCells").size();
-        if (num_procs != static_cast<std::size_t>(Parallel::size(_comm)))
+        const auto nprocs = _number_of_pieces_in_file();
+        if (nprocs != static_cast<std::size_t>(Parallel::size(_comm)))
             throw SizeError(
                 "Can only read the file in parallel if the size of the communicator matches the size "
                 "of that used when writing the file. Please read in the file sequentially on one process "
-                "and distribute the grid yourself."
+                "and distribute the grid yourself, or restart the parallel run with "
+                + std::to_string(nprocs) + " processes."
             );
     }
 
@@ -365,6 +377,12 @@ class VTKHDFUnstructuredGridReader : public GridReader {
 
     bool _is_transient() const {
         return static_cast<bool>(_num_steps);
+    }
+
+    const HDF5File& _access_file() const {
+        if (!_file.has_value())
+            throw InvalidState("No file has been read");
+        return _file.value();
     }
 
     Communicator _comm;

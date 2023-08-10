@@ -79,7 +79,7 @@ class PXMLReaderBase : public GridReader {
         return _vtk_grid_type;
     }
 
-    std::size_t _num_pieces() const {
+    std::size_t _num_process_pieces() const {
         return _piece_readers.size();
     }
 
@@ -90,7 +90,6 @@ class PXMLReaderBase : public GridReader {
     XMLReaderHelper _read_pvtk_file(const std::string& filename, typename GridReader::FieldNames& fields) {
         _filename = filename;
          auto helper = XMLReaderHelper::make_from(filename, _vtk_grid_type);
-
         _read_pieces(helper);
         if (_piece_readers.size() > 0) {
             std::ranges::copy(point_field_names(_piece_readers.front()), std::back_inserter(fields.point_fields));
@@ -134,6 +133,10 @@ class PXMLReaderBase : public GridReader {
         );
     }
 
+    std::size_t _number_of_pieces() const override {
+        return _num_ranks.value_or(std::size_t{1});
+    }
+
     bool _is_sequence() const override {
         return false;
     }
@@ -157,9 +160,9 @@ class PXMLReaderBase : public GridReader {
     template<std::invocable<const PieceReader&> FieldGetter>
         requires(std::same_as<std::invoke_result_t<FieldGetter, const PieceReader&>, FieldPtr>)
     FieldPtr _merge(const FieldGetter& get_field, FieldType type) const {
-        if (_num_pieces() == 0)
+        if (_num_process_pieces() == 0)
             return make_field_ptr(EmptyField{float64});
-        if (_num_pieces() == 1)
+        if (_num_process_pieces() == 1)
             return get_field(_piece_readers.front());
 
         std::vector<FieldPtr> field_pieces;
@@ -187,13 +190,12 @@ class PXMLReaderBase : public GridReader {
     }
 
     void _read_pieces(const XMLReaderHelper& helper) {
-        if (_num_ranks) {
+        if (_num_ranks)
             _read_parallel_piece(helper);
-        } else {
+        else
             std::ranges::for_each(_pieces_paths(helper), [&] (const std::filesystem::path& path) {
                 _piece_readers.emplace_back(PieceReader{}).open(path);
             });
-        }
     }
 
     void _read_parallel_piece(const XMLReaderHelper& helper) {
@@ -208,10 +210,9 @@ class PXMLReaderBase : public GridReader {
                 + std::to_string(_num_ranks.value()) + " pieces"
             );
 
-        const std::size_t my_num_pieces =
-            _rank.value() == _num_ranks.value() - 1 && _merge_exceeding.value_or(false)
-                ? _num_ranks.value() - _rank.value()
-                : 1;
+        const bool is_last_rank = _rank.value() == _num_ranks.value() - 1;
+        const bool merge_final_pieces = is_last_rank && _merge_exceeding.value_or(false);
+        const std::size_t my_num_pieces = merge_final_pieces ? _num_ranks.value() - _rank.value() : 1;
 
         std::ranges::for_each(
             _pieces_paths(helper)
@@ -342,10 +343,10 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
     typename GridReader::PieceLocation _location() const override {
         typename GridReader::PieceLocation result;
 
-        if (this->_num_pieces() == 0) {
+        if (this->_num_process_pieces() == 0) {
             std::ranges::fill(result.lower_left, 0);
             std::ranges::fill(result.upper_right, 0);
-        } else if (this->_num_pieces() == 1) {
+        } else if (this->_num_process_pieces() == 1) {
             result = this->_readers().at(0).location();
         } else {  // use "WholeExtent"
             const auto& specs = _specs();
@@ -357,15 +358,15 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
     }
 
     std::size_t _number_of_points() const override {
-        if (this->_num_pieces() == 0)
+        if (this->_num_process_pieces() == 0)
             return 0;
-        if (this->_num_pieces() == 1)
+        if (this->_num_process_pieces() == 1)
             return this->_readers().at(0).number_of_points();
         return CommonDetail::number_of_entities(_whole_point_extents());
     }
 
     void _visit_cells(const typename GridReader::CellVisitor& visitor) const override {
-        if (this->_num_pieces() == 1)
+        if (this->_num_process_pieces() == 1)
             this->_readers().at(0).visit_cells(visitor);
         else
             CommonDetail::visit_structured_cells(visitor, _specs().extents);
