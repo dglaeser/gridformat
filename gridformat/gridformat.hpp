@@ -54,15 +54,50 @@
 
 #ifndef DOXYGEN
 namespace GridFormat::APIDetail {
-    class Unavailable {
-        template<typename... Args>
-        Unavailable(Args&&...) {
-            throw NotImplemented("Requested reader/writer is not available due to missing dependency");
+
+    template<typename... T>
+    inline constexpr bool always_false = false;
+
+    template<typename... T>
+    struct DefaultAsserter {
+        static constexpr bool do_assert() {
+            static_assert(
+                always_false<T...>,
+                "\033[1m\033[31mRequested reader/writer is unavailable due to missing dependency\033[0"
+            );
+            return false;
         }
     };
 
-    template<typename T>
-    inline constexpr bool always_false = false;
+    // Derive from GridWriter to make this a "valid" writer (and abuse some valid grid impl for that)
+    template<template<typename...> typename Asserter = DefaultAsserter>
+    class UnavailableWriter : public GridWriter<ImageGrid<2, double>> {
+     public:
+        template<typename... Args>
+        UnavailableWriter(Args&&...) { static_assert(Asserter<Args...>::do_assert()); }
+     private:
+        void _throw() const { throw GridFormat::NotImplemented("Writer unavailable"); }
+        void _write(std::ostream&) const { _throw(); }
+    };
+
+    // Derive from Reader to make this a "valid" reader
+    template<template<typename...> typename Asserter = DefaultAsserter>
+    class UnavailableReader : public GridReader {
+     public:
+        template<typename... Args>
+        UnavailableReader(Args&&...) { static_assert(Asserter<Args...>::do_assert()); }
+     private:
+        void _throw() const { throw GridFormat::NotImplemented("Reader unavailable"); }
+        std::string _name() const override { _throw(); return ""; }
+        void _open(const std::string&, typename GridReader::FieldNames&) override { _throw(); }
+        void _close() override { _throw(); }
+        std::size_t _number_of_cells() const override { _throw(); return 0; }
+        std::size_t _number_of_points() const override { _throw(); return 0; }
+        FieldPtr _cell_field(std::string_view) const override { _throw(); return nullptr; }
+        FieldPtr _point_field(std::string_view) const override { _throw(); return nullptr; }
+        FieldPtr _meta_data_field(std::string_view) const override { _throw(); return nullptr; }
+        bool _is_sequence() const override { _throw(); return false; }
+    };
 
 }  // namespace GridFormat::APIDetail
 
@@ -71,19 +106,32 @@ namespace GridFormat::APIDetail {
 #include <gridformat/vtk/hdf_reader.hpp>
 inline constexpr bool _gfmt_api_have_high_five = true;
 #else
+#include <gridformat/vtk/hdf_common.hpp>
 inline constexpr bool _gfmt_api_have_high_five = false;
 namespace GridFormat {
 
-using VTKHDFWriter = APIDetail::Unavailable;
-using VTKHDFTimeSeriesWriter = APIDetail::Unavailable;
-using VTKHDFImageGridWriter = APIDetail::Unavailable;
-using VTKHDFUnstructuredGridWriter = APIDetail::Unavailable;
-using VTKHDFImageGridTimeSeriesWriter = APIDetail::Unavailable;
-using VTKHDFUnstructuredGridTimeSeriesWriter = APIDetail::Unavailable;
+template<typename... T>
+struct VTKHDFAsserter {
+    static constexpr bool do_assert() {
+        static_assert(
+            APIDetail::always_false<T...>,
+            "\033[1m\033[31mVTKHDF reader/writers require libhdf5 and HighFive. "
+            "For the latter, use `git submodule init && git submodule update` to pull it.\033[0"
+        );
+        return false;
+    }
+};
 
-using VTKHDFImageGridReader = APIDetail::Unavailable;
-template<typename...> using VTKHDFUnstructuredGridReader = APIDetail::Unavailable;
-template<typename...> using VTKHDFReader = APIDetail::Unavailable;
+using VTKHDFWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
+using VTKHDFTimeSeriesWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
+using VTKHDFImageGridWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
+using VTKHDFUnstructuredGridWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
+using VTKHDFImageGridTimeSeriesWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
+using VTKHDFUnstructuredTimeSeriesWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
+
+using VTKHDFImageGridReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
+template<typename...> using VTKHDFUnstructuredGridReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
+template<typename...> using VTKHDFReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
 
 }  // namespace GridFormat
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE
@@ -218,7 +266,7 @@ struct VTU : VTKXMLFormatBase<VTU> {};
 template<typename VTX>
 struct VTKXMLTimeSeries : VTKXMLFormatBase<VTKXMLTimeSeries<VTX>> {};
 
-#if GRIDFORMAT_HAVE_HIGH_FIVE
+
 /*!
  * \ingroup API
  * \brief Selector for the vtk-hdf file format for image grids.
@@ -296,7 +344,6 @@ struct VTKHDF {
         return {std::move(opts)};
     }
 };
-#endif  // GRIDFORMAT_HAVE_HIGH_FIVE
 
 #ifndef DOXYGEN
 namespace Detail {
@@ -307,6 +354,7 @@ namespace Detail {
     template<> struct IsVTKXMLFormat<VTS> : public std::true_type {};
     template<> struct IsVTKXMLFormat<VTP> : public std::true_type {};
     template<> struct IsVTKXMLFormat<VTU> : public std::true_type {};
+
 }  // namespace Detail
 #endif  // DOXYGEN
 
@@ -346,14 +394,12 @@ struct TimeSeriesClosure {
     constexpr auto operator()(const Format& f) const {
         if constexpr (Detail::IsVTKXMLFormat<Format>::value)
             return VTKXMLTimeSeries<Format>{f.opts};
-#if GRIDFORMAT_HAVE_HIGH_FIVE
         else if constexpr (std::same_as<VTKHDFImage, Format>)
             return VTKHDFImageTransient{};
         else if constexpr (std::same_as<VTKHDFUnstructured, Format>)
             return VTKHDFUnstructuredTransient{};
         else if constexpr (std::same_as<VTKHDF, Format>)
             return VTKHDFTransient{};
-#endif  // GRIDFORMAT_HAVE_HIGH_FIVE
         else {
             static_assert(
                 APIDetail::always_false<Format>,
@@ -494,7 +540,6 @@ template<typename F> struct WriterFactory<FileFormat::VTKXMLTimeSeries<F>> {
     }
 };
 
-#if GRIDFORMAT_HAVE_HIGH_FIVE
 //! Specialization of the WriterFactory for the vtk-hdf image grid format
 template<> struct WriterFactory<FileFormat::VTKHDFImage> {
     static auto make(const FileFormat::VTKHDFImage&,
@@ -640,8 +685,6 @@ template<>
 struct ReaderFactory<FileFormat::VTKHDFTransient>
 : APIDetail::DefaultTemplatedReaderFactory<FileFormat::VTKHDFTransient, VTKHDFReader<>, VTKHDFReader>
 {};
-
-#endif  // GRIDFORMAT_HAVE_HIGH_FIVE
 
 //! Specialization of the WriterFactory for the .pvd time series format.
 template<typename F>
@@ -826,11 +869,8 @@ inline constexpr FileFormat::VTU vtu;
 inline constexpr FileFormat::PVD pvd;
 inline constexpr FileFormat::PVDClosure pvd_with;
 inline constexpr FileFormat::TimeSeriesClosure time_series;
-
-#if GRIDFORMAT_HAVE_HIGH_FIVE
 inline constexpr FileFormat::VTKHDF vtk_hdf;
 inline constexpr FileFormat::VTKHDFTransient vtk_hdf_transient;
-#endif
 
 //! \} name File Format Selectors
 //! \} group API

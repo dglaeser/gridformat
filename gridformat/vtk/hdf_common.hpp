@@ -8,7 +8,6 @@
  */
 #ifndef GRIDFORMAT_VTK_HDF_COMMON_HPP_
 #define GRIDFORMAT_VTK_HDF_COMMON_HPP_
-#if GRIDFORMAT_HAVE_HIGH_FIVE
 
 #include <vector>
 #include <cstddef>
@@ -94,6 +93,8 @@ struct IOContext {
     }
 };
 
+#if GRIDFORMAT_HAVE_HIGH_FIVE
+
 /*!
  * \ingroup VTKHDF
  * \brief Field implementation that draws values from an open HDF5 file upon request.
@@ -134,8 +135,9 @@ std::string get_file_type(const HDF5::File<C>& file) {
     return file.template read_attribute_to<std::string>("/VTKHDF/Type");
 }
 
+#endif  // GRIDFORMAT_HAVE_HIGH_FIVE
+
 }  // namespace VTKHDF
 }  // namespace GridFormat
 
-#endif  // GRIDFORMAT_HAVE_HIGH_FIVE
 #endif  // GRIDFORMAT_VTK_HDF_COMMON_HPP_
