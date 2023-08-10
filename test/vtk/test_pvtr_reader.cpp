@@ -64,6 +64,21 @@ int main(int argc, char** argv) {
         expect(eq(reader.number_of_pieces(), static_cast<std::size_t>(size)));
     };
 
+    "parallel_pvtr_ordinates"_test = [&] () {
+        auto ordinates_x = reader.ordinates(0);
+        auto ordinates_y = reader.ordinates(1);
+        auto ordinates_z = reader.ordinates(2);
+        expect(eq(ordinates_x.size(), nx + 1));
+        expect(eq(ordinates_y.size(), ny + 1));
+        expect(eq(ordinates_z.size(), std::size_t{0}));
+        expect(std::ranges::is_sorted(ordinates_x));
+        expect(std::ranges::is_sorted(ordinates_y));
+        std::ranges::unique(ordinates_x);
+        std::ranges::unique(ordinates_y);
+        expect(eq(ordinates_x.size(), nx + 1));
+        expect(eq(ordinates_y.size(), ny + 1));
+    };
+
     // test that sequential I/O yields the expected results
     if (rank == 0) {
         std::cout << "Opening '" << GridFormat::as_highlight(test_filename) << "'" << std::endl;
@@ -111,6 +126,23 @@ int main(int argc, char** argv) {
                 ));
                 vtu_writer.set_cell_field(name, field_ptr);
             }
+        };
+
+        "sequential_pvtr_ordinates"_test = [&] () {
+            const auto num_expected_points_x = (nx + 1)*num_domains_x - (num_domains_x - 1);
+            const auto num_expected_points_y = (ny + 1)*num_domains_y - (num_domains_y - 1);
+            auto ordinates_x = sequential_reader.ordinates(0);
+            auto ordinates_y = sequential_reader.ordinates(1);
+            auto ordinates_z = sequential_reader.ordinates(2);
+            expect(eq(ordinates_x.size(), num_expected_points_x));
+            expect(eq(ordinates_y.size(), num_expected_points_y));
+            expect(eq(ordinates_z.size(), std::size_t{0}));
+            expect(std::ranges::is_sorted(ordinates_x));
+            expect(std::ranges::is_sorted(ordinates_y));
+            std::ranges::unique(ordinates_x);
+            std::ranges::unique(ordinates_y);
+            expect(eq(ordinates_x.size(), num_expected_points_x));
+            expect(eq(ordinates_y.size(), num_expected_points_y));
         };
 
         const auto seq_filename = vtu_writer.write(

@@ -71,6 +71,25 @@ class VTRReader : public GridReader {
         return false;
     }
 
+    std::vector<double> _ordinates(unsigned int i) const override {
+        std::vector<double> result;
+        unsigned int direction = 0;
+        const XMLElement& coords = _helper.value().get("RectilinearGrid/Piece/Coordinates");
+        for (const XMLElement& da : VTK::XML::data_arrays(coords))
+            if (direction++ == i) {
+                FieldPtr ordinates_field = _helper.value().make_data_array_field(da);
+                return ordinates_field->precision().visit([&] <typename T> (const Precision<T>& prec) {
+                    auto bytes = ordinates_field->serialized();
+                    auto values = bytes.as_span_of(prec);
+                    result.resize(values.size());
+                    std::ranges::copy(values, result.begin());
+                    return result;
+                });
+            }
+        throw IOError("Could not read ordinates in direction " + std::to_string(i));
+    }
+
+
     FieldPtr _points() const override {
         const XMLElement& coordinates = _helper.value().get("RectilinearGrid/Piece/Coordinates");
 
