@@ -8,6 +8,7 @@
 #include <iostream>
 #include <utility>
 #include <string>
+#include <vector>
 #include <ranges>
 
 #include <gridformat/common/exceptions.hpp>
@@ -64,12 +65,17 @@ auto grid_and_space_dimension(const std::string& filename) {
 }
 
 std::ranges::range auto test_filenames(const std::filesystem::path& folder, const std::string& extension) {
+    std::vector<std::string> names;
     if (!std::filesystem::directory_entry{folder}.exists())
-        throw GridFormat::IOError("Test data folder '" + std::string{folder} + "' does not exist");
-    return std::filesystem::directory_iterator{folder}
+        return names;
+    std::ranges::copy(
+        std::filesystem::directory_iterator{folder}
         | std::views::filter([&] (const auto& p) { return std::filesystem::is_regular_file(p); })
         | std::views::filter([&] (const std::filesystem::path& p) { return p.extension() == extension; })
-        | std::views::transform([&] (const std::filesystem::path& p) { return p.string(); });
+        | std::views::transform([&] (const std::filesystem::path& p) { return p.string(); }),
+        std::back_inserter(names)
+    );
+    return names;
 }
 
 void test_reader(GridFormat::Reader&& reader, const std::string& filename) {
@@ -159,19 +165,19 @@ void test_reader(GridFormat::Reader&& reader, const std::string& filename) {
 }
 
 template<typename... ConstructorArgs>
-void test_reader(const std::filesystem::path& folder,
-                 const std::string& extension,
-                 ConstructorArgs&&... args) {
+int test_reader(const std::filesystem::path& folder,
+                const std::string& extension,
+                ConstructorArgs&&... args) {
     bool visited = false;
     std::ranges::for_each(test_filenames(folder, extension), [&] (const std::string& filename) {
         test_reader(GridFormat::Reader{std::forward<ConstructorArgs>(args)...}, filename);
         visited = true;
     });
     if (!visited)
-        throw GridFormat::IOError(
-            "Could not find test data files for extension " + extension +
-            " in folder " + std::string{folder}
-        );
+        std::cout << "Could not find test data files for extension "
+                  << extension << " in folder " << std::string{folder}
+                  << std::endl;
+    return visited ? 0 : 42;
 }
 
 template<std::size_t dim, typename Writer, typename... Args>
@@ -203,22 +209,23 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     constexpr bool is_parallel = false;
 #endif
 
+    std::vector<int> exit_codes;
     const std::string vtk_test_data_folder{TEST_VTK_DATA_PATH};
 
-    test_reader(vtk_test_data_folder, ".vtu", GridFormat::vtu);
-    test_reader(vtk_test_data_folder, ".vtu", GridFormat::any);
+    exit_codes.push_back(test_reader(vtk_test_data_folder, ".vtu", GridFormat::vtu));
+    exit_codes.push_back(test_reader(vtk_test_data_folder, ".vtu", GridFormat::any));
 
-    test_reader(vtk_test_data_folder, ".vtp", GridFormat::vtp);
-    test_reader(vtk_test_data_folder, ".vtp", GridFormat::any);
+    exit_codes.push_back(test_reader(vtk_test_data_folder, ".vtp", GridFormat::vtp));
+    exit_codes.push_back(test_reader(vtk_test_data_folder, ".vtp", GridFormat::any));
 
-    test_reader(vtk_test_data_folder, ".vti", GridFormat::vti);
-    test_reader(vtk_test_data_folder, ".vti", GridFormat::any);
+    exit_codes.push_back(test_reader(vtk_test_data_folder, ".vti", GridFormat::vti));
+    exit_codes.push_back(test_reader(vtk_test_data_folder, ".vti", GridFormat::any));
 
-    test_reader(vtk_test_data_folder, ".vtr", GridFormat::vtr);
-    test_reader(vtk_test_data_folder, ".vtr", GridFormat::any);
+    exit_codes.push_back(test_reader(vtk_test_data_folder, ".vtr", GridFormat::vtr));
+    exit_codes.push_back(test_reader(vtk_test_data_folder, ".vtr", GridFormat::any));
 
-    test_reader(vtk_test_data_folder, ".vts", GridFormat::vts);
-    test_reader(vtk_test_data_folder, ".vts", GridFormat::any);
+    exit_codes.push_back(test_reader(vtk_test_data_folder, ".vts", GridFormat::vts));
+    exit_codes.push_back(test_reader(vtk_test_data_folder, ".vts", GridFormat::any));
 
     // generate some more test data & test it
     const auto comm_size = GridFormat::Parallel::size(comm);
@@ -294,5 +301,5 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     MPI_Finalize();
 #endif
 
-    return 0;
+    return *std::max_element(exit_codes.begin(), exit_codes.end());
 }
