@@ -16,6 +16,7 @@
 
 #include <gridformat/common/hdf5.hpp>
 #include <gridformat/common/lazy_field.hpp>
+#include <gridformat/common/string_conversion.hpp>
 
 namespace GridFormat {
 
@@ -133,6 +134,20 @@ std::string get_file_type(const HDF5::File<C>& file) {
     if (!file.has_attribute_at("/VTKHDF/Type"))
         throw IOError("VTKHDF-Type attribute missing");
     return file.template read_attribute_to<std::string>("/VTKHDF/Type");
+}
+
+//! Check that the version stated in the file is supported
+template<typename C>
+void check_version_compatibility(const HDF5::File<C>& file, const std::array<std::size_t, 2>& supported) {
+    if (file.has_attribute_at("/VTKHDF/Version"))
+        file.visit_attribute("/VTKHDF/Version", [&] (auto&& field) {
+            const auto version = field.template export_to<std::vector<std::size_t>>();
+            if ((version.size() > 0 && version.at(0) > supported[0]) ||
+                (version.size() > 1 && version.at(0) == supported[0] && version.at(1) > supported[1]))
+                throw ValueError(
+                    "File version is higher than supported by the reader (" + as_string(supported, ".") + ")"
+                );
+        });
 }
 
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE

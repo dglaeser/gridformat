@@ -62,6 +62,8 @@ class VTKHDFImageGridReader : public GridReader {
         if (type != "ImageData")
             throw ValueError("Incompatible VTK-HDF type: '" + type + "', expected 'ImageData'.");
 
+        VTKHDF::check_version_compatibility(_file.value(), {2, 0});
+
         if (_file->exists("VTKHDF/Steps"))
             _file->visit_attribute("VTKHDF/Steps/NSteps", [&] (auto&& field) {
                 _num_steps.emplace();

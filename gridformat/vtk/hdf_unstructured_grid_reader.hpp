@@ -57,6 +57,8 @@ class VTKHDFUnstructuredGridReader : public GridReader {
         if (type != "UnstructuredGrid")
             throw ValueError("Incompatible VTK-HDF type: '" + type + "', expected 'UnstructuredGrid'.");
 
+        VTKHDF::check_version_compatibility(_file.value(), {2, 0});
+
         if (_file->exists("VTKHDF/Steps"))
             _file->visit_attribute("VTKHDF/Steps/NSteps", [&] (auto&& field) {
                 _num_steps.emplace();
