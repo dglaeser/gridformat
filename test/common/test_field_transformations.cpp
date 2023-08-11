@@ -311,5 +311,39 @@ int main() {
         }));
     };
 
+    "sliced_field"_test = [&] () {
+        auto field_ptr = GridFormat::make_field_ptr(RangeField{
+            std::vector<std::array<int, 2>>{
+                {2, 42},
+                {2, 43}
+            },
+            GridFormat::Precision<double>{}
+        });
+        GridFormat::SlicedField sliced{field_ptr, {
+            .from = {0, 1},
+            .to = {2, 2}
+        }};
+        auto serialization = sliced.serialized();
+        expect(std::ranges::equal(serialization.template as_span_of<double>(), std::vector{42., 43.}));
+    };
+
+    "sliced_field_dimension_mismatch_throws"_test = [&] () {
+        auto field_ptr = GridFormat::make_field_ptr(RangeField{
+            std::vector<std::array<int, 2>>{{2, 42}, {2, 43}}
+        });
+        expect(throws<GridFormat::SizeError>([&] () {
+            GridFormat::SlicedField f{field_ptr, {.from = {0, 0}, .to = {2}}};
+            f.layout();
+        }));
+        expect(throws<GridFormat::SizeError>([&] () {
+            GridFormat::SlicedField f{field_ptr, {.from = {0}, .to = {2}}};
+            f.layout();
+        }));
+        expect(throws<GridFormat::SizeError>([&] () {
+            GridFormat::SlicedField f{field_ptr, {.from = {0, 0, 0}, .to = {1, 1, 1}}};
+            f.layout();
+        }));
+    };
+
     return 0;
 }
