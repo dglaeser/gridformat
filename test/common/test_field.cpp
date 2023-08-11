@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <memory>
+#include <ranges>
+#include <algorithm>
 
 #include <gridformat/common/serialization.hpp>
 #include <gridformat/common/exceptions.hpp>
@@ -69,8 +71,15 @@ int main() {
         std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
         auto values = field->template export_to<std::vector<int>>();
         expect(std::ranges::equal(values, std::vector{1, 2, 3, 4}));
+
         values.resize(values.size() - 1);
         expect(throws<GridFormat::SizeError>([&] () { field->export_to(values); }));
+
+        values.resize(7);
+        std::ranges::fill(values, 42);
+        field->export_to(values);
+        expect(std::ranges::equal(values | std::views::take(4), std::vector{1, 2, 3, 4}));
+        expect(std::ranges::equal(values | std::views::drop(4), std::vector{42, 42, 42}));
     };
 
     return 0;
