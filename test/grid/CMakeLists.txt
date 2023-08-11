@@ -3,6 +3,7 @@
 
 gridformat_add_test(test_unstructured_grid test_unstructured_grid.cpp)
 gridformat_add_test(test_grid_writer test_grid_writer.cpp)
+gridformat_add_test(test_grid_reader test_grid_reader.cpp)
 gridformat_add_test(test_discontinuous_grid test_discontinuous_grid.cpp)
 gridformat_add_regression_test(test_image_grid test_image_grid.cpp "*image_grid_test*")
 gridformat_add_regression_test_if(

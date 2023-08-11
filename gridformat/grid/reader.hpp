@@ -278,11 +278,11 @@ class GridReader {
     virtual FieldPtr _meta_data_field(std::string_view) const = 0;
 
     virtual void _visit_cells(const CellVisitor&) const {
-        throw TypeError("'" + _name() + "' does not implement cell visiting");
+        throw NotImplemented("'" + _name() + "' does not implement cell visiting");
     }
 
     virtual FieldPtr _points() const {
-        throw TypeError("'" + _name() + "' does not implement points()");
+        throw NotImplemented("'" + _name() + "' does not implement points()");
     }
 
     virtual PieceLocation _location() const {
