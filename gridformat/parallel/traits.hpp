@@ -14,6 +14,7 @@
 #include <type_traits>
 #include <algorithm>
 
+#include <gridformat/common/ranges.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/type_traits.hpp>
@@ -120,28 +121,47 @@ struct BroadCast<NullCommunicator> {
 
 template<>
 struct Gather<NullCommunicator> {
-    template<typename T>
-    static constexpr std::vector<FieldScalar<T>> get(const NullCommunicator&, const T&, [[maybe_unused]] int root_rank = 0) {
-        throw NotImplemented("Gather on null communicator");
+    template<Concepts::Scalar T>
+    static constexpr std::vector<T> get(const NullCommunicator&, const T& value, [[maybe_unused]] int root_rank = 0) {
+        return {value};
+    }
+
+    template<Concepts::Scalar T>
+    static constexpr std::vector<T>& get(const NullCommunicator&, const std::vector<T>& vec, [[maybe_unused]] int root_rank = 0) {
+        return vec;
+    }
+
+    template<std::ranges::range R>
+    static constexpr auto get(const NullCommunicator&, const R& r, [[maybe_unused]] int root_rank = 0) {
+        std::vector<std::ranges::range_value_t<R>> result(Ranges::size(r));
+        std::ranges::copy(r, result.begin());
+        return result;
     }
 };
 
 template<>
 struct Scatter<NullCommunicator> {
- private:
-    template<std::ranges::range R>
-    struct Return;
-    template<Concepts::StaticallySizedRange R>
-    struct Return<R> { using type = std::array<FieldScalar<R>, static_size<R>>; };
-    template<std::ranges::range R> requires(!Concepts::StaticallySizedRange<R>)
-    struct Return<R> { using type = std::vector<FieldScalar<R>>; };
-
  public:
+    template<typename T>
+    static constexpr const auto& get(const NullCommunicator&, const std::vector<T>& vec, [[maybe_unused]] int root_rank = 0) {
+        return vec;
+    }
+
     template<std::ranges::contiguous_range R>
-    static constexpr typename Return<R>::type get(const NullCommunicator&,
-                                                  const R&,
-                                                  [[maybe_unused]] int root_rank = 0) {
-        throw NotImplemented("Scatter on null communicator");
+        requires(!Concepts::StaticallySizedRange<R>)
+    static constexpr auto get(const NullCommunicator&, const R& r, [[maybe_unused]] int root_rank = 0) {
+        std::vector<std::ranges::range_value_t<R>> result;
+        result.resize(Ranges::size(r));
+        std::ranges::copy(r, result.begin());
+        return result;
+    }
+
+    template<std::ranges::contiguous_range R>
+        requires(Concepts::StaticallySizedRange<R>)
+    static constexpr auto get(const NullCommunicator&, const R& r, [[maybe_unused]] int root_rank = 0) {
+        std::array<std::ranges::range_value_t<R>, static_size<R>> result;
+        std::ranges::copy(r, result.begin());
+        return result;
     }
 };
 
