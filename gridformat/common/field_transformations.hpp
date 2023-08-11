@@ -8,22 +8,31 @@
 #ifndef GRIDFORMAT_COMMON_FIELD_TRANSFORMATIONS_HPP_
 #define GRIDFORMAT_COMMON_FIELD_TRANSFORMATIONS_HPP_
 
+#include <vector>
 #include <utility>
 #include <concepts>
 #include <algorithm>
 #include <type_traits>
+#include <sstream>
+#include <ranges>
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/serialization.hpp>
+#include <gridformat/common/string_conversion.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/md_index.hpp>
 #include <gridformat/common/iterator_facades.hpp>
+#include <gridformat/common/flat_index_mapper.hpp>
 
 namespace GridFormat {
 
 #ifndef DOXYGEN
 namespace FieldTransformationDetail {
+
+    // walks along md indices in the source & target layouts
+    // and exposes the corresponding flat indices within the
+    // layouts according to row-major-ordering (we store data this way)
     class BackwardsMDIndexMapWalk {
      public:
         template<std::convertible_to<MDLayout> _L1,
@@ -133,7 +142,8 @@ namespace FieldTransformationDetail {
         std::size_t _current_flat;
         std::size_t _current_target_flat;
     };
-}
+
+}  // namespace FieldTransformationDetail
 #endif  // DOXYGEN
 
 
@@ -178,6 +188,42 @@ class FlattenedField : public Field {
 
     MDLayout _layout() const override {
         return MDLayout{{_field->layout().number_of_entries()}};
+    }
+
+    DynamicPrecision _precision() const override {
+        return _field->precision();
+    }
+
+    Serialization _serialized() const override {
+        return _field->serialized();
+    }
+};
+
+/*!
+ * \ingroup Common
+ * \brief Exposes a given field with a different layout.
+ * \note Requires the target layout to have the same number of entries as the original layout.
+ */
+class ReshapedField : public Field {
+ public:
+    explicit ReshapedField(FieldPtr field, MDLayout target_layout)
+    : _field(field)
+    , _target_layout{std::move(target_layout)} {
+        if (_field->layout().number_of_entries() != _target_layout.number_of_entries()) {
+            std::ostringstream in;
+            std::ostringstream target;
+            in << _field->layout();
+            target << _target_layout;
+            throw SizeError("Cannot reshape field with layout " + in.str() + " to " + target.str());
+        }
+    }
+
+ private:
+    FieldPtr _field;
+    MDLayout _target_layout;
+
+    MDLayout _layout() const override {
+        return _target_layout;
     }
 
     DynamicPrecision _precision() const override {
@@ -272,6 +318,154 @@ class ExtendedField : public Field {
     }
 };
 
+
+/*!
+ * \ingroup Common
+ * \brief Exposes a field that represents a slice of another field.
+ */
+class SlicedField : public Field {
+ public:
+    struct Slice {
+        std::vector<std::size_t> from;
+        std::vector<std::size_t> to;
+    };
+
+    explicit SlicedField(FieldPtr field, Slice slice)
+    : _field{field}
+    , _slice{std::move(slice)}
+    {}
+
+ private:
+    MDLayout _make_slice_layout() const {
+        if (_slice.from.size() != _slice.to.size())
+            throw SizeError("Slice bounds must have the same dimension");
+        if (_slice.from.size() != _field->layout().dimension())
+            throw SizeError("Slice dimension does not match that of the original field");
+        return MDLayout{
+            std::views::iota(std::size_t{0}, _slice.from.size())
+            | std::views::transform([&] (const std::size_t i) {
+                if (_slice.to[i] < _slice.from[i])
+                    throw SizeError("slice.from must be smaller than slice.to");
+                return _slice.to[i] - _slice.from[i];
+            })
+        };
+    }
+
+    MDLayout _layout() const override {
+        return _make_slice_layout();
+    }
+
+    Serialization _serialized() const override {
+        const auto in_layout = _field->layout();
+        const auto out_layout = _layout();
+        const auto precision = _precision();
+        Serialization in_serialization = _field->serialized();
+        Serialization out_serialization(out_layout.number_of_entries()*precision.size_in_bytes());
+
+        // data is stored row-major, so we reverse the layout here
+        const auto in_offset = FlatIndexMapper{in_layout | std::views::reverse}.map(
+            _slice.from | std::views::reverse
+        );
+
+        auto index_walk = FieldTransformationDetail::BackwardsMDIndexMapWalk{out_layout, in_layout};
+        precision.visit([&] <typename T> (const Precision<T>&) {
+            auto in = in_serialization.template as_span_of<T>();
+            auto out = out_serialization.template as_span_of<T>();
+            while (!index_walk.is_finished()) {
+                assert(index_walk.source_index_flat() < out.size());
+                assert(index_walk.target_index_flat() + in_offset < in.size());
+                out[index_walk.source_index_flat()] = in[index_walk.target_index_flat() + in_offset];
+                index_walk.next();
+            }
+        });
+
+        return out_serialization;
+    }
+
+    DynamicPrecision _precision() const override {
+        return _field->precision();
+    }
+
+    FieldPtr _field;
+    Slice _slice;
+};
+
+/*!
+ * \ingroup Common
+ * \brief Exposes a field that is the result of merging the given fields.
+ */
+class MergedField : public Field {
+ public:
+    template<typename... Ptrs>
+        requires(std::same_as<Ptrs, FieldPtr> && ...)
+    explicit MergedField(FieldPtr first, Ptrs&&... fields)
+    : MergedField(_as_vector(first, std::forward<Ptrs>(fields)...))
+    {}
+
+    explicit MergedField(std::vector<FieldPtr>&& fields)
+    : _fields{std::move(fields)} {
+        if (_fields.empty())
+            throw ValueError("Need at least one field for merging");
+        _merged_layout = _merge_layouts(_fields.front()->layout());
+        if (std::ranges::any_of(_fields | std::views::drop(1), [&] (const FieldPtr& ptr) {
+            return ptr->precision() != _fields.front()->precision();
+        }))
+            throw ValueError("Can only merge fields with matching precision");
+    }
+
+ private:
+    template<typename... Ptrs>
+    static std::vector<FieldPtr> _as_vector(Ptrs&&... ptrs) {
+        std::vector<FieldPtr> result;
+        (result.push_back(ptrs), ...);
+        return result;
+    }
+
+    MDLayout _merge_layouts(const MDLayout& first_layout) const {
+        if (first_layout.dimension() == 0)
+            throw ValueError("Cannot merge layouts with zero dimension");
+
+        std::vector<std::size_t> merged_layout(first_layout.dimension());
+        first_layout.export_to(merged_layout);
+        std::ranges::for_each(_fields | std::views::drop(1), [&] (const FieldPtr& ptr) {
+            MDLayout layout = ptr->layout();
+            if (!_are_compatible(first_layout, layout))
+                throw ValueError(
+                    "Fields to be merged have incompatible layouts: ("
+                    + as_string(first_layout) + ") and ("
+                    + as_string(layout) + ")."
+                );
+            merged_layout.at(0) += layout.extent(0);
+        });
+        return MDLayout{merged_layout};
+    }
+
+    bool _are_compatible(const MDLayout& first, const MDLayout& second) const {
+        if (first.dimension() != second.dimension())
+            return false;
+        return std::ranges::equal(first | std::views::drop(1), second | std::views::drop(1));
+    }
+
+    MDLayout _layout() const override {
+        return _merged_layout;
+    }
+
+    Serialization _serialized() const override {
+        Serialization result = _fields.front()->serialized();
+        std::ranges::for_each(_fields | std::views::drop(1), [&] (const FieldPtr& ptr) {
+            result.push_back(ptr->serialized().data());
+        });
+        return result;
+    }
+
+    DynamicPrecision _precision() const override {
+        return _fields.front()->precision();
+    }
+
+    std::vector<FieldPtr> _fields;
+    MDLayout _merged_layout;
+};
+
 namespace FieldTransformation {
 
 #ifndef DOXYGEN
@@ -337,6 +531,56 @@ namespace Detail {
         }
     };
 
+    class ReshapedFieldAdapter {
+     public:
+        explicit ReshapedFieldAdapter(MDLayout layout)
+        : _layout{std::move(layout)}
+        {}
+
+        auto operator()(FieldPtr f) const {
+            return make_field_ptr(ReshapedField{f, _layout});
+        }
+
+     private:
+        MDLayout _layout;
+    };
+
+    struct ReshapedFieldAdapterClosure {
+        auto operator()(MDLayout sub_layout) const {
+            return ReshapedFieldAdapter{std::move(sub_layout)};
+        }
+    };
+
+    struct SubFieldAdapter {
+        auto operator()(FieldPtr f) const {
+            const auto layout = f->layout();
+            std::vector<std::size_t> new_layout(layout.dimension() + 1, 0);
+            layout.export_to(new_layout | std::views::drop(1));
+            new_layout.at(0) = 1;
+            return ReshapedFieldAdapter{MDLayout{std::move(new_layout)}}(f);
+        }
+    };
+
+    class SlicedFieldAdapter {
+     public:
+        explicit SlicedFieldAdapter(typename SlicedField::Slice slice)
+        : _slice{std::move(slice)}
+        {}
+
+        auto operator()(FieldPtr f) const {
+            return make_field_ptr(SlicedField{f, _slice});
+        }
+
+     private:
+        typename SlicedField::Slice _slice;
+    };
+
+    struct SlicedFieldAdapterClosure {
+        auto operator()(typename SlicedField::Slice slice) const {
+            return SlicedFieldAdapter{std::move(slice)};
+        }
+    };
+
 }  // namespace Detail
 #endif  // DOXYGEN
 
@@ -344,6 +588,9 @@ inline constexpr Detail::IdentityFieldAdapter identity;
 inline constexpr Detail::FlattenedFieldAdapter flatten;
 inline constexpr Detail::ExtendFieldAdapterClosure extend_to;
 inline constexpr Detail::ExtendAllFieldAdapterClosure extend_all_to;
+inline constexpr Detail::ReshapedFieldAdapterClosure reshape_to;
+inline constexpr Detail::SubFieldAdapter as_sub_field;
+inline constexpr Detail::SlicedFieldAdapterClosure take_slice;
 
 }  // namespace FieldTransformation
 
@@ -357,6 +604,12 @@ concept FieldTransformation
 };
 
 }  // namespace Concepts
+
+
+template<Concepts::FieldTransformation T>
+FieldPtr transform(FieldPtr field, T&& trafo) {
+    return trafo(field);
+}
 
 
 class TransformedField : public Field {

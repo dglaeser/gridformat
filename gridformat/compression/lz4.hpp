@@ -24,6 +24,7 @@
 #include <gridformat/common/logging.hpp>
 
 #include <gridformat/compression/common.hpp>
+#include <gridformat/compression/decompress.hpp>
 
 namespace GridFormat::Compression {
 
@@ -39,6 +40,22 @@ struct LZ4Options {
 //! Compressor using the lz4 compression library
 class LZ4 {
     using LZ4Byte = char;
+    static_assert(sizeof(typename Serialization::Byte) == sizeof(LZ4Byte));
+
+    struct BlockDecompressor {
+        using ByteType = LZ4Byte;
+
+        void operator()(std::span<const ByteType> in, std::span<ByteType> out) const {
+            int decompressed_length = LZ4_decompress_safe(
+                in.data(),
+                out.data(),
+                static_cast<int>(in.size()),
+                static_cast<int>(out.size())
+            );
+            if (decompressed_length != static_cast<int>(out.size()))
+                throw IOError("(LZ4Compressor) Error upon block decompression");
+        }
+    };
 
  public:
     using Options = LZ4Options;
@@ -59,6 +76,11 @@ class LZ4 {
         in = std::move(out);
         in.resize(blocks.compressed_size());
         return blocks;
+    }
+
+    template<typename HeaderType>
+    static void decompress(Serialization& in, const CompressedBlocks<HeaderType>& blocks) {
+        Compression::decompress(in, blocks, BlockDecompressor{});
     }
 
     static LZ4 with(Options opts) {

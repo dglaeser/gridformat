@@ -25,6 +25,7 @@
 #include <gridformat/common/logging.hpp>
 
 #include <gridformat/compression/common.hpp>
+#include <gridformat/compression/decompress.hpp>
 
 namespace GridFormat::Compression {
 
@@ -40,6 +41,24 @@ struct LZMAOptions {
 //! Compressor using the lzma library
 class LZMA {
     using LZMAByte = std::uint8_t;
+    static_assert(sizeof(typename Serialization::Byte) == sizeof(LZMAByte));
+
+    struct BlockDecompressor {
+        using ByteType = LZMAByte;
+
+        void operator()(std::span<const ByteType> in, std::span<ByteType> out) const {
+            size_t in_pos = 0;
+            size_t out_pos = 0;
+            uint64_t memlim = UINT64_MAX;
+            if (lzma_stream_buffer_decode(
+                &memlim,      // No memory limit
+                uint32_t{0},  // Don't use any decoder flags
+                nullptr, // Use default allocators (malloc/free)
+                in.data(), &in_pos, in.size(),
+                out.data(), &out_pos, out.size()) != LZMA_OK)
+                throw IOError("(LZMACompressor) Error upon decompression");
+        }
+    };
 
  public:
     using Options = LZMAOptions;
@@ -60,6 +79,11 @@ class LZMA {
         in = std::move(out);
         in.resize(blocks.compressed_size());
         return blocks;
+    }
+
+    template<std::integral HeaderType>
+    static void decompress(Serialization& in, const CompressedBlocks<HeaderType>& blocks) {
+        Compression::decompress(in, blocks, BlockDecompressor{});
     }
 
     static LZMA with(Options opts) {

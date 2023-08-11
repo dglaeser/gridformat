@@ -56,13 +56,18 @@ class PDataArrayHelper {
         // vtk always uses 3d, this assumes that the field
         // is transformed accordingly in the piece writers
         static constexpr std::size_t vtk_space_dim = 3;
-        const auto ncomps = std::pow(vtk_space_dim, field.layout().dimension() - 1);
+        const auto layout = field.layout();
+        std::size_t ncomps = std::pow(vtk_space_dim, field.layout().dimension() - 1);
+
+        // leave higher-dimensional vectors untouched
+        if (layout.dimension() == 2 && layout.extent(1) > vtk_space_dim)
+            ncomps = layout.extent(1);
 
         XMLElement& arr = _element.add_child("PDataArray");
         arr.set_attribute("Name", name);
         arr.set_attribute("type", VTK::attribute_name(field.precision()));
         arr.set_attribute("format", VTK::data_format_name(_encoder, _data_format));
-        arr.set_attribute("NumberOfComponents", static_cast<std::size_t>(ncomps));
+        arr.set_attribute("NumberOfComponents", ncomps);
     }
 
  private:

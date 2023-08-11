@@ -51,7 +51,8 @@ class StructuredGrid {
 
     StructuredGrid(std::array<double, dim> size,
                    std::array<std::size_t, dim> cells,
-                   std::array<double, dim> origin = Detail::make_filled_array<dim>(0.0))
+                   std::array<double, dim> origin = Detail::make_filled_array<dim>(0.0),
+                   bool shuffle = true)
     : _origin(std::move(origin))
     , _size(std::move(size))
     , _num_cells(std::move(cells)) {
@@ -82,10 +83,12 @@ class StructuredGrid {
                         _points.emplace_back(Point{.position = {i, j, k}});
         }
 
-        // shuffle cells/points such that the range order does not match the grid ordering
-        std::mt19937 g(std::random_device{}());
-        std::shuffle(_cells.begin(), _cells.end(), g);
-        std::shuffle(_points.begin(), _points.end(), g);
+        if (shuffle) {
+            // shuffle cells/points such that the range order does not match the grid ordering
+            std::mt19937 g(std::random_device{}());
+            std::shuffle(_cells.begin(), _cells.end(), g);
+            std::shuffle(_points.begin(), _points.end(), g);
+        }
 
         // set the cell/point ids
         auto points = cells;

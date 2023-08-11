@@ -9,6 +9,7 @@
 #define GRIDFORMAT_PARALLEL_CONCEPTS_HPP_
 
 #include <concepts>
+#include <type_traits>
 
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/type_traits.hpp>
@@ -36,13 +37,13 @@ namespace ParallelDetail {
 
 template<typename T>
 concept Communicator
-    = is_complete<ParallelTraits::Size<T>>
-    and is_complete<ParallelTraits::Rank<T>>
-    and is_complete<ParallelTraits::Barrier<T>>
+    = is_complete<ParallelTraits::Size<std::remove_cvref_t<T>>>
+    and is_complete<ParallelTraits::Rank<std::remove_cvref_t<T>>>
+    and is_complete<ParallelTraits::Barrier<std::remove_cvref_t<T>>>
     and requires(const T& t) {
-        { ParallelTraits::Size<T>::get(t) } -> std::convertible_to<int>;
-        { ParallelTraits::Rank<T>::get(t) } -> std::convertible_to<int>;
-        { ParallelTraits::Barrier<T>::get(t) } -> std::convertible_to<int>;
+        { ParallelTraits::Size<std::remove_cvref_t<T>>::get(t) } -> std::convertible_to<int>;
+        { ParallelTraits::Rank<std::remove_cvref_t<T>>::get(t) } -> std::convertible_to<int>;
+        { ParallelTraits::Barrier<std::remove_cvref_t<T>>::get(t) } -> std::convertible_to<int>;
     };
 
 template<typename T>

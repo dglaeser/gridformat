@@ -15,6 +15,7 @@
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/concepts.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/parallel/concepts.hpp>
@@ -27,10 +28,6 @@
 
 namespace GridFormat {
 
-/*!
- * \ingroup VTK
- * \brief TODO: Doc me
- */
 template<bool is_transient,
          Concepts::UnstructuredGrid G,
          Concepts::Communicator Communicator = NullCommunicator>
@@ -42,10 +39,8 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
     template<typename T> using Vector = std::array<T, vtk_space_dim>;
     template<typename T> using Tensor = std::array<T, vtk_space_dim*vtk_space_dim>;
 
-    using DataSetSlice = VTKHDF::DataSetSlice;
-    using DataSetPath = VTKHDF::DataSetPath;
     using IOContext = VTKHDF::IOContext;
-    using HDF5File = VTKHDF::HDF5File<Communicator>;
+    using HDF5File = HDF5::File<Communicator>;
 
     static constexpr WriterOptions writer_opts{
         .use_structured_grid_ordering = false,
@@ -61,37 +56,41 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
  public:
     using Grid = G;
 
-    explicit VTKHDFUnstructuredGridWriterImpl(const Grid& grid)
+    explicit VTKHDFUnstructuredGridWriterImpl(LValueReferenceOf<const Grid> grid)
         requires(!is_transient && std::is_same_v<Communicator, NullCommunicator>)
-    : GridWriter<Grid>(grid, ".hdf", writer_opts)
+    : GridWriter<Grid>(grid.get(), ".hdf", writer_opts)
     {}
 
-    explicit VTKHDFUnstructuredGridWriterImpl(const Grid& grid, const Communicator& comm)
+    explicit VTKHDFUnstructuredGridWriterImpl(LValueReferenceOf<const Grid> grid, const Communicator& comm)
         requires(!is_transient && std::is_copy_constructible_v<Communicator>)
-    : GridWriter<Grid>(grid, ".hdf", writer_opts)
+    : GridWriter<Grid>(grid.get(), ".hdf", writer_opts)
     , _comm{comm}
     {}
 
-    explicit VTKHDFUnstructuredGridWriterImpl(const Grid& grid,
+    explicit VTKHDFUnstructuredGridWriterImpl(LValueReferenceOf<const Grid> grid,
                                               std::string filename_without_extension,
                                               VTK::HDFTransientOptions opts = {})
         requires(is_transient && std::is_same_v<Communicator, NullCommunicator>)
-    : TimeSeriesGridWriter<Grid>(grid, writer_opts)
+    : TimeSeriesGridWriter<Grid>(grid.get(), writer_opts)
     , _comm{}
     , _timeseries_filename{std::move(filename_without_extension) + ".hdf"}
     , _transient_opts{std::move(opts)}
     {}
 
-    explicit VTKHDFUnstructuredGridWriterImpl(const Grid& grid,
+    explicit VTKHDFUnstructuredGridWriterImpl(LValueReferenceOf<const Grid> grid,
                                               const Communicator& comm,
                                               std::string filename_without_extension,
                                               VTK::HDFTransientOptions opts = {})
         requires(is_transient && std::is_copy_constructible_v<Communicator>)
-    : TimeSeriesGridWriter<Grid>(grid, writer_opts)
+    : TimeSeriesGridWriter<Grid>(grid.get(), writer_opts)
     , _comm{comm}
     , _timeseries_filename{std::move(filename_without_extension) + ".hdf"}
     , _transient_opts{std::move(opts)}
     {}
+
+    const Communicator& communicator() const {
+        return _comm;
+    }
 
  private:
     void _write(std::ostream&) const {
@@ -115,28 +114,31 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
         HDF5File file{_timeseries_filename, _comm, HDF5File::append};
         const auto offsets = _write_to(file);
 
-        file.set_attribute("NSteps", this->_step_count+1, "VTKHDF/Steps");
-        file.write(std::array{t}, {"VTKHDF/Steps", "Values"});
-        file.write(std::vector{offsets.point_offset}, {"VTKHDF/Steps", "PointOffsets"});
-        file.write(std::vector{std::array{offsets.cell_offset}}, {"VTKHDF/Steps", "CellOffsets"});
-        file.write(std::vector{std::array{offsets.connectivity_offset}}, {"VTKHDF/Steps", "ConnectivityIdOffsets"});
+        file.write_attribute(this->_step_count+1, "/VTKHDF/Steps/NSteps");
+        file.write(std::array{t}, "VTKHDF/Steps/Values");
+        file.write(std::vector{offsets.point_offset}, "VTKHDF/Steps/PointOffsets");
+        file.write(std::vector{std::array{offsets.cell_offset}}, "/VTKHDF/Steps/CellOffsets");
+        file.write(std::vector{std::array{offsets.connectivity_offset}}, "VTKHDF/Steps/ConnectivityIdOffsets");
 
-        file.write(std::vector{Parallel::size(_comm)}, {"VTKHDF/Steps", "NumberOfParts"});
+        file.write(std::vector{Parallel::size(_comm)}, "/VTKHDF/Steps/NumberOfParts");
         if (this->_step_count > 0 && _transient_opts.static_grid) {
-            file.write(std::vector{_get_last_step_data(file, {"", "PartOffsets"})}, {"VTKHDF/Steps", "PartOffsets"});
+            file.write(
+                std::vector{_get_last_step_data(file, "PartOffsets")},
+                "/VTKHDF/Steps/PartOffsets"
+            );
         } else {
             const std::size_t offset = this->_step_count == 0
                 ? 0
-                : _get_last_step_data(file, {"", "PartOffsets"}) + Parallel::size(_comm);
-            file.write(std::vector{offset}, {"VTKHDF/Steps", "PartOffsets"});
+                : _get_last_step_data(file, "PartOffsets") + Parallel::size(_comm);
+            file.write(std::vector{offset}, "/VTKHDF/Steps/PartOffsets");
         }
 
         return _timeseries_filename;
     }
 
     TimeSeriesOffsets _write_to(HDF5File& file) const {
-        file.set_attribute("Version", std::array<std::size_t, 2>{(is_transient ? 2 : 1), 0}, "VTKHDF");
-        file.set_attribute("Type", "UnstructuredGrid", "VTKHDF");
+        file.write_attribute(std::array<std::size_t, 2>{(is_transient ? 2 : 1), 0}, "/VTKHDF/Version");
+        file.write_attribute("UnstructuredGrid", "/VTKHDF/Type");
 
         TimeSeriesOffsets offsets;
         const auto context = IOContext::from(this->grid(), _comm, root_rank);
@@ -153,27 +155,25 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
     }
 
     void _write_num_cells_and_points(HDF5File& file, const IOContext& context) const {
-        _write_values(file, {"VTKHDF", "NumberOfPoints"}, std::vector{number_of_points(this->grid())}, context);
-        _write_values(file, {"VTKHDF", "NumberOfCells"}, std::vector{number_of_cells(this->grid())}, context);
+        _write_values(file, "/VTKHDF/NumberOfPoints", std::vector{number_of_points(this->grid())}, context);
+        _write_values(file, "/VTKHDF/NumberOfCells", std::vector{number_of_cells(this->grid())}, context);
     }
 
     std::size_t _write_coordinates(HDF5File& file, const IOContext& context) const {
         if constexpr (is_transient) {
             if (this->_step_count > 0 && _transient_opts.static_grid)
-                return _get_last_step_data(file, {"", "PointOffsets"});
+                return _get_last_step_data(file, "PointOffsets");
         }
         const auto coords_field = VTK::make_coordinates_field<CT>(this->grid(), false);
-        std::vector<std::array<CT, vtk_space_dim>> coords(number_of_points(this->grid()));
-        coords_field->export_to(coords);
-        const auto offset = _get_current_offset(file, {"VTKHDF", "Points"});
-        _write_point_field(file, {"VTKHDF", "Points"}, coords, context);
+        const auto offset = _get_current_offset(file, "/VTKHDF/Points");
+        _write_point_field(file, "/VTKHDF/Points", *coords_field, context);
         return offset;
     }
 
     std::size_t _write_connectivity(HDF5File& file, const IOContext& context) const {
         if constexpr (is_transient) {
             if (this->_step_count > 0 && _transient_opts.static_grid)
-                return _get_last_step_data(file, {"", "ConnectivityIdOffsets"});
+                return _get_last_step_data(file, "ConnectivityIdOffsets");
         }
         const auto point_id_map = make_point_id_map(this->grid());
         const auto connectivity_field = VTK::make_connectivity_field(this->grid(), point_id_map);
@@ -181,37 +181,37 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
         const auto my_num_ids = std::vector{static_cast<long>(num_entries)};
         std::vector<long> connectivity(num_entries);
         connectivity_field->export_to(connectivity);
-        const auto offset = _get_current_offset(file, {"VTKHDF", "Connectivity"});
-        _write_values(file, {"VTKHDF", "Connectivity"}, connectivity, context);
-        _write_values(file, {"VTKHDF", "NumberOfConnectivityIds"}, my_num_ids, context);
+        const auto offset = _get_current_offset(file, "/VTKHDF/Connectivity");
+        _write_values(file, "/VTKHDF/Connectivity", connectivity, context);
+        _write_values(file, "/VTKHDF/NumberOfConnectivityIds", my_num_ids, context);
         return offset;
     }
 
     std::size_t _write_types(HDF5File& file, const IOContext& context) const {
         if constexpr (is_transient) {
             if (this->_step_count > 0 && _transient_opts.static_grid)
-                return _get_last_step_data(file, {"", "CellOffsets"});
+                return _get_last_step_data(file, "CellOffsets");
         }
         const auto types_field = VTK::make_cell_types_field(this->grid());
         std::vector<std::uint8_t> types(types_field->layout().number_of_entries());
         types_field->export_to(types);
-        const auto offset = _get_current_offset(file, {"VTKHDF", "Types"});
-        _write_values(file, {"VTKHDF", "Types"}, types, context);
+        const auto offset = _get_current_offset(file, "VTKHDF/Types");
+        _write_values(file, "VTKHDF/Types", types, context);
         return offset;
     }
 
     std::size_t _write_offsets(HDF5File& file, const IOContext& context) const {
         if constexpr (is_transient) {
             if (this->_step_count > 0 && _transient_opts.static_grid)
-                return _get_last_step_data(file, {"", "CellOffsets"});
+                return _get_last_step_data(file, "CellOffsets");
         }
         const auto offsets_field = VTK::make_offsets_field(this->grid());
         const auto num_offset_entries = offsets_field->layout().number_of_entries() + 1;
         std::vector<long> offsets(num_offset_entries);
         offsets_field->export_to(std::ranges::subrange(std::next(offsets.begin()), offsets.end()));
         offsets[0] = long{0};
-        const auto offset = _get_current_offset(file, {"VTKHDF", "Offsets"});
-        _write_values(file, {"VTKHDF", "Offsets"}, offsets, context);
+        const auto offset = _get_current_offset(file, "/VTKHDF/Offsets");
+        _write_values(file, "/VTKHDF/Offsets", offsets, context);
         return offset;
     }
 
@@ -219,17 +219,17 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
         std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
             if constexpr (is_transient) {
                 if (this->_step_count > 0 && _transient_opts.static_meta_data) {
-                    file.write(std::array{0}, {"VTKHDF/Steps/FieldDataOffsets", name});
+                    file.write(std::array{0}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
                     return;
                 } else {
-                    file.write(std::array{this->_step_count}, {"VTKHDF/Steps/FieldDataOffsets", name});
+                    file.write(std::array{this->_step_count}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
                 }
+                // For transient data, prepend a dimension indicating the step count
+                TransformedField sub{this->_get_meta_data_field_ptr(name), FieldTransformation::as_sub_field};
+                file.write(sub, "/VTKHDF/FieldData/" + name);
+            } else {
+                file.write(*this->_get_meta_data_field_ptr(name), "/VTKHDF/FieldData/" + name);
             }
-
-            auto field_ptr = this->_get_meta_data_field_ptr(name);
-            _visit_field_values(*field_ptr, [&] <typename T> (T&& values) {
-                file.write(std::array{std::forward<T>(values)}, {"VTKHDF/FieldData", name});
-            });
         });
     }
 
@@ -238,11 +238,11 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
             if constexpr (is_transient)
                 _write_step_offset(
                     file,
-                    _get_current_offset(file, {"VTKHDF/PointData", name}),
-                    {"VTKHDF/Steps/PointDataOffsets", name}
+                    _get_current_offset(file, "/VTKHDF/PointData/" + name),
+                    "/VTKHDF/Steps/PointDataOffsets/" + name
                 );
-            auto field_ptr = VTK::make_vtk_field(this->_get_point_field_ptr(name));
-            _write_point_field(file, {"VTKHDF/PointData", name}, *field_ptr, context);
+            auto reshaped = _reshape(VTK::make_vtk_field(this->_get_point_field_ptr(name)));
+            _write_point_field(file, "/VTKHDF/PointData/" + name, *reshaped, context);
         });
     }
 
@@ -251,17 +251,28 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
             if constexpr (is_transient)
                 _write_step_offset(
                     file,
-                    _get_current_offset(file, {"VTKHDF/CellData", name}),
-                    {"VTKHDF/Steps/CellDataOffsets", name}
+                    _get_current_offset(file, "VTKHDF/CellData/" + name),
+                    "/VTKHDF/Steps/CellDataOffsets/" + name
                 );
-            auto field_ptr = VTK::make_vtk_field(this->_get_cell_field_ptr(name));
-            _write_cell_field(file, {"VTKHDF/CellData", name}, *field_ptr, context);
+            auto reshaped = _reshape(VTK::make_vtk_field(this->_get_cell_field_ptr(name)));
+            _write_cell_field(file, "/VTKHDF/CellData/" + name, *reshaped, context);
         });
+    }
+
+    FieldPtr _reshape(FieldPtr field_ptr) const {
+        // VTK requires tensors to be written as flat fields
+        const auto layout = field_ptr->layout();
+        if (layout.dimension() > 2)
+            return make_field_ptr(ReshapedField{
+                field_ptr,
+                MDLayout{{layout.extent(0), layout.number_of_entries(1)}}
+            });
+        return field_ptr;
     }
 
     template<Concepts::Scalar T>
     void _write_values(HDF5File& file,
-                       const DataSetPath& path,
+                       const std::string& path,
                        const std::vector<T>& values,
                        const IOContext& context) const {
         if (context.is_parallel) {
@@ -269,10 +280,10 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
             const auto total_num_values = Parallel::sum(_comm, num_values, root_rank);
             const auto my_total_num_values = Parallel::broadcast(_comm, total_num_values, root_rank);
             const auto my_offset = _accumulate_rank_offset(num_values);
-            DataSetSlice slice{
-                .total_size = std::vector{my_total_num_values},
+            HDF5::Slice slice{
                 .offset = std::vector{my_offset},
-                .count = std::vector{num_values}
+                .count = std::vector{num_values},
+                .total_size = std::vector{my_total_num_values}
             };
             file.write(values, path, slice);
         } else {
@@ -281,84 +292,43 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
     }
 
     void _write_point_field(HDF5File& file,
-                            const DataSetPath& path,
+                            const std::string& path,
                             const Field& field,
                             const IOContext& context) const {
-        _visit_field_values(field, [&] <typename T> (const T& values) {
-            _write_field<true>(file, path, values, context);
-        });
+        _write_field(file, path, field, context.is_parallel, context.my_point_offset, context.num_points_total);
     }
 
     void _write_cell_field(HDF5File& file,
-                           const DataSetPath& path,
+                           const std::string& path,
                            const Field& field,
                            const IOContext& context) const {
-        _visit_field_values(field, [&] <typename T> (const T& values) {
-            _write_field<false>(file, path, values, context);
-        });
+        _write_field(file, path, field, context.is_parallel, context.my_cell_offset, context.num_cells_total);
     }
 
-    template<typename FieldValues>
-    void _write_point_field(HDF5File& file,
-                            const DataSetPath& path,
-                            const FieldValues& values,
-                            const IOContext& context) const {
-        _write_field<true>(file, path, values, context);
-    }
-
-    template<typename FieldValues>
-    void _write_cell_field(HDF5File& file,
-                           const DataSetPath& path,
-                           const FieldValues& values,
-                           const IOContext& context) const {
-        _write_field<false>(file, path, values, context);
-    }
-
-    template<bool is_point_field, typename FieldValues>
     void _write_field(HDF5File& file,
-                      const DataSetPath& path,
-                      const FieldValues& values,
-                      const IOContext& context) const {
-        if (context.is_parallel) {
-            const auto layout = get_md_layout(values);
+                      const std::string& path,
+                      const Field& field,
+                      bool is_parallel,
+                      std::size_t main_offset,
+                      std::size_t main_size) const {
+        if (is_parallel) {
+            const auto layout = field.layout();
             std::vector<std::size_t> count(layout.dimension());
             layout.export_to(count);
 
             std::vector<std::size_t> size = count;
             std::vector<std::size_t> offset(layout.dimension(), 0);
-            offset.at(0) = is_point_field ? context.my_point_offset : context.my_cell_offset;
-            size.at(0) = is_point_field ? context.num_points_total : context.num_cells_total;
+            offset.at(0) = main_offset;
+            size.at(0) = main_size;
 
-            file.write(values, path, {
-                .total_size = size,
+            file.write(field, path, HDF5::Slice{
                 .offset = offset,
-                .count = count
+                .count = count,
+                .total_size = size
             });
         } else {
-            file.write(values, path);
+            file.write(field, path);
         }
-    }
-
-    template<typename Visitor>
-    void _visit_field_values(const Field& field, const Visitor& visitor) const {
-        field.precision().visit([&] <typename T> (const Precision<T>&) {
-            const auto layout = field.layout();
-            if (layout.dimension() == 1) {
-                std::vector<T> data(layout.extent(0));
-                field.export_to(data);
-                visitor(data);
-            } else if (layout.dimension() == 2) {
-                std::vector<Vector<T>> data(layout.extent(0));
-                field.export_to(data);
-                visitor(data);
-            } else if (layout.dimension() == 3) {
-                std::vector<Tensor<T>> data(layout.extent(0));
-                field.export_to(data);
-                visitor(data);
-            } else {
-                throw NotImplemented("Support for fields with dimension > 3 or < 1");
-            }
-        });
     }
 
     std::size_t _accumulate_rank_offset(std::size_t my_size) const {
@@ -376,19 +346,19 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
 
     void _write_step_offset(HDF5File& file,
                             const std::size_t offset,
-                            const DataSetPath& path) const {
+                            const std::string& path) const {
         file.write(std::array{offset}, path);
     }
 
-    std::size_t _get_current_offset(HDF5File& file, const DataSetPath& path) const {
+    std::size_t _get_current_offset(HDF5File& file, const std::string& path) const {
         const auto cur_dimensions = file.get_dimensions(path);
         return cur_dimensions ? (*cur_dimensions)[0] : 0;
     }
 
-    std::size_t _get_last_step_data(const HDF5File& file, const DataSetPath& sub_path) const {
+    std::size_t _get_last_step_data(const HDF5File& file, const std::string& sub_path) const {
         if (this->_step_count == 0)
             throw ValueError("Last step data can only be read after at least one write");
-        const DataSetPath path{"VTKHDF/Steps/" + sub_path.group_path, sub_path.dataset_name};
+        const std::string path ="VTKHDF/Steps/" + sub_path;
 
         auto step_dimensions = file.get_dimensions(path).value();
         std::ranges::fill(step_dimensions, std::size_t{1});
@@ -397,11 +367,10 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
         std::ranges::fill(access_offset, std::size_t{0});
         access_offset.at(0) = this->_step_count - 1;
 
-        return file.template read<std::size_t>(path, {
-                .offset = access_offset,
-                .count = step_dimensions
-            }
-        );
+        return file.template read_dataset_to<std::size_t>(path, HDF5::Slice{
+            .offset = access_offset,
+            .count = step_dimensions
+        });
     }
 
     Communicator _comm;
@@ -409,6 +378,10 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
     VTK::HDFTransientOptions _transient_opts;
 };
 
+/*!
+ * \ingroup VTK
+ * \brief Writer for the VTK HDF file format for unstructured grids.
+ */
 template<Concepts::UnstructuredGrid G, Concepts::Communicator C = NullCommunicator>
 class VTKHDFUnstructuredGridWriter : public VTKHDFUnstructuredGridWriterImpl<false, G, C> {
     using ParentType = VTKHDFUnstructuredGridWriterImpl<false, G, C>;
@@ -416,6 +389,10 @@ class VTKHDFUnstructuredGridWriter : public VTKHDFUnstructuredGridWriterImpl<fal
     using ParentType::ParentType;
 };
 
+/*!
+ * \ingroup VTK
+ * \brief Writer for the transient VTK HDF file format for unstructured grids.
+ */
 template<Concepts::UnstructuredGrid G, Concepts::Communicator C = NullCommunicator>
 class VTKHDFUnstructuredTimeSeriesWriter : public VTKHDFUnstructuredGridWriterImpl<true, G, C> {
     using ParentType = VTKHDFUnstructuredGridWriterImpl<true, G, C>;

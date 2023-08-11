@@ -12,6 +12,10 @@
 
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
+
+    int rank = GridFormat::Parallel::rank(MPI_COMM_WORLD);
+    bool verbose = rank == 0;
+
     {
         const auto grid = GridFormat::Test::make_unstructured<2, 2>();
         GridFormat::VTKHDFTimeSeriesWriter writer{
@@ -19,19 +23,10 @@ int main(int argc, char** argv) {
             MPI_COMM_WORLD,
             "pvtk_hdf_time_series_2d_in_2d_unstructured"
         };
-
-        GridFormat::Test::add_meta_data(writer);
-        for (double t : {0.0, 0.25, 0.5, 0.75, 1.0}) {
-            const auto test_data = GridFormat::Test::make_test_data<2, double>(grid, t);
-            GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
-            const auto filename = writer.write(t);
-            if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
-                std::cout << "Wrote '" << GridFormat::as_highlight(filename) << "'" << std::endl;
-        }
+        GridFormat::Test::write_test_time_series<2>(writer, 5, {}, verbose);
     }
 
     {
-        int rank = GridFormat::Parallel::rank(MPI_COMM_WORLD);
         const double xoffset = static_cast<double>(rank%2);
         const double yoffset = static_cast<double>(rank/2);
         GridFormat::Test::StructuredGrid<2> structured_grid{
@@ -39,20 +34,12 @@ int main(int argc, char** argv) {
             {5, 7},
             {xoffset, yoffset}
         };
-        GridFormat::VTKHDFTimeSeriesWriter image_writer{
+        GridFormat::VTKHDFTimeSeriesWriter writer{
             structured_grid,
             MPI_COMM_WORLD,
             "pvtk_hdf_time_series_2d_in_2d_image"
         };
-
-        GridFormat::Test::add_meta_data(image_writer);
-        for (double t : {0.0, 0.25, 0.5, 0.75, 1.0}) {
-            const auto test_data = GridFormat::Test::make_test_data<2, double>(structured_grid, t);
-            GridFormat::Test::add_test_data(image_writer, test_data, GridFormat::Precision<float>{});
-            const auto filename = image_writer.write(t);
-            if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
-                std::cout << "Wrote '" << GridFormat::as_highlight(filename) << "'" << std::endl;
-        }
+        GridFormat::Test::write_test_time_series<2>(writer, 5, {.write_meta_data = false}, verbose);
     }
 
     MPI_Finalize();

@@ -67,11 +67,11 @@ int main() {
         GridFormat::XMLElement element("some_element");
         element.add_child("some_child");
 
-        expect(eq(element.num_children(), std::size_t{1}));
+        expect(eq(element.number_of_children(), std::size_t{1}));
         expect(element.has_child("some_child"));
         expect(element.remove_child("some_child"));
         expect(!element.has_child("some_child"));
-        expect(eq(element.num_children(), std::size_t{0}));
+        expect(eq(element.number_of_children(), std::size_t{0}));
     };
 
     "xml_element_set_and_stream_content"_test = [] () {

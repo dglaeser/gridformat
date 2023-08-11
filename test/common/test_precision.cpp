@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: MIT
 
+#include <iostream>
+
 #include <gridformat/common/precision.hpp>
 #include "../testing.hpp"
 
@@ -9,13 +11,18 @@ void _test(const GridFormat::Precision<T>& prec) {
     GridFormat::DynamicPrecision precision;
     precision = prec;
 
+    std::cout << "Testing precision " << precision << std::endl;
+
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;
     expect(eq(precision.is_integral(), std::is_integral_v<T>));
     expect(eq(precision.is_signed(), std::is_signed_v<T>));
     expect(eq(precision.size_in_bytes(), sizeof(T)));
-    precision.visit([] <typename _T> (const GridFormat::Precision<_T>&) {
+    precision.visit([&] <typename _T> (const GridFormat::Precision<_T>& _p) {
         expect(std::is_same_v<T, _T>);
+        expect(precision == _p);
+        if constexpr (!std::is_same_v<_T, double>)
+            expect(precision != GridFormat::DynamicPrecision{GridFormat::Precision<double>{}});
     });
 }
 

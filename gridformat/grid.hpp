@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup API
- * \brief TODO: Doc me
+ * \brief Includes the grid API.
  */
 #ifndef GRIDFORMAT_GRID_HPP_
 #define GRIDFORMAT_GRID_HPP_

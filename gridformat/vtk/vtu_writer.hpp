@@ -14,6 +14,7 @@
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/field_storage.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/vtk/common.hpp>
@@ -30,9 +31,9 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, VTUWriter<Grid>> {
     using ParentType = VTK::XMLWriterBase<Grid, VTUWriter<Grid>>;
 
  public:
-    explicit VTUWriter(const Grid& grid,
+    explicit VTUWriter(LValueReferenceOf<const Grid> grid,
                        VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".vtu", false, std::move(xml_opts))
+    : ParentType(grid.get(), ".vtu", false, std::move(xml_opts))
     {}
 
  private:
@@ -49,11 +50,11 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, VTUWriter<Grid>> {
         FieldStorage vtk_cell_fields;
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             vtk_point_fields.set(name, VTK::make_vtk_field(this->_get_point_field_ptr(name)));
-            this->_set_data_array(context, "Piece.PointData", name, vtk_point_fields.get(name));
+            this->_set_data_array(context, "Piece/PointData", name, vtk_point_fields.get(name));
         });
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
             vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_cell_field_ptr(name)));
-            this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
+            this->_set_data_array(context, "Piece/CellData", name, vtk_cell_fields.get(name));
         });
 
         const auto point_id_map = make_point_id_map(this->grid());
@@ -67,13 +68,16 @@ class VTUWriter : public VTK::XMLWriterBase<Grid, VTUWriter<Grid>> {
             return VTK::make_offsets_field<T>(this->grid());
         }, this->_xml_settings.header_precision);
         const FieldPtr types_field = VTK::make_cell_types_field(this->grid());
-        this->_set_data_array(context, "Piece.Points", "Coordinates", *coords_field);
-        this->_set_data_array(context, "Piece.Cells", "connectivity", *connectivity_field);
-        this->_set_data_array(context, "Piece.Cells", "offsets", *offsets_field);
-        this->_set_data_array(context, "Piece.Cells", "types", *types_field);
+        this->_set_data_array(context, "Piece/Points", "Coordinates", *coords_field);
+        this->_set_data_array(context, "Piece/Cells", "connectivity", *connectivity_field);
+        this->_set_data_array(context, "Piece/Cells", "offsets", *offsets_field);
+        this->_set_data_array(context, "Piece/Cells", "types", *types_field);
         this->_write_xml(std::move(context), s);
     }
 };
+
+template<typename G>
+VTUWriter(G&&, VTK::XMLOptions = {}) -> VTUWriter<std::remove_cvref_t<G>>;
 
 }  // namespace GridFormat
 

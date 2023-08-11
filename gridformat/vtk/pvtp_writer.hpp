@@ -11,8 +11,10 @@
 #include <ostream>
 #include <string>
 #include <fstream>
+#include <filesystem>
 
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/parallel/helpers.hpp>
 
@@ -33,12 +35,16 @@ class PVTPWriter : public VTK::XMLWriterBase<Grid, PVTPWriter<Grid, Communicator
     using ParentType = VTK::XMLWriterBase<Grid, PVTPWriter<Grid, Communicator>>;
 
  public:
-    explicit PVTPWriter(const Grid& grid,
+    explicit PVTPWriter(LValueReferenceOf<const Grid> grid,
                         Communicator comm,
                         VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".pvtp", false, xml_opts)
+    : ParentType(grid.get(), ".pvtp", false, xml_opts)
     , _comm(comm)
     {}
+
+    const Communicator& communicator() const {
+        return _comm;
+    }
 
  private:
     Communicator _comm;
@@ -97,16 +103,18 @@ class PVTPWriter : public VTK::XMLWriterBase<Grid, PVTPWriter<Grid, Communicator
         }, this->_xml_settings.coordinate_precision);
 
         std::ranges::for_each(Parallel::ranks(_comm), [&] (int rank) {
-            grid.add_child("Piece").set_attribute(
-                "Source",
+            grid.add_child("Piece").set_attribute("Source", std::filesystem::path{
                 PVTK::piece_basefilename(filename_with_ext, rank) + ".vtp"
-            );
+            }.filename());
         });
 
         this->_set_default_active_fields(pvtk_xml.get_child("PPolyData"));
         write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
     }
 };
+
+template<typename G, Concepts::Communicator C>
+PVTPWriter(G&&, const C&, VTK::XMLOptions = {}) -> PVTPWriter<std::remove_cvref_t<G>, C>;
 
 }  // namespace GridFormat
 

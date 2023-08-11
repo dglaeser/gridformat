@@ -4,20 +4,25 @@
 #include <mpi.h>
 #include <numbers>
 
+#include <gridformat/grid/type_traits.hpp>
 #include <gridformat/vtk/hdf_writer.hpp>
 
 #include "../grid/structured_grid.hpp"
 #include "../make_test_data.hpp"
 
 template<typename Grid, typename Communicator>
-void _test(const Grid& grid, const Communicator& comm, const std::string& base_filename) {
+void _test(const Grid& grid, const Communicator& comm, const std::string& filename) {
+    const bool verbose = GridFormat::Parallel::rank(comm) == 0;
     GridFormat::VTKHDFWriter writer{grid, comm};
-    auto test_data = GridFormat::Test::make_test_data<GridFormat::dimension<Grid>, double>(grid);
-    GridFormat::Test::add_test_point_data(writer, test_data, GridFormat::Precision<float>{});
-    GridFormat::Test::add_meta_data(writer);
-    const auto filename = writer.write(base_filename);
-    if (GridFormat::Parallel::rank(comm) == 0)
-        std::cout << "Wrote '" << filename << "'" << std::endl;
+    GridFormat::Test::write_test_file<GridFormat::dimension<Grid>>(
+        writer,
+        filename,
+        {
+            .write_cell_data = false,
+            .write_meta_data = false
+        },
+        verbose
+    );
 }
 
 int main(int argc, char** argv) {

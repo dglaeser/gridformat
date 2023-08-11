@@ -49,7 +49,8 @@ int main(int argc, char** argv) {
                 std::vector{0.2, 0.4, 2.0}
             }
         };
-        GridFormat::VTRWriter writer{grid.leafGridView()};
+        const auto& grid_view = grid.leafGridView();
+        GridFormat::VTRWriter writer{grid_view};
         write<Grid>(writer);
     }
     {
@@ -62,7 +63,8 @@ int main(int argc, char** argv) {
                 std::vector{0.05, 1.0, 2.0}
             }
         };
-        GridFormat::VTRWriter writer{grid.leafGridView()};
+        const auto& grid_view = grid.leafGridView();
+        GridFormat::VTRWriter writer{grid_view};
         write<Grid>(writer);
     }
 

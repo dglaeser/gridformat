@@ -24,6 +24,7 @@
 #include <gridformat/common/logging.hpp>
 
 #include <gridformat/compression/common.hpp>
+#include <gridformat/compression/decompress.hpp>
 
 namespace GridFormat::Compression {
 
@@ -39,6 +40,20 @@ struct ZLIBOptions {
 //! Compressor using the zlib library
 class ZLIB {
     using ZLIBByte = unsigned char;
+    static_assert(sizeof(typename Serialization::Byte) == sizeof(ZLIBByte));
+
+    struct BlockDecompressor {
+        using ByteType = ZLIBByte;
+
+        void operator()(std::span<const ByteType> in, std::span<ByteType> out) const {
+            uLongf out_len = out.size();
+            uLong in_len = in.size();
+            if (uncompress(out.data(), &out_len, in.data(), in_len) != Z_OK)
+                throw IOError("(ZLIBCompressor) Error upon decompression");
+            if (out_len != out.size())
+                throw IOError("(ZLIBCompressor) Unexpected decompressed size");
+        }
+    };
 
  public:
     using Options = ZLIBOptions;
@@ -49,7 +64,6 @@ class ZLIB {
 
     template<std::integral HeaderType = std::size_t>
     CompressedBlocks<HeaderType> compress(Serialization& in) const {
-        static_assert(sizeof(typename Serialization::Byte) == sizeof(ZLIBByte));
         if (std::numeric_limits<HeaderType>::max() < in.size())
             throw TypeError("Chosen HeaderType is too small for given number of bytes");
         if (std::numeric_limits<HeaderType>::max() < _opts.block_size)
@@ -59,6 +73,11 @@ class ZLIB {
         in = std::move(out);
         in.resize(blocks.compressed_size());
         return blocks;
+    }
+
+    template<std::integral HeaderType>
+    static void decompress(Serialization& in, const CompressedBlocks<HeaderType>& blocks) {
+        Compression::decompress(in, blocks, BlockDecompressor{});
     }
 
     static ZLIB with(Options opts) {

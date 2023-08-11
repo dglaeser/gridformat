@@ -16,26 +16,49 @@
 #include <concepts>
 #include <type_traits>
 
+#include <gridformat/parallel/communication.hpp>
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/field_storage.hpp>
 #include <gridformat/common/range_field.hpp>
 #include <gridformat/common/scalar_field.hpp>
+#include <gridformat/common/logging.hpp>
 
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/grid/_detail.hpp>
 #include <gridformat/grid/entity_fields.hpp>
 
 namespace GridFormat {
+namespace Traits {
+
+//! Can be specialized by writers in case the file format does not contain connectivity information
+template<typename Writer> struct WritesConnectivity : public std::true_type {};
+
+//! Can be specialized by parallel writers to expose their underlying communicator
+template<typename Writer>
+struct CommunicatorAccess {
+    static constexpr auto get(const Writer&) { return NullCommunicator{}; }
+};
+
+//! Default specialization for writers that have a communicator() function
+template<typename Writer>
+    requires( requires(const Writer& w) { { w.communicator() }; } )
+struct CommunicatorAccess<Writer> {
+    static constexpr Concepts::Communicator decltype(auto) get(const Writer& w) {
+        return w.communicator();
+    }
+};
+
+}  // namespace Traits
 
 //! \addtogroup Grid
 //! \{
 
 //! Options that writer implementations can pass to the base class.
 struct WriterOptions {
-    bool use_structured_grid_ordering;
-    bool append_null_terminator_to_strings;
+    bool use_structured_grid_ordering;  //!< Use row-major structured grid ordering
+    bool append_null_terminator_to_strings;  //!< If true, '\0' is appended to string meta data
 
     bool operator==(const WriterOptions& other) const {
         return use_structured_grid_ordering == other.use_structured_grid_ordering
@@ -44,9 +67,10 @@ struct WriterOptions {
 };
 
 //! Base class for all writer implementations.
-template<typename Grid>
+template<typename G>
 class GridWriterBase {
  public:
+    using Grid = G;
     using Field = typename FieldStorage::Field;
     using FieldPtr = typename FieldStorage::FieldPtr;
 
@@ -131,6 +155,10 @@ class GridWriterBase {
         _cell_fields.clear();
     }
 
+    void set_ignore_warnings(bool value) {
+        _ignore_warnings = value;
+    }
+
     const Grid& grid() const {
         return _grid;
     }
@@ -202,6 +230,15 @@ class GridWriterBase {
     }
 
  protected:
+    void _log_warning(std::string_view warning) const {
+        if (!_ignore_warnings)
+            log_warning(
+                std::string{warning}
+                + (warning.ends_with("\n") ? "" : "\n")
+                + "To deactivate this warning, call set_ignore_warnings(true);"
+            );
+    }
+
     template<typename EntityFunction, Concepts::Scalar T>
     auto _make_point_field(EntityFunction&& f, const Precision<T>& prec) const {
         if (_opts.has_value())
@@ -258,6 +295,7 @@ class GridWriterBase {
     FieldStorage _cell_fields;
     FieldStorage _meta_data;
     std::optional<WriterOptions> _opts;
+    bool _ignore_warnings = false;
 };
 
 //! Abstract base class for grid file writers.

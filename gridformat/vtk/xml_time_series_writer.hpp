@@ -18,7 +18,8 @@ namespace GridFormat {
 
 /*!
  * \ingroup VTK
- * \brief TODO: Doc me
+ * \brief Writer for time series of a VTK-XML file format.
+ *        Populates the "TimeValue" metadata field supported by VTK.
  */
 template<typename VTKWriter>
 class VTKXMLTimeSeriesWriter : public TimeSeriesGridWriter<typename VTKWriter::Grid> {

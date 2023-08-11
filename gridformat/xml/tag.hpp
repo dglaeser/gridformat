@@ -52,7 +52,7 @@ class XMLTag {
         return _name;
     }
 
-    std::size_t num_attributes() const noexcept {
+    std::size_t number_of_attributes() const noexcept {
         return _attributes.size();
     }
 
@@ -86,9 +86,14 @@ class XMLTag {
 
     template<typename T = std::string>
     T get_attribute(std::string_view attr_name) const {
-        if (const auto it = _find(attr_name); it != _attributes.end())
-            return from_string<T>(it->second);
+        if (auto result = _get_attribute<T>(attr_name); result)
+            return *std::move(result);
         throw InvalidState("No attribute with name '" + std::string(attr_name) + "'");
+    }
+
+    template<typename T = std::string>
+    T get_attribute_or(T fallback, std::string_view attr_name) const {
+       return _get_attribute<T>(attr_name).value_or(fallback);
     }
 
      friend decltype(auto) attributes(const XMLTag& tag) {
@@ -96,6 +101,13 @@ class XMLTag {
     }
 
  private:
+    template<typename T>
+    std::optional<T> _get_attribute(std::string_view attr_name) const {
+        if (const auto it = _find(attr_name); it != _attributes.end())
+            return from_string<T>(it->second);
+        return {};
+    }
+
     typename std::vector<Attribute>::const_iterator _find(std::string_view n) const {
         return std::ranges::find_if(_attributes, Detail::_attr_find_lambda<Attribute>(n));
     }

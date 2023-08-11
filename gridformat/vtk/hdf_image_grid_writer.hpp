@@ -21,6 +21,8 @@
 #include <gridformat/common/matrix.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/type_traits.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
+#include <gridformat/common/field_transformations.hpp>
 
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/parallel/concepts.hpp>
@@ -34,65 +36,6 @@
 
 namespace GridFormat {
 
-#ifndef DOXYGEN
-namespace VTKHDFImageDetail {
-
-    template<std::size_t dim>
-    struct FieldDataStorage;
-
-    template<>
-    struct FieldDataStorage<1> {
-        template<typename T>
-        using type = std::vector<T>;
-
-        template<typename T, Concepts::StaticallySizedMDRange<1> Extents>
-            requires(static_size<Extents> == 1)
-        static auto resize(type<T>& buffer, const Extents& extents) {
-            buffer.resize(Ranges::at(0, extents));
-        }
-    };
-
-    template<>
-    struct FieldDataStorage<2> {
-        template<typename T>
-        using type = std::vector<std::vector<T>>;
-
-        template<typename T, Concepts::StaticallySizedMDRange<1> Extents>
-            requires(static_size<Extents> == 2)
-        static auto resize(type<T>& buffer, const Extents& extents) {
-            buffer.resize(Ranges::at(1, extents));
-            std::ranges::for_each(buffer, [&] (std::vector<T>& sub_range) {
-                sub_range.resize(Ranges::at(0, extents));
-            });
-        }
-    };
-
-    template<>
-    struct FieldDataStorage<3> {
-        template<typename T>
-        using type = std::vector<std::vector<std::vector<T>>>;
-
-        template<typename T, Concepts::StaticallySizedMDRange<1> Extents>
-            requires(static_size<Extents> == 3)
-        static auto resize(type<T>& buffer, const Extents& extents) {
-            buffer.resize(Ranges::at(2, extents));
-            std::ranges::for_each(buffer, [&] (std::ranges::range auto& sub_range) {
-                sub_range.resize(Ranges::at(1, extents));
-                std::ranges::for_each(sub_range, [&] (std::vector<T>& last_range) {
-                    last_range.resize(Ranges::at(0, extents));
-                });
-            });
-        }
-    };
-
-}  // namespace VTKHDFImageDetail
-#endif  // DOXYGEN
-
-
-/*!
- * \ingroup VTK
- * \brief TODO: Doc me
- */
 template<bool is_transient, Concepts::ImageGrid Grid, Concepts::Communicator Communicator = NullCommunicator>
 class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Grid>::type {
     static constexpr int root_rank = 0;
@@ -101,13 +44,8 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
     static constexpr std::array<std::size_t, 2> version{1, 0};
 
     using CT = CoordinateType<Grid>;
-    template<typename T> using Vector = std::array<T, vtk_space_dim>;
-    template<typename T> using Tensor = std::array<T, vtk_space_dim*vtk_space_dim>;
-
-    using DataSetSlice = VTKHDF::DataSetSlice;
-    using DataSetPath = VTKHDF::DataSetPath;
     using IOContext = VTKHDF::IOContext;
-    using HDF5File = VTKHDF::HDF5File<Communicator>;
+    using HDF5File = HDF5::File<Communicator>;
 
     struct ImageSpecs {
         const std::array<CT, dim> origin;
@@ -128,37 +66,46 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
     };
 
  public:
-    explicit VTKHDFImageGridWriterImpl(const Grid& grid)
+    explicit VTKHDFImageGridWriterImpl(LValueReferenceOf<const Grid> grid)
         requires(std::is_same_v<Communicator, NullCommunicator>)
-    : GridWriter<Grid>(grid, ".hdf", writer_opts)
+    : GridWriter<Grid>(grid.get(), ".hdf", writer_opts)
     {}
 
-    explicit VTKHDFImageGridWriterImpl(const Grid& grid, const Communicator& comm)
+    explicit VTKHDFImageGridWriterImpl(LValueReferenceOf<const Grid> grid, const Communicator& comm)
         requires(std::is_copy_constructible_v<Communicator>)
-    : GridWriter<Grid>(grid, ".hdf", writer_opts)
+    : GridWriter<Grid>(grid.get(), ".hdf", writer_opts)
     , _comm{comm}
     {}
 
-    explicit VTKHDFImageGridWriterImpl(const Grid& grid,
+    explicit VTKHDFImageGridWriterImpl(LValueReferenceOf<const Grid> grid,
                                        std::string filename_without_extension,
-                                       VTK::HDFTransientOptions opts = {})
+                                       VTK::HDFTransientOptions opts = {
+                                            .static_grid = true,
+                                            .static_meta_data = false
+                                       })
         requires(is_transient && std::is_same_v<Communicator, NullCommunicator>)
-    : TimeSeriesGridWriter<Grid>(grid, writer_opts)
-    , _comm{}
-    , _timeseries_filename{std::move(filename_without_extension) + ".hdf"}
-    , _transient_opts{std::move(opts)}
+    : VTKHDFImageGridWriterImpl(grid.get(), NullCommunicator{}, filename_without_extension, std::move(opts))
     {}
 
-    explicit VTKHDFImageGridWriterImpl(const Grid& grid,
+    explicit VTKHDFImageGridWriterImpl(LValueReferenceOf<const Grid> grid,
                                        const Communicator& comm,
                                        std::string filename_without_extension,
-                                       VTK::HDFTransientOptions opts = {})
+                                       VTK::HDFTransientOptions opts = {
+                                            .static_grid = true,
+                                            .static_meta_data = false
+                                       })
         requires(is_transient && std::is_copy_constructible_v<Communicator>)
-    : TimeSeriesGridWriter<Grid>(grid, writer_opts)
+    : TimeSeriesGridWriter<Grid>(grid.get(), writer_opts)
     , _comm{comm}
     , _timeseries_filename{std::move(filename_without_extension) + ".hdf"}
-    , _transient_opts{std::move(opts)}
-    {}
+    , _transient_opts{std::move(opts)} {
+        if (!_transient_opts.static_grid)
+            throw ValueError("Transient VTK-HDF ImageData files do not support evolving grids");
+    }
+
+    const Communicator& communicator() const {
+        return _comm;
+    }
 
  private:
     void _write(std::ostream&) const {
@@ -174,8 +121,8 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
 
         HDF5File file{_timeseries_filename, _comm, HDF5File::Mode::append};
         _write_to(file);
-        file.set_attribute("NSteps", this->_step_count+1, "VTKHDF/Steps");
-        file.write(std::array{t}, {"VTKHDF/Steps", "Values"});
+        file.write_attribute(this->_step_count+1, "/VTKHDF/Steps/NSteps");
+        file.write(std::array{t}, "/VTKHDF/Steps/Values");
         return _timeseries_filename;
     }
 
@@ -205,40 +152,95 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
                 const auto my_end = my_specs.extents[dir] + my_offset[dir];
                 return my_end < overall_end ? my_specs.extents[dir] : my_specs.extents[dir] + 1;
         }));
-        const auto point_slice_base = _make_slice(
-            Ranges::incremented(overall_specs.extents, 1),
+        const auto point_slice_base = _make_slice<true>(
+            overall_specs.extents,
             my_point_extents,
             my_offset
         );
 
-        file.set_attribute("Version", std::array<std::size_t, 2>{(is_transient ? 2 : 1), 0}, "VTKHDF");
-        file.set_attribute("Origin", Ranges::to_array<vtk_space_dim>(overall_specs.origin), "VTKHDF");
-        file.set_attribute("Spacing", Ranges::to_array<vtk_space_dim>(overall_specs.spacing), "VTKHDF");
-        file.set_attribute("WholeExtent", VTK::CommonDetail::get_extents(overall_specs.extents), "VTKHDF");
-        file.set_attribute("Direction", _get_direction(), "VTKHDF");
-        file.set_attribute("Type", "ImageData", "VTKHDF");
+        file.write_attribute(std::array<std::size_t, 2>{(is_transient ? 2 : 1), 0}, "/VTKHDF/Version");
+        file.write_attribute(Ranges::to_array<vtk_space_dim>(overall_specs.origin), "/VTKHDF/Origin");
+        file.write_attribute(Ranges::to_array<vtk_space_dim>(overall_specs.spacing), "/VTKHDF/Spacing");
+        file.write_attribute(VTK::CommonDetail::get_extents(overall_specs.extents), "/VTKHDF/WholeExtent");
+        file.write_attribute(_get_direction(), "/VTKHDF/Direction");
+        file.write_attribute("ImageData", "/VTKHDF/Type");
 
-        // TODO: There seem to be issues with the vtkImageDataReader when parsing field data?
-        // std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
-        //     auto field_ptr = this->_get_meta_data_field_ptr(name);
-        //     _visit_meta_data_field_values(*field_ptr, [&] (auto&& values) {
-        //         file.write(std::move(values), {"VTKHDF/FieldData", name});
-        //     });
-        // });
+        std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
+            if constexpr (is_transient) {
+                if (this->_step_count > 0 && _transient_opts.static_meta_data) {
+                    file.write(std::array{0}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
+                    return;
+                } else {
+                    file.write(std::array{this->_step_count}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
+                }
+                auto field_ptr = this->_get_meta_data_field_ptr(name);
+                auto sub = make_field_ptr(TransformedField{field_ptr, FieldTransformation::as_sub_field});
+                _write_field(file, sub, "/VTKHDF/FieldData/" + name, _slice_from(sub));
+            } else {
+                auto field_ptr = this->_get_meta_data_field_ptr(name);
+                _write_field(file, field_ptr, "/VTKHDF/FieldData/" + name, _slice_from(field_ptr));
+            }
+
+        });
+
+        std::vector<std::size_t> non_zero_extents;
+        std::ranges::copy(
+            my_specs.extents | std::views::filter([] (auto e) { return e != 0; }),
+            std::back_inserter(non_zero_extents)
+        );
 
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
-            auto field_ptr = VTK::make_vtk_field(this->_get_point_field_ptr(name));
-            _visit_field_values<true>(*field_ptr, my_point_extents, [&] (auto&& values) {
-                _write_piece_values(file, std::move(values), {"VTKHDF/PointData", name}, point_slice_base);
-            });
+            auto field_ptr = _reshape(
+                VTK::make_vtk_field(this->_get_point_field_ptr(name)),
+                Ranges::incremented(non_zero_extents, 1) | std::views::reverse,
+                point_slice_base.count
+            );
+            _write_field(file, field_ptr, "/VTKHDF/PointData/" + name, point_slice_base);
         });
 
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
-            auto field_ptr = VTK::make_vtk_field(this->_get_cell_field_ptr(name));
-            _visit_field_values<false>(*field_ptr, my_specs.extents, [&] (auto&& values) {
-                _write_piece_values(file, std::move(values), {"VTKHDF/CellData", name}, cell_slice_base);
-            });
+            auto field_ptr = _reshape(
+                VTK::make_vtk_field(this->_get_cell_field_ptr(name)),
+                non_zero_extents | std::views::reverse,
+                cell_slice_base.count
+            );
+            _write_field(file, field_ptr, "/VTKHDF/CellData/" + name, cell_slice_base);
         });
+    }
+
+    template<std::ranges::range E, std::ranges::range S>
+    FieldPtr _reshape(FieldPtr f, const E& row_major_extents, S&& _slice_end) const {
+        auto flat = _flatten(f);
+        auto structured = _make_structured(flat, row_major_extents);
+        const auto structured_layout = structured->layout();
+
+        std::vector<std::size_t> slice_end;
+        std::ranges::copy(_slice_end, std::back_inserter(slice_end));
+        for (std::size_t i = slice_end.size(); i < structured_layout.dimension(); ++i)
+            slice_end.push_back(structured_layout.extent(i));
+        return transform(structured, FieldTransformation::take_slice({
+            .from = std::vector<std::size_t>(slice_end.size(), 0),
+            .to = slice_end
+        }));
+    }
+
+    FieldPtr _flatten(FieldPtr f) const {
+        const auto layout = f->layout();
+        if (layout.dimension() <= 2)
+            return f;
+        // vtk requires tensors to be made flat
+        auto nl = MDLayout{{layout.extent(0), layout.number_of_entries(1)}};
+        return transform(f, FieldTransformation::reshape_to(std::move(nl)));
+    }
+
+    template<std::ranges::range E>
+    FieldPtr _make_structured(FieldPtr f, const E& row_major_extents) const {
+        const auto layout = f->layout();
+        std::vector<std::size_t> target_layout(Ranges::size(row_major_extents));
+        std::ranges::copy(row_major_extents, target_layout.begin());
+        if (layout.dimension() > 1)
+            target_layout.push_back(layout.extent(1));
+        return transform(f, FieldTransformation::reshape_to(MDLayout{std::move(target_layout)}));
     }
 
     auto _get_image_specs(const ImageSpecs& piece_specs) const {
@@ -267,18 +269,37 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         }
     }
 
-    template<typename TotalExtents, typename Extents, typename Offsets>
-    DataSetSlice _make_slice(const TotalExtents& total_extents,
-                             const Extents& extents,
-                             const Offsets& offsets) const {
-        DataSetSlice result;
-        std::ranges::copy(total_extents, std::back_inserter(result.total_size));
-        std::ranges::copy(extents, std::back_inserter(result.count));
-        std::ranges::copy(offsets, std::back_inserter(result.offset));
-        // slices are accessed with the last coordinate first (i.e. values[z][y][x])
-        std::ranges::reverse(result.total_size);
+    template<bool increment = false, typename TotalExtents, typename Extents, typename Offsets>
+    HDF5::Slice _make_slice(const TotalExtents& total_extents,
+                            const Extents& extents,
+                            const Offsets& offsets) const {
+        HDF5::Slice result;
+        result.total_size.emplace();
+
+        // use only those dimensions that are not zero
+        std::vector<bool> is_nonzero;
+        std::ranges::copy(
+            total_extents | std::views::transform([] (const auto& v) { return v != 0; }),
+            std::back_inserter(is_nonzero)
+        );
+        std::ranges::for_each(total_extents, [&, i=0] (const auto& value) mutable {
+            if (is_nonzero[i++])
+                result.total_size.value().push_back(value + (increment ? 1 : 0));
+        });
+        std::ranges::for_each(extents, [&, i=0] (const auto& value) mutable {
+            if (is_nonzero[i++])
+                result.count.push_back(value);
+        });
+        std::ranges::for_each(offsets, [&, i=0] (const auto& value) mutable {
+            if (is_nonzero[i++])
+                result.offset.push_back(value);
+        });
+
+        // slices in VTK are accessed with the last coordinate first (i.e. values[z][y][x])
+        std::ranges::reverse(result.total_size.value());
         std::ranges::reverse(result.count);
         std::ranges::reverse(result.offset);
+
         return result;
     }
 
@@ -296,99 +317,59 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         return coefficients;
     }
 
-    template<bool is_point_field, Concepts::StaticallySizedMDRange<1> SliceExtents, typename Visitor>
-        requires(static_size<SliceExtents> == dim)
-    void _visit_field_values(const Field& field,
-                             const SliceExtents& slice_extents,
-                             const Visitor& visitor) const {
-        field.precision().visit([&] <typename T> (const Precision<T>&) {
-            using Helper = VTKHDFImageDetail::FieldDataStorage<dim>;
+    void _write_field(HDF5File& file,
+                      FieldPtr field,
+                      const std::string& path,
+                      const HDF5::Slice& slice) const {
+        const std::size_t dimension_offset = is_transient ? 1 : 0;
+        std::vector<std::size_t> size(slice.total_size.value().size() + dimension_offset);
+        std::vector<std::size_t> count(slice.count.size() + dimension_offset);
+        std::vector<std::size_t> offset(slice.offset.size() + dimension_offset);
+        std::ranges::copy(slice.total_size.value(), std::ranges::begin(size | std::views::drop(dimension_offset)));
+        std::ranges::copy(slice.count, std::ranges::begin(count | std::views::drop(dimension_offset)));
+        std::ranges::copy(slice.offset, std::ranges::begin(offset | std::views::drop(dimension_offset)));
 
-            const auto layout = field.layout();
-            const auto size = is_point_field ? Ranges::incremented(extents(this->grid()), 1)
-                                             : extents(this->grid());
-
-            if (layout.dimension() == 1) {
-                typename Helper::template type<T> data;
-                Helper::resize(data, size);
-                field.export_to(data | Views::flat);
-                Helper::resize(data, slice_extents);
-                visitor(std::move(data));
-            } else if (layout.dimension() == 2) {
-                typename Helper::template type<Vector<T>> data;
-                Helper::resize(data, size);
-                field.export_to(data | Views::flat);
-                Helper::resize(data, slice_extents);
-                visitor(std::move(data));
-            } else if (layout.dimension() == 3) {
-                typename Helper::template type<Tensor<T>> data;
-                Helper::resize(data, size);
-                field.export_to(data | Views::flat);
-                Helper::resize(data, slice_extents);
-                visitor(std::move(data));
-            } else {
-                throw NotImplemented("Support for fields with dimension > 3 or < 1");
-            }
-        });
-    }
-
-    template<typename Visitor>
-    void _visit_meta_data_field_values(const Field& field, const Visitor& visitor) const {
-        field.precision().visit([&] <typename T> (const Precision<T>&) {
-            const auto layout = field.layout();
-            if (layout.dimension() == 1) {
-                std::vector<T> data(field.layout().extent(0));
-                field.export_to(data);
-                visitor(std::move(data));
-            } else if (layout.dimension() == 2) {
-                std::vector<Vector<T>> data(field.layout().extent(0));
-                field.export_to(data);
-                visitor(std::move(data));
-            } else if (layout.dimension() == 3) {
-                std::vector<Tensor<T>> data(field.layout().extent(0));
-                field.export_to(data);
-                visitor(std::move(data));
-            } else {
-                throw NotImplemented("Support for fields with dimension > 3 or < 1");
-            }
-        });
-    }
-
-    template<std::ranges::range Values>
-    void _write_piece_values(HDF5File& file,
-                             Values&& values,
-                             const DataSetPath& path,
-                             const DataSetSlice& slice) const {
-        std::vector<std::size_t> size{slice.total_size.begin(), slice.total_size.end()};
-        std::vector<std::size_t> count{slice.count.begin(), slice.count.end()};
-        std::vector<std::size_t> offset{slice.offset.begin(), slice.offset.end()};
-
-        if constexpr (mdrange_dimension<Values> > 1) {
-            using FieldType = MDRangeValueTypeAt<dim-1, Values>;
-            const auto layout = get_md_layout<FieldType>();
-            for (std::size_t i = 0; i < layout.dimension(); ++i) {
-                size.push_back(layout.extent(i));
-                count.push_back(layout.number_of_entries());
-                offset.push_back(0);
-            }
-        }
+        const auto layout = field->layout();
+        const bool is_vector_field = layout.dimension() > size.size() - dimension_offset;
+        if (is_vector_field)
+            std::ranges::for_each(
+                std::views::iota(size.size() - dimension_offset, layout.dimension()),
+                [&] (const std::size_t codim) {
+                    size.push_back(layout.extent(codim));
+                    count.push_back(layout.extent(codim));
+                    offset.push_back(0);
+                }
+            );
 
         if constexpr (is_transient) {
-            size.insert(size.begin(), 1);
-            offset.insert(offset.begin(), 0);
-            count.insert(count.begin(), 1);
-            file.write(std::array{std::move(values)}, path, {
-                .total_size = size,
-                .offset = offset,
-                .count = count
+            size.at(0) = 1;
+            count.at(0) = 1;
+            offset.at(0) = 0;
+            FieldPtr sub_field = transform(field, FieldTransformation::as_sub_field);
+            file.write(*sub_field, path, HDF5::Slice{
+                .offset = std::move(offset),
+                .count = std::move(count),
+                .total_size = std::move(size)
             });
         } else {
-            file.write(values, path, {
-                .total_size = size,
-                .offset = offset,
-                .count = count
+            file.write(*field, path, HDF5::Slice{
+                .offset = std::move(offset),
+                .count = std::move(count),
+                .total_size = std::move(size)
             });
         }
+    }
+
+    HDF5::Slice _slice_from(FieldPtr field) const {
+        const auto layout = field->layout();
+        std::vector<std::size_t> dims(layout.dimension());
+        std::vector<std::size_t> offset(layout.dimension(), 0);
+        layout.export_to(dims);
+        return {
+            .offset = offset,
+            .count = dims,
+            .total_size = dims
+        };
     }
 
     Communicator _comm;
@@ -396,6 +377,10 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
     VTK::HDFTransientOptions _transient_opts;
 };
 
+/*!
+ * \ingroup VTK
+ * \brief Writer for the VTK HDF file format for image grids.
+ */
 template<Concepts::ImageGrid G, Concepts::Communicator C = NullCommunicator>
 class VTKHDFImageGridWriter : public VTKHDFImageGridWriterImpl<false, G, C> {
     using ParentType = VTKHDFImageGridWriterImpl<false, G, C>;
@@ -403,6 +388,10 @@ class VTKHDFImageGridWriter : public VTKHDFImageGridWriterImpl<false, G, C> {
     using ParentType::ParentType;
 };
 
+/*!
+ * \ingroup VTK
+ * \brief Writer for the transient VTK HDF file format for image grids.
+ */
 template<Concepts::ImageGrid G, Concepts::Communicator C = NullCommunicator>
 class VTKHDFImageGridTimeSeriesWriter : public VTKHDFImageGridWriterImpl<true, G, C> {
     using ParentType = VTKHDFImageGridWriterImpl<true, G, C>;
@@ -421,6 +410,15 @@ template<Concepts::ImageGrid G, Concepts::Communicator C>
 VTKHDFImageGridTimeSeriesWriter(const G&, const C&, std::string, VTK::HDFTransientOptions = {}) -> VTKHDFImageGridTimeSeriesWriter<G, C>;
 
 
+namespace Traits {
+
+template<typename... Args>
+struct WritesConnectivity<VTKHDFImageGridWriter<Args...>> : public std::false_type {};
+
+template<typename... Args>
+struct WritesConnectivity<VTKHDFImageGridTimeSeriesWriter<Args...>> : public std::false_type {};
+
+}  // namespace Traits
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE

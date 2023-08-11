@@ -18,6 +18,7 @@
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/field_storage.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/grid/type_traits.hpp>
@@ -45,8 +46,9 @@ class VTRWriter : public VTK::XMLWriterBase<Grid, VTRWriter<Grid>> {
 
     using Offset = std::array<std::size_t, dim>;
 
-    explicit VTRWriter(const Grid& grid, VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".vtr", true, std::move(xml_opts))
+    explicit VTRWriter(LValueReferenceOf<const Grid> grid,
+                       VTK::XMLOptions xml_opts = {})
+    : ParentType(grid.get(), ".vtr", true, std::move(xml_opts))
     {}
 
     VTRWriter as_piece_for(Domain domain) const {
@@ -76,16 +78,16 @@ class VTRWriter : public VTK::XMLWriterBase<Grid, VTRWriter<Grid>> {
         FieldStorage vtk_cell_fields;
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_point_field_ptr(name)));
-            this->_set_data_array(context, "Piece.PointData", name, vtk_cell_fields.get(name));
+            this->_set_data_array(context, "Piece/PointData", name, vtk_cell_fields.get(name));
         });
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
             vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_cell_field_ptr(name)));
-            this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
+            this->_set_data_array(context, "Piece/CellData", name, vtk_cell_fields.get(name));
         });
 
         const auto coord_fields = _make_ordinate_fields();
         for (unsigned dir = 0; dir < space_dim; ++dir)
-            this->_set_data_array(context, "Piece.Coordinates", "X_" + std::to_string(dir), *coord_fields[dir]);
+            this->_set_data_array(context, "Piece/Coordinates", "X_" + std::to_string(dir), *coord_fields[dir]);
         this->_write_xml(std::move(context), s);
     }
 
@@ -131,6 +133,15 @@ class VTRWriter : public VTK::XMLWriterBase<Grid, VTRWriter<Grid>> {
     std::optional<Offset> _offset;
 };
 
+template<typename G>
+VTRWriter(G&&, VTK::XMLOptions = {}) -> VTRWriter<std::remove_cvref_t<G>>;
+
+namespace Traits {
+
+template<typename... Args>
+struct WritesConnectivity<VTRWriter<Args...>> : public std::false_type {};
+
+}  // namespace Traits
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_VTK_VTR_WRITER_HPP_

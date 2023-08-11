@@ -48,7 +48,8 @@ namespace VTKHDFDetail {
 
 /*!
  * \ingroup VTK
- * \brief TODO: Doc me
+ * \brief Convenience writer for the vtk-hdf file format, automatically selecting the image
+ *        or unstructured grid format depending on the given grid type.
  */
 template<Concepts::Grid Grid, typename Communicator = GridFormat::NullCommunicator>
 class VTKHDFWriter : public VTKHDFDetail::VTKHDFWriterSelector<Grid, Communicator>::type {
@@ -67,8 +68,8 @@ VTKHDFWriter(const Grid&, const Comm&) -> VTKHDFWriter<Grid, Comm>;
 
 /*!
  * \ingroup VTK
- * \brief TODO: Doc me
- * \todo TODO: deduce format from grid
+ * \brief Convenience writer for the vtk-hdf file format, automatically selecting the image
+ *        or unstructured grid format depending on the given grid type.
  */
 template<Concepts::Grid Grid, Concepts::Communicator C = GridFormat::NullCommunicator>
 class VTKHDFTimeSeriesWriter : public VTKHDFDetail::VTKHDFTimeSeriesWriterSelector<Grid, C>::type {
@@ -82,6 +83,16 @@ template<Concepts::Grid Grid>
 VTKHDFTimeSeriesWriter(const Grid&, std::string, VTK::HDFTransientOptions = {}) -> VTKHDFTimeSeriesWriter<Grid>;
 template<Concepts::Grid Grid, Concepts::Communicator C>
 VTKHDFTimeSeriesWriter(const Grid&, C, std::string, VTK::HDFTransientOptions = {}) -> VTKHDFTimeSeriesWriter<Grid, C>;
+
+namespace Traits {
+
+template<Concepts::ImageGrid Grid, typename... Args>
+struct WritesConnectivity<VTKHDFWriter<Grid, Args...>> : public std::false_type {};
+
+template<Concepts::ImageGrid Grid, typename... Args>
+struct WritesConnectivity<VTKHDFTimeSeriesWriter<Grid, Args...>> : public std::false_type {};
+
+}  // namespace Traits
 
 }  // namespace GridFormat
 

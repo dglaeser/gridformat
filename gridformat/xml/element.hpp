@@ -11,20 +11,23 @@
 #include <utility>
 #include <string>
 #include <ostream>
+#include <iterator>
 #include <string_view>
-#include <cassert>
+#include <type_traits>
 #include <memory>
 #include <list>
 #include <any>
 
+#include <gridformat/common/path.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/indentation.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/optional_reference.hpp>
 #include <gridformat/xml/tag.hpp>
 
 namespace GridFormat {
 
-#ifndef DOXYGEN_SKIP_DETAILS
+#ifndef DOXYGEN
 namespace Detail {
 
     template<typename Child>
@@ -33,7 +36,7 @@ namespace Detail {
     }
 
 }  // end namespace Detail
-#endif  // DOXYGEN_SKIP_DETAILS
+#endif  // DOXYGEN
 
 /*!
  * \ingroup XML
@@ -114,22 +117,26 @@ class XMLElement : public XMLTag {
     }
 
     XMLElement& get_child(std::string_view child_name) {
-        assert(has_child(child_name));
-        return *std::ranges::find_if(
+        auto it = std::ranges::find_if(
             _children,
             Detail::_child_find_lambda<XMLElement>(child_name)
         );
+        if (it == _children.end())
+            throw ValueError("XMLElement has no child '" + std::string{child_name} + "'");
+        return *it;
     }
 
     const XMLElement& get_child(std::string_view child_name) const {
-        assert(has_child(child_name));
-        return *std::ranges::find_if(
+        auto it = std::ranges::find_if(
             _children,
             Detail::_child_find_lambda<XMLElement>(child_name)
         );
+        if (it == _children.end())
+            throw ValueError("XMLElement has no child '" + std::string{child_name} + "'");
+        return *it;
     }
 
-    std::size_t num_children() const {
+    std::size_t number_of_children() const {
         return _children.size();
     }
 
@@ -148,7 +155,8 @@ class XMLElement : public XMLTag {
 
     template<typename T>
     T get_content() const {
-        assert(has_content());
+        if (!has_content())
+            throw ValueError("XMLElement has no content");
         return std::any_cast<T>(_content->get_as_any());
     }
 
@@ -171,7 +179,53 @@ class XMLElement : public XMLTag {
     std::unique_ptr<Content> _content{nullptr};
 };
 
-#ifndef DOXYGEN_SKIP_DETAILS
+
+/*!
+ * \ingroup XML
+ * \brief Return a reference to the element resulting from successively
+ *        accessing the child elements as given by the provided path.
+ * \param path The relative path starting from the given element
+ * \param element The element at which to start traversing
+ * \param delimiter The delimiter used to separate path entries.
+ * \note If an element has multiple children with the same (matching) name,
+ *       the first one will be selected.
+ */
+template<typename Element> requires(std::same_as<XMLElement, std::remove_cvref_t<Element>>)
+OptionalReference<Element> access_at(std::string_view path, Element& element, char delimiter = '/') {
+    if (path == "")
+        return OptionalReference<Element>{element};
+    Element* result = &element;
+    for (const auto& name : Path::elements_of(path, delimiter)) {
+        if (!result->has_child(name))
+            return {};
+        result = &result->get_child(name);
+    }
+    return OptionalReference<Element>{*result};
+}
+
+/*!
+ * \ingroup XML
+ * \brief Return a reference to the element resulting from successively
+ *        accessing or creating the child elements as given by the provided path.
+ * \param path The relative path starting from the given element
+ * \param element The element at which to start traversing
+ * \param delimiter The delimiter used to separate path entries.
+ * \note If an element has multiple children with the same (matching) name,
+ *       the first one will be selected.
+ */
+XMLElement& access_or_create_at(std::string_view path, XMLElement& element, char delimiter = '/') {
+    if (path == "")
+        return element;
+    XMLElement* result = &element;
+    std::ranges::for_each(Path::elements_of(path, delimiter), [&] (const auto& name) {
+        result = result->has_child(name) ? &result->get_child(name)
+                                         : &result->add_child(name);
+    });
+    return *result;
+}
+
+
+#ifndef DOXYGEN
 namespace XML::Detail {
 
 void write_xml_tag_open(const XMLElement& e,
@@ -206,7 +260,7 @@ void write_xml_tag_close(const XMLElement& e,
 void write_xml_element(const XMLElement& e,
                        std::ostream& s,
                        Indentation& ind) {
-    if (!e.has_content() && e.num_children() == 0) {
+    if (!e.has_content() && e.number_of_children() == 0) {
         s << ind;
         write_empty_xml_tag(e, s);
     } else {
@@ -232,7 +286,7 @@ void write_xml_element(const XMLElement& e,
 }
 
 }  // end namespace XML::Detail
-#endif  // DOXYGEN_SKIP_DETAILS
+#endif  // DOXYGEN
 
 inline void write_xml(const XMLElement& e,
                       std::ostream& s,

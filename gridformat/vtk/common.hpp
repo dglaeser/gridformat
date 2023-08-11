@@ -13,15 +13,20 @@
 #include <utility>
 #include <type_traits>
 #include <algorithm>
+#include <array>
+#include <cmath>
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/precision.hpp>
+#include <gridformat/common/serialization.hpp>
+#include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/matrix.hpp>
 #include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/string_conversion.hpp>
+#include <gridformat/common/flat_index_mapper.hpp>
 #include <gridformat/common/field_transformations.hpp>
 #include <gridformat/common/field.hpp>
 
@@ -90,10 +95,37 @@ inline constexpr std::uint8_t cell_type_number(CellType t) {
     throw NotImplemented("VTK cell type number for the given cell type");
 }
 
+inline constexpr CellType cell_type(std::uint8_t vtk_id) {
+    switch (vtk_id) {
+        case 1: return CellType::vertex;
+        case 3: return CellType::segment;
+        case 5: return CellType::triangle;
+        case 8: return CellType::pixel;
+        case 9: return CellType::quadrilateral;
+        case 7: return CellType::polygon;
+        case 10: return CellType::tetrahedron;
+        case 12: return CellType::hexahedron;
+        case 11: return CellType::voxel;
+        case 68: return CellType::lagrange_segment;
+        case 69: return CellType::lagrange_triangle;
+        case 70: return CellType::lagrange_quadrilateral;
+        case 71: return CellType::lagrange_tetrahedron;
+        case 72: return CellType::lagrange_hexahedron;
+    }
+
+    throw NotImplemented("Cell type for the given VTK cell type number: " + std::to_string(vtk_id));
+}
+
 FieldPtr make_vtk_field(FieldPtr field) {
-    // vector/tensor fields must be made 3d
-    if (field->layout().dimension() > 1)
-        return FieldTransformation::extend_all_to(3)(field);
+    const auto layout = field->layout();
+    if (layout.dimension() < 2)
+        return field;
+    // (maybe) make vector/tensor fields 3d
+    if (std::ranges::all_of(
+            std::views::iota(std::size_t{1}, layout.dimension()),
+            [&] (const std::size_t codim) { return layout.extent(codim) < 3; }
+        ))
+        return transform(field, FieldTransformation::extend_all_to(3));
     return field;
 }
 
@@ -257,51 +289,19 @@ namespace CommonDetail {
         return result;
     }
 
-    template<Concepts::StaticallySizedRange R>
-    std::string extents_string(const R& r) {
-        int i = 0;
-        std::string result;
-        std::ranges::for_each(r, [&] (const auto& entry) {
-            result += (i > 0 ? " 0 " : "0 ") + as_string(entry);
-            ++i;
-        });
-        for (i = static_size<R>; i < 3; ++i)
-            result += " 0 0";
-        return result;
-    }
-
     template<Concepts::StaticallySizedRange R1,
              Concepts::StaticallySizedRange R2>
-    std::string extents_string(const R1& r1, const R2& r2) {
+        requires(std::integral<std::ranges::range_value_t<R1>> and
+                 std::integral<std::ranges::range_value_t<R2>>)
+    std::array<std::size_t, 6> get_extents(const R1& from, const R2& to) {
         static_assert(static_size<R1> == static_size<R2>);
+        static_assert(static_size<R1> <= 3);
+
         int i = 0;
-        std::string result;
-        auto it1 = std::ranges::begin(r1);
-        auto it2 = std::ranges::begin(r2);
-        for (; it1 != std::ranges::end(r1) && it2 != std::ranges::end(r2); ++it1, ++it2, ++i)
-            result += (i > 0 ? " " : "") + as_string(*it1) + " " + as_string(*it2);
-        for (i = static_size<R1>; i < 3; ++i)
-            result += " 0 0";
-        return result;
-    }
-
-    template<Concepts::StructuredEntitySet Grid>
-        requires(!Concepts::StaticallySizedRange<Grid>)
-    std::string extents_string(const Grid& grid) {
-        return extents_string(extents(grid));
-    }
-
-    template<Concepts::StaticallySizedRange R1,
-             Concepts::StaticallySizedRange R2>
-    std::array<std::size_t, 6> get_extents(const R1& r1, const R2& r2) {
-        static_assert(static_size<R1> == static_size<R2>);
-        int i = 0;
-        std::array<std::size_t, 6> result;
-        std::ranges::fill(result, 0);
-
-        auto it1 = std::ranges::begin(r1);
-        auto it2 = std::ranges::begin(r2);
-        for (; it1 != std::ranges::end(r1); ++it1, ++it2, ++i) {
+        auto result = Ranges::filled_array<6>(std::size_t{0});
+        auto it1 = std::ranges::begin(from);
+        auto it2 = std::ranges::begin(to);
+        for (; it1 != std::ranges::end(from); ++it1, ++it2, ++i) {
             result[i*2 + 0] = *it1;
             result[i*2 + 1] = *it2;
         }
@@ -309,10 +309,27 @@ namespace CommonDetail {
     }
 
     template<Concepts::StaticallySizedRange R>
-    std::array<std::size_t, 6> get_extents(const R& r1) {
-        std::array<std::size_t, static_size<R>> origin;
-        std::ranges::fill(origin, 0);
-        return get_extents(origin, r1);
+    std::array<std::size_t, 6> get_extents(const R& to) {
+        using T = std::ranges::range_value_t<R>;
+        return get_extents(Ranges::filled_array<static_size<R>>(T{0}), to);
+    }
+
+    template<Concepts::StaticallySizedRange R1,
+             Concepts::StaticallySizedRange R2>
+    std::string extents_string(const R1& from, const R2& to) {
+        return as_string(get_extents(from, to));
+    }
+
+    template<Concepts::StaticallySizedRange R>
+    std::string extents_string(const R& r) {
+        using T = std::ranges::range_value_t<R>;
+        return extents_string(Ranges::filled_array<static_size<R>>(T{0}), r);
+    }
+
+    template<Concepts::StructuredEntitySet Grid>
+        requires(!Concepts::StaticallySizedRange<Grid>)
+    std::string extents_string(const Grid& grid) {
+        return extents_string(extents(grid));
     }
 
     template<Concepts::StaticallySizedRange Spacing>
@@ -323,6 +340,106 @@ namespace CommonDetail {
             result.begin()
         );
         return result;
+    }
+
+    std::size_t number_of_entities(const std::array<std::size_t, 6>& extents) {
+        return std::max(extents[1] - extents[0], std::size_t{1})
+                *std::max(extents[3] - extents[2], std::size_t{1})
+                *std::max(extents[5] - extents[4], std::size_t{1});
+    }
+
+    unsigned int structured_grid_dimension(const std::array<std::size_t, 3>& cells_per_direction) {
+        return std::ranges::count_if(cells_per_direction, [] (const std::size_t e) { return e > 0; });
+    }
+
+    template<typename T>
+    Serialization serialize_structured_points(const std::array<std::size_t, 6>& extents,
+                                              const std::array<T, 3>& origin,
+                                              const std::array<T, 3>& spacing,
+                                              const std::array<T, 9>& direction) {
+        const MDLayout layout{{
+            extents[1] - extents[0],
+            extents[3] - extents[2],
+            extents[5] - extents[4]
+        }};
+        const FlatIndexMapper mapper{layout};
+
+        std::array<T, 3> piece_origin{
+            origin[0] + spacing[0]*extents[0],
+            origin[1] + spacing[1]*extents[2],
+            origin[2] + spacing[2]*extents[4]
+        };
+
+        static constexpr unsigned int vtk_space_dim = 3;
+        Serialization result(layout.number_of_entries()*sizeof(T)*vtk_space_dim);
+        auto span_out = result.as_span_of(Precision<T>{});
+        for (const auto& md_index : MDIndexRange{layout}) {
+            const auto offset = mapper.map(md_index)*vtk_space_dim;
+            assert(offset + 2 < span_out.size());
+
+            const T dx = static_cast<T>(md_index.get(0))*spacing[0];
+            const T dy = static_cast<T>(md_index.get(1))*spacing[1];
+            const T dz = static_cast<T>(md_index.get(2))*spacing[2];
+            span_out[offset + 0] = piece_origin[0] + dx*direction[0] + dy*direction[1] + dz*direction[2];
+            span_out[offset + 1] = piece_origin[1] + dx*direction[3] + dy*direction[4] + dz*direction[5];
+            span_out[offset + 2] = piece_origin[2] + dx*direction[6] + dy*direction[7] + dz*direction[8];
+        }
+        return result;
+    }
+
+    template<typename Visitor>
+    void visit_structured_cells(const Visitor& visitor,
+                                const std::array<std::size_t, 6>& extents,
+                                const bool is_axis_aligned = true) {
+        std::array<CellType, 4> grid_dim_to_cell_type{
+            CellType::vertex,
+            CellType::segment,
+            (is_axis_aligned ? CellType::pixel : CellType::quadrilateral),
+            (is_axis_aligned ? CellType::voxel : CellType::hexahedron)
+        };
+
+        std::array<std::size_t, 3> counts{
+            extents[1] - extents[0],
+            extents[3] - extents[2],
+            extents[5] - extents[4]
+        };
+
+        const std::size_t grid_dim = structured_grid_dimension(counts);
+        if (grid_dim == 0)
+            throw ValueError("Grid must be at least 1d");
+
+        const MDLayout point_layout{Ranges::incremented(counts, 1)};
+        const FlatIndexMapper point_mapper{point_layout};
+        const auto x_offset = grid_dim > 1 ? point_layout.extent(0) : std::size_t{0};
+        const auto y_offset = grid_dim > 2 ? point_layout.extent(0)*point_layout.extent(1) : std::size_t{0};
+
+        // avoid zero counts s.t. the index range does not degenerate
+        std::ranges::for_each(counts, [] (std::size_t& count) { count = std::max(count, std::size_t{1}); });
+        std::vector<std::size_t> corners(std::pow(2, grid_dim), 0);
+
+        const MDIndexRange index_range{MDLayout{counts}};
+        if (grid_dim == 1) {
+            std::ranges::for_each(index_range, [&] (const auto& md_index) {
+                const auto p0 = point_mapper.map(md_index);
+                corners = {p0, p0 + 1};
+                visitor(grid_dim_to_cell_type[grid_dim], corners);
+            });
+        } else if (grid_dim == 2) {
+            std::ranges::for_each(index_range, [&] (const auto& md_index) {
+                const auto p0 = point_mapper.map(md_index);
+                corners = {p0, p0 + 1, p0 + x_offset, p0 + 1 + x_offset};
+                visitor(grid_dim_to_cell_type[grid_dim], corners);
+            });
+        } else {
+            std::ranges::for_each(index_range, [&] (const auto& md_index) {
+                const auto p0 = point_mapper.map(md_index);
+                corners = {
+                    p0, p0 + 1, p0 + x_offset, p0 + 1 + x_offset,
+                    p0 + y_offset, p0 + y_offset + 1, p0 + y_offset + x_offset, p0 + 1 + y_offset + x_offset
+                };
+                visitor(grid_dim_to_cell_type[grid_dim], corners);
+            });
+        }
     }
 
 }  // namespace CommonDetail

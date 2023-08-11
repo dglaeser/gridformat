@@ -8,7 +8,9 @@
 #ifndef GRIDFORMAT_COMPRESSION_CONCEPTS_HPP_
 #define GRIDFORMAT_COMPRESSION_CONCEPTS_HPP_
 
+#include <span>
 #include <ranges>
+#include <concepts>
 #include <type_traits>
 
 #include <gridformat/common/serialization.hpp>
@@ -38,6 +40,20 @@ template<typename T>
 concept Compressor = requires(const T& t, Serialization& s) {
     { t.compress(s) } -> CompressionDetail::ValidCompressionResult;
 };
+
+//! Concept that decompressors must fulfill
+template<typename T>
+concept Decompressor = requires(const T& t,
+                                Serialization& s,
+                                const Compression::CompressedBlocks<std::size_t>& b) {
+    { t.decompress(s, b) };
+};
+
+//! Concept that block decompressors must fulfill
+template<typename T>
+concept BlockDecompressor
+    = requires { typename T::ByteType; }
+    and std::invocable<T, std::span<const typename T::ByteType>, std::span<typename T::ByteType>>;
 
 //! \} group Compression
 

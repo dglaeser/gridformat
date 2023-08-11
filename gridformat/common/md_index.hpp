@@ -15,6 +15,7 @@
 #include <iterator>
 #include <algorithm>
 #include <initializer_list>
+#include <functional>
 #include <numeric>
 
 #include <gridformat/common/concepts.hpp>
@@ -31,6 +32,7 @@ namespace GridFormat {
 //! Represents a multi-dimensional index.
 class MDIndex {
     static constexpr std::size_t buffered_dimensions = 5;
+    using Indices = ReservedVector<std::size_t, buffered_dimensions>;
 
  public:
     MDIndex() = default;
@@ -59,13 +61,11 @@ class MDIndex {
     : MDIndex(layout.dimension())
     {}
 
-    auto begin() const {
-        return _indices.begin();
-    }
+    auto begin() const { return _indices.begin(); }
+    auto begin() { return _indices.begin(); }
 
-    auto end() const {
-        return _indices.end();
-    }
+    auto end() const { return _indices.end(); }
+    auto end() { return _indices.end(); }
 
     std::size_t size() const {
         return _indices.size();
@@ -83,6 +83,25 @@ class MDIndex {
         return std::ranges::equal(_indices, other._indices);
     }
 
+    MDIndex& operator+=(const MDIndex& other) {
+        if (size() != other.size())
+            throw ValueError("MDIndex size mismatch");
+        std::transform(
+            begin(),
+            end(),
+            other.begin(),
+            begin(),
+            std::plus<std::size_t>{}
+        );
+        return *this;
+    }
+
+    MDIndex operator+(const MDIndex& other) const {
+        MDIndex result(*this);
+        result += other;
+        return result;
+    }
+
     friend std::ostream& operator<<(std::ostream& s, const MDIndex& md_index) {
         s << "(";
         if (md_index._indices.size() > 0) {
@@ -96,7 +115,7 @@ class MDIndex {
     }
 
  private:
-    ReservedVector<std::size_t, buffered_dimensions> _indices;
+    Indices _indices;
 };
 
 
@@ -108,9 +127,10 @@ class MDIndexRange {
         Iterator() = default;
         Iterator(const MDLayout& layout, bool is_end = false)
         : _layout{&layout}
-        , _current{layout} {
+        , _current{layout}
+        , _last_dim{layout.dimension() - 1} {
             if (is_end)
-                _current.set(0, layout.extent(0));
+                _current.set(_last_dim, layout.extent(_last_dim));
         }
 
      private:
@@ -126,14 +146,14 @@ class MDIndexRange {
 
         void _increment() {
             assert(!_is_end());
-            unsigned int codim = _current.size() - 1;
+            unsigned int codim = 0;
             while (true) {
                 _increment_at(codim);
                 if (_current.get(codim) >= _layout->extent(codim)) {
-                    if (codim == 0)
+                    if (codim == _last_dim)
                         break;
                     _current.set(codim, 0);
-                    codim--;
+                    codim++;
                 } else {
                     break;
                 }
@@ -145,11 +165,12 @@ class MDIndexRange {
         }
 
         bool _is_end() const {
-            return _current.get(0) >= _layout->extent(0);
+            return _current.get(_last_dim) >= _layout->extent(_last_dim);
         }
 
         const MDLayout* _layout;
         MDIndex _current;
+        std::size_t _last_dim;
     };
 
  public:
@@ -158,6 +179,10 @@ class MDIndexRange {
     {}
 
     explicit MDIndexRange(const std::vector<std::size_t>& dimensions)
+    : MDIndexRange(MDLayout{dimensions})
+    {}
+
+    explicit MDIndexRange(const std::initializer_list<std::size_t>& dimensions)
     : MDIndexRange(MDLayout{dimensions})
     {}
 

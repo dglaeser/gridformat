@@ -13,35 +13,46 @@
 #include <concepts>
 #include <type_traits>
 #include <utility>
+#include <ranges>
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/serialization.hpp>
+#include <gridformat/common/type_traits.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/concepts.hpp>
 #include <gridformat/common/ranges.hpp>
 
 namespace GridFormat {
 
+//! \addtogroup Common
+//! \{
+
 /*!
- * \ingroup Common
- * \brief Interface for fields of values.
+ * \brief Abstract interface for fields of values that is used by writers/readers to store fields.
+ * \details Allows you to obtain information on the layout of the field, the precision of its value type,
+ *          and to retrieve its values in serialized form or to export them into containers.
  */
 class Field {
  public:
     virtual ~Field() = default;
 
+    //! Return the layout of this field
     MDLayout layout() const {
         return _layout();
     }
 
+    //! Return the precision of the scalar field values
     DynamicPrecision precision() const {
         return _precision();
     }
 
+    //! Return the size of all field values in serialized form
     std::size_t size_in_bytes() const {
         return layout().number_of_entries()*precision().size_in_bytes();
     }
 
+    //! Return the field values in serialized form
     Serialization serialized() const {
         auto result = _serialized();
         if (result.size() != size_in_bytes())
@@ -49,6 +60,7 @@ class Field {
         return result;
     }
 
+    //! Visit the scalar values of the field in the form of an std::span
     template<typename Visitor>
     decltype(auto) visit_field_values(Visitor&& visitor) const {
         return precision().visit([&] <typename T> (const Precision<T>&) {
@@ -57,6 +69,7 @@ class Field {
         });
     }
 
+    //! Export the field values into the provided range (requires the range to be large enough)
     template<std::ranges::range R> requires(Concepts::Scalar<MDRangeValueType<R>>)
     void export_to(R&& output_range) const {
         const auto serialization = serialized();
@@ -76,15 +89,44 @@ class Field {
         });
     }
 
+    //! Export the field as a scalar (works only if the field is a scalar field)
     template<Concepts::Scalar S>
     void export_to(S& out) const {
         const auto my_layout = layout();
         const auto serialization = serialized();
-        visit_field_values([&] <typename T> (std::span<const T> data) {
-            if (my_layout.number_of_entries() != 1)
+        if (my_layout.number_of_entries() != 1)
                 throw ValueError("Field cannot be exported into a scalar");
+        visit_field_values([&] <typename T> (std::span<const T> data) {
             out = static_cast<S>(data[0]);
         });
+    }
+
+    //! Export the field as a scalar (works only if the field is a scalar field)
+    template<Concepts::Scalar S>
+    S export_to() const {
+        S out;
+        export_to(out);
+        return out;
+    }
+
+    //! Export the field into a resizable range (e.g. std::vector)
+    template<Concepts::ResizableMDRange R>
+        requires(Concepts::StaticallySizedMDRange<std::ranges::range_value_t<R>> or
+                 Concepts::Scalar<std::ranges::range_value_t<R>>)
+    R export_to() const {
+        const auto num_scalars = layout().number_of_entries();
+        const auto num_sub_scalars = get_md_layout<std::ranges::range_value_t<R>>().number_of_entries();
+        if (num_scalars%num_sub_scalars != 0)
+            throw TypeError(
+                "Cannot export the field into the given range type. "
+                "Number of entries in the field is not divisible by the "
+                "number of entries in the value_type of the provided range."
+            );
+
+        R range;
+        range.resize(num_scalars/num_sub_scalars, default_value<std::ranges::range_value_t<R>>);
+        export_to(range);
+        return range;
     }
 
  private:
@@ -109,14 +151,18 @@ class Field {
     }
 };
 
+//! Pointer type used by writers/readers for fields
 using FieldPtr = std::shared_ptr<const Field>;
 
+//! Factory function for field pointers
 template<typename F> requires(
     std::derived_from<std::remove_cvref_t<F>, Field> and
     !std::is_lvalue_reference_v<F>)
 FieldPtr make_field_ptr(F&& f) {
     return std::make_shared<std::add_const_t<F>>(std::forward<F>(f));
 }
+
+//! \}  group Common
 
 }  // namespace GridFormat
 

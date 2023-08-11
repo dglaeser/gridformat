@@ -17,6 +17,7 @@
 #include <functional>
 #include <type_traits>
 #include <optional>
+#include <sstream>
 
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/exceptions.hpp>
@@ -61,7 +62,7 @@ inline constexpr auto size(R&&) {
  * \brief Return the value at the i-th position of the range.
  */
 template<std::integral I, std::ranges::range R>
-inline constexpr auto at(I i, const R& r) {
+inline constexpr decltype(auto) at(I i, const R& r) {
     auto it = std::ranges::begin(r);
     std::advance(it, i);
     return *it;
@@ -136,8 +137,26 @@ inline constexpr auto to_array(const R& r) {
     const std::size_t range_size = size(r);
 
     using ValueType = std::conditional_t<std::is_same_v<T, Automatic>, std::ranges::range_value_t<R>, T>;
-    auto result = filled_array<result_size, ValueType>();
+    std::array<ValueType, result_size> result;
     std::ranges::copy_n(std::ranges::begin(r), std::min(range_size, result_size), result.begin());
+    if (range_size < result_size)
+        std::ranges::fill_n(result.begin() + range_size, result_size - range_size, ValueType{0});
+    return result;
+}
+
+/*!
+ * \ingroup Common
+ * \brief Create an array of given type and size from a string.
+ */
+template<typename T, std::size_t N>
+std::array<T, N> array_from_string(const std::string& values) {
+    auto result = Ranges::filled_array<N>(T{0});
+    std::stringstream stream;
+    stream << values;
+    auto stream_view = std::ranges::istream_view<T>(stream);
+    const auto [_, out] = std::ranges::copy(stream_view, result.begin());
+    if (std::ranges::distance(result.begin(), out) != N)
+        throw IOError("Could not read " + std::to_string(N) + " values from '" + values + "'");
     return result;
 }
 

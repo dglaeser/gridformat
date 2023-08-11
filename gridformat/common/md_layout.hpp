@@ -11,11 +11,11 @@
 #include <ostream>
 #include <utility>
 #include <vector>
-#include <cassert>
 #include <numeric>
 #include <iterator>
 #include <algorithm>
 #include <initializer_list>
+#include <string>
 
 #include <gridformat/common/reserved_vector.hpp>
 #include <gridformat/common/type_traits.hpp>
@@ -46,12 +46,18 @@ class MDLayout {
         std::ranges::copy(extents, std::back_inserter(_extents));
     }
 
+    auto begin() const { return _extents.begin(); }
+    auto begin() { return _extents.begin(); }
+
+    auto end() const { return _extents.end(); }
+    auto end() { return _extents.end(); }
+
     std::size_t dimension() const {
         return _extents.size();
     }
 
     std::size_t extent(unsigned int codim) const {
-        return _extents[codim];
+        return _extents.at(codim);
     }
 
     std::size_t number_of_entries() const {
@@ -68,15 +74,15 @@ class MDLayout {
     }
 
     MDLayout sub_layout(unsigned int codim) const {
-        assert(codim < dimension());
+        if (codim >= dimension())
+            throw ValueError(
+                "Given codim " + std::to_string(codim)
+                + " exceeds dimensions (" + std::to_string(dimension()) + ")"
+            );
         return MDLayout{std::vector<std::size_t>{
             _extents.begin() + codim,
             _extents.end()
         }};
-    }
-
-    bool is_scalar() const {
-        return _extents.size() == 0;
     }
 
     bool operator==(const MDLayout& other) const {
@@ -84,7 +90,7 @@ class MDLayout {
     }
 
     template<std::ranges::range R>
-    void export_to(R& out) const {
+    void export_to(R&& out) const {
         if (Ranges::size(out) < dimension())
             throw SizeError("Given output range is too small");
         std::ranges::copy(_extents, std::ranges::begin(out));

@@ -3,13 +3,7 @@
 
 #include <mpi.h>
 
-// In the GitHub action runner we run into a compiler warning from
-// the VTIWriter when using release flags. Locally, this could not
-// be reproduced. For now, we simply ignore those warnings here.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wrestrict"
 #include <gridformat/gridformat.hpp>
-#pragma GCC diagnostic pop
 
 #include "../make_test_data.hpp"
 
@@ -66,6 +60,11 @@ int main(int argc, char** argv) {
     write(
         GridFormat::Writer{GridFormat::vtp({}), grid, MPI_COMM_WORLD},
         MPI_COMM_WORLD
+    );
+    write(
+        GridFormat::Writer{GridFormat::any, grid, MPI_COMM_WORLD},
+        MPI_COMM_WORLD,
+        "from_any"
     );
 #if GRIDFORMAT_HAVE_HIGH_FIVE
     write(

@@ -36,9 +36,21 @@ int main() {
     static_assert(!GridFormat::Concepts::StaticallySizedRange<std::span<int>>);
     static_assert(!GridFormat::Concepts::StaticallySizedRange<double>);
 
+    static_assert(!GridFormat::Concepts::StaticallySizedMDRange<double>);
+    static_assert(GridFormat::Concepts::StaticallySizedMDRange<std::array<int, 2>>);
+    static_assert(GridFormat::Concepts::StaticallySizedMDRange<std::array<std::array<int, 2>, 2>>);
+
     static_assert(GridFormat::Concepts::StaticallySizedMDRange<
         std::array<std::array<int, 2>, 2>,
         2>
+    );
+    static_assert(!GridFormat::Concepts::StaticallySizedMDRange<
+        std::array<std::array<int, 2>, 2>,
+        1>
+    );
+    static_assert(!GridFormat::Concepts::StaticallySizedMDRange<
+        std::array<std::array<int, 2>, 2>,
+        3>
     );
     static_assert(GridFormat::Concepts::StaticallySizedMDRange<
         std::array<std::array<std::array<int, 2>, 2>, 2>,
@@ -56,6 +68,11 @@ int main() {
         std::array<std::array<std::vector<int>, 2>, 2>,
         3>
     );
+
+    static_assert(GridFormat::Concepts::ResizableMDRange<std::vector<int>>);
+    static_assert(GridFormat::Concepts::ResizableMDRange<std::vector<std::vector<double>>>);
+    static_assert(GridFormat::Concepts::ResizableMDRange<std::vector<std::array<double, 2>>>);
+    static_assert(!GridFormat::Concepts::ResizableMDRange<std::array<double, 2>>);
 
     static_assert(GridFormat::Concepts::Interoperable<int, double>);
     static_assert(GridFormat::Concepts::Interoperable<double, int>);

@@ -10,6 +10,7 @@
 
 #include <bit>
 
+#include <gridformat/common/precision.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/callable_overload_set.hpp>
 #include <gridformat/vtk/common.hpp>
@@ -62,6 +63,37 @@ std::string data_format_name(const Enc& e, const Format& format) {
         "VTK's '" + format_name + "' data format cannot be used with "  + encoder_name
         + " encoding. Please choose '" + other_format_name + "' or a different encoder."
     );
+}
+
+std::endian from_endian_attribute(const std::string& endian) {
+    if (endian == "LittleEndian")
+        return std::endian::little;
+    if (endian == "BigEndian")
+        return std::endian::big;
+    throw ValueError("Unsupported endian attribute: '" + endian + "'");
+}
+
+DynamicPrecision from_precision_attribute(const std::string& prec) {
+    if (prec.starts_with("Int")) {
+        const auto bytes = prec.substr(3);
+        if (bytes == "8") return int8;
+        if (bytes == "16") return int16;
+        if (bytes == "32") return int32;
+        if (bytes == "64") return int64;
+    } else if (prec.starts_with("UInt")) {
+        const auto bytes = prec.substr(4);
+        if (bytes == "8") return uint8;
+        if (bytes == "16") return uint16;
+        if (bytes == "32") return uint32;
+        if (bytes == "64") return uint64;
+    } else if (prec.starts_with("Float")) {
+        const auto bytes = prec.substr(5);
+        if (bytes == "32") return float32;
+        if (bytes == "64") return float64;
+    } else if (prec == "String") {
+        return {Precision<char>{}};
+    }
+    throw ValueError("Cannot parse precision from '" + prec + "'");
 }
 
 //! \} group VTK

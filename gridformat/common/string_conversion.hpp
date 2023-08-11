@@ -59,6 +59,9 @@ inline std::string as_string(R&& range, std::string_view delimiter = " ") {
 
 template<Concepts::Scalar T>
 T from_string(const std::string& str) {
+    if constexpr (std::is_same_v<T, char>)
+        return static_cast<T>(std::stoi(str));
+
     std::istringstream s(str);
     s.imbue(std::locale::classic());
 

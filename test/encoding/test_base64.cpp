@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: MIT
 
+#include <iterator>
+#include <algorithm>
 #include <sstream>
 #include <span>
 
@@ -31,6 +33,18 @@ int main() {
         std::ostringstream s;
         GridFormat::Encoding::base64.with({.num_cached_buffers=20})(s).write(std::span{in_data});
         expect(eq(s.str(), expected));
+    };
+
+    "base64_decode"_test = [&] () {
+        std::ostringstream s;
+        GridFormat::Encoding::base64(s).write(std::span{in_data});
+
+        std::vector<char> decoded;
+        std::ranges::copy(s.str(), std::back_inserter(decoded));
+
+        const auto size = GridFormat::Base64Decoder{}.decode(std::span{decoded});
+        decoded.resize(size);
+        expect(std::ranges::equal(decoded, in_data));
     };
 
     return 0;

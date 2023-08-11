@@ -8,7 +8,6 @@
 
 #include "../grid/unstructured_grid.hpp"
 #include "../make_test_data.hpp"
-#include "vtk_writer_tester.hpp"
 
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
@@ -18,23 +17,17 @@ int main(int argc, char** argv) {
     {
         const auto grid = GridFormat::Test::make_unstructured_2d();
         GridFormat::VTKHDFWriter writer{grid, MPI_COMM_WORLD};
-        auto test_data = GridFormat::Test::make_test_data<2, double>(grid);
-        GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
-        GridFormat::Test::add_meta_data(writer);
-        const auto filename = writer.write("pvtk_2d_in_2d_parallel_unstructured_nranks_" + std::to_string(size));
-        if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
-            std::cout << "Wrote '" << filename << "'" << std::endl;
+        GridFormat::Test::write_test_file<2>(
+            writer, "pvtk_2d_in_2d_parallel_unstructured_nranks_" + std::to_string(size)
+        );
     }
 
     {
         const auto grid = GridFormat::Test::make_unstructured_3d();
         GridFormat::VTKHDFWriter writer{grid, MPI_COMM_WORLD};
-        auto test_data = GridFormat::Test::make_test_data<3, double>(grid);
-        GridFormat::Test::add_test_data(writer, test_data, GridFormat::Precision<float>{});
-        GridFormat::Test::add_meta_data(writer);
-        const auto filename = writer.write("pvtk_3d_in_3d_parallel_unstructured_nranks_" + std::to_string(size));
-        if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
-            std::cout << "Wrote '" << filename << "'" << std::endl;
+        GridFormat::Test::write_test_file<3>(
+            writer, "pvtk_3d_in_3d_parallel_unstructured_nranks_" + std::to_string(size)
+        );
     }
 
     MPI_Finalize();

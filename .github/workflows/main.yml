@@ -87,6 +87,16 @@ jobs:
           pushd build && ctest --output-on-failure && popd
         shell: bash
 
+      - name: verify-no-skipped-tests
+        run: |
+          if [[ -e build/Testing/Temporary/LastTestsDisabled.log ]]; then
+            echo "The full test suite should not skip any tests. Making the job fail..."
+            exit 1
+          else
+            echo "No skipped tests detected"
+          fi
+        shell: bash
+
 
   mem-check:
     runs-on: ubuntu-22.04

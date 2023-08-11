@@ -11,13 +11,7 @@
 #include <gridformat/grid/image_grid.hpp>
 #include <gridformat/grid/discontinuous.hpp>
 
-// In the GitHub action runner we run into a compiler warning when
-// using release flags. Locally, this could not be reproduced. For
-// now, we simply ignore those warnings here.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wrestrict"
 #include <gridformat/vtk/vti_writer.hpp>
-#pragma GCC diagnostic pop
 #include <gridformat/vtk/vtr_writer.hpp>
 #include <gridformat/vtk/vts_writer.hpp>
 #include <gridformat/vtk/vtp_writer.hpp>

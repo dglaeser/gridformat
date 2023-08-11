@@ -11,8 +11,10 @@
 #include <ostream>
 #include <string>
 #include <fstream>
+#include <filesystem>
 
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/parallel/helpers.hpp>
 
@@ -33,12 +35,16 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
     using ParentType = VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator>>;
 
  public:
-    explicit PVTUWriter(const Grid& grid,
+    explicit PVTUWriter(LValueReferenceOf<const Grid> grid,
                         Communicator comm,
                         VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".pvtu", false, xml_opts)
+    : ParentType(grid.get(), ".pvtu", false, xml_opts)
     , _comm(comm)
     {}
+
+    const Communicator& communicator() const {
+        return _comm;
+    }
 
  private:
     Communicator _comm;
@@ -97,16 +103,18 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
         }, this->_xml_settings.coordinate_precision);
 
         std::ranges::for_each(Parallel::ranks(_comm), [&] (int rank) {
-            grid.add_child("Piece").set_attribute(
-                "Source",
+            grid.add_child("Piece").set_attribute("Source", std::filesystem::path{
                 PVTK::piece_basefilename(filename_with_ext, rank) + ".vtu"
-            );
+            }.filename());
         });
 
         this->_set_default_active_fields(pvtk_xml.get_child("PUnstructuredGrid"));
         write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
     }
 };
+
+template<typename G, Concepts::Communicator C>
+PVTUWriter(G&&, const C&, VTK::XMLOptions = {}) -> PVTUWriter<std::remove_cvref_t<G>, C>;
 
 }  // namespace GridFormat
 

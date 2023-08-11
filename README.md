@@ -8,12 +8,14 @@
 [![API Documentation](https://img.shields.io/badge/doc-API-ff69b4)](https://dglaeser.github.io/gridformat)
 [![REUSE status](https://api.reuse.software/badge/git.fsfe.org/reuse/api)](https://api.reuse.software/info/git.fsfe.org/reuse/api)
 
-`GridFormat` is a header-only C++ library for writing data into grid file formats that can be visualized with tools
-such as [ParaView](https://www.paraview.org/). The typical use case for `GridFormat` is within codes for numerical simulations
-that want to export numerical results into visualizable file formats. A variety of simulation frameworks exist, such as
+`GridFormat` is a header-only C++ library for reading/writing data from/to standardized grid file formats that are supported by visualization tools such as e.g. [ParaView](https://www.paraview.org/).
+Thus, applications that operate on grid-like data structures such as numerical simulations, GIS or computational geometry applications, can leverage `GridFormat` to import/export their data from/into interoperable file formats.
+The typical use case for `GridFormat` is within codes for numerical simulations, for visualization of results or for importing
+them for further processing.
+A variety of simulation frameworks exist, such as
 [Dune](https://www.dune-project.org/), [DuMuX](https://dumux.org/), [Deal.II](https://www.dealii.org/), [Fenics](https://fenicsproject.org/)
 or [MFEM](https://mfem.org/),
-which usually provide mechanisms to export data produced with the framework into some file formats. However, there are situations
+which usually provide mechanisms to export/import data produced with the framework into some file formats. However, there are situations
 in which one wants to use a format that the framework does not support, or, use some features of the format specification that are
 not implemented in the framework. `GridFormat` aims to provide access to a variety of file formats through a unified interface and
 without the need to convert any data or to use a specific data structure to represent computational grids. Using generic programming
@@ -32,7 +34,7 @@ Prerequisites:
 
 It is easiest to integrate `GridFormat` either as a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
 or via the `FetchContent` module of `cmake`. A minimal example (using `FetchContent`) of a project using `GridFormat` to
-write a [VTU](https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid) file may look like this:
+write a [VTU](https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid) file and read it back in may look like this:
 
 ```cmake
 cmake_minimum_required(VERSION 3.22)
@@ -55,6 +57,7 @@ target_link_libraries(my_app PRIVATE gridformat::gridformat)
 
 ```cpp
 #include <array>
+#include <vector>
 #include <gridformat/gridformat.hpp>
 
 double f(const std::array<double, 2>& x) { return x[0]*x[1]; }
@@ -72,13 +75,20 @@ int main () {
     writer.set_meta_data("some_metadata", "i am metadata");
     writer.set_point_field("point_field", [&] (const auto& point) { return f(grid.position(point)); });
     writer.set_cell_field("cell_field", [&] (const auto& cell) { return f(grid.center(cell)); });
-    writer.write("my_test_file");  // the file extension will be appended by the writer
+    const auto written_file = writer.write("my_test_file"); // extension is added by the writer
+
+    // read the data back in (here we create a generic reader, but you can also select specific ones)
+    GridFormat::Reader reader; reader.open(written_file);
+    std::vector<double> cell_field_values(reader.number_of_cells());
+    std::vector<double> point_field_values(reader.number_of_points());
+    reader.cell_field("cell_field")->export_to(cell_field_values);
+    reader.point_field("point_field")->export_to(point_field_values);
 
     return 0;
 }
 ```
 
-Many more formats and options are available, see the [API documentation](https://dglaeser.github.io/gridformat/)
+Many more formats, options and functions are available, see the [API documentation](https://dglaeser.github.io/gridformat/)
 or have a look at the [examples](./examples).
 
 

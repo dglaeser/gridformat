@@ -12,12 +12,14 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
+#include <filesystem>
 #include <array>
 #include <tuple>
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
 
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/parallel/helpers.hpp>
@@ -44,12 +46,16 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
     static constexpr int root_rank = 0;
 
  public:
-    explicit PVTRWriter(const Grid& grid,
+    explicit PVTRWriter(LValueReferenceOf<const Grid> grid,
                         Communicator comm,
                         VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".pvtr", true, xml_opts)
+    : ParentType(grid.get(), ".pvtr", true, xml_opts)
     , _comm(comm)
     {}
+
+    const Communicator& communicator() const {
+        return _comm;
+    }
 
  private:
     Communicator _comm;
@@ -158,7 +164,9 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
             }
             auto& piece = grid.add_child("Piece");
             piece.set_attribute("Extent", VTK::CommonDetail::extents_string(extents_begin, extents_end));
-            piece.set_attribute("Source", PVTK::piece_basefilename(filename_with_ext, rank) + ".vtr");
+            piece.set_attribute("Source", std::filesystem::path{
+                PVTK::piece_basefilename(filename_with_ext, rank) + ".vtr"
+            }.filename());
         });
 
         this->_set_default_active_fields(pvtk_xml.get_child("PRectilinearGrid"));
@@ -166,6 +174,15 @@ class PVTRWriter : public VTK::XMLWriterBase<Grid, PVTRWriter<Grid, Communicator
     }
 };
 
+template<typename G, Concepts::Communicator C>
+PVTRWriter(G&&, const C&, VTK::XMLOptions = {}) -> PVTRWriter<std::remove_cvref_t<G>, C>;
+
+namespace Traits {
+
+template<typename... Args>
+struct WritesConnectivity<PVTRWriter<Args...>> : public std::false_type {};
+
+}  // namespace Traits
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_VTK_PVTR_WRITER_HPP_

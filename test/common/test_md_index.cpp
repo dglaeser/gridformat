@@ -111,6 +111,17 @@ int main() {
         expect(eq(s.str(), std::string{"(1,2)"}));
     };
 
+    "md_index_addition"_test = [] () {
+        const MDIndex sum = MDIndex{{1, 2}} + MDIndex{{42, 43}};
+        expect(sum == MDIndex{{43, 45}});
+    };
+
+    "md_index_inplace_addition"_test = [] () {
+        MDIndex sum{{1, 2}};
+        sum += MDIndex{{42, 43}};
+        expect(sum == MDIndex{{43, 45}});
+    };
+
     "md_index_range_1d"_test = [] () {
         static_assert(std::ranges::forward_range<MDIndexRange>);
         expect(std::ranges::equal(
@@ -129,8 +140,9 @@ int main() {
         expect(std::ranges::equal(
             MDIndexRange{{2, 3}},
             std::vector{
-                MDIndex{0, 0}, MDIndex{0, 1}, MDIndex{0, 2},
-                MDIndex{1, 0}, MDIndex{1, 1}, MDIndex{1, 2}
+                MDIndex{0, 0}, MDIndex{1, 0},
+                MDIndex{0, 1}, MDIndex{1, 1},
+                MDIndex{0, 2}, MDIndex{1, 2}
             }
         ));
     };
@@ -141,8 +153,8 @@ int main() {
             MDIndexRange{{2, 2, 1}},
             std::vector{
                 MDIndex{0, 0, 0},
-                MDIndex{0, 1, 0},
                 MDIndex{1, 0, 0},
+                MDIndex{0, 1, 0},
                 MDIndex{1, 1, 0},
             }
         ));

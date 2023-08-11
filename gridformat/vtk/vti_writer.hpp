@@ -16,6 +16,8 @@
 #include <optional>
 
 #include <gridformat/common/field_storage.hpp>
+#include <gridformat/common/lvalue_reference.hpp>
+
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/grid/type_traits.hpp>
 #include <gridformat/vtk/common.hpp>
@@ -41,8 +43,9 @@ class VTIWriter : public VTK::XMLWriterBase<Grid, VTIWriter<Grid>> {
 
     using Offset = std::array<std::size_t, dim>;
 
-    explicit VTIWriter(const Grid& grid, VTK::XMLOptions xml_opts = {})
-    : ParentType(grid, ".vti", true, std::move(xml_opts))
+    explicit VTIWriter(LValueReferenceOf<const Grid> grid,
+                       VTK::XMLOptions xml_opts = {})
+    : ParentType(grid.get(), ".vti", true, std::move(xml_opts))
     {}
 
     VTIWriter as_piece_for(Domain domain) const {
@@ -72,11 +75,11 @@ class VTIWriter : public VTK::XMLWriterBase<Grid, VTIWriter<Grid>> {
         FieldStorage vtk_cell_fields;
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
             vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_point_field_ptr(name)));
-            this->_set_data_array(context, "Piece.PointData", name, vtk_cell_fields.get(name));
+            this->_set_data_array(context, "Piece/PointData", name, vtk_cell_fields.get(name));
         });
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
             vtk_cell_fields.set(name, VTK::make_vtk_field(this->_get_cell_field_ptr(name)));
-            this->_set_data_array(context, "Piece.CellData", name, vtk_cell_fields.get(name));
+            this->_set_data_array(context, "Piece/CellData", name, vtk_cell_fields.get(name));
         });
 
         this->_write_xml(std::move(context), s);
@@ -117,6 +120,15 @@ class VTIWriter : public VTK::XMLWriterBase<Grid, VTIWriter<Grid>> {
     std::optional<Offset> _offset;
 };
 
+template<typename G>
+VTIWriter(G&&, VTK::XMLOptions opts = {}) -> VTIWriter<std::remove_cvref_t<G>>;
+
+namespace Traits {
+
+template<typename... Args>
+struct WritesConnectivity<VTIWriter<Args...>> : public std::false_type {};
+
+}  // namespace Traits
 }  // namespace GridFormat
 
 #endif  // GRIDFORMAT_VTK_VTI_WRITER_HPP_
