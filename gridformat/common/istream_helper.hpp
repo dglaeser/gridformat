@@ -132,24 +132,6 @@ class InputStreamHelper {
         }
     }
 
-    //! Count space-separated words until the given end position
-    std::size_t count_space_separated_until(std::streamsize end_pos) {
-        if (end_pos <= position())
-            return 0;
-
-        std::size_t count = 0;
-        shift_whitespace();
-        while (true) {
-            count++;
-            shift_until_whitespace();
-            shift_whitespace();
-            if (position() >= end_pos || is_end_of_file())
-                return count;
-        }
-
-        return count;
-    }
-
     //! Skip characters considered whitespace
     void shift_whitespace() {
         shift_until_not_any_of(_whitespace_chars);

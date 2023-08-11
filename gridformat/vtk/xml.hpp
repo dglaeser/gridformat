@@ -905,10 +905,19 @@ class XMLReaderHelper {
         std::ifstream file{_filename};
         XMLDetail::_move_to_data(_stream_location_for(element), file);
 
-        InputStreamHelper helper{file};
-        if (element.get_attribute("format") == "ascii")
-            return helper.count_space_separated_until(_parser.get_content_bounds(element).end_pos);
+        if (element.get_attribute("format") == "ascii") {
+            const auto precision = from_precision_attribute(element.get_attribute("type"));
+            return precision.visit([&] <typename T> (const Precision<T>&) {
+                using _T = std::conditional_t<
+                    std::integral<T> && sizeof(T) < 4,  // see XMLDetail::DataArrayReader::read_ascii
+                    int,
+                    T
+                >;
+                return std::ranges::distance(std::ranges::istream_view<_T>{file});
+            });
+        }
 
+        InputStreamHelper helper{file};
         const auto header = _read_binary_data_array_header(helper, element);
         if (get().has_attribute("compressor") && header.size() < 3)
             throw ValueError("Could not read compression header");
