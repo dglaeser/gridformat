@@ -954,19 +954,26 @@ std::string convert(const std::string& in,
     using WriterDetail::has_sequential_factory;
     using WriterDetail::has_sequential_time_series_factory;
     using CG = ConverterDetail::ConverterGrid;
-    if constexpr (has_sequential_factory<OutFormat, CG>)
+    if constexpr (has_sequential_factory<OutFormat, CG>) {
+        if (reader.is_sequence()) {
+            auto ts_fmt = FileFormat::TimeSeriesClosure{}(out_format);
+            return convert(reader, [&] (const auto& grid) {
+                return WriterFactory<decltype(ts_fmt)>::make(ts_fmt, grid, out);
+            });
+        }
         return convert(reader, out, [&] (const auto& grid) {
             return WriterFactory<OutFormat>::make(out_format, grid);
         });
-    else if constexpr (has_sequential_time_series_factory<OutFormat, CG>)
+    } else if constexpr (has_sequential_time_series_factory<OutFormat, CG>) {
         return convert(reader, [&] (const auto& grid) {
             return WriterFactory<OutFormat>::make(out_format, grid, out);
         });
-    else
+    } else {
         static_assert(
             APIDetail::always_false<OutFormat>,
             "No viable factory found for the requested format"
         );
+    }
 }
 
 /*!
@@ -999,19 +1006,26 @@ std::string convert(const std::string& in,
     using WriterDetail::has_parallel_factory;
     using WriterDetail::has_parallel_time_series_factory;
     using CG = ConverterDetail::ConverterGrid;
-    if constexpr (has_parallel_factory<OutFormat, CG, C>)
+    if constexpr (has_parallel_factory<OutFormat, CG, C>) {
+        if (reader.is_sequence()) {
+            auto ts_fmt = FileFormat::TimeSeriesClosure{}(out_format);
+            return convert(reader, [&] (const auto& grid) {
+                return WriterFactory<decltype(ts_fmt)>::make(ts_fmt, grid, communicator, out);
+            });
+        }
         return convert(reader, out, [&] (const auto& grid) {
             return WriterFactory<OutFormat>::make(out_format, grid, communicator);
         });
-    else if constexpr (has_parallel_time_series_factory<OutFormat, CG, C>)
+    } else if constexpr (has_parallel_time_series_factory<OutFormat, CG, C>) {
         return convert(reader, [&] (const auto& grid) {
             return WriterFactory<OutFormat>::make(out_format, grid, communicator, out);
         });
-    else
+    } else {
         static_assert(
             APIDetail::always_false<OutFormat>,
             "No viable factory found for the requested format"
         );
+    }
 }
 
 
