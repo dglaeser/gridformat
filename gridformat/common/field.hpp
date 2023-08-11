@@ -77,7 +77,7 @@ class Field {
         const auto input_range_layout = get_md_layout(output_range);
 
         if (input_range_layout.number_of_entries() < my_layout.number_of_entries())
-            throw TypeError(
+            throw SizeError(
                 std::string{"Cannot fill the given range. Too few entries. "} +
                 "Number of field entries: '" + std::to_string(my_layout.number_of_entries()) + "'; " +
                 "Number of range entries: '" + std::to_string(input_range_layout.number_of_entries()) + "'"

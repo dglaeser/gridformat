@@ -65,5 +65,13 @@ int main() {
         expect(throws<GridFormat::SizeError>([&] () { field->serialized(); }));
     };
 
+    "field_export_throws_when_size_does_not_match"_test = [] () {
+        std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
+        auto values = field->template export_to<std::vector<int>>();
+        expect(std::ranges::equal(values, std::vector{1, 2, 3, 4}));
+        values.resize(values.size() - 1);
+        expect(throws<GridFormat::SizeError>([&] () { field->export_to(values); }));
+    };
+
     return 0;
 }
