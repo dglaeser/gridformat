@@ -129,6 +129,21 @@ instance, compression of data (e.g. for the VTK-XML file formats) can only be us
 found on the system. Dependencies of those features are stated in the [API documentation](https://dglaeser.github.io/gridformat/).
 
 
+## Command-line interface
+
+`GridFormat` comes with a few command-line apps that you can build and install alongside the library.
+To include them in the build, pass the option `-DGRIDFORMAT_BUILD_BINARIES=ON` to `cmake` when configuring (see above).
+For performance reasons, you should set `-DCMAKE_BUILD_TYPE=Release` when configuring. If successfully built, you can then
+use the command-line apps to print information on a grid file to the terminal, or convert between different file formats.
+For instance:
+
+```cpp
+gridformat-info my_vti_file.vti        # prints info on the contents of the vti file
+gridformat-convert my_vti_file.vti vtu # converts an image grid format (.vti) to vtu format
+gridformat-convert my_vti_file.vti vtu encoder=ascii # format options can be set as key-value pairs
+gridformat-convert my_vti_file.vti vtu -o some_file  # choose an output filename
+```
+
 ## Compatibility with user-defined grids
 
 `GridFormat` does not operate on a specific grid data structure, but instead, it can be made compatible with any user-defined
