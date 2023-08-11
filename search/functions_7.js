@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['remove_5fcell_5ffield_0',['remove_cell_field',['../classGridFormat_1_1Writer.html#a78b1f2209c24a3c7da50e65041034bcd',1,'GridFormat::Writer']]],
-  ['remove_5fmeta_5fdata_1',['remove_meta_data',['../classGridFormat_1_1Writer.html#a4d7c7e81634cbb9f0e8fc3304e4de7db',1,'GridFormat::Writer']]],
-  ['remove_5fpoint_5ffield_2',['remove_point_field',['../classGridFormat_1_1Writer.html#ae0ffe4fb8ea43b67baf108a8bbc55763',1,'GridFormat::Writer']]]
+  ['operator_28_29_0',['operator()',['../structGridFormat_1_1FileFormat_1_1FormatWithOptions.html#a992f4d97822f3bd87129d0fb7c4d4fda',1,'GridFormat::FileFormat::FormatWithOptions::operator()()'],['../structGridFormat_1_1Encoding_1_1Ascii.html#a34f11d4b786bbc8ff59ee01b0cc85822',1,'GridFormat::Encoding::Ascii::operator()()'],['../structGridFormat_1_1Encoding_1_1Base64.html#a40cd9b8fb1e7e574666a74c3b36493e7',1,'GridFormat::Encoding::Base64::operator()(Stream &amp;s) const noexcept'],['../structGridFormat_1_1Encoding_1_1Base64.html#acf09995d558e20f7b94e23781d447f5a',1,'GridFormat::Encoding::Base64::operator()(Base64EncoderOptions opts) const']]],
+  ['options_1',['options',['../structGridFormat_1_1Encoding_1_1Ascii.html#a6052411ab879536cf9a598a2635b7c0b',1,'GridFormat::Encoding::Ascii']]],
+  ['ordinates_2',['ordinates',['../classGridFormat_1_1ImageGrid.html#ae2c9061a39f4335a01da01336b6d0953',1,'GridFormat::ImageGrid']]]
 ];

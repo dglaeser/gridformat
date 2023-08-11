@@ -52,7 +52,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"structGridFormat_1_1Traits_1_1NumberOfCellPoints_3_01DolfinX_1_1LagrangeMesh_00_01DolfinX_1_1Cell_01_4.html"
+"structGridFormat_1_1Base64EncoderOptions.html#a3a4f39c2fc7f18903b5006d3cbf3381a"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

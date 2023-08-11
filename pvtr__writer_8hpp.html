@@ -113,7 +113,8 @@ $(document).ready(function(){initNavTree('pvtr__writer_8hpp.html',''); initResiz
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">pvtr_writer.hpp File Reference<div class="ingroups"><a class="el" href="group__VTK.html">VTK</a></div></div></div>
 </div><!--header-->
 <div class="contents">
@@ -121,11 +122,13 @@ $(document).ready(function(){initNavTree('pvtr__writer_8hpp.html',''); initResiz
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;fstream&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
 <code>#include &lt;array&gt;</code><br />
 <code>#include &lt;tuple&gt;</code><br />
-<code>#include &lt;gridformat/common/field.hpp&gt;</code><br />
+<code>#include &lt;<a class="el" href="field_8hpp_source.html">gridformat/common/field.hpp</a>&gt;</code><br />
 <code>#include &lt;gridformat/common/ranges.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/exceptions.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/lvalue_reference.hpp&gt;</code><br />
 <code>#include &lt;gridformat/parallel/communication.hpp&gt;</code><br />
 <code>#include &lt;gridformat/parallel/helpers.hpp&gt;</code><br />
 <code>#include &lt;gridformat/grid/grid.hpp&gt;</code><br />
@@ -142,6 +145,15 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1PVTRWriter.html">GridFormat::PVTRWriter&lt; Grid, Communicator &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> for parallel .pvtr files.  <a href="classGridFormat_1_1PVTRWriter.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1WritesConnectivity_3_01PVTRWriter_3_01Args_8_8_8_01_4_01_4.html">GridFormat::Traits::WritesConnectivity&lt; PVTRWriter&lt; Args... &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ac30fa1d6816941dc99052b940e14aa2f"><td class="memTemplParams" colspan="2"><a id="ac30fa1d6816941dc99052b940e14aa2f" name="ac30fa1d6816941dc99052b940e14aa2f"></a>
+template&lt;typename G , Concepts::Communicator C&gt; </td></tr>
+<tr class="memitem:ac30fa1d6816941dc99052b940e14aa2f"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::PVTRWriter</b> (G &amp;&amp;, const C &amp;, VTK::XMLOptions={}) -&gt; PVTRWriter&lt; std::remove_cvref_t&lt; G &gt;, C &gt;</td></tr>
+<tr class="separator:ac30fa1d6816941dc99052b940e14aa2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

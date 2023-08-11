@@ -121,45 +121,48 @@ $(document).ready(function(){initNavTree('hdf__common_8hpp.html',''); initResiza
 
 <p>Common functionality for writing VTK HDF files.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;type_traits&gt;</code><br />
-<code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;ranges&gt;</code><br />
-<code>#include &lt;highfive/H5Easy.hpp&gt;</code><br />
-<code>#include &lt;highfive/H5File.hpp&gt;</code><br />
-<code>#include &lt;gridformat/common/logging.hpp&gt;</code><br />
+<div class="textblock"><code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;numeric&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;gridformat/common/hdf5.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/lazy_field.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/string_conversion.hpp&gt;</code><br />
-<code>#include &lt;gridformat/parallel/communication.hpp&gt;</code><br />
-<code>#include &lt;gridformat/grid/grid.hpp&gt;</code><br />
 </div>
 <p><a href="hdf__common_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1VTK_1_1HDFTransientOptions.html">GridFormat::VTK::HDFTransientOptions</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1VTKHDF_1_1DataSetSlice.html">GridFormat::VTKHDF::DataSetSlice</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1VTKHDF_1_1DataSetPath.html">GridFormat::VTKHDF::DataSetPath</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for transient vtk-hdf file formats.  <a href="structGridFormat_1_1VTK_1_1HDFTransientOptions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1VTKHDF_1_1IOContext.html">GridFormat::VTKHDF::IOContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper class to store processor offsets in parallel writes.  <a href="structGridFormat_1_1VTKHDF_1_1IOContext.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1VTKHDF_1_1AsciiString.html">GridFormat::VTKHDF::AsciiString</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKHDF_1_1HDF5File.html">GridFormat::VTKHDF::HDF5File&lt; Communicator &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKHDF_1_1DataSetField.html">GridFormat::VTKHDF::DataSetField&lt; C &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classGridFormat_1_1Field.html" title="Abstract interface for fields of values that is used by writers/readers to store fields.">Field</a> implementation that draws values from an open HDF5 file upon request.  <a href="classGridFormat_1_1VTKHDF_1_1DataSetField.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aa5b743a7605683506567d6e741e75221"><td class="memItemLeft" align="right" valign="top"><a id="aa5b743a7605683506567d6e741e75221" name="aa5b743a7605683506567d6e741e75221"></a>
-HighFive::DataTransferProps&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTKHDF::Detail::parallel_transfer_props</b> ()</td></tr>
-<tr class="separator:aa5b743a7605683506567d6e741e75221"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ad25cfec6fbddf42ef630a7a57e0c0d"><td class="memTemplParams" colspan="2"><a id="a2ad25cfec6fbddf42ef630a7a57e0c0d" name="a2ad25cfec6fbddf42ef630a7a57e0c0d"></a>
-template&lt;Concepts::Communicator Communicator&gt; </td></tr>
-<tr class="memitem:a2ad25cfec6fbddf42ef630a7a57e0c0d"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::VTKHDF::Detail::parallel_file_access_props</b> (const Communicator &amp;communicator)</td></tr>
-<tr class="separator:a2ad25cfec6fbddf42ef630a7a57e0c0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8467c5e7708992275e2cb47356294eb9"><td class="memItemLeft" align="right" valign="top"><a id="a8467c5e7708992275e2cb47356294eb9" name="a8467c5e7708992275e2cb47356294eb9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTKHDF::Detail::check_successful_collective_io</b> (const HighFive::DataTransferProps &amp;xfer_props)</td></tr>
-<tr class="separator:a8467c5e7708992275e2cb47356294eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44ced24161c932402c79590024671360"><td class="memTemplParams" colspan="2"><a id="a44ced24161c932402c79590024671360" name="a44ced24161c932402c79590024671360"></a>
+template&lt;typename C &gt; </td></tr>
+<tr class="memitem:a44ced24161c932402c79590024671360"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::VTKHDF::DataSetField</b> (const HDF5::File&lt; C &gt; &amp;, std::string) -&gt; DataSetField&lt; C &gt;</td></tr>
+<tr class="separator:a44ced24161c932402c79590024671360"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79bcde74ed94aee114f177fe131595f6"><td class="memTemplParams" colspan="2"><a id="a79bcde74ed94aee114f177fe131595f6" name="a79bcde74ed94aee114f177fe131595f6"></a>
+template&lt;typename C , typename CB &gt; </td></tr>
+<tr class="memitem:a79bcde74ed94aee114f177fe131595f6"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::VTKHDF::DataSetField</b> (const HDF5::File&lt; C &gt; &amp;, MDLayout, DynamicPrecision, CB &amp;&amp;) -&gt; DataSetField&lt; C &gt;</td></tr>
+<tr class="separator:a79bcde74ed94aee114f177fe131595f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e7214ca418a6b8d6850513e929d468d"><td class="memTemplParams" colspan="2"><a id="a6e7214ca418a6b8d6850513e929d468d" name="a6e7214ca418a6b8d6850513e929d468d"></a>
+template&lt;typename C &gt; </td></tr>
+<tr class="memitem:a6e7214ca418a6b8d6850513e929d468d"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::VTKHDF::get_file_type</b> (const HDF5::File&lt; C &gt; &amp;file)</td></tr>
+<tr class="memdesc:a6e7214ca418a6b8d6850513e929d468d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the vtk-hdf file type from an hdf5 file. <br /></td></tr>
+<tr class="separator:a6e7214ca418a6b8d6850513e929d468d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a142373cff142be920f5afb60aa21f974"><td class="memTemplParams" colspan="2"><a id="a142373cff142be920f5afb60aa21f974" name="a142373cff142be920f5afb60aa21f974"></a>
+template&lt;typename C &gt; </td></tr>
+<tr class="memitem:a142373cff142be920f5afb60aa21f974"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::VTKHDF::check_version_compatibility</b> (const HDF5::File&lt; C &gt; &amp;file, const std::array&lt; std::size_t, 2 &gt; &amp;supported)</td></tr>
+<tr class="memdesc:a142373cff142be920f5afb60aa21f974"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check that the version stated in the file is supported. <br /></td></tr>
+<tr class="separator:a142373cff142be920f5afb60aa21f974"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

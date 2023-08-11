@@ -113,7 +113,8 @@ $(document).ready(function(){initNavTree('vtr__writer_8hpp.html',''); initResiza
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">vtr_writer.hpp File Reference<div class="ingroups"><a class="el" href="group__VTK.html">VTK</a></div></div></div>
 </div><!--header-->
 <div class="contents">
@@ -124,8 +125,9 @@ $(document).ready(function(){initNavTree('vtr__writer_8hpp.html',''); initResiza
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;iterator&gt;</code><br />
-<code>#include &lt;gridformat/common/field.hpp&gt;</code><br />
+<code>#include &lt;<a class="el" href="field_8hpp_source.html">gridformat/common/field.hpp</a>&gt;</code><br />
 <code>#include &lt;gridformat/common/field_storage.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/lvalue_reference.hpp&gt;</code><br />
 <code>#include &lt;gridformat/grid/grid.hpp&gt;</code><br />
 <code>#include &lt;gridformat/grid/type_traits.hpp&gt;</code><br />
 <code>#include &lt;<a class="el" href="vtk_2common_8hpp_source.html">gridformat/vtk/common.hpp</a>&gt;</code><br />
@@ -142,6 +144,15 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1VTRWriter_1_1Domain.html">GridFormat::VTRWriter&lt; Grid &gt;::Domain</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1WritesConnectivity_3_01VTRWriter_3_01Args_8_8_8_01_4_01_4.html">GridFormat::Traits::WritesConnectivity&lt; VTRWriter&lt; Args... &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a99c349f2864dbbef77447147fba9f1aa"><td class="memTemplParams" colspan="2"><a id="a99c349f2864dbbef77447147fba9f1aa" name="a99c349f2864dbbef77447147fba9f1aa"></a>
+template&lt;typename G &gt; </td></tr>
+<tr class="memitem:a99c349f2864dbbef77447147fba9f1aa"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::VTRWriter</b> (G &amp;&amp;, VTK::XMLOptions={}) -&gt; VTRWriter&lt; std::remove_cvref_t&lt; G &gt; &gt;</td></tr>
+<tr class="separator:a99c349f2864dbbef77447147fba9f1aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

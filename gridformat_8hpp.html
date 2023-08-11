@@ -114,28 +114,41 @@ $(document).ready(function(){initNavTree('gridformat_8hpp.html',''); initResizab
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">gridformat.hpp File Reference<div class="ingroups"><a class="el" href="group__API.html">API</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>This file is the entrypoint to the high-level API exposing all provided writers through a unified interface.  
+<p>This file is the entrypoint to the high-level API exposing all provided readers/writers through a unified interface.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;type_traits&gt;</code><br />
+<div class="textblock"><code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;type_traits&gt;</code><br />
+<code>#include &lt;gridformat/reader.hpp&gt;</code><br />
 <code>#include &lt;<a class="el" href="writer_8hpp_source.html">gridformat/writer.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="converter_8hpp_source.html">gridformat/grid/converter.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="image__grid_8hpp_source.html">gridformat/grid/image_grid.hpp</a>&gt;</code><br />
+<code>#include &lt;gridformat/common/exceptions.hpp&gt;</code><br />
+<code>#include &lt;gridformat/parallel/communication.hpp&gt;</code><br />
+<code>#include &lt;<a class="el" href="vti__reader_8hpp_source.html">gridformat/vtk/vti_reader.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="vti__writer_8hpp_source.html">gridformat/vtk/vti_writer.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="vtr__writer_8hpp_source.html">gridformat/vtk/vtr_writer.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="vts__writer_8hpp_source.html">gridformat/vtk/vts_writer.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="vtp__writer_8hpp_source.html">gridformat/vtk/vtp_writer.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="vtu__writer_8hpp_source.html">gridformat/vtk/vtu_writer.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="pvti__writer_8hpp_source.html">gridformat/vtk/pvti_writer.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="vtr__reader_8hpp_source.html">gridformat/vtk/vtr_reader.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="vtr__writer_8hpp_source.html">gridformat/vtk/vtr_writer.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="pvtr__writer_8hpp_source.html">gridformat/vtk/pvtr_writer.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="vts__reader_8hpp_source.html">gridformat/vtk/vts_reader.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="vts__writer_8hpp_source.html">gridformat/vtk/vts_writer.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="pvts__writer_8hpp_source.html">gridformat/vtk/pvts_writer.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="vtp__reader_8hpp_source.html">gridformat/vtk/vtp_reader.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="vtp__writer_8hpp_source.html">gridformat/vtk/vtp_writer.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="pvtp__writer_8hpp_source.html">gridformat/vtk/pvtp_writer.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="vtu__writer_8hpp_source.html">gridformat/vtk/vtu_writer.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="vtu__reader_8hpp_source.html">gridformat/vtk/vtu_reader.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="pvtu__writer_8hpp_source.html">gridformat/vtk/pvtu_writer.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="xml__time__series__writer_8hpp_source.html">gridformat/vtk/xml_time_series_writer.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="pvd__reader_8hpp_source.html">gridformat/vtk/pvd_reader.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="pvd__writer_8hpp_source.html">gridformat/vtk/pvd_writer.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="xml__time__series__writer_8hpp_source.html">gridformat/vtk/xml_time_series_writer.hpp</a>&gt;</code><br />
 </div><a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The individual writer can also be used directly, for instance, if one wants to minimize compile times. All available writers can be seen in the lists of includes of this file. For instructions on how to use the API, have a look at the readme or the provided examples. </p>
 </div>
@@ -148,6 +161,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html">GridFormat::FileFormat::VTKXMLFormatBase&lt; VTKFormat &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for VTK-XML formats.  <a href="structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1FileFormat_1_1Any.html">GridFormat::FileFormat::Any</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selector for an unspecified file format. When using this format, GridFormat will automatically select a format or deduce from a file being read, for instance.  <a href="structGridFormat_1_1FileFormat_1_1Any.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1FileFormat_1_1VTI.html">GridFormat::FileFormat::VTI</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selector for the .vti/.pvti image grid file format to be passed to the <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a>.  <a href="structGridFormat_1_1FileFormat_1_1VTI.html#details">More...</a><br /></td></tr>
@@ -197,17 +213,32 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTI_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTI &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the .vti format.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTI_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTI_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::VTI &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the .vti format.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTI_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTR_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTR &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the .vtr format.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTR_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTR_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::VTR &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the .vtr format.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTR_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTS_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTS &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the .vts format.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTS_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTS_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::VTS &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the .vts format.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTS_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTP_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTP &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the .vtp format.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTP_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTP_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::VTP &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the .vtp format.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTP_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTU_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTU &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the .vtu format.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTU_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTU_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::VTU &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the .vtu format.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTU_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKXMLTimeSeries_3_01F_01_4_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTKXMLTimeSeries&lt; F &gt; &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for vtk-xml time series.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKXMLTimeSeries_3_01F_01_4_01_4.html#details">More...</a><br /></td></tr>
@@ -215,27 +246,63 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFImage_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTKHDFImage &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the vtk-hdf image grid format.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFImage_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFImage_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::VTKHDFImage &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the vtk-hdf image grid format.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFImage_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFImageTransient_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTKHDFImageTransient &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the transient vtk-hdf image grid format.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFImageTransient_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFImageTransient_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::VTKHDFImageTransient &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the transient vtk-hdf image grid format.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFImageTransient_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFUnstructured_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTKHDFUnstructured &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the vtk-hdf unstructured grid format.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFUnstructured_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFUnstructured_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::VTKHDFUnstructured &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the vtk-hdf unstructured grid format.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFUnstructured_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFUnstructuredTransient_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTKHDFUnstructuredTransient &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the transient vtk-hdf unstructured grid format.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFUnstructuredTransient_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFUnstructuredTransient_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::VTKHDFUnstructuredTransient &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the vtk-hdf unstructured grid format.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFUnstructuredTransient_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDF_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTKHDF &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the vtk-hdf file format with automatic flavour selection.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDF_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDF_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::VTKHDF &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the vtk-hdf file format with automatic flavour selection.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDF_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFTransient_01_4.html">GridFormat::WriterFactory&lt; FileFormat::VTKHDFTransient &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the transient vtk-hdf file format with automatic flavour selection.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTKHDFTransient_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFTransient_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::VTKHDFTransient &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the transient vtk-hdf file format with automatic flavour selection.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFTransient_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1PVD_3_01F_01_4_01_4.html">GridFormat::WriterFactory&lt; FileFormat::PVD&lt; F &gt; &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the .pvd time series format.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1PVD_3_01F_01_4_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVD_3_01PieceFormat_01_4_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::PVD&lt; PieceFormat &gt; &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the .pvd time series file format.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVD_3_01PieceFormat_01_4_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVDClosure_01_4.html">GridFormat::ReaderFactory&lt; FileFormat::PVDClosure &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1ReaderFactory.html" title="Factory class to create a reader for the given file format.">ReaderFactory</a> for the .pvd time series closure type.  <a href="structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVDClosure_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1Any_01_4.html">GridFormat::WriterFactory&lt; FileFormat::Any &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialization of the <a class="el" href="structGridFormat_1_1WriterFactory.html" title="Factory class to create a writer for the given file format.">WriterFactory</a> for the any format selector.  <a href="structGridFormat_1_1WriterFactory_3_01FileFormat_1_1Any_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ga9b4d2325c9f5caed7dcb52bd022dbcf7"><td class="memTemplParams" colspan="2">template&lt;typename OutFormat , typename InFormat  = FileFormat::Any&gt; <br />
+requires (!Concepts::Communicator&lt;InFormat&gt;)</td></tr>
+<tr class="memitem:ga9b4d2325c9f5caed7dcb52bd022dbcf7"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__API.html#ga9b4d2325c9f5caed7dcb52bd022dbcf7">GridFormat::convert</a> (const std::string &amp;in, const std::string &amp;out, const OutFormat &amp;out_format, const InFormat &amp;in_format={})</td></tr>
+<tr class="memdesc:ga9b4d2325c9f5caed7dcb52bd022dbcf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert between grid file formats.  <br /></td></tr>
+<tr class="separator:ga9b4d2325c9f5caed7dcb52bd022dbcf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad4a7a7a5caa86c0b786d2bc085f59a26"><td class="memTemplParams" colspan="2">template&lt;typename OutFormat , Concepts::Communicator C, typename InFormat  = FileFormat::Any&gt; </td></tr>
+<tr class="memitem:gad4a7a7a5caa86c0b786d2bc085f59a26"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__API.html#gad4a7a7a5caa86c0b786d2bc085f59a26">GridFormat::convert</a> (const std::string &amp;in, const std::string &amp;out, const OutFormat &amp;out_format, const C &amp;communicator, const InFormat &amp;in_format={})</td></tr>
+<tr class="memdesc:gad4a7a7a5caa86c0b786d2bc085f59a26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert between parallel grid file formats.  <br /></td></tr>
+<tr class="separator:gad4a7a7a5caa86c0b786d2bc085f59a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga19ce8850e7c649e701a6cab52a3ad5a5"><td class="memTemplParams" colspan="2">template&lt;Concepts::Grid G&gt; </td></tr>
 <tr class="memitem:ga19ce8850e7c649e701a6cab52a3ad5a5"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5">GridFormat::Formats::default_for</a> ()</td></tr>
 <tr class="memdesc:ga19ce8850e7c649e701a6cab52a3ad5a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects a default format suitable to write the given grid.  <br /></td></tr>
@@ -247,7 +314,14 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
+<tr class="memitem:a86b425aee0f2f7c0a0deb3bd0ed5a7db"><td class="memItemLeft" align="right" valign="top"><a id="a86b425aee0f2f7c0a0deb3bd0ed5a7db" name="a86b425aee0f2f7c0a0deb3bd0ed5a7db"></a>
+constexpr GridFormat::NullCommunicator&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::null_communicator</b></td></tr>
+<tr class="memdesc:a86b425aee0f2f7c0a0deb3bd0ed5a7db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Null communicator that can be used e.g. to read parallel file formats sequentially. <br /></td></tr>
+<tr class="separator:a86b425aee0f2f7c0a0deb3bd0ed5a7db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">File Format Selectors</div></td></tr>
+<tr class="memitem:gaf8bbefbeb22feda2f7ad0dd6c7d272e3"><td class="memItemLeft" align="right" valign="top">
+constexpr FileFormat::Any&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::any</b></td></tr>
+<tr class="separator:gaf8bbefbeb22feda2f7ad0dd6c7d272e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gada0823d3c326f9ad36f25dd758c81a67"><td class="memItemLeft" align="right" valign="top">
 constexpr FileFormat::VTI&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::vti</b></td></tr>
 <tr class="separator:gada0823d3c326f9ad36f25dd758c81a67"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -263,9 +337,12 @@ constexpr FileFormat::VTP&#160;</td><td class="memItemRight" valign="bottom"><b>
 <tr class="memitem:ga9bc302a0e0248a09c98f2f37d335375c"><td class="memItemLeft" align="right" valign="top">
 constexpr FileFormat::VTU&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::vtu</b></td></tr>
 <tr class="separator:ga9bc302a0e0248a09c98f2f37d335375c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga19ec6cc0c616ec2d3843f84bea19011b"><td class="memItemLeft" align="right" valign="top">
-constexpr FileFormat::PVDClosure&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::pvd</b></td></tr>
-<tr class="separator:ga19ec6cc0c616ec2d3843f84bea19011b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga231cf8060433b66090b44263bc3ce8e1"><td class="memItemLeft" align="right" valign="top">
+constexpr FileFormat::PVD&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::pvd</b></td></tr>
+<tr class="separator:ga231cf8060433b66090b44263bc3ce8e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gacf6b1820c942e3bb74cd28b2cf44b0cd"><td class="memItemLeft" align="right" valign="top">
+constexpr FileFormat::PVDClosure&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::pvd_with</b></td></tr>
+<tr class="separator:gacf6b1820c942e3bb74cd28b2cf44b0cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa385d91dc7f7cce60faf7da4f5976ce6"><td class="memItemLeft" align="right" valign="top">
 constexpr FileFormat::TimeSeriesClosure&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::time_series</b></td></tr>
 <tr class="separator:gaa385d91dc7f7cce60faf7da4f5976ce6"><td class="memSeparator" colspan="2">&#160;</td></tr>

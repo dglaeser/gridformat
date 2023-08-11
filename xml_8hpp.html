@@ -113,12 +113,13 @@ $(document).ready(function(){initNavTree('xml_8hpp.html',''); initResizable(); }
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">xml.hpp File Reference<div class="ingroups"><a class="el" href="group__VTK.html">VTK</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Base class for VTK XML-type file format writers.  
+<p>Helper classes and functions for VTK XML-type file format writers &amp; readers.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;bit&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
@@ -128,14 +129,19 @@ $(document).ready(function(){initNavTree('xml_8hpp.html',''); initResizable(); }
 <code>#include &lt;functional&gt;</code><br />
 <code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;iterator&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;concepts&gt;</code><br />
 <code>#include &lt;gridformat/common/detail/crtp.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/callable_overload_set.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/optional_reference.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/exceptions.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/type_traits.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/variant.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/precision.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/logging.hpp&gt;</code><br />
-<code>#include &lt;gridformat/common/field.hpp&gt;</code><br />
+<code>#include &lt;<a class="el" href="field_8hpp_source.html">gridformat/common/field.hpp</a>&gt;</code><br />
+<code>#include &lt;gridformat/common/lazy_field.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/path.hpp&gt;</code><br />
 <code>#include &lt;<a class="el" href="base64_8hpp_source.html">gridformat/encoding/base64.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="ascii_8hpp_source.html">gridformat/encoding/ascii.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="raw_8hpp_source.html">gridformat/encoding/raw.hpp</a>&gt;</code><br />
@@ -146,6 +152,7 @@ $(document).ready(function(){initNavTree('xml_8hpp.html',''); initResizable(); }
 <code>#include &lt;<a class="el" href="grid_2writer_8hpp_source.html">gridformat/grid/writer.hpp</a>&gt;</code><br />
 <code>#include &lt;gridformat/grid/grid.hpp&gt;</code><br />
 <code>#include &lt;gridformat/xml/element.hpp&gt;</code><br />
+<code>#include &lt;gridformat/xml/parser.hpp&gt;</code><br />
 <code>#include &lt;<a class="el" href="vtk_2common_8hpp_source.html">gridformat/vtk/common.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="attributes_8hpp_source.html">gridformat/vtk/attributes.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="data__array_8hpp_source.html">gridformat/vtk/data_array.hpp</a>&gt;</code><br />
@@ -163,6 +170,24 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1VTK_1_1XMLWriterBase_1_1WriteContext.html">GridFormat::VTK::XMLWriterBase&lt; G, Impl &gt;::WriteContext</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTK_1_1XMLReaderHelper.html">GridFormat::VTK::XMLReaderHelper</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper class for VTK-XML readers to use.  <a href="classGridFormat_1_1VTK_1_1XMLReaderHelper.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga13cac6a5ca9985b3b6b6997ab983566d"><td class="memItemLeft" align="right" valign="top">
+std::ranges::range auto&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTK::XML::data_arrays</b> (const XMLElement &amp;e)</td></tr>
+<tr class="memdesc:ga13cac6a5ca9985b3b6b6997ab983566d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a range over all data array elements in the given xml section. <br /></td></tr>
+<tr class="separator:ga13cac6a5ca9985b3b6b6997ab983566d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga22370aa4c6eb8a632b6cd0f56056557d"><td class="memItemLeft" align="right" valign="top">
+std::ranges::range auto&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTK::XML::data_array_names</b> (const XMLElement &amp;e)</td></tr>
+<tr class="memdesc:ga22370aa4c6eb8a632b6cd0f56056557d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a range over the names of all data array elements in the given xml section. <br /></td></tr>
+<tr class="separator:ga22370aa4c6eb8a632b6cd0f56056557d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga366c38cd2ebfa955b93b2a9a667e927a"><td class="memItemLeft" align="right" valign="top">
+const XMLElement &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTK::XML::get_data_array</b> (std::string_view name, const XMLElement &amp;section)</td></tr>
+<tr class="memdesc:ga366c38cd2ebfa955b93b2a9a667e927a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the data array element with the given name within the given xml section. <br /></td></tr>
+<tr class="separator:ga366c38cd2ebfa955b93b2a9a667e927a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

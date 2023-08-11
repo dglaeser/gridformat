@@ -113,14 +113,17 @@ $(document).ready(function(){initNavTree('pvtu__writer_8hpp.html',''); initResiz
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">pvtu_writer.hpp File Reference<div class="ingroups"><a class="el" href="group__VTK.html">VTK</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;ostream&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
 <code>#include &lt;gridformat/common/exceptions.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/lvalue_reference.hpp&gt;</code><br />
 <code>#include &lt;gridformat/parallel/communication.hpp&gt;</code><br />
 <code>#include &lt;gridformat/parallel/helpers.hpp&gt;</code><br />
 <code>#include &lt;gridformat/grid/grid.hpp&gt;</code><br />
@@ -137,6 +140,13 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1PVTUWriter.html">GridFormat::PVTUWriter&lt; Grid, Communicator &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> for parallel .pvtu files.  <a href="classGridFormat_1_1PVTUWriter.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a23a7f0f267bb084379aae559bbbdb33e"><td class="memTemplParams" colspan="2"><a id="a23a7f0f267bb084379aae559bbbdb33e" name="a23a7f0f267bb084379aae559bbbdb33e"></a>
+template&lt;typename G , Concepts::Communicator C&gt; </td></tr>
+<tr class="memitem:a23a7f0f267bb084379aae559bbbdb33e"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::PVTUWriter</b> (G &amp;&amp;, const C &amp;, VTK::XMLOptions={}) -&gt; PVTUWriter&lt; std::remove_cvref_t&lt; G &gt;, C &gt;</td></tr>
+<tr class="separator:a23a7f0f267bb084379aae559bbbdb33e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

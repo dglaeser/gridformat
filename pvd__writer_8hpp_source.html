@@ -127,101 +127,116 @@ $(document).ready(function(){initNavTree('pvd__writer_8hpp_source.html',''); ini
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;ranges&gt;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;gridformat/xml/element.hpp&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;<a class="code" href="grid_2writer_8hpp.html">gridformat/grid/writer.hpp</a>&gt;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;gridformat/grid.hpp&gt;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span>GridFormat {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;filesystem&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;gridformat/parallel/communication.hpp&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;gridformat/xml/element.hpp&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;<a class="code" href="grid_2writer_8hpp.html">gridformat/grid/writer.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;gridformat/grid.hpp&gt;</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#ifndef DOXYGEN</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span>Detail {</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> W&gt;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">class </span>WriterStorage {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>     <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">explicit</span> WriterStorage(W&amp;&amp; w) : _w(std::move(w)) {}</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>     <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        W&amp; _writer() { <span class="keywordflow">return</span> _w; }</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keyword">const</span> W&amp; _writer()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _w; }</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>     <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        W _w;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    };</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}  <span class="comment">// namespace Detail</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="preprocessor">#endif  </span><span class="comment">// DOXYGEN</span></div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VTKWriter&gt;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classGridFormat_1_1PVDWriter.html">   49</a></span><span class="keyword">class </span><a class="code hl_class" href="classGridFormat_1_1PVDWriter.html">PVDWriter</a> : <span class="keyword">public</span> Detail::WriterStorage&lt;VTKWriter&gt;,</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                  <span class="keyword">public</span> <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">TimeSeriesGridWriter</a>&lt;typename VTKWriter::Grid&gt; {</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">using </span>Storage = Detail::WriterStorage&lt;VTKWriter&gt;;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">using </span><a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">ParentType</a> = <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">TimeSeriesGridWriter&lt;typename VTKWriter::Grid&gt;</a>;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1PVDWriter.html">PVDWriter</a>(VTKWriter&amp;&amp; writer, std::string base_filename)</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    : Storage(std::move(writer))</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    , <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">ParentType</a>(Storage::_writer().grid(), Storage::_writer().writer_options())</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    , _base_filename{std::move(base_filename)}</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    , _pvd_filename{_base_filename + <span class="stringliteral">&quot;.pvd&quot;</span>}</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    , _xml{<span class="stringliteral">&quot;VTKFile&quot;</span>} {</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        _xml.set_attribute(<span class="stringliteral">&quot;type&quot;</span>, <span class="stringliteral">&quot;Collection&quot;</span>);</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        _xml.set_attribute(<span class="stringliteral">&quot;version&quot;</span>, <span class="stringliteral">&quot;1.0&quot;</span>);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        _xml.add_child(<span class="stringliteral">&quot;Collection&quot;</span>);</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        this-&gt;_writer().clear();</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    std::string _write(<span class="keywordtype">double</span> _time)<span class="keyword"> override </span>{</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">const</span> <span class="keyword">auto</span> time_step_index = _xml.get_child(<span class="stringliteral">&quot;Collection&quot;</span>).num_children();</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">const</span> <span class="keyword">auto</span> vtk_filename = _write_time_step_file(time_step_index);</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        _add_dataset(_time, vtk_filename);</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        std::ofstream pvd_file(_pvd_filename, std::ios::out);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        write_xml_with_version_header(_xml, pvd_file, Indentation{{.width = 2}});</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">return</span> _pvd_filename;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::string _write_time_step_file(<span class="keyword">const</span> std::integral <span class="keyword">auto</span> index) {</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        this-&gt;copy_fields(this-&gt;_writer());</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keyword">const</span> <span class="keyword">auto</span> filename = this-&gt;_writer().write(</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            _base_filename + <span class="stringliteral">&quot;-&quot;</span> + _get_file_number_string(index)</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        );</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        this-&gt;_writer().clear();</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">return</span> filename;</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    std::string _get_file_number_string(<span class="keyword">const</span> std::integral <span class="keyword">auto</span> index)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        std::ostringstream file_number;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        file_number &lt;&lt; std::setw(5) &lt;&lt; std::setfill(<span class="charliteral">&#39;0&#39;</span>) &lt;&lt; index;</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">return</span> file_number.str();</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    XMLElement&amp; _add_dataset(<span class="keyword">const</span> Concepts::Scalar <span class="keyword">auto</span> _time, <span class="keyword">const</span> std::string&amp; filename) {</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keyword">auto</span>&amp; dataset = _xml.get_child(<span class="stringliteral">&quot;Collection&quot;</span>).add_child(<span class="stringliteral">&quot;DataSet&quot;</span>);</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        dataset.set_attribute(<span class="stringliteral">&quot;timestep&quot;</span>, _time);</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        dataset.set_attribute(<span class="stringliteral">&quot;group&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        dataset.set_attribute(<span class="stringliteral">&quot;part&quot;</span>, <span class="stringliteral">&quot;0&quot;</span>);</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        dataset.set_attribute(<span class="stringliteral">&quot;name&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        dataset.set_attribute(<span class="stringliteral">&quot;file&quot;</span>, filename);</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordflow">return</span> dataset;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    std::string _base_filename;</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    std::string _pvd_filename;</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    XMLElement _xml;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>};</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VTKWriter&gt;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><a class="code hl_class" href="classGridFormat_1_1PVDWriter.html">PVDWriter</a>(VTKWriter&amp;&amp;) -&gt; <a class="code hl_class" href="classGridFormat_1_1PVDWriter.html">PVDWriter&lt;std::remove_cvref_t&lt;VTKWriter&gt;</a>&gt;;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}  <span class="comment">// namespace GridFormat</span></div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_PVD_WRITER_HPP_</span></div>
-<div class="ttc" id="aclassGridFormat_1_1PVDWriter_html"><div class="ttname"><a href="classGridFormat_1_1PVDWriter.html">GridFormat::PVDWriter</a></div><div class="ttdoc">Writer for .pvd time-series file format.</div><div class="ttdef"><b>Definition:</b> pvd_writer.hpp:50</div></div>
-<div class="ttc" id="aclassGridFormat_1_1TimeSeriesGridWriter_html"><div class="ttname"><a href="classGridFormat_1_1TimeSeriesGridWriter.html">GridFormat::TimeSeriesGridWriter</a></div><div class="ttdoc">Abstract base class for time series file writers.</div><div class="ttdef"><b>Definition:</b> writer.hpp:296</div></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span>GridFormat {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#ifndef DOXYGEN</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">namespace </span>PVDDetail {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> W&gt;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">class </span>WriterStorage {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>     <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">explicit</span> WriterStorage(W&amp;&amp; w) : _w(std::move(w)) {}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>     <span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        W&amp; _writer() { <span class="keywordflow">return</span> _w; }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">const</span> W&amp; _writer()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _w; }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>     <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        W _w;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    };</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}  <span class="comment">// namespace PVDDetail</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="preprocessor">#endif  </span><span class="comment">// DOXYGEN</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VTKWriter&gt;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classGridFormat_1_1PVDWriter.html">   51</a></span><span class="keyword">class </span><a class="code hl_class" href="classGridFormat_1_1PVDWriter.html">PVDWriter</a> : <span class="keyword">public</span> PVDDetail::WriterStorage&lt;VTKWriter&gt;,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                  <span class="keyword">public</span> <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">TimeSeriesGridWriter</a>&lt;typename VTKWriter::Grid&gt; {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">using </span>Storage = PVDDetail::WriterStorage&lt;VTKWriter&gt;;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">using </span><a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">ParentType</a> = <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">TimeSeriesGridWriter&lt;typename VTKWriter::Grid&gt;</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1PVDWriter.html">PVDWriter</a>(VTKWriter&amp;&amp; writer, std::string base_filename)</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    : Storage(std::move(writer))</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    , <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">ParentType</a>(Storage::_writer().grid(), Storage::_writer().writer_options())</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    , _base_filename{std::move(base_filename)}</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    , _pvd_filename{_base_filename + <span class="stringliteral">&quot;.pvd&quot;</span>}</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    , _xml{<span class="stringliteral">&quot;VTKFile&quot;</span>} {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        _xml.set_attribute(<span class="stringliteral">&quot;type&quot;</span>, <span class="stringliteral">&quot;Collection&quot;</span>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        _xml.set_attribute(<span class="stringliteral">&quot;version&quot;</span>, <span class="stringliteral">&quot;1.0&quot;</span>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        _xml.add_child(<span class="stringliteral">&quot;Collection&quot;</span>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        this-&gt;_writer().clear();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::string _write(<span class="keywordtype">double</span> _time)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">const</span> <span class="keyword">auto</span> time_step_index = _xml.get_child(<span class="stringliteral">&quot;Collection&quot;</span>).number_of_children();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">const</span> <span class="keyword">auto</span> vtk_filename = _write_time_step_file(time_step_index);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        _add_dataset(_time, vtk_filename);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; communicator = <a class="code hl_struct" href="structGridFormat_1_1Traits_1_1CommunicatorAccess.html">Traits::CommunicatorAccess&lt;VTKWriter&gt;::get</a>(this-&gt;_writer());</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">if</span> (Parallel::rank(communicator) == 0) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            std::ofstream pvd_file(_pvd_filename, std::ios::out);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            write_xml_with_version_header(_xml, pvd_file, Indentation{{.width = 2}});</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        Parallel::barrier(communicator);  <span class="comment">// make sure all process exit here after the pvd file is written</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">return</span> _pvd_filename;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    std::string _write_time_step_file(<span class="keyword">const</span> std::integral <span class="keyword">auto</span> index) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        this-&gt;copy_fields(this-&gt;_writer());</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keyword">const</span> <span class="keyword">auto</span> filename = this-&gt;_writer().write(</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            _base_filename + <span class="stringliteral">&quot;-&quot;</span> + _get_file_number_string(index)</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        );</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        this-&gt;_writer().clear();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">return</span> filename;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    std::string _get_file_number_string(<span class="keyword">const</span> std::integral <span class="keyword">auto</span> index)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        std::ostringstream file_number;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        file_number &lt;&lt; std::setw(5) &lt;&lt; std::setfill(<span class="charliteral">&#39;0&#39;</span>) &lt;&lt; index;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">return</span> file_number.str();</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    XMLElement&amp; _add_dataset(<span class="keyword">const</span> Concepts::Scalar <span class="keyword">auto</span> _time, <span class="keyword">const</span> std::string&amp; filename) {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keyword">auto</span>&amp; dataset = _xml.get_child(<span class="stringliteral">&quot;Collection&quot;</span>).add_child(<span class="stringliteral">&quot;DataSet&quot;</span>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        dataset.set_attribute(<span class="stringliteral">&quot;timestep&quot;</span>, _time);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        dataset.set_attribute(<span class="stringliteral">&quot;group&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        dataset.set_attribute(<span class="stringliteral">&quot;part&quot;</span>, <span class="stringliteral">&quot;0&quot;</span>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        dataset.set_attribute(<span class="stringliteral">&quot;name&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        dataset.set_attribute(<span class="stringliteral">&quot;file&quot;</span>, std::filesystem::path{filename}.filename());</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordflow">return</span> dataset;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    std::string _base_filename;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    std::filesystem::path _pvd_filename;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    XMLElement _xml;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>};</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VTKWriter&gt;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><a class="code hl_class" href="classGridFormat_1_1PVDWriter.html">PVDWriter</a>(VTKWriter&amp;&amp;) -&gt; <a class="code hl_class" href="classGridFormat_1_1PVDWriter.html">PVDWriter&lt;std::remove_cvref_t&lt;VTKWriter&gt;</a>&gt;;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="keyword">namespace </span>Traits {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VTKWriter&gt;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="structGridFormat_1_1Traits_1_1WritesConnectivity_3_01PVDWriter_3_01VTKWriter_01_4_01_4.html">  121</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structGridFormat_1_1Traits_1_1WritesConnectivity.html">WritesConnectivity</a>&lt;<a class="code hl_class" href="classGridFormat_1_1PVDWriter.html">PVDWriter</a>&lt;VTKWriter&gt;&gt; : <span class="keyword">public</span> <a class="code hl_struct" href="structGridFormat_1_1Traits_1_1WritesConnectivity.html">WritesConnectivity</a>&lt;VTKWriter&gt; {};</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}  <span class="comment">// namespace Traits</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}  <span class="comment">// namespace GridFormat</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_PVD_WRITER_HPP_</span></div>
+<div class="ttc" id="aclassGridFormat_1_1PVDWriter_html"><div class="ttname"><a href="classGridFormat_1_1PVDWriter.html">GridFormat::PVDWriter</a></div><div class="ttdoc">Writer for .pvd time-series file format.</div><div class="ttdef"><b>Definition:</b> pvd_writer.hpp:52</div></div>
+<div class="ttc" id="aclassGridFormat_1_1TimeSeriesGridWriter_html"><div class="ttname"><a href="classGridFormat_1_1TimeSeriesGridWriter.html">GridFormat::TimeSeriesGridWriter</a></div><div class="ttdoc">Abstract base class for time series file writers.</div><div class="ttdef"><b>Definition:</b> writer.hpp:334</div></div>
 <div class="ttc" id="agrid_2writer_8hpp_html"><div class="ttname"><a href="grid_2writer_8hpp.html">writer.hpp</a></div><div class="ttdoc">Base classes for grid data writers.</div></div>
+<div class="ttc" id="astructGridFormat_1_1Traits_1_1CommunicatorAccess_html"><div class="ttname"><a href="structGridFormat_1_1Traits_1_1CommunicatorAccess.html">GridFormat::Traits::CommunicatorAccess</a></div><div class="ttdoc">Can be specialized by parallel writers to expose their underlying communicator.</div><div class="ttdef"><b>Definition:</b> writer.hpp:40</div></div>
+<div class="ttc" id="astructGridFormat_1_1Traits_1_1WritesConnectivity_html"><div class="ttname"><a href="structGridFormat_1_1Traits_1_1WritesConnectivity.html">GridFormat::Traits::WritesConnectivity</a></div><div class="ttdoc">Can be specialized by writers in case the file format does not contain connectivity information.</div><div class="ttdef"><b>Definition:</b> writer.hpp:36</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->

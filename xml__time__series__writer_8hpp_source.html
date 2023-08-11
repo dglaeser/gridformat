@@ -128,49 +128,49 @@ $(document).ready(function(){initNavTree('xml__time__series__writer_8hpp_source.
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>GridFormat {</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VTKWriter&gt;</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">   24</a></span><span class="keyword">class </span><a class="code hl_class" href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">VTKXMLTimeSeriesWriter</a> : <span class="keyword">public</span> <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">TimeSeriesGridWriter</a>&lt;typename VTKWriter::Grid&gt; {</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">using </span><a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">ParentType</a> = <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">TimeSeriesGridWriter&lt;typename VTKWriter::Grid&gt;</a>;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">VTKXMLTimeSeriesWriter</a>(VTKWriter&amp;&amp; writer, std::string base_filename)</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    : <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">ParentType</a>(writer.grid(), writer.writer_options())</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    , _vtk_writer{std::move(writer)}</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    , _base_filename{std::move(base_filename)}</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    {}</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    std::string _write(<span class="keywordtype">double</span> _time)<span class="keyword"> override </span>{</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        this-&gt;copy_fields(_vtk_writer);</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        _vtk_writer.set_meta_data(<span class="stringliteral">&quot;TimeValue&quot;</span>, _time);</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">const</span> <span class="keyword">auto</span> filename = _vtk_writer.write(_get_filename(this-&gt;_step_count));</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        _vtk_writer.clear();</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">return</span> filename;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    std::string _get_filename(<span class="keyword">const</span> std::integral <span class="keyword">auto</span> index)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">return</span> _base_filename + <span class="stringliteral">&quot;-&quot;</span> + _get_file_number_string(index);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    }</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::string _get_file_number_string(<span class="keyword">const</span> std::integral <span class="keyword">auto</span> index)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        std::ostringstream file_number;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        file_number &lt;&lt; std::setw(5) &lt;&lt; std::setfill(<span class="charliteral">&#39;0&#39;</span>) &lt;&lt; index;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">return</span> file_number.str();</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    VTKWriter _vtk_writer;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    std::string _base_filename;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::string _pvd_filename;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VTKWriter&gt;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><a class="code hl_class" href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">VTKXMLTimeSeriesWriter</a>(VTKWriter&amp;&amp;) -&gt; <a class="code hl_class" href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">VTKXMLTimeSeriesWriter&lt;std::remove_cvref_t&lt;VTKWriter&gt;</a>&gt;;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}  <span class="comment">// namespace GridFormat</span></div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_XML_TIME_SERIES_WRITER_HPP_</span></div>
-<div class="ttc" id="aclassGridFormat_1_1TimeSeriesGridWriter_html"><div class="ttname"><a href="classGridFormat_1_1TimeSeriesGridWriter.html">GridFormat::TimeSeriesGridWriter</a></div><div class="ttdoc">Abstract base class for time series file writers.</div><div class="ttdef"><b>Definition:</b> writer.hpp:296</div></div>
-<div class="ttc" id="aclassGridFormat_1_1VTKXMLTimeSeriesWriter_html"><div class="ttname"><a href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">GridFormat::VTKXMLTimeSeriesWriter</a></div><div class="ttdoc">TODO: Doc me.</div><div class="ttdef"><b>Definition:</b> xml_time_series_writer.hpp:24</div></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VTKWriter&gt;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">   25</a></span><span class="keyword">class </span><a class="code hl_class" href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">VTKXMLTimeSeriesWriter</a> : <span class="keyword">public</span> <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">TimeSeriesGridWriter</a>&lt;typename VTKWriter::Grid&gt; {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">using </span><a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">ParentType</a> = <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">TimeSeriesGridWriter&lt;typename VTKWriter::Grid&gt;</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">VTKXMLTimeSeriesWriter</a>(VTKWriter&amp;&amp; writer, std::string base_filename)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    : <a class="code hl_class" href="classGridFormat_1_1TimeSeriesGridWriter.html">ParentType</a>(writer.grid(), writer.writer_options())</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    , _vtk_writer{std::move(writer)}</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    , _base_filename{std::move(base_filename)}</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    {}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    std::string _write(<span class="keywordtype">double</span> _time)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        this-&gt;copy_fields(_vtk_writer);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        _vtk_writer.set_meta_data(<span class="stringliteral">&quot;TimeValue&quot;</span>, _time);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">const</span> <span class="keyword">auto</span> filename = _vtk_writer.write(_get_filename(this-&gt;_step_count));</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        _vtk_writer.clear();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">return</span> filename;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    std::string _get_filename(<span class="keyword">const</span> std::integral <span class="keyword">auto</span> index)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> _base_filename + <span class="stringliteral">&quot;-&quot;</span> + _get_file_number_string(index);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    std::string _get_file_number_string(<span class="keyword">const</span> std::integral <span class="keyword">auto</span> index)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        std::ostringstream file_number;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        file_number &lt;&lt; std::setw(5) &lt;&lt; std::setfill(<span class="charliteral">&#39;0&#39;</span>) &lt;&lt; index;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">return</span> file_number.str();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    VTKWriter _vtk_writer;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::string _base_filename;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    std::string _pvd_filename;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>};</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VTKWriter&gt;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><a class="code hl_class" href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">VTKXMLTimeSeriesWriter</a>(VTKWriter&amp;&amp;) -&gt; <a class="code hl_class" href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">VTKXMLTimeSeriesWriter&lt;std::remove_cvref_t&lt;VTKWriter&gt;</a>&gt;;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}  <span class="comment">// namespace GridFormat</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_XML_TIME_SERIES_WRITER_HPP_</span></div>
+<div class="ttc" id="aclassGridFormat_1_1TimeSeriesGridWriter_html"><div class="ttname"><a href="classGridFormat_1_1TimeSeriesGridWriter.html">GridFormat::TimeSeriesGridWriter</a></div><div class="ttdoc">Abstract base class for time series file writers.</div><div class="ttdef"><b>Definition:</b> writer.hpp:334</div></div>
+<div class="ttc" id="aclassGridFormat_1_1VTKXMLTimeSeriesWriter_html"><div class="ttname"><a href="classGridFormat_1_1VTKXMLTimeSeriesWriter.html">GridFormat::VTKXMLTimeSeriesWriter</a></div><div class="ttdoc">Writer for time series of a VTK-XML file format. Populates the &quot;TimeValue&quot; metadata field supported b...</div><div class="ttdef"><b>Definition:</b> xml_time_series_writer.hpp:25</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->

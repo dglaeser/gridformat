@@ -116,6 +116,7 @@ $(document).ready(function(){initNavTree('group__Compression.html',''); initResi
 <a href="#files">Files</a> &#124;
 <a href="#concepts">Concepts</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">Compression</div></div>
 </div><!--header-->
@@ -133,6 +134,9 @@ Files</h2></td></tr>
 <tr class="memitem:compression_2concepts_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compression_2concepts_8hpp.html">concepts.hpp</a></td></tr>
 <tr class="memdesc:compression_2concepts_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concepts related to data compression. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:decompress_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="decompress_8hpp.html">decompress.hpp</a></td></tr>
+<tr class="memdesc:decompress_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompress compressed data. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:lz4_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lz4_8hpp.html">lz4.hpp</a></td></tr>
 <tr class="memdesc:lz4_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compressor using the LZ4 library. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,6 +151,12 @@ Files</h2></td></tr>
 Concepts</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptGridFormat_1_1Concepts_1_1Compressor.html">GridFormat::Concepts::Compressor</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concept that compressors must fulfill. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptGridFormat_1_1Concepts_1_1Decompressor.html">GridFormat::Concepts::Decompressor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concept that decompressors must fulfill. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptGridFormat_1_1Concepts_1_1BlockDecompressor.html">GridFormat::Concepts::BlockDecompressor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concept that block decompressors must fulfill. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -175,6 +185,14 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Compression_1_1ZLIB.html">GridFormat::Compression::ZLIB</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compressor using the zlib library.  <a href="classGridFormat_1_1Compression_1_1ZLIB.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga9af24a6f6c98d5b54d43e34a538d5d9e"><td class="memTemplParams" colspan="2"><a id="ga9af24a6f6c98d5b54d43e34a538d5d9e" name="ga9af24a6f6c98d5b54d43e34a538d5d9e"></a>
+template&lt;std::integral HeaderType, Concepts::BlockDecompressor Decompressor&gt; </td></tr>
+<tr class="memitem:ga9af24a6f6c98d5b54d43e34a538d5d9e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::Compression::decompress</b> (Serialization &amp;in, const <a class="el" href="structGridFormat_1_1Compression_1_1CompressedBlocks.html">CompressedBlocks</a>&lt; HeaderType &gt; &amp;blocks, const Decompressor &amp;block_decompressor)</td></tr>
+<tr class="memdesc:ga9af24a6f6c98d5b54d43e34a538d5d9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompress compressed data. <br /></td></tr>
+<tr class="separator:ga9af24a6f6c98d5b54d43e34a538d5d9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>

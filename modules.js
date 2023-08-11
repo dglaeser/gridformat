@@ -5,5 +5,6 @@ var modules =
     [ "Compression", "group__Compression.html", "group__Compression" ],
     [ "VTK", "group__VTK.html", "group__VTK" ],
     [ "Grid", "group__Grid.html", "group__Grid" ],
-    [ "PredefinedTraits", "group__PredefinedTraits.html", "group__PredefinedTraits" ]
+    [ "PredefinedTraits", "group__PredefinedTraits.html", "group__PredefinedTraits" ],
+    [ "Common", "group__Common.html", "group__Common" ]
 ];

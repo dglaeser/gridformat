@@ -131,15 +131,18 @@ Inheritance diagram for GridFormat::PVTPWriter&lt; Grid, Communicator &gt;:</div
   <map id="GridFormat::PVTPWriter_3C_20Grid_2C_20Communicator_20_3E_map" name="GridFormat::PVTPWriter_3C_20Grid_2C_20Communicator_20_3E_map">
 <area href="classGridFormat_1_1VTK_1_1XMLWriterBase.html" alt="GridFormat::VTK::XMLWriterBase&lt; Grid, PVTPWriter&lt; Grid, Communicator &gt; &gt;" shape="rect" coords="235,112,695,136"/>
 <area href="classGridFormat_1_1GridWriter.html" alt="GridFormat::GridWriter&lt; G &gt;" shape="rect" coords="0,56,460,80"/>
-<area href="classGridFormat_1_1GridWriterBase.html" title="Base class for all writer implementations." alt="GridFormat::GridWriterBase&lt; Grid &gt;" shape="rect" coords="0,0,460,24"/>
+<area href="classGridFormat_1_1GridWriterBase.html" title="Base class for all writer implementations." alt="GridFormat::GridWriterBase&lt; G &gt;" shape="rect" coords="0,0,460,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a028d9abc832217b495d89db04d8a9017"><td class="memItemLeft" align="right" valign="top"><a id="a028d9abc832217b495d89db04d8a9017" name="a028d9abc832217b495d89db04d8a9017"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>PVTPWriter</b> (const <a class="el" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html#a995f334d11afd2cd8d66011ca4f4a266">Grid</a> &amp;grid, Communicator comm, <a class="el" href="structGridFormat_1_1VTK_1_1XMLOptions.html">VTK::XMLOptions</a> xml_opts={})</td></tr>
-<tr class="separator:a028d9abc832217b495d89db04d8a9017"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9271d759867fa3418bdaed3b7cda15a5"><td class="memItemLeft" align="right" valign="top"><a id="a9271d759867fa3418bdaed3b7cda15a5" name="a9271d759867fa3418bdaed3b7cda15a5"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PVTPWriter</b> (LValueReferenceOf&lt; const <a class="el" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html#a995f334d11afd2cd8d66011ca4f4a266">Grid</a> &gt; grid, Communicator comm, <a class="el" href="structGridFormat_1_1VTK_1_1XMLOptions.html">VTK::XMLOptions</a> xml_opts={})</td></tr>
+<tr class="separator:a9271d759867fa3418bdaed3b7cda15a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5a87f548089f624129d76ce95eccd64"><td class="memItemLeft" align="right" valign="top"><a id="aa5a87f548089f624129d76ce95eccd64" name="aa5a87f548089f624129d76ce95eccd64"></a>
+const Communicator &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>communicator</b> () const</td></tr>
+<tr class="separator:aa5a87f548089f624129d76ce95eccd64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGridFormat_1_1VTK_1_1XMLWriterBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">GridFormat::VTK::XMLWriterBase&lt; Grid, PVTPWriter&lt; Grid, Communicator &gt; &gt;</a></td></tr>
 <tr class="memitem:a4e907a7c318805a1d31746777b90aef9 inherit pub_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a4e907a7c318805a1d31746777b90aef9" name="a4e907a7c318805a1d31746777b90aef9"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>XMLWriterBase</b> (const <a class="el" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html#a995f334d11afd2cd8d66011ca4f4a266">Grid</a> &amp;grid, std::string extension, bool use_structured_grid_ordering, <a class="el" href="structGridFormat_1_1VTK_1_1XMLOptions.html">XMLOptions</a> xml_opts={})</td></tr>
@@ -172,72 +175,75 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (con
 <tr class="memitem:a50b692ac8bc6f3757c90816ae0760d77 inherit pub_methods_classGridFormat_1_1GridWriter"><td class="memItemLeft" align="right" valign="top"><a id="a50b692ac8bc6f3757c90816ae0760d77" name="a50b692ac8bc6f3757c90816ae0760d77"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (std::ostream &amp;s) const</td></tr>
 <tr class="separator:a50b692ac8bc6f3757c90816ae0760d77 inherit pub_methods_classGridFormat_1_1GridWriter"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classGridFormat_1_1GridWriterBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGridFormat_1_1GridWriterBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGridFormat_1_1GridWriterBase.html">GridFormat::GridWriterBase&lt; Grid &gt;</a></td></tr>
-<tr class="memitem:ac41cf3386704483785edb2ffa89bd264 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="ac41cf3386704483785edb2ffa89bd264" name="ac41cf3386704483785edb2ffa89bd264"></a>
+<tr class="inherit_header pub_methods_classGridFormat_1_1GridWriterBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGridFormat_1_1GridWriterBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGridFormat_1_1GridWriterBase.html">GridFormat::GridWriterBase&lt; G &gt;</a></td></tr>
+<tr class="memitem:acbd9e6bb48fef0a01c96cee9a82545fa inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="acbd9e6bb48fef0a01c96cee9a82545fa" name="acbd9e6bb48fef0a01c96cee9a82545fa"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>GridWriterBase</b> (const Grid &amp;grid, std::optional&lt; <a class="el" href="structGridFormat_1_1WriterOptions.html">WriterOptions</a> &gt; opts)</td></tr>
-<tr class="separator:ac41cf3386704483785edb2ffa89bd264 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ab607fb53ef3026268ec05788d0912a inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a2ab607fb53ef3026268ec05788d0912a" name="a2ab607fb53ef3026268ec05788d0912a"></a>
+<tr class="separator:acbd9e6bb48fef0a01c96cee9a82545fa inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dc079c56805c64f5950056ad350d969 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a1dc079c56805c64f5950056ad350d969" name="a1dc079c56805c64f5950056ad350d969"></a>
 template&lt;std::ranges::range R&gt; </td></tr>
-<tr class="memitem:a2ab607fb53ef3026268ec05788d0912a inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_meta_data</b> (const std::string &amp;name, R &amp;&amp;range)</td></tr>
-<tr class="separator:a2ab607fb53ef3026268ec05788d0912a inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7acab59b3b76143d6ad865aa7caaecf4 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a7acab59b3b76143d6ad865aa7caaecf4" name="a7acab59b3b76143d6ad865aa7caaecf4"></a>
+<tr class="memitem:a1dc079c56805c64f5950056ad350d969 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_meta_data</b> (const std::string &amp;name, R &amp;&amp;range)</td></tr>
+<tr class="separator:a1dc079c56805c64f5950056ad350d969 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05421b84538b7459b5e50ff49c1070ca inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a05421b84538b7459b5e50ff49c1070ca" name="a05421b84538b7459b5e50ff49c1070ca"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_meta_data</b> (const std::string &amp;name, std::string text)</td></tr>
-<tr class="separator:a7acab59b3b76143d6ad865aa7caaecf4 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91e4b0b355c75c342a62f6e4525400e9 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a91e4b0b355c75c342a62f6e4525400e9" name="a91e4b0b355c75c342a62f6e4525400e9"></a>
+<tr class="separator:a05421b84538b7459b5e50ff49c1070ca inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfd7a2dc8f695d37aaf79dc4fd3a5863 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="acfd7a2dc8f695d37aaf79dc4fd3a5863" name="acfd7a2dc8f695d37aaf79dc4fd3a5863"></a>
 template&lt;Concepts::Scalar T&gt; </td></tr>
-<tr class="memitem:a91e4b0b355c75c342a62f6e4525400e9 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_meta_data</b> (const std::string &amp;name, T value)</td></tr>
-<tr class="separator:a91e4b0b355c75c342a62f6e4525400e9 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f88ebd7b010c94dde6cc461566503e7 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a2f88ebd7b010c94dde6cc461566503e7" name="a2f88ebd7b010c94dde6cc461566503e7"></a>
+<tr class="memitem:acfd7a2dc8f695d37aaf79dc4fd3a5863 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_meta_data</b> (const std::string &amp;name, T value)</td></tr>
+<tr class="separator:acfd7a2dc8f695d37aaf79dc4fd3a5863 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4146dd9588df65c58fd498ffefc8d35 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="af4146dd9588df65c58fd498ffefc8d35" name="af4146dd9588df65c58fd498ffefc8d35"></a>
 template&lt;std::derived_from&lt; Field &gt; F&gt; </td></tr>
-<tr class="memitem:a2f88ebd7b010c94dde6cc461566503e7 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_meta_data</b> (const std::string &amp;name, F &amp;&amp;field)</td></tr>
-<tr class="separator:a2f88ebd7b010c94dde6cc461566503e7 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4424bf9a0ea99ab7bf93c61cf18c0932 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a4424bf9a0ea99ab7bf93c61cf18c0932" name="a4424bf9a0ea99ab7bf93c61cf18c0932"></a>
+<tr class="memitem:af4146dd9588df65c58fd498ffefc8d35 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_meta_data</b> (const std::string &amp;name, F &amp;&amp;field)</td></tr>
+<tr class="separator:af4146dd9588df65c58fd498ffefc8d35 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afea11f7fbb1d4d11746c11b0f64d6108 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="afea11f7fbb1d4d11746c11b0f64d6108" name="afea11f7fbb1d4d11746c11b0f64d6108"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_meta_data</b> (const std::string &amp;name, FieldPtr ptr)</td></tr>
-<tr class="separator:a4424bf9a0ea99ab7bf93c61cf18c0932 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adfc21ec778035562acdf934ba315f3aa inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="adfc21ec778035562acdf934ba315f3aa" name="adfc21ec778035562acdf934ba315f3aa"></a>
+<tr class="separator:afea11f7fbb1d4d11746c11b0f64d6108 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47fd28222130d36867d41f3e3451acd5 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a47fd28222130d36867d41f3e3451acd5" name="a47fd28222130d36867d41f3e3451acd5"></a>
 FieldPtr&#160;</td><td class="memItemRight" valign="bottom"><b>remove_meta_data</b> (const std::string &amp;name)</td></tr>
-<tr class="separator:adfc21ec778035562acdf934ba315f3aa inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae145e87fbd280bfc1680914110adbd4c inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="ae145e87fbd280bfc1680914110adbd4c" name="ae145e87fbd280bfc1680914110adbd4c"></a>
+<tr class="separator:a47fd28222130d36867d41f3e3451acd5 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a012bd388ac0704a677b73e92e78f1658 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a012bd388ac0704a677b73e92e78f1658" name="a012bd388ac0704a677b73e92e78f1658"></a>
 template&lt;Concepts::PointFunction&lt; Grid &gt; F, Concepts::Scalar T = GridDetail::PointFunctionScalarType&lt;Grid, F&gt;&gt; </td></tr>
-<tr class="memitem:ae145e87fbd280bfc1680914110adbd4c inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_point_field</b> (const std::string &amp;name, F &amp;&amp;point_function, const Precision&lt; T &gt; &amp;prec={})</td></tr>
-<tr class="separator:ae145e87fbd280bfc1680914110adbd4c inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af23e08ffe3ddbec9c81d8d1122c04d40 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="af23e08ffe3ddbec9c81d8d1122c04d40" name="af23e08ffe3ddbec9c81d8d1122c04d40"></a>
+<tr class="memitem:a012bd388ac0704a677b73e92e78f1658 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_point_field</b> (const std::string &amp;name, F &amp;&amp;point_function, const Precision&lt; T &gt; &amp;prec={})</td></tr>
+<tr class="separator:a012bd388ac0704a677b73e92e78f1658 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56dda48dff65f4451eec55b5effacdbc inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a56dda48dff65f4451eec55b5effacdbc" name="a56dda48dff65f4451eec55b5effacdbc"></a>
 template&lt;std::derived_from&lt; Field &gt; F&gt; </td></tr>
-<tr class="memitem:af23e08ffe3ddbec9c81d8d1122c04d40 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_point_field</b> (const std::string &amp;name, F &amp;&amp;field)</td></tr>
-<tr class="separator:af23e08ffe3ddbec9c81d8d1122c04d40 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aafa0e5304df2404fc213f4dc2925286c inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="aafa0e5304df2404fc213f4dc2925286c" name="aafa0e5304df2404fc213f4dc2925286c"></a>
+<tr class="memitem:a56dda48dff65f4451eec55b5effacdbc inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_point_field</b> (const std::string &amp;name, F &amp;&amp;field)</td></tr>
+<tr class="separator:a56dda48dff65f4451eec55b5effacdbc inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a397d2e7265c68206926bda81e9a7bdc4 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a397d2e7265c68206926bda81e9a7bdc4" name="a397d2e7265c68206926bda81e9a7bdc4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_point_field</b> (const std::string &amp;name, FieldPtr field_ptr)</td></tr>
-<tr class="separator:aafa0e5304df2404fc213f4dc2925286c inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0edd1629d852e3554d11ddd1587a8b2 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="ab0edd1629d852e3554d11ddd1587a8b2" name="ab0edd1629d852e3554d11ddd1587a8b2"></a>
+<tr class="separator:a397d2e7265c68206926bda81e9a7bdc4 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2573389fe4cd1b176710583464be1718 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a2573389fe4cd1b176710583464be1718" name="a2573389fe4cd1b176710583464be1718"></a>
 FieldPtr&#160;</td><td class="memItemRight" valign="bottom"><b>remove_point_field</b> (const std::string &amp;name)</td></tr>
-<tr class="separator:ab0edd1629d852e3554d11ddd1587a8b2 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41c66dcb68ddfe9f907f85c8ac5739b0 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a41c66dcb68ddfe9f907f85c8ac5739b0" name="a41c66dcb68ddfe9f907f85c8ac5739b0"></a>
+<tr class="separator:a2573389fe4cd1b176710583464be1718 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac527f279b02f7ca786d113877d3f0bde inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="ac527f279b02f7ca786d113877d3f0bde" name="ac527f279b02f7ca786d113877d3f0bde"></a>
 template&lt;Concepts::CellFunction&lt; Grid &gt; F, Concepts::Scalar T = GridDetail::CellFunctionScalarType&lt;Grid, F&gt;&gt; </td></tr>
-<tr class="memitem:a41c66dcb68ddfe9f907f85c8ac5739b0 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_cell_field</b> (const std::string &amp;name, F &amp;&amp;cell_function, const Precision&lt; T &gt; &amp;prec={})</td></tr>
-<tr class="separator:a41c66dcb68ddfe9f907f85c8ac5739b0 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a405bc93dd52bc3e796df2b285d138fbf inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a405bc93dd52bc3e796df2b285d138fbf" name="a405bc93dd52bc3e796df2b285d138fbf"></a>
+<tr class="memitem:ac527f279b02f7ca786d113877d3f0bde inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_cell_field</b> (const std::string &amp;name, F &amp;&amp;cell_function, const Precision&lt; T &gt; &amp;prec={})</td></tr>
+<tr class="separator:ac527f279b02f7ca786d113877d3f0bde inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f3f0334f9183f21848a64bc9499dcb0 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a2f3f0334f9183f21848a64bc9499dcb0" name="a2f3f0334f9183f21848a64bc9499dcb0"></a>
 template&lt;std::derived_from&lt; Field &gt; F&gt; </td></tr>
-<tr class="memitem:a405bc93dd52bc3e796df2b285d138fbf inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_cell_field</b> (const std::string &amp;name, F &amp;&amp;field)</td></tr>
-<tr class="separator:a405bc93dd52bc3e796df2b285d138fbf inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acd805ccc79c64a46d56ee8156955ecc1 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="acd805ccc79c64a46d56ee8156955ecc1" name="acd805ccc79c64a46d56ee8156955ecc1"></a>
+<tr class="memitem:a2f3f0334f9183f21848a64bc9499dcb0 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_cell_field</b> (const std::string &amp;name, F &amp;&amp;field)</td></tr>
+<tr class="separator:a2f3f0334f9183f21848a64bc9499dcb0 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeddcfe87f1529dbc7073c51b8d6503ce inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="aeddcfe87f1529dbc7073c51b8d6503ce" name="aeddcfe87f1529dbc7073c51b8d6503ce"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_cell_field</b> (const std::string &amp;name, FieldPtr field_ptr)</td></tr>
-<tr class="separator:acd805ccc79c64a46d56ee8156955ecc1 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab84f48e00406e6e28d31a3509c8552bc inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="ab84f48e00406e6e28d31a3509c8552bc" name="ab84f48e00406e6e28d31a3509c8552bc"></a>
+<tr class="separator:aeddcfe87f1529dbc7073c51b8d6503ce inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ebfa5ae11670623ac78ce46ae1657aa inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a8ebfa5ae11670623ac78ce46ae1657aa" name="a8ebfa5ae11670623ac78ce46ae1657aa"></a>
 FieldPtr&#160;</td><td class="memItemRight" valign="bottom"><b>remove_cell_field</b> (const std::string &amp;name)</td></tr>
-<tr class="separator:ab84f48e00406e6e28d31a3509c8552bc inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95c9d35fe688985ab7e7891ce08ee99f inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a95c9d35fe688985ab7e7891ce08ee99f" name="a95c9d35fe688985ab7e7891ce08ee99f"></a>
+<tr class="separator:a8ebfa5ae11670623ac78ce46ae1657aa inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c0ea525e9066b88a82426062bae315a inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a5c0ea525e9066b88a82426062bae315a" name="a5c0ea525e9066b88a82426062bae315a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
-<tr class="separator:a95c9d35fe688985ab7e7891ce08ee99f inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42854e0e379f0a2184dde1c6eb33ba8d inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a42854e0e379f0a2184dde1c6eb33ba8d" name="a42854e0e379f0a2184dde1c6eb33ba8d"></a>
+<tr class="separator:a5c0ea525e9066b88a82426062bae315a inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b28cbe0f62d3e78ed0ac35aa82bee7f inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a7b28cbe0f62d3e78ed0ac35aa82bee7f" name="a7b28cbe0f62d3e78ed0ac35aa82bee7f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_ignore_warnings</b> (bool value)</td></tr>
+<tr class="separator:a7b28cbe0f62d3e78ed0ac35aa82bee7f inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c9f2301bd1917783dbb396b1d7a3f8c inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a0c9f2301bd1917783dbb396b1d7a3f8c" name="a0c9f2301bd1917783dbb396b1d7a3f8c"></a>
 const Grid &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>grid</b> () const</td></tr>
-<tr class="separator:a42854e0e379f0a2184dde1c6eb33ba8d inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5143a6b6b070e78e87d09c029452bc9f inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a5143a6b6b070e78e87d09c029452bc9f" name="a5143a6b6b070e78e87d09c029452bc9f"></a>
+<tr class="separator:a0c9f2301bd1917783dbb396b1d7a3f8c inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f5c9724804705d6725fd62029ab5b08 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a5f5c9724804705d6725fd62029ab5b08" name="a5f5c9724804705d6725fd62029ab5b08"></a>
 const std::optional&lt; <a class="el" href="structGridFormat_1_1WriterOptions.html">WriterOptions</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>writer_options</b> () const</td></tr>
-<tr class="separator:a5143a6b6b070e78e87d09c029452bc9f inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32aadb9346ca950fb625ff2dd7c05a7a inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a32aadb9346ca950fb625ff2dd7c05a7a" name="a32aadb9346ca950fb625ff2dd7c05a7a"></a>
+<tr class="separator:a5f5c9724804705d6725fd62029ab5b08 inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e92a95700caa3c65cd52bfe609466da inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a1e92a95700caa3c65cd52bfe609466da" name="a1e92a95700caa3c65cd52bfe609466da"></a>
 template&lt;typename <a class="el" href="classGridFormat_1_1Writer.html">Writer</a> &gt; </td></tr>
-<tr class="memitem:a32aadb9346ca950fb625ff2dd7c05a7a inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>copy_fields</b> (<a class="el" href="classGridFormat_1_1Writer.html">Writer</a> &amp;w) const</td></tr>
-<tr class="separator:a32aadb9346ca950fb625ff2dd7c05a7a inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e92a95700caa3c65cd52bfe609466da inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>copy_fields</b> (<a class="el" href="classGridFormat_1_1Writer.html">Writer</a> &amp;w) const</td></tr>
+<tr class="separator:a1e92a95700caa3c65cd52bfe609466da inherit pub_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -246,13 +252,16 @@ Additional Inherited Members</h2></td></tr>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>Grid</b> = G</td></tr>
 <tr class="memdesc:a995f334d11afd2cd8d66011ca4f4a266 inherit pub_types_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export underlying grid type. <br /></td></tr>
 <tr class="separator:a995f334d11afd2cd8d66011ca4f4a266 inherit pub_types_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_types_classGridFormat_1_1GridWriterBase"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classGridFormat_1_1GridWriterBase')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classGridFormat_1_1GridWriterBase.html">GridFormat::GridWriterBase&lt; Grid &gt;</a></td></tr>
-<tr class="memitem:a6d4ead96e265ca5d984c89a2da6fb3b9 inherit pub_types_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a6d4ead96e265ca5d984c89a2da6fb3b9" name="a6d4ead96e265ca5d984c89a2da6fb3b9"></a>
+<tr class="inherit_header pub_types_classGridFormat_1_1GridWriterBase"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classGridFormat_1_1GridWriterBase')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classGridFormat_1_1GridWriterBase.html">GridFormat::GridWriterBase&lt; G &gt;</a></td></tr>
+<tr class="memitem:aec2869db8a7e0994ca0064a094beb4d9 inherit pub_types_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="aec2869db8a7e0994ca0064a094beb4d9" name="aec2869db8a7e0994ca0064a094beb4d9"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Grid</b> = G</td></tr>
+<tr class="separator:aec2869db8a7e0994ca0064a094beb4d9 inherit pub_types_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17c9e50a3e01da29b8763699199372ca inherit pub_types_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a17c9e50a3e01da29b8763699199372ca" name="a17c9e50a3e01da29b8763699199372ca"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>Field</b> = typename FieldStorage::Field</td></tr>
-<tr class="separator:a6d4ead96e265ca5d984c89a2da6fb3b9 inherit pub_types_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47764be7a4b3426add817686c836eab2 inherit pub_types_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a47764be7a4b3426add817686c836eab2" name="a47764be7a4b3426add817686c836eab2"></a>
+<tr class="separator:a17c9e50a3e01da29b8763699199372ca inherit pub_types_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8660074ef95beb5e75087c996f2968e inherit pub_types_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="ab8660074ef95beb5e75087c996f2968e" name="ab8660074ef95beb5e75087c996f2968e"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>FieldPtr</b> = typename FieldStorage::FieldPtr</td></tr>
-<tr class="separator:a47764be7a4b3426add817686c836eab2 inherit pub_types_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:ab8660074ef95beb5e75087c996f2968e inherit pub_types_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">GridFormat::VTK::XMLWriterBase&lt; Grid, PVTPWriter&lt; Grid, Communicator &gt; &gt;</a></td></tr>
 <tr class="memitem:af710aaf99fd961097ad2ecb885272120 inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="af710aaf99fd961097ad2ecb885272120" name="af710aaf99fd961097ad2ecb885272120"></a>
 WriteContext&#160;</td><td class="memItemRight" valign="bottom"><b>_get_write_context</b> (std::string vtk_grid_type) const</td></tr>
@@ -269,54 +278,54 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>_set_data_array</b> (
 <tr class="memitem:abb677b7a191dd35c741e8200533e3e56 inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="abb677b7a191dd35c741e8200533e3e56" name="abb677b7a191dd35c741e8200533e3e56"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>_set_data_array_content</b> (const DataFormat &amp;, XMLElement &amp;e, <a class="el" href="classGridFormat_1_1VTK_1_1Appendix.html">Appendix</a> &amp;app, Content &amp;&amp;c) const</td></tr>
 <tr class="separator:abb677b7a191dd35c741e8200533e3e56 inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afadb30cba1bf34cd6e8bc041c06e1542 inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="afadb30cba1bf34cd6e8bc041c06e1542" name="afadb30cba1bf34cd6e8bc041c06e1542"></a>
-XMLElement &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>_access_element</b> (WriteContext &amp;context, const std::vector&lt; std::string &gt; &amp;sub_elem_names) const</td></tr>
-<tr class="separator:afadb30cba1bf34cd6e8bc041c06e1542 inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb7991d284b5796a41805ea7315c2080 inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="afb7991d284b5796a41805ea7315c2080" name="afb7991d284b5796a41805ea7315c2080"></a>
-std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_get_element_names</b> (std::string_view elements) const</td></tr>
-<tr class="separator:afb7991d284b5796a41805ea7315c2080 inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b7d4c84ceb0debabb1355cdd65c233b inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a7b7d4c84ceb0debabb1355cdd65c233b" name="a7b7d4c84ceb0debabb1355cdd65c233b"></a>
+XMLElement &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>_access_at</b> (std::string_view path, WriteContext &amp;context) const</td></tr>
+<tr class="separator:a7b7d4c84ceb0debabb1355cdd65c233b inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2f3249218f323930ae7605ee860586f inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="af2f3249218f323930ae7605ee860586f" name="af2f3249218f323930ae7605ee860586f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>_write_xml</b> (WriteContext &amp;&amp;context, std::ostream &amp;s) const</td></tr>
 <tr class="separator:af2f3249218f323930ae7605ee860586f inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e0c773966a9035004a3c34892bf3aba inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a6e0c773966a9035004a3c34892bf3aba" name="a6e0c773966a9035004a3c34892bf3aba"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>_set_default_active_fields</b> (XMLElement &amp;xml) const</td></tr>
 <tr class="separator:a6e0c773966a9035004a3c34892bf3aba inherit pro_methods_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classGridFormat_1_1GridWriterBase"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGridFormat_1_1GridWriterBase')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classGridFormat_1_1GridWriterBase.html">GridFormat::GridWriterBase&lt; Grid &gt;</a></td></tr>
-<tr class="memitem:ae9b00f7007463488c5a9a2db965bd8c1 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="ae9b00f7007463488c5a9a2db965bd8c1" name="ae9b00f7007463488c5a9a2db965bd8c1"></a>
+<tr class="inherit_header pro_methods_classGridFormat_1_1GridWriterBase"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGridFormat_1_1GridWriterBase')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classGridFormat_1_1GridWriterBase.html">GridFormat::GridWriterBase&lt; G &gt;</a></td></tr>
+<tr class="memitem:a1552e8674b9e7c0210af59cdf4ee2ece inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a1552e8674b9e7c0210af59cdf4ee2ece" name="a1552e8674b9e7c0210af59cdf4ee2ece"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>_log_warning</b> (std::string_view warning) const</td></tr>
+<tr class="separator:a1552e8674b9e7c0210af59cdf4ee2ece inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9142def8d44bb7155e27f657e8661b0 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="ab9142def8d44bb7155e27f657e8661b0" name="ab9142def8d44bb7155e27f657e8661b0"></a>
 template&lt;typename EntityFunction , Concepts::Scalar T&gt; </td></tr>
-<tr class="memitem:ae9b00f7007463488c5a9a2db965bd8c1 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>_make_point_field</b> (EntityFunction &amp;&amp;f, const Precision&lt; T &gt; &amp;prec) const</td></tr>
-<tr class="separator:ae9b00f7007463488c5a9a2db965bd8c1 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac7280431cb73f733452b8d17ae41357 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="aac7280431cb73f733452b8d17ae41357" name="aac7280431cb73f733452b8d17ae41357"></a>
+<tr class="memitem:ab9142def8d44bb7155e27f657e8661b0 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>_make_point_field</b> (EntityFunction &amp;&amp;f, const Precision&lt; T &gt; &amp;prec) const</td></tr>
+<tr class="separator:ab9142def8d44bb7155e27f657e8661b0 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cdd3fb8d086965a01f8e2c2aac0448d inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplParams" colspan="2"><a id="a0cdd3fb8d086965a01f8e2c2aac0448d" name="a0cdd3fb8d086965a01f8e2c2aac0448d"></a>
 template&lt;typename EntityFunction , Concepts::Scalar T&gt; </td></tr>
-<tr class="memitem:aac7280431cb73f733452b8d17ae41357 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>_make_cell_field</b> (EntityFunction &amp;&amp;f, const Precision&lt; T &gt; &amp;prec) const</td></tr>
-<tr class="separator:aac7280431cb73f733452b8d17ae41357 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa97c73c12e26f8def2785093e069b9ba inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="aa97c73c12e26f8def2785093e069b9ba" name="aa97c73c12e26f8def2785093e069b9ba"></a>
+<tr class="memitem:a0cdd3fb8d086965a01f8e2c2aac0448d inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>_make_cell_field</b> (EntityFunction &amp;&amp;f, const Precision&lt; T &gt; &amp;prec) const</td></tr>
+<tr class="separator:a0cdd3fb8d086965a01f8e2c2aac0448d inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2725284e90a4849646c8c34a17f2729c inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a2725284e90a4849646c8c34a17f2729c" name="a2725284e90a4849646c8c34a17f2729c"></a>
 std::ranges::range auto&#160;</td><td class="memItemRight" valign="bottom"><b>_point_field_names</b> () const</td></tr>
-<tr class="separator:aa97c73c12e26f8def2785093e069b9ba inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad8c7911c2d166b2f148a73201549756 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="aad8c7911c2d166b2f148a73201549756" name="aad8c7911c2d166b2f148a73201549756"></a>
+<tr class="separator:a2725284e90a4849646c8c34a17f2729c inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a7a9d733aea0a2046c7f84d9e5a0a50 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a2a7a9d733aea0a2046c7f84d9e5a0a50" name="a2a7a9d733aea0a2046c7f84d9e5a0a50"></a>
 std::ranges::range auto&#160;</td><td class="memItemRight" valign="bottom"><b>_cell_field_names</b> () const</td></tr>
-<tr class="separator:aad8c7911c2d166b2f148a73201549756 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2b30eed804cc452d2af7cad581e66de inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="ac2b30eed804cc452d2af7cad581e66de" name="ac2b30eed804cc452d2af7cad581e66de"></a>
+<tr class="separator:a2a7a9d733aea0a2046c7f84d9e5a0a50 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a329bbcab0f1be82ad1cf22935aeedf5d inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a329bbcab0f1be82ad1cf22935aeedf5d" name="a329bbcab0f1be82ad1cf22935aeedf5d"></a>
 const Field &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>_get_point_field</b> (const std::string &amp;name) const</td></tr>
-<tr class="separator:ac2b30eed804cc452d2af7cad581e66de inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a658f70133d5a0012e5e30e73d28b95d4 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a658f70133d5a0012e5e30e73d28b95d4" name="a658f70133d5a0012e5e30e73d28b95d4"></a>
+<tr class="separator:a329bbcab0f1be82ad1cf22935aeedf5d inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8d663045b7c12d88003c9110a8a91d4 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="ae8d663045b7c12d88003c9110a8a91d4" name="ae8d663045b7c12d88003c9110a8a91d4"></a>
 FieldPtr&#160;</td><td class="memItemRight" valign="bottom"><b>_get_point_field_ptr</b> (const std::string &amp;name) const</td></tr>
-<tr class="separator:a658f70133d5a0012e5e30e73d28b95d4 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae70936895c7ad60e653dd07a39c938a8 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="ae70936895c7ad60e653dd07a39c938a8" name="ae70936895c7ad60e653dd07a39c938a8"></a>
+<tr class="separator:ae8d663045b7c12d88003c9110a8a91d4 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8b288b1c3c231debf99a8a12d173146 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="ad8b288b1c3c231debf99a8a12d173146" name="ad8b288b1c3c231debf99a8a12d173146"></a>
 const Field &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>_get_cell_field</b> (const std::string &amp;name) const</td></tr>
-<tr class="separator:ae70936895c7ad60e653dd07a39c938a8 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a370acd3c452d49523235f57308558431 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a370acd3c452d49523235f57308558431" name="a370acd3c452d49523235f57308558431"></a>
+<tr class="separator:ad8b288b1c3c231debf99a8a12d173146 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab554604bf37a3b409ad12c80da1b43ff inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="ab554604bf37a3b409ad12c80da1b43ff" name="ab554604bf37a3b409ad12c80da1b43ff"></a>
 FieldPtr&#160;</td><td class="memItemRight" valign="bottom"><b>_get_cell_field_ptr</b> (const std::string &amp;name) const</td></tr>
-<tr class="separator:a370acd3c452d49523235f57308558431 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f726cba82fefb93a358f622d7c56f23 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a3f726cba82fefb93a358f622d7c56f23" name="a3f726cba82fefb93a358f622d7c56f23"></a>
+<tr class="separator:ab554604bf37a3b409ad12c80da1b43ff inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2902a48987c336721b66f70e6e82a448 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a2902a48987c336721b66f70e6e82a448" name="a2902a48987c336721b66f70e6e82a448"></a>
 std::ranges::range auto&#160;</td><td class="memItemRight" valign="bottom"><b>_meta_data_field_names</b> () const</td></tr>
-<tr class="separator:a3f726cba82fefb93a358f622d7c56f23 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcfd4713e6bbf8f4297a3b9dfc9ef43a inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="afcfd4713e6bbf8f4297a3b9dfc9ef43a" name="afcfd4713e6bbf8f4297a3b9dfc9ef43a"></a>
+<tr class="separator:a2902a48987c336721b66f70e6e82a448 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a172f031a83407db37a277c552ed69b4a inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="a172f031a83407db37a277c552ed69b4a" name="a172f031a83407db37a277c552ed69b4a"></a>
 const Field &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>_get_meta_data_field</b> (const std::string &amp;name) const</td></tr>
-<tr class="separator:afcfd4713e6bbf8f4297a3b9dfc9ef43a inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add29224c5de080714caa84249fbe4d41 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="add29224c5de080714caa84249fbe4d41" name="add29224c5de080714caa84249fbe4d41"></a>
+<tr class="separator:a172f031a83407db37a277c552ed69b4a inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad439b56f3db67d65efc74bba68ae9f97 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="ad439b56f3db67d65efc74bba68ae9f97" name="ad439b56f3db67d65efc74bba68ae9f97"></a>
 FieldPtr&#160;</td><td class="memItemRight" valign="bottom"><b>_get_meta_data_field_ptr</b> (const std::string &amp;name) const</td></tr>
-<tr class="separator:add29224c5de080714caa84249fbe4d41 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:ad439b56f3db67d65efc74bba68ae9f97 inherit pro_methods_classGridFormat_1_1GridWriterBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classGridFormat_1_1VTK_1_1XMLWriterBase"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classGridFormat_1_1VTK_1_1XMLWriterBase')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">GridFormat::VTK::XMLWriterBase&lt; Grid, PVTPWriter&lt; Grid, Communicator &gt; &gt;</a></td></tr>
 <tr class="memitem:abc433cd5a7852fd1a764a13cfc5b6a3e inherit pro_attribs_classGridFormat_1_1VTK_1_1XMLWriterBase"><td class="memItemLeft" align="right" valign="top"><a id="abc433cd5a7852fd1a764a13cfc5b6a3e" name="abc433cd5a7852fd1a764a13cfc5b6a3e"></a>
 <a class="el" href="structGridFormat_1_1VTK_1_1XMLOptions.html">XMLOptions</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_xml_opts</b></td></tr>

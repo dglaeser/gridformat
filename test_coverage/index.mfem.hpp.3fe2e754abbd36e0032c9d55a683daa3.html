@@ -26,7 +26,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2023-06-29 16:36:32</td>
+      <td>2023-08-11 16:40:15</td>
     </tr>
   </table>
 </div>
@@ -302,7 +302,7 @@
       <td class="lineno"><a id="l30" href="#l30">30</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">9405</td>
+      <td class="linecount coveredLine">9966</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">CellType</span><span class="w"> </span><span class="nf">cell_type</span><span class="p">(</span><span class="n">mfem</span><span class="o">::</span><span class="n">Element</span><span class="o">::</span><span class="n">Type</span><span class="w"> </span><span class="n">ct</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -313,9 +313,9 @@
         <summary class="linebranchSummary">5/9</summary>
         <div class="linebranchContents">
           <div class="notTakenBranch">&cross; Branch 0 not taken.</div>
-          <div class="takenBranch">&check; Branch 1 taken 495 times.</div>
-          <div class="takenBranch">&check; Branch 2 taken 5920 times.</div>
-          <div class="takenBranch">&check; Branch 3 taken 1520 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 571 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 6244 times.</div>
+          <div class="takenBranch">&check; Branch 3 taken 1681 times.</div>
           <div class="takenBranch">&check; Branch 4 taken 1260 times.</div>
           <div class="notTakenBranch">&cross; Branch 5 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 6 not taken.</div>
@@ -324,7 +324,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">9405</td>
+      <td class="linecount coveredLine">9966</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">ct</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -340,7 +340,7 @@
       <td class="lineno"><a id="l33" href="#l33">33</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">495</td>
+      <td class="linecount coveredLine">571</td>
       <td class="src coveredLine"><span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="n">mfem</span><span class="o">::</span><span class="n">Element</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">SEGMENT</span><span class="o">:</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">GridFormat</span><span class="o">::</span><span class="n">CellType</span><span class="o">::</span><span class="n">segment</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -348,7 +348,7 @@
       <td class="lineno"><a id="l34" href="#l34">34</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">5920</td>
+      <td class="linecount coveredLine">6244</td>
       <td class="src coveredLine"><span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="n">mfem</span><span class="o">::</span><span class="n">Element</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">TRIANGLE</span><span class="o">:</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">GridFormat</span><span class="o">::</span><span class="n">CellType</span><span class="o">::</span><span class="n">triangle</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -356,7 +356,7 @@
       <td class="lineno"><a id="l35" href="#l35">35</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1520</td>
+      <td class="linecount coveredLine">1681</td>
       <td class="src coveredLine"><span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="n">mfem</span><span class="o">::</span><span class="n">Element</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">QUADRILATERAL</span><span class="o">:</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">GridFormat</span><span class="o">::</span><span class="n">CellType</span><span class="o">::</span><span class="n">quadrilateral</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -650,7 +650,7 @@
       <td class="lineno"><a id="l70" href="#l70">70</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">9405</td>
+      <td class="linecount coveredLine">9966</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">GridFormat</span><span class="o">::</span><span class="n">CellType</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">mfem</span><span class="o">::</span><span class="n">Mesh</span><span class="o">&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">GridFormat</span><span class="o">::</span><span class="n">MFEM</span><span class="o">::</span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -658,7 +658,7 @@
       <td class="lineno"><a id="l71" href="#l71">71</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">9405</td>
+      <td class="linecount coveredLine">9966</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">GridFormat</span><span class="o">::</span><span class="n">MFEM</span><span class="o">::</span><span class="n">Detail</span><span class="o">::</span><span class="n">cell_type</span><span class="p">(</span><span class="n">mesh</span><span class="p">.</span><span class="n">GetElement</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">GetType</span><span class="p">());</span><span class="w"></span></td>
     </tr>
 
@@ -921,7 +921,7 @@
       <td class="lineno"><a id="l103" href="#l103">103</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">149</td>
+      <td class="linecount coveredLine">141</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">integral</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">mfem</span><span class="o">::</span><span class="n">Mesh</span><span class="o">&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -929,7 +929,7 @@
       <td class="lineno"><a id="l104" href="#l104">104</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">149</td>
+      <td class="linecount coveredLine">141</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">GetNV</span><span class="p">();</span><span class="w"></span></td>
     </tr>
 
@@ -977,7 +977,7 @@
       <td class="lineno"><a id="l110" href="#l110">110</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">110</td>
+      <td class="linecount coveredLine">126</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">integral</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">mfem</span><span class="o">::</span><span class="n">Mesh</span><span class="o">&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -985,7 +985,7 @@
       <td class="lineno"><a id="l111" href="#l111">111</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">110</td>
+      <td class="linecount coveredLine">126</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">GetNE</span><span class="p">();</span><span class="w"></span></td>
     </tr>
 

@@ -127,12 +127,14 @@ $(document).ready(function(){initNavTree('grid_2writer_8hpp.html',''); initResiz
 <code>#include &lt;ostream&gt;</code><br />
 <code>#include &lt;concepts&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
+<code>#include &lt;gridformat/parallel/communication.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/type_traits.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/precision.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/concepts.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/field_storage.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/range_field.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/scalar_field.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/logging.hpp&gt;</code><br />
 <code>#include &lt;gridformat/grid/grid.hpp&gt;</code><br />
 <code>#include &lt;gridformat/grid/_detail.hpp&gt;</code><br />
 <code>#include &lt;gridformat/grid/entity_fields.hpp&gt;</code><br />
@@ -141,10 +143,19 @@ $(document).ready(function(){initNavTree('grid_2writer_8hpp.html',''); initResiz
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1WritesConnectivity.html">GridFormat::Traits::WritesConnectivity&lt; Writer &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Can be specialized by writers in case the file format does not contain connectivity information.  <a href="structGridFormat_1_1Traits_1_1WritesConnectivity.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1CommunicatorAccess.html">GridFormat::Traits::CommunicatorAccess&lt; Writer &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Can be specialized by parallel writers to expose their underlying communicator.  <a href="structGridFormat_1_1Traits_1_1CommunicatorAccess.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1CommunicatorAccess_3_01Writer_01_4.html">GridFormat::Traits::CommunicatorAccess&lt; Writer &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default specialization for writers that have a communicator() function.  <a href="structGridFormat_1_1Traits_1_1CommunicatorAccess_3_01Writer_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1WriterOptions.html">GridFormat::WriterOptions</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options that writer implementations can pass to the base class.  <a href="structGridFormat_1_1WriterOptions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1GridWriterBase.html">GridFormat::GridWriterBase&lt; Grid &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1GridWriterBase.html">GridFormat::GridWriterBase&lt; G &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for all writer implementations.  <a href="classGridFormat_1_1GridWriterBase.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1GridWriter.html">GridFormat::GridWriter&lt; Grid &gt;</a></td></tr>

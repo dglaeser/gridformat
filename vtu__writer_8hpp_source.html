@@ -124,74 +124,79 @@ $(document).ready(function(){initNavTree('vtu__writer_8hpp_source.html',''); ini
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;ostream&gt;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;gridformat/common/field.hpp&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;<a class="code" href="field_8hpp.html">gridformat/common/field.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;gridformat/common/field_storage.hpp&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;gridformat/grid/grid.hpp&gt;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;<a class="code" href="vtk_2common_8hpp.html">gridformat/vtk/common.hpp</a>&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;<a class="code" href="xml_8hpp.html">gridformat/vtk/xml.hpp</a>&gt;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span>GridFormat {</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> Gr<span class="keywordtype">id</span>&gt;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classGridFormat_1_1VTUWriter.html">   29</a></span><span class="keyword">class </span><a class="code hl_class" href="classGridFormat_1_1VTUWriter.html">VTUWriter</a> : <span class="keyword">public</span> <a class="code hl_class" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">VTK::XMLWriterBase</a>&lt;Grid, VTUWriter&lt;Grid&gt;&gt; {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">using </span><a class="code hl_class" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">ParentType</a> = <a class="code hl_class" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">VTK::XMLWriterBase&lt;Grid, VTUWriter&lt;Grid&gt;</a>&gt;;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1VTUWriter.html">VTUWriter</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html#a995f334d11afd2cd8d66011ca4f4a266">Grid</a>&amp; grid,</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                       <a class="code hl_struct" href="structGridFormat_1_1VTK_1_1XMLOptions.html">VTK::XMLOptions</a> xml_opts = {})</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    : <a class="code hl_class" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">ParentType</a>(grid, <span class="stringliteral">&quot;.vtu&quot;</span>, <span class="keyword">false</span>, std::move(xml_opts))</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    {}</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_class" href="classGridFormat_1_1VTUWriter.html">VTUWriter</a> _with(<a class="code hl_struct" href="structGridFormat_1_1VTK_1_1XMLOptions.html">VTK::XMLOptions</a> xml_opts)<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classGridFormat_1_1VTUWriter.html">VTUWriter</a>{this-&gt;grid(), std::move(xml_opts)};</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> _write(std::ostream&amp; s)<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keyword">auto</span> context = this-&gt;_get_write_context(<span class="stringliteral">&quot;UnstructuredGrid&quot;</span>);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        this-&gt;_set_attribute(context, <span class="stringliteral">&quot;Piece&quot;</span>, <span class="stringliteral">&quot;NumberOfPoints&quot;</span>, number_of_points(this-&gt;grid()));</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        this-&gt;_set_attribute(context, <span class="stringliteral">&quot;Piece&quot;</span>, <span class="stringliteral">&quot;NumberOfCells&quot;</span>, number_of_cells(this-&gt;grid()));</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        FieldStorage vtk_point_fields;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        FieldStorage vtk_cell_fields;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        std::ranges::for_each(this-&gt;_point_field_names(), [&amp;] (<span class="keyword">const</span> std::string&amp; name) {</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            vtk_point_fields.set(name, VTK::make_vtk_field(this-&gt;_get_point_field_ptr(name)));</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece.PointData&quot;</span>, name, vtk_point_fields.get(name));</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        });</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        std::ranges::for_each(this-&gt;_cell_field_names(), [&amp;] (<span class="keyword">const</span> std::string&amp; name) {</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            vtk_cell_fields.set(name, VTK::make_vtk_field(this-&gt;_get_cell_field_ptr(name)));</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece.CellData&quot;</span>, name, vtk_cell_fields.get(name));</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        });</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keyword">const</span> <span class="keyword">auto</span> point_id_map = make_point_id_map(this-&gt;grid());</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keyword">const</span> FieldPtr coords_field = std::visit([&amp;] &lt;<span class="keyword">typename</span> T&gt; (<span class="keyword">const</span> Precision&lt;T&gt;&amp;) {</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">return</span> VTK::make_coordinates_field&lt;T&gt;(this-&gt;grid(), <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        }, this-&gt;_xml_settings.coordinate_precision);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keyword">const</span> FieldPtr connectivity_field = std::visit([&amp;] &lt;<span class="keyword">typename</span> T&gt; (<span class="keyword">const</span> Precision&lt;T&gt;&amp;) {</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">return</span> VTK::make_connectivity_field&lt;T&gt;(this-&gt;grid(), point_id_map);</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        }, this-&gt;_xml_settings.header_precision);</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keyword">const</span> FieldPtr offsets_field = std::visit([&amp;] &lt;<span class="keyword">typename</span> T&gt; (<span class="keyword">const</span> Precision&lt;T&gt;&amp;) {</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">return</span> VTK::make_offsets_field&lt;T&gt;(this-&gt;grid());</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        }, this-&gt;_xml_settings.header_precision);</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keyword">const</span> FieldPtr types_field = VTK::make_cell_types_field(this-&gt;grid());</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece.Points&quot;</span>, <span class="stringliteral">&quot;Coordinates&quot;</span>, *coords_field);</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece.Cells&quot;</span>, <span class="stringliteral">&quot;connectivity&quot;</span>, *connectivity_field);</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece.Cells&quot;</span>, <span class="stringliteral">&quot;offsets&quot;</span>, *offsets_field);</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece.Cells&quot;</span>, <span class="stringliteral">&quot;types&quot;</span>, *types_field);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        this-&gt;_write_xml(std::move(context), s);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}  <span class="comment">// namespace GridFormat</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_VTU_WRITER_HPP_</span></div>
-<div class="ttc" id="aclassGridFormat_1_1VTK_1_1XMLWriterBase_html"><div class="ttname"><a href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">GridFormat::VTK::XMLWriterBase</a></div><div class="ttdoc">Base class for VTK-XML Writer implementations.</div><div class="ttdef"><b>Definition:</b> xml.hpp:182</div></div>
-<div class="ttc" id="aclassGridFormat_1_1VTK_1_1XMLWriterBase_html_a995f334d11afd2cd8d66011ca4f4a266"><div class="ttname"><a href="classGridFormat_1_1VTK_1_1XMLWriterBase.html#a995f334d11afd2cd8d66011ca4f4a266">GridFormat::VTK::XMLWriterBase&lt; Grid, VTUWriter&lt; Grid &gt; &gt;::Grid</a></div><div class="ttdeci">G Grid</div><div class="ttdoc">Export underlying grid type.</div><div class="ttdef"><b>Definition:</b> xml.hpp:188</div></div>
-<div class="ttc" id="aclassGridFormat_1_1VTUWriter_html"><div class="ttname"><a href="classGridFormat_1_1VTUWriter.html">GridFormat::VTUWriter</a></div><div class="ttdoc">Writer for .vtu file format.</div><div class="ttdef"><b>Definition:</b> vtu_writer.hpp:29</div></div>
-<div class="ttc" id="astructGridFormat_1_1VTK_1_1XMLOptions_html"><div class="ttname"><a href="structGridFormat_1_1VTK_1_1XMLOptions.html">GridFormat::VTK::XMLOptions</a></div><div class="ttdoc">Options for VTK-XML files for setting the desired encoding, data format and compression.</div><div class="ttdef"><b>Definition:</b> xml.hpp:95</div></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;gridformat/common/lvalue_reference.hpp&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;gridformat/grid/grid.hpp&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;<a class="code" href="vtk_2common_8hpp.html">gridformat/vtk/common.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;<a class="code" href="xml_8hpp.html">gridformat/vtk/xml.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span>GridFormat {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">template</span>&lt;Concepts::UnstructuredGr<span class="keywordtype">id</span> Gr<span class="keywordtype">id</span>&gt;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classGridFormat_1_1VTUWriter.html">   30</a></span><span class="keyword">class </span><a class="code hl_class" href="classGridFormat_1_1VTUWriter.html">VTUWriter</a> : <span class="keyword">public</span> <a class="code hl_class" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">VTK::XMLWriterBase</a>&lt;Grid, VTUWriter&lt;Grid&gt;&gt; {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">using </span><a class="code hl_class" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">ParentType</a> = <a class="code hl_class" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">VTK::XMLWriterBase&lt;Grid, VTUWriter&lt;Grid&gt;</a>&gt;;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1VTUWriter.html">VTUWriter</a>(LValueReferenceOf&lt;const Grid&gt; grid,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                       <a class="code hl_struct" href="structGridFormat_1_1VTK_1_1XMLOptions.html">VTK::XMLOptions</a> xml_opts = {})</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    : <a class="code hl_class" href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">ParentType</a>(grid.get(), <span class="stringliteral">&quot;.vtu&quot;</span>, <span class="keyword">false</span>, std::move(xml_opts))</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    {}</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_class" href="classGridFormat_1_1VTUWriter.html">VTUWriter</a> _with(<a class="code hl_struct" href="structGridFormat_1_1VTK_1_1XMLOptions.html">VTK::XMLOptions</a> xml_opts)<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classGridFormat_1_1VTUWriter.html">VTUWriter</a>{this-&gt;grid(), std::move(xml_opts)};</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> _write(std::ostream&amp; s)<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">auto</span> context = this-&gt;_get_write_context(<span class="stringliteral">&quot;UnstructuredGrid&quot;</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        this-&gt;_set_attribute(context, <span class="stringliteral">&quot;Piece&quot;</span>, <span class="stringliteral">&quot;NumberOfPoints&quot;</span>, number_of_points(this-&gt;grid()));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        this-&gt;_set_attribute(context, <span class="stringliteral">&quot;Piece&quot;</span>, <span class="stringliteral">&quot;NumberOfCells&quot;</span>, number_of_cells(this-&gt;grid()));</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        FieldStorage vtk_point_fields;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        FieldStorage vtk_cell_fields;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        std::ranges::for_each(this-&gt;_point_field_names(), [&amp;] (<span class="keyword">const</span> std::string&amp; name) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            vtk_point_fields.set(name, VTK::make_vtk_field(this-&gt;_get_point_field_ptr(name)));</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece/PointData&quot;</span>, name, vtk_point_fields.get(name));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        });</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        std::ranges::for_each(this-&gt;_cell_field_names(), [&amp;] (<span class="keyword">const</span> std::string&amp; name) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            vtk_cell_fields.set(name, VTK::make_vtk_field(this-&gt;_get_cell_field_ptr(name)));</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece/CellData&quot;</span>, name, vtk_cell_fields.get(name));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        });</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keyword">const</span> <span class="keyword">auto</span> point_id_map = make_point_id_map(this-&gt;grid());</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> coords_field = std::visit([&amp;] &lt;<span class="keyword">typename</span> T&gt; (<span class="keyword">const</span> Precision&lt;T&gt;&amp;) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keywordflow">return</span> VTK::make_coordinates_field&lt;T&gt;(this-&gt;grid(), <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        }, this-&gt;_xml_settings.coordinate_precision);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> connectivity_field = std::visit([&amp;] &lt;<span class="keyword">typename</span> T&gt; (<span class="keyword">const</span> Precision&lt;T&gt;&amp;) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keywordflow">return</span> VTK::make_connectivity_field&lt;T&gt;(this-&gt;grid(), point_id_map);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        }, this-&gt;_xml_settings.header_precision);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> offsets_field = std::visit([&amp;] &lt;<span class="keyword">typename</span> T&gt; (<span class="keyword">const</span> Precision&lt;T&gt;&amp;) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <span class="keywordflow">return</span> VTK::make_offsets_field&lt;T&gt;(this-&gt;grid());</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        }, this-&gt;_xml_settings.header_precision);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> types_field = VTK::make_cell_types_field(this-&gt;grid());</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece/Points&quot;</span>, <span class="stringliteral">&quot;Coordinates&quot;</span>, *coords_field);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece/Cells&quot;</span>, <span class="stringliteral">&quot;connectivity&quot;</span>, *connectivity_field);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece/Cells&quot;</span>, <span class="stringliteral">&quot;offsets&quot;</span>, *offsets_field);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        this-&gt;_set_data_array(context, <span class="stringliteral">&quot;Piece/Cells&quot;</span>, <span class="stringliteral">&quot;types&quot;</span>, *types_field);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        this-&gt;_write_xml(std::move(context), s);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>};</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> G&gt;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><a class="code hl_class" href="classGridFormat_1_1VTUWriter.html">VTUWriter</a>(G&amp;&amp;, <a class="code hl_struct" href="structGridFormat_1_1VTK_1_1XMLOptions.html">VTK::XMLOptions</a> = {}) -&gt; VTUWriter&lt;std::remove_cvref_t&lt;G&gt;&gt;;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}  <span class="comment">// namespace GridFormat</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_VTU_WRITER_HPP_</span></div>
+<div class="ttc" id="aclassGridFormat_1_1VTK_1_1XMLWriterBase_html"><div class="ttname"><a href="classGridFormat_1_1VTK_1_1XMLWriterBase.html">GridFormat::VTK::XMLWriterBase</a></div><div class="ttdoc">Base class for VTK-XML Writer implementations.</div><div class="ttdef"><b>Definition:</b> xml.hpp:186</div></div>
+<div class="ttc" id="aclassGridFormat_1_1VTUWriter_html"><div class="ttname"><a href="classGridFormat_1_1VTUWriter.html">GridFormat::VTUWriter</a></div><div class="ttdoc">Writer for .vtu file format.</div><div class="ttdef"><b>Definition:</b> vtu_writer.hpp:30</div></div>
+<div class="ttc" id="afield_8hpp_html"><div class="ttname"><a href="field_8hpp.html">field.hpp</a></div></div>
+<div class="ttc" id="agroup__Common_html_ga06474c8fd20c465d2ea250e7749f68b9"><div class="ttname"><a href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">GridFormat::FieldPtr</a></div><div class="ttdeci">std::shared_ptr&lt; const Field &gt; FieldPtr</div><div class="ttdoc">Pointer type used by writers/readers for fields.</div><div class="ttdef"><b>Definition:</b> field.hpp:155</div></div>
+<div class="ttc" id="astructGridFormat_1_1VTK_1_1XMLOptions_html"><div class="ttname"><a href="structGridFormat_1_1VTK_1_1XMLOptions.html">GridFormat::VTK::XMLOptions</a></div><div class="ttdoc">Options for VTK-XML files for setting the desired encoding, data format and compression.</div><div class="ttdef"><b>Definition:</b> xml.hpp:99</div></div>
 <div class="ttc" id="avtk_2common_8hpp_html"><div class="ttname"><a href="vtk_2common_8hpp.html">common.hpp</a></div><div class="ttdoc">Common functionality for VTK writers.</div></div>
-<div class="ttc" id="axml_8hpp_html"><div class="ttname"><a href="xml_8hpp.html">xml.hpp</a></div><div class="ttdoc">Base class for VTK XML-type file format writers.</div></div>
+<div class="ttc" id="axml_8hpp_html"><div class="ttname"><a href="xml_8hpp.html">xml.hpp</a></div><div class="ttdoc">Helper classes and functions for VTK XML-type file format writers &amp; readers.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->

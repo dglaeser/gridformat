@@ -2,6 +2,7 @@ var group__Grid =
 [
     [ "image_grid.hpp", "image__grid_8hpp.html", null ],
     [ "concepts.hpp", "grid_2concepts_8hpp.html", null ],
+    [ "converter.hpp", "converter_8hpp.html", null ],
     [ "writer.hpp", "grid_2writer_8hpp.html", null ],
     [ "GridFormat::Concepts::EntitySet", "conceptGridFormat_1_1Concepts_1_1EntitySet.html", null ],
     [ "GridFormat::Concepts::StructuredEntitySet", "conceptGridFormat_1_1Concepts_1_1StructuredEntitySet.html", null ],
@@ -28,11 +29,16 @@ var group__Grid =
       [ "points", "classGridFormat_1_1ImageGrid.html#aa9d83f1ddc7682a78d72b019f5a2ad6f", null ],
       [ "position", "classGridFormat_1_1ImageGrid.html#a88894d16e2ca48e3202060ef7dbfcb3d", null ]
     ] ],
-    [ "GridFormat::WriterOptions", "structGridFormat_1_1WriterOptions.html", null ],
-    [ "GridFormat::GridWriterBase< Grid >", "classGridFormat_1_1GridWriterBase.html", [
+    [ "GridFormat::WriterOptions", "structGridFormat_1_1WriterOptions.html", [
+      [ "append_null_terminator_to_strings", "structGridFormat_1_1WriterOptions.html#a7e206dfd8f927c7ad1ed379b0430cb89", null ],
+      [ "use_structured_grid_ordering", "structGridFormat_1_1WriterOptions.html#a95f072273a80a5eb26b56ac708a710c2", null ]
+    ] ],
+    [ "GridFormat::GridWriterBase< G >", "classGridFormat_1_1GridWriterBase.html", [
       [ "cell_fields_of_rank", "classGridFormat_1_1GridWriterBase.html#a1f9cfc3f7ee7e5064a2a42e82412464a", null ],
       [ "point_fields_of_rank", "classGridFormat_1_1GridWriterBase.html#adf9ece46db6879297b4df095501b8e54", null ]
     ] ],
     [ "GridFormat::GridWriter< Grid >", "classGridFormat_1_1GridWriter.html", null ],
-    [ "GridFormat::TimeSeriesGridWriter< Grid >", "classGridFormat_1_1TimeSeriesGridWriter.html", null ]
+    [ "GridFormat::TimeSeriesGridWriter< Grid >", "classGridFormat_1_1TimeSeriesGridWriter.html", null ],
+    [ "GridFormat::convert", "group__Grid.html#gab143956e469694e5bb3cc534958e674e", null ],
+    [ "GridFormat::convert", "group__Grid.html#gacfdca599d26be7db93a94fb21896b342", null ]
 ];

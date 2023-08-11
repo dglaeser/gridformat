@@ -121,6 +121,7 @@ $(document).ready(function(){initNavTree('attributes_8hpp.html',''); initResizab
 <p>Helper functions to get the VTK-specific names of things.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;bit&gt;</code><br />
+<code>#include &lt;gridformat/common/precision.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/exceptions.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/callable_overload_set.hpp&gt;</code><br />
 <code>#include &lt;<a class="el" href="vtk_2common_8hpp_source.html">gridformat/vtk/common.hpp</a>&gt;</code><br />
@@ -169,6 +170,12 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VT
 template&lt;typename Enc , typename Format &gt; </td></tr>
 <tr class="memitem:ga66944b7839cadf30f6eaee371a533c8d"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::VTK::data_format_name</b> (const Enc &amp;e, const Format &amp;format)</td></tr>
 <tr class="separator:ga66944b7839cadf30f6eaee371a533c8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6cca811da0bde6e3b88438ad5bd5aa80"><td class="memItemLeft" align="right" valign="top">
+std::endian&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTK::from_endian_attribute</b> (const std::string &amp;endian)</td></tr>
+<tr class="separator:ga6cca811da0bde6e3b88438ad5bd5aa80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga26aaf74669a968864ad8ccf8f2c47b95"><td class="memItemLeft" align="right" valign="top">
+DynamicPrecision&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTK::from_precision_attribute</b> (const std::string &amp;prec)</td></tr>
+<tr class="separator:ga26aaf74669a968864ad8ccf8f2c47b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

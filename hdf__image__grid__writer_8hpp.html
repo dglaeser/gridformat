@@ -132,6 +132,8 @@ $(document).ready(function(){initNavTree('hdf__image__grid__writer_8hpp.html',''
 <code>#include &lt;gridformat/common/matrix.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/ranges.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/type_traits.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/lvalue_reference.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/field_transformations.hpp&gt;</code><br />
 <code>#include &lt;gridformat/parallel/communication.hpp&gt;</code><br />
 <code>#include &lt;gridformat/parallel/concepts.hpp&gt;</code><br />
 <code>#include &lt;<a class="el" href="grid_2concepts_8hpp_source.html">gridformat/grid/concepts.hpp</a>&gt;</code><br />
@@ -145,11 +147,16 @@ $(document).ready(function(){initNavTree('hdf__image__grid__writer_8hpp.html',''
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKHDFImageGridWriterImpl.html">GridFormat::VTKHDFImageGridWriterImpl&lt; is_transient, Grid, Communicator &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Doc me.  <a href="classGridFormat_1_1VTKHDFImageGridWriterImpl.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKHDFImageGridWriter.html">GridFormat::VTKHDFImageGridWriter&lt; G, C &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> for the VTK HDF file format for image grids.  <a href="classGridFormat_1_1VTKHDFImageGridWriter.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1VTKHDFImageGridTimeSeriesWriter.html">GridFormat::VTKHDFImageGridTimeSeriesWriter&lt; G, C &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> for the transient VTK HDF file format for image grids.  <a href="classGridFormat_1_1VTKHDFImageGridTimeSeriesWriter.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1WritesConnectivity_3_01VTKHDFImageGridWriter_3_01Args_8_8_8_01_4_01_4.html">GridFormat::Traits::WritesConnectivity&lt; VTKHDFImageGridWriter&lt; Args... &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1WritesConnectivity_3_01VTKHDFImageGridTimeSeriesWriter_3_01Args_8_8_8_01_4_01_4.html">GridFormat::Traits::WritesConnectivity&lt; VTKHDFImageGridTimeSeriesWriter&lt; Args... &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>

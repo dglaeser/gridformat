@@ -129,7 +129,7 @@ $(document).ready(function(){initNavTree('classGridFormat_1_1Writer.html',''); i
 <div class="textblock"><div class="compoundTemplParams">template&lt;Concepts::Grid G&gt;<br />
 class GridFormat::Writer&lt; G &gt;</div><p>Typically you would construct this class with one of the predefined file format instances. For example, with the .vtu file format: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{GridFormat::vtu, <a class="code hl_function" href="classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998">grid</a>};</div>
 <div class="ttc" id="aclassGridFormat_1_1Writer_html"><div class="ttname"><a href="classGridFormat_1_1Writer.html">GridFormat::Writer</a></div><div class="ttdoc">Interface to the writers for all supported file formats. Depending on the chosen format,...</div><div class="ttdef"><b>Definition:</b> writer.hpp:90</div></div>
-<div class="ttc" id="aclassGridFormat_1_1Writer_html_a7b2d2f15b874cc2958df8c4abb922998"><div class="ttname"><a href="classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998">GridFormat::Writer::grid</a></div><div class="ttdeci">const Grid &amp; grid() const</div><div class="ttdoc">Return a reference to the underlying grid.</div><div class="ttdef"><b>Definition:</b> writer.hpp:319</div></div>
+<div class="ttc" id="aclassGridFormat_1_1Writer_html_a7b2d2f15b874cc2958df8c4abb922998"><div class="ttname"><a href="classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998">GridFormat::Writer::grid</a></div><div class="ttdeci">const Grid &amp; grid() const</div><div class="ttdoc">Return a reference to the underlying grid.</div><div class="ttdef"><b>Definition:</b> writer.hpp:326</div></div>
 </div><!-- fragment --> <dl class="section note"><dt>Note</dt><dd>The constructor checks that the grid you are passing in is actually an lvalue-reference. If not, compilation will fail. This is because all writers take the grid per reference and their lifetime is bound to the lifetime of the given grid. </dd></dl>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
@@ -146,26 +146,26 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>Grid</b> = G</td></t
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa9ea2c5a5d4f035ba94efb7aae282dad"><td class="memTemplParams" colspan="2">template&lt;typename FileFormat , Detail::Compatible&lt; Grid &gt; _Grid&gt; <br />
-requires (Detail::has_sequential_factory&lt;FileFormat, Grid&gt;)</td></tr>
-<tr class="memitem:aa9ea2c5a5d4f035ba94efb7aae282dad"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#aa9ea2c5a5d4f035ba94efb7aae282dad">Writer</a> (const FileFormat &amp;f, _Grid &amp;&amp;<a class="el" href="classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998">grid</a>)</td></tr>
-<tr class="memdesc:aa9ea2c5a5d4f035ba94efb7aae282dad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a sequential grid file writer.  <br /></td></tr>
-<tr class="separator:aa9ea2c5a5d4f035ba94efb7aae282dad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa6c2b43018ce7b25c60b02d800f1fd3"><td class="memTemplParams" colspan="2">template&lt;typename FileFormat , Detail::Compatible&lt; Grid &gt; _Grid&gt; <br />
-requires (Detail::has_sequential_time_series_factory&lt;FileFormat, Grid&gt;)</td></tr>
-<tr class="memitem:aaa6c2b43018ce7b25c60b02d800f1fd3"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#aaa6c2b43018ce7b25c60b02d800f1fd3">Writer</a> (const FileFormat &amp;f, _Grid &amp;&amp;<a class="el" href="classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998">grid</a>, const std::string &amp;base_filename)</td></tr>
-<tr class="memdesc:aaa6c2b43018ce7b25c60b02d800f1fd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a sequential time series writer.  <br /></td></tr>
-<tr class="separator:aaa6c2b43018ce7b25c60b02d800f1fd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b6a33c7ba6a578f38afca52041dd5bd"><td class="memTemplParams" colspan="2">template&lt;typename FileFormat , Detail::Compatible&lt; Grid &gt; _Grid, Concepts::Communicator Comm&gt; <br />
-requires (Detail::has_parallel_factory&lt;FileFormat, Grid, Comm&gt;)</td></tr>
-<tr class="memitem:a5b6a33c7ba6a578f38afca52041dd5bd"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a5b6a33c7ba6a578f38afca52041dd5bd">Writer</a> (const FileFormat &amp;f, _Grid &amp;&amp;<a class="el" href="classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998">grid</a>, const Comm &amp;comm)</td></tr>
-<tr class="memdesc:a5b6a33c7ba6a578f38afca52041dd5bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a parallel grid file writer.  <br /></td></tr>
-<tr class="separator:a5b6a33c7ba6a578f38afca52041dd5bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36ff61315b1312d1a5d0f47a0a405073"><td class="memTemplParams" colspan="2">template&lt;typename FileFormat , Detail::Compatible&lt; Grid &gt; _Grid, Concepts::Communicator Comm&gt; <br />
-requires (Detail::has_parallel_time_series_factory&lt;FileFormat, Grid, Comm&gt;)</td></tr>
-<tr class="memitem:a36ff61315b1312d1a5d0f47a0a405073"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a36ff61315b1312d1a5d0f47a0a405073">Writer</a> (const FileFormat &amp;f, _Grid &amp;&amp;<a class="el" href="classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998">grid</a>, const Comm &amp;comm, const std::string &amp;base_filename)</td></tr>
-<tr class="memdesc:a36ff61315b1312d1a5d0f47a0a405073"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a parallel time series file writer.  <br /></td></tr>
-<tr class="separator:a36ff61315b1312d1a5d0f47a0a405073"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21c5ead0db253c1a821d068ce8a9c8e2"><td class="memTemplParams" colspan="2">template&lt;typename FileFormat , WriterDetail::Compatible&lt; Grid &gt; _Grid&gt; <br />
+requires (WriterDetail::has_sequential_factory&lt;FileFormat, Grid&gt;)</td></tr>
+<tr class="memitem:a21c5ead0db253c1a821d068ce8a9c8e2"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a21c5ead0db253c1a821d068ce8a9c8e2">Writer</a> (const FileFormat &amp;f, _Grid &amp;&amp;<a class="el" href="classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998">grid</a>)</td></tr>
+<tr class="memdesc:a21c5ead0db253c1a821d068ce8a9c8e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a sequential grid file writer.  <br /></td></tr>
+<tr class="separator:a21c5ead0db253c1a821d068ce8a9c8e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a512931ccb35c0338b94af7b819548ceb"><td class="memTemplParams" colspan="2">template&lt;typename FileFormat , WriterDetail::Compatible&lt; Grid &gt; _Grid&gt; <br />
+requires (WriterDetail::has_sequential_time_series_factory&lt;FileFormat, Grid&gt;)</td></tr>
+<tr class="memitem:a512931ccb35c0338b94af7b819548ceb"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a512931ccb35c0338b94af7b819548ceb">Writer</a> (const FileFormat &amp;f, _Grid &amp;&amp;<a class="el" href="classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998">grid</a>, const std::string &amp;base_filename)</td></tr>
+<tr class="memdesc:a512931ccb35c0338b94af7b819548ceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a sequential time series writer.  <br /></td></tr>
+<tr class="separator:a512931ccb35c0338b94af7b819548ceb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a602e4bbc66a2304ac89e0cb58341afcd"><td class="memTemplParams" colspan="2">template&lt;typename FileFormat , WriterDetail::Compatible&lt; Grid &gt; _Grid, Concepts::Communicator Comm&gt; <br />
+requires (WriterDetail::has_parallel_factory&lt;FileFormat, Grid, Comm&gt;)</td></tr>
+<tr class="memitem:a602e4bbc66a2304ac89e0cb58341afcd"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a602e4bbc66a2304ac89e0cb58341afcd">Writer</a> (const FileFormat &amp;f, _Grid &amp;&amp;<a class="el" href="classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998">grid</a>, const Comm &amp;comm)</td></tr>
+<tr class="memdesc:a602e4bbc66a2304ac89e0cb58341afcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a parallel grid file writer.  <br /></td></tr>
+<tr class="separator:a602e4bbc66a2304ac89e0cb58341afcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b1a5666cab669b42b81a06f7502b971"><td class="memTemplParams" colspan="2">template&lt;typename FileFormat , WriterDetail::Compatible&lt; Grid &gt; _Grid, Concepts::Communicator Comm&gt; <br />
+requires (WriterDetail::has_parallel_time_series_factory&lt;FileFormat, Grid, Comm&gt;)</td></tr>
+<tr class="memitem:a6b1a5666cab669b42b81a06f7502b971"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a6b1a5666cab669b42b81a06f7502b971">Writer</a> (const FileFormat &amp;f, _Grid &amp;&amp;<a class="el" href="classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998">grid</a>, const Comm &amp;comm, const std::string &amp;base_filename)</td></tr>
+<tr class="memdesc:a6b1a5666cab669b42b81a06f7502b971"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a parallel time series file writer.  <br /></td></tr>
+<tr class="separator:a6b1a5666cab669b42b81a06f7502b971"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace6ff6a97c61c66858fccb3b018bb5e1"><td class="memTemplParams" colspan="2"><a id="ace6ff6a97c61c66858fccb3b018bb5e1" name="ace6ff6a97c61c66858fccb3b018bb5e1"></a>
 template&lt;std::derived_from&lt; <a class="el" href="classGridFormat_1_1GridWriter.html">GridWriter</a>&lt; Grid &gt; &gt; W&gt; <br />
 requires (!std::is_lvalue_reference_v&lt;W&gt;)</td></tr>
@@ -185,39 +185,43 @@ requires (!std::is_lvalue_reference_v&lt;W&gt;)</td></tr>
 <tr class="memitem:a21dcdaabcf4880f16c96e82f70737e81"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a21dcdaabcf4880f16c96e82f70737e81">write</a> (const T &amp;time_value) const</td></tr>
 <tr class="memdesc:a21dcdaabcf4880f16c96e82f70737e81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a time step in a time series.  <br /></td></tr>
 <tr class="separator:a21dcdaabcf4880f16c96e82f70737e81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aceba61d4867ddb47d0286827fae8cfc1"><td class="memTemplParams" colspan="2">template&lt;typename Field &gt; </td></tr>
-<tr class="memitem:aceba61d4867ddb47d0286827fae8cfc1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#aceba61d4867ddb47d0286827fae8cfc1">set_meta_data</a> (const std::string &amp;name, Field &amp;&amp;field)</td></tr>
+<tr class="memitem:aceba61d4867ddb47d0286827fae8cfc1"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classGridFormat_1_1Field.html">Field</a> &gt; </td></tr>
+<tr class="memitem:aceba61d4867ddb47d0286827fae8cfc1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#aceba61d4867ddb47d0286827fae8cfc1">set_meta_data</a> (const std::string &amp;name, <a class="el" href="classGridFormat_1_1Field.html">Field</a> &amp;&amp;field)</td></tr>
 <tr class="memdesc:aceba61d4867ddb47d0286827fae8cfc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a meta data field to be added to the output.  <br /></td></tr>
 <tr class="separator:aceba61d4867ddb47d0286827fae8cfc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a657b4cb84b4a5e0921d69912a3f9c3"><td class="memTemplParams" colspan="2">template&lt;typename Field &gt; </td></tr>
-<tr class="memitem:a1a657b4cb84b4a5e0921d69912a3f9c3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a1a657b4cb84b4a5e0921d69912a3f9c3">set_point_field</a> (const std::string &amp;name, Field &amp;&amp;field)</td></tr>
+<tr class="memitem:a1a657b4cb84b4a5e0921d69912a3f9c3"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classGridFormat_1_1Field.html">Field</a> &gt; </td></tr>
+<tr class="memitem:a1a657b4cb84b4a5e0921d69912a3f9c3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a1a657b4cb84b4a5e0921d69912a3f9c3">set_point_field</a> (const std::string &amp;name, <a class="el" href="classGridFormat_1_1Field.html">Field</a> &amp;&amp;field)</td></tr>
 <tr class="memdesc:a1a657b4cb84b4a5e0921d69912a3f9c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a point data field to be added to the output.  <br /></td></tr>
 <tr class="separator:a1a657b4cb84b4a5e0921d69912a3f9c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a595ed3c719b017f3ffb8a9197c2c1f69"><td class="memTemplParams" colspan="2">template&lt;typename Field , typename T &gt; </td></tr>
-<tr class="memitem:a595ed3c719b017f3ffb8a9197c2c1f69"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a595ed3c719b017f3ffb8a9197c2c1f69">set_point_field</a> (const std::string &amp;name, Field &amp;&amp;field, const Precision&lt; T &gt; &amp;prec)</td></tr>
+<tr class="memitem:a595ed3c719b017f3ffb8a9197c2c1f69"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classGridFormat_1_1Field.html">Field</a> , typename T &gt; </td></tr>
+<tr class="memitem:a595ed3c719b017f3ffb8a9197c2c1f69"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a595ed3c719b017f3ffb8a9197c2c1f69">set_point_field</a> (const std::string &amp;name, <a class="el" href="classGridFormat_1_1Field.html">Field</a> &amp;&amp;field, const Precision&lt; T &gt; &amp;prec)</td></tr>
 <tr class="memdesc:a595ed3c719b017f3ffb8a9197c2c1f69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overload with custom precision with which to write the field.  <br /></td></tr>
 <tr class="separator:a595ed3c719b017f3ffb8a9197c2c1f69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b6e4702677c4d6c3a1b4f431ccf6d03"><td class="memTemplParams" colspan="2">template&lt;typename Field &gt; </td></tr>
-<tr class="memitem:a7b6e4702677c4d6c3a1b4f431ccf6d03"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a7b6e4702677c4d6c3a1b4f431ccf6d03">set_cell_field</a> (const std::string &amp;name, Field &amp;&amp;field)</td></tr>
+<tr class="memitem:a7b6e4702677c4d6c3a1b4f431ccf6d03"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classGridFormat_1_1Field.html">Field</a> &gt; </td></tr>
+<tr class="memitem:a7b6e4702677c4d6c3a1b4f431ccf6d03"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a7b6e4702677c4d6c3a1b4f431ccf6d03">set_cell_field</a> (const std::string &amp;name, <a class="el" href="classGridFormat_1_1Field.html">Field</a> &amp;&amp;field)</td></tr>
 <tr class="memdesc:a7b6e4702677c4d6c3a1b4f431ccf6d03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a cell data field to be added to the output.  <br /></td></tr>
 <tr class="separator:a7b6e4702677c4d6c3a1b4f431ccf6d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad676b0b617166ef873c610805911997f"><td class="memTemplParams" colspan="2">template&lt;typename Field , typename T &gt; </td></tr>
-<tr class="memitem:ad676b0b617166ef873c610805911997f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#ad676b0b617166ef873c610805911997f">set_cell_field</a> (const std::string &amp;name, Field &amp;&amp;field, const Precision&lt; T &gt; &amp;prec)</td></tr>
+<tr class="memitem:ad676b0b617166ef873c610805911997f"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classGridFormat_1_1Field.html">Field</a> , typename T &gt; </td></tr>
+<tr class="memitem:ad676b0b617166ef873c610805911997f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#ad676b0b617166ef873c610805911997f">set_cell_field</a> (const std::string &amp;name, <a class="el" href="classGridFormat_1_1Field.html">Field</a> &amp;&amp;field, const Precision&lt; T &gt; &amp;prec)</td></tr>
 <tr class="memdesc:ad676b0b617166ef873c610805911997f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overload with custom precision with which to write the field.  <br /></td></tr>
 <tr class="separator:ad676b0b617166ef873c610805911997f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d7c7e81634cbb9f0e8fc3304e4de7db"><td class="memItemLeft" align="right" valign="top">FieldPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a4d7c7e81634cbb9f0e8fc3304e4de7db">remove_meta_data</a> (const std::string &amp;name)</td></tr>
+<tr class="memitem:a4d7c7e81634cbb9f0e8fc3304e4de7db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a4d7c7e81634cbb9f0e8fc3304e4de7db">remove_meta_data</a> (const std::string &amp;name)</td></tr>
 <tr class="memdesc:a4d7c7e81634cbb9f0e8fc3304e4de7db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a meta data field from the output.  <br /></td></tr>
 <tr class="separator:a4d7c7e81634cbb9f0e8fc3304e4de7db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0ffe4fb8ea43b67baf108a8bbc55763"><td class="memItemLeft" align="right" valign="top">FieldPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#ae0ffe4fb8ea43b67baf108a8bbc55763">remove_point_field</a> (const std::string &amp;name)</td></tr>
+<tr class="memitem:ae0ffe4fb8ea43b67baf108a8bbc55763"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#ae0ffe4fb8ea43b67baf108a8bbc55763">remove_point_field</a> (const std::string &amp;name)</td></tr>
 <tr class="memdesc:ae0ffe4fb8ea43b67baf108a8bbc55763"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a point field from the output.  <br /></td></tr>
 <tr class="separator:ae0ffe4fb8ea43b67baf108a8bbc55763"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78b1f2209c24a3c7da50e65041034bcd"><td class="memItemLeft" align="right" valign="top">FieldPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a78b1f2209c24a3c7da50e65041034bcd">remove_cell_field</a> (const std::string &amp;name)</td></tr>
+<tr class="memitem:a78b1f2209c24a3c7da50e65041034bcd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a78b1f2209c24a3c7da50e65041034bcd">remove_cell_field</a> (const std::string &amp;name)</td></tr>
 <tr class="memdesc:a78b1f2209c24a3c7da50e65041034bcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a cell field from the output.  <br /></td></tr>
 <tr class="separator:a78b1f2209c24a3c7da50e65041034bcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8063585db73e2c047ac567a0b83ec22c"><td class="memItemLeft" align="right" valign="top"><a id="a8063585db73e2c047ac567a0b83ec22c" name="a8063585db73e2c047ac567a0b83ec22c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
 <tr class="memdesc:a8063585db73e2c047ac567a0b83ec22c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all data inserted to the writer. <br /></td></tr>
 <tr class="separator:a8063585db73e2c047ac567a0b83ec22c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2877c87046a2cbc27d793107ab3894e4"><td class="memItemLeft" align="right" valign="top"><a id="a2877c87046a2cbc27d793107ab3894e4" name="a2877c87046a2cbc27d793107ab3894e4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_ignore_warnings</b> (bool value)</td></tr>
+<tr class="memdesc:a2877c87046a2cbc27d793107ab3894e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ignore/consider warnings (default: true) <br /></td></tr>
+<tr class="separator:a2877c87046a2cbc27d793107ab3894e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61832042c0d72ff457f69bad4a45775b"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classGridFormat_1_1Writer.html">Writer</a> &gt; </td></tr>
 <tr class="memitem:a61832042c0d72ff457f69bad4a45775b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html#a61832042c0d72ff457f69bad4a45775b">copy_fields</a> (<a class="el" href="classGridFormat_1_1Writer.html">Writer</a> &amp;out) const</td></tr>
 <tr class="memdesc:a61832042c0d72ff457f69bad4a45775b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy all inserted fields into another writer.  <br /></td></tr>
@@ -243,16 +247,16 @@ Friends</h2></td></tr>
 <tr class="separator:a20c677573e50e2d2bd0bd14e2a8d5193"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aa9ea2c5a5d4f035ba94efb7aae282dad" name="aa9ea2c5a5d4f035ba94efb7aae282dad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa9ea2c5a5d4f035ba94efb7aae282dad">&#9670;&#160;</a></span>Writer() <span class="overload">[1/4]</span></h2>
+<a id="a21c5ead0db253c1a821d068ce8a9c8e2" name="a21c5ead0db253c1a821d068ce8a9c8e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21c5ead0db253c1a821d068ce8a9c8e2">&#9670;&#160;</a></span>Writer() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;Concepts::Grid G&gt; </div>
 <div class="memtemplate">
-template&lt;typename FileFormat , Detail::Compatible&lt; Grid &gt; _Grid&gt; <br />
-requires (Detail::has_sequential_factory&lt;FileFormat, Grid&gt;)</div>
+template&lt;typename FileFormat , WriterDetail::Compatible&lt; Grid &gt; _Grid&gt; <br />
+requires (WriterDetail::has_sequential_factory&lt;FileFormat, Grid&gt;)</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -291,16 +295,16 @@ requires (Detail::has_sequential_factory&lt;FileFormat, Grid&gt;)</div>
 
 </div>
 </div>
-<a id="aaa6c2b43018ce7b25c60b02d800f1fd3" name="aaa6c2b43018ce7b25c60b02d800f1fd3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa6c2b43018ce7b25c60b02d800f1fd3">&#9670;&#160;</a></span>Writer() <span class="overload">[2/4]</span></h2>
+<a id="a512931ccb35c0338b94af7b819548ceb" name="a512931ccb35c0338b94af7b819548ceb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a512931ccb35c0338b94af7b819548ceb">&#9670;&#160;</a></span>Writer() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;Concepts::Grid G&gt; </div>
 <div class="memtemplate">
-template&lt;typename FileFormat , Detail::Compatible&lt; Grid &gt; _Grid&gt; <br />
-requires (Detail::has_sequential_time_series_factory&lt;FileFormat, Grid&gt;)</div>
+template&lt;typename FileFormat , WriterDetail::Compatible&lt; Grid &gt; _Grid&gt; <br />
+requires (WriterDetail::has_sequential_time_series_factory&lt;FileFormat, Grid&gt;)</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -346,16 +350,16 @@ requires (Detail::has_sequential_time_series_factory&lt;FileFormat, Grid&gt;)</d
 
 </div>
 </div>
-<a id="a5b6a33c7ba6a578f38afca52041dd5bd" name="a5b6a33c7ba6a578f38afca52041dd5bd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b6a33c7ba6a578f38afca52041dd5bd">&#9670;&#160;</a></span>Writer() <span class="overload">[3/4]</span></h2>
+<a id="a602e4bbc66a2304ac89e0cb58341afcd" name="a602e4bbc66a2304ac89e0cb58341afcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a602e4bbc66a2304ac89e0cb58341afcd">&#9670;&#160;</a></span>Writer() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;Concepts::Grid G&gt; </div>
 <div class="memtemplate">
-template&lt;typename FileFormat , Detail::Compatible&lt; Grid &gt; _Grid, Concepts::Communicator Comm&gt; <br />
-requires (Detail::has_parallel_factory&lt;FileFormat, Grid, Comm&gt;)</div>
+template&lt;typename FileFormat , WriterDetail::Compatible&lt; Grid &gt; _Grid, Concepts::Communicator Comm&gt; <br />
+requires (WriterDetail::has_parallel_factory&lt;FileFormat, Grid, Comm&gt;)</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -401,16 +405,16 @@ requires (Detail::has_parallel_factory&lt;FileFormat, Grid, Comm&gt;)</div>
 
 </div>
 </div>
-<a id="a36ff61315b1312d1a5d0f47a0a405073" name="a36ff61315b1312d1a5d0f47a0a405073"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36ff61315b1312d1a5d0f47a0a405073">&#9670;&#160;</a></span>Writer() <span class="overload">[4/4]</span></h2>
+<a id="a6b1a5666cab669b42b81a06f7502b971" name="a6b1a5666cab669b42b81a06f7502b971"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b1a5666cab669b42b81a06f7502b971">&#9670;&#160;</a></span>Writer() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;Concepts::Grid G&gt; </div>
 <div class="memtemplate">
-template&lt;typename FileFormat , Detail::Compatible&lt; Grid &gt; _Grid, Concepts::Communicator Comm&gt; <br />
-requires (Detail::has_parallel_time_series_factory&lt;FileFormat, Grid, Comm&gt;)</div>
+template&lt;typename FileFormat , WriterDetail::Compatible&lt; Grid &gt; _Grid, Concepts::Communicator Comm&gt; <br />
+requires (WriterDetail::has_parallel_time_series_factory&lt;FileFormat, Grid, Comm&gt;)</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -512,7 +516,7 @@ template&lt;Concepts::Grid G&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">FieldPtr <a class="el" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a>&lt; G &gt;::remove_cell_field </td>
+          <td class="memname"><a class="el" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> <a class="el" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a>&lt; G &gt;::remove_cell_field </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
@@ -546,7 +550,7 @@ template&lt;Concepts::Grid G&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">FieldPtr <a class="el" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a>&lt; G &gt;::remove_meta_data </td>
+          <td class="memname"><a class="el" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> <a class="el" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a>&lt; G &gt;::remove_meta_data </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
@@ -580,7 +584,7 @@ template&lt;Concepts::Grid G&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">FieldPtr <a class="el" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a>&lt; G &gt;::remove_point_field </td>
+          <td class="memname"><a class="el" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> <a class="el" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a>&lt; G &gt;::remove_point_field </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
@@ -610,7 +614,7 @@ template&lt;Concepts::Grid G&gt; </div>
 <div class="memtemplate">
 template&lt;Concepts::Grid G&gt; </div>
 <div class="memtemplate">
-template&lt;typename Field &gt; </div>
+template&lt;typename <a class="el" href="classGridFormat_1_1Field.html">Field</a> &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -624,7 +628,7 @@ template&lt;typename Field &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Field &amp;&amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classGridFormat_1_1Field.html">Field</a> &amp;&amp;&#160;</td>
           <td class="paramname"><em>field</em>&#160;</td>
         </tr>
         <tr>
@@ -646,7 +650,7 @@ template&lt;typename Field &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>Cell data is usually given as lambdas that are invocable with cells of the grid. You can also pass in custom fields that inherit from the <code>Field</code> class. This is discouraged, however. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Cell data is usually given as lambdas that are invocable with cells of the grid. You can also pass in custom fields that inherit from the <code><a class="el" href="classGridFormat_1_1Field.html" title="Abstract interface for fields of values that is used by writers/readers to store fields.">Field</a></code> class. This is discouraged, however. </dd></dl>
 
 </div>
 </div>
@@ -658,7 +662,7 @@ template&lt;typename Field &gt; </div>
 <div class="memtemplate">
 template&lt;Concepts::Grid G&gt; </div>
 <div class="memtemplate">
-template&lt;typename Field , typename T &gt; </div>
+template&lt;typename <a class="el" href="classGridFormat_1_1Field.html">Field</a> , typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -672,7 +676,7 @@ template&lt;typename Field , typename T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Field &amp;&amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classGridFormat_1_1Field.html">Field</a> &amp;&amp;&#160;</td>
           <td class="paramname"><em>field</em>, </td>
         </tr>
         <tr>
@@ -705,7 +709,7 @@ template&lt;typename Field , typename T &gt; </div>
 <div class="memtemplate">
 template&lt;Concepts::Grid G&gt; </div>
 <div class="memtemplate">
-template&lt;typename Field &gt; </div>
+template&lt;typename <a class="el" href="classGridFormat_1_1Field.html">Field</a> &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -719,7 +723,7 @@ template&lt;typename Field &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Field &amp;&amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classGridFormat_1_1Field.html">Field</a> &amp;&amp;&#160;</td>
           <td class="paramname"><em>field</em>&#160;</td>
         </tr>
         <tr>
@@ -753,7 +757,7 @@ template&lt;typename Field &gt; </div>
 <div class="memtemplate">
 template&lt;Concepts::Grid G&gt; </div>
 <div class="memtemplate">
-template&lt;typename Field &gt; </div>
+template&lt;typename <a class="el" href="classGridFormat_1_1Field.html">Field</a> &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -767,7 +771,7 @@ template&lt;typename Field &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Field &amp;&amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classGridFormat_1_1Field.html">Field</a> &amp;&amp;&#160;</td>
           <td class="paramname"><em>field</em>&#160;</td>
         </tr>
         <tr>
@@ -789,7 +793,7 @@ template&lt;typename Field &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>Point data is usually given as lambdas that are invocable with points of the grid. You can also pass in custom fields that inherit from the <code>Field</code> class. This is discouraged, however. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Point data is usually given as lambdas that are invocable with points of the grid. You can also pass in custom fields that inherit from the <code><a class="el" href="classGridFormat_1_1Field.html" title="Abstract interface for fields of values that is used by writers/readers to store fields.">Field</a></code> class. This is discouraged, however. </dd></dl>
 
 </div>
 </div>
@@ -801,7 +805,7 @@ template&lt;typename Field &gt; </div>
 <div class="memtemplate">
 template&lt;Concepts::Grid G&gt; </div>
 <div class="memtemplate">
-template&lt;typename Field , typename T &gt; </div>
+template&lt;typename <a class="el" href="classGridFormat_1_1Field.html">Field</a> , typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -815,7 +819,7 @@ template&lt;typename Field , typename T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Field &amp;&amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classGridFormat_1_1Field.html">Field</a> &amp;&amp;&#160;</td>
           <td class="paramname"><em>field</em>, </td>
         </tr>
         <tr>
@@ -974,7 +978,7 @@ template&lt;Concepts::Grid G&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A range over key-value pairs containing the name and a pointer to actual field.  </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>You can use range-based for loops with structured bindings, for instance: <div class="fragment"><div class="line"><span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [name, field_ptr] : <a class="code hl_friend" href="classGridFormat_1_1Writer.html#ae0ad42b5ba01d3437e543394058c052d">cell_fields</a>(writer)) { ... }</div>
-<div class="ttc" id="aclassGridFormat_1_1Writer_html_ae0ad42b5ba01d3437e543394058c052d"><div class="ttname"><a href="classGridFormat_1_1Writer.html#ae0ad42b5ba01d3437e543394058c052d">GridFormat::Writer::cell_fields</a></div><div class="ttdeci">friend decltype(auto) cell_fields(const Writer &amp;w)</div><div class="ttdoc">Return a range over all cell fields that were added to the given writer.</div><div class="ttdef"><b>Definition:</b> writer.hpp:349</div></div>
+<div class="ttc" id="aclassGridFormat_1_1Writer_html_ae0ad42b5ba01d3437e543394058c052d"><div class="ttname"><a href="classGridFormat_1_1Writer.html#ae0ad42b5ba01d3437e543394058c052d">GridFormat::Writer::cell_fields</a></div><div class="ttdeci">friend decltype(auto) cell_fields(const Writer &amp;w)</div><div class="ttdoc">Return a range over all cell fields that were added to the given writer.</div><div class="ttdef"><b>Definition:</b> writer.hpp:356</div></div>
 </div><!-- fragment --> </dd></dl>
 
 </div>
@@ -1012,7 +1016,7 @@ template&lt;Concepts::Grid G&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A range over key-value pairs containing the name and a pointer to actual field.  </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>You can use range-based for loops with structured bindings, for instance: <div class="fragment"><div class="line"><span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [name, field_ptr] : <a class="code hl_friend" href="classGridFormat_1_1Writer.html#a20c677573e50e2d2bd0bd14e2a8d5193">meta_data_fields</a>(writer)) { ... }</div>
-<div class="ttc" id="aclassGridFormat_1_1Writer_html_a20c677573e50e2d2bd0bd14e2a8d5193"><div class="ttname"><a href="classGridFormat_1_1Writer.html#a20c677573e50e2d2bd0bd14e2a8d5193">GridFormat::Writer::meta_data_fields</a></div><div class="ttdeci">friend decltype(auto) meta_data_fields(const Writer &amp;w)</div><div class="ttdoc">Return a range over all meta data fields that were added to the given writer.</div><div class="ttdef"><b>Definition:</b> writer.hpp:364</div></div>
+<div class="ttc" id="aclassGridFormat_1_1Writer_html_a20c677573e50e2d2bd0bd14e2a8d5193"><div class="ttname"><a href="classGridFormat_1_1Writer.html#a20c677573e50e2d2bd0bd14e2a8d5193">GridFormat::Writer::meta_data_fields</a></div><div class="ttdeci">friend decltype(auto) meta_data_fields(const Writer &amp;w)</div><div class="ttdoc">Return a range over all meta data fields that were added to the given writer.</div><div class="ttdef"><b>Definition:</b> writer.hpp:371</div></div>
 </div><!-- fragment --> </dd></dl>
 
 </div>
@@ -1050,7 +1054,7 @@ template&lt;Concepts::Grid G&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A range over key-value pairs containing the name and a pointer to actual field.  </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>You can use range-based for loops with structured bindings, for instance: <div class="fragment"><div class="line"><span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [name, field_ptr] : <a class="code hl_friend" href="classGridFormat_1_1Writer.html#a8ff537d09be2f0c5782873a026048c24">point_fields</a>(writer)) { ... }</div>
-<div class="ttc" id="aclassGridFormat_1_1Writer_html_a8ff537d09be2f0c5782873a026048c24"><div class="ttname"><a href="classGridFormat_1_1Writer.html#a8ff537d09be2f0c5782873a026048c24">GridFormat::Writer::point_fields</a></div><div class="ttdeci">friend decltype(auto) point_fields(const Writer &amp;w)</div><div class="ttdoc">Return a range over all point fields that were added to the given writer.</div><div class="ttdef"><b>Definition:</b> writer.hpp:334</div></div>
+<div class="ttc" id="aclassGridFormat_1_1Writer_html_a8ff537d09be2f0c5782873a026048c24"><div class="ttname"><a href="classGridFormat_1_1Writer.html#a8ff537d09be2f0c5782873a026048c24">GridFormat::Writer::point_fields</a></div><div class="ttdeci">friend decltype(auto) point_fields(const Writer &amp;w)</div><div class="ttdoc">Return a range over all point fields that were added to the given writer.</div><div class="ttdef"><b>Definition:</b> writer.hpp:341</div></div>
 </div><!-- fragment --> </dd></dl>
 
 </div>

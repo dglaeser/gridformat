@@ -126,18 +126,18 @@ $(document).ready(function(){initNavTree('group__API.html',''); initResizable();
 <p>The high-level API exposes all available file formats and the generic <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">GridFormat::Writer</a>, which takes an instance of one of the formats and a grid that is to be written. It is recommended to use the provided file format selectors for construction of a <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">GridFormat::Writer</a>. As an example, to construct a writer for the .vtu file format for your <code>grid</code>, you may write </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{GridFormat::vtu, grid};</div>
 <div class="ttc" id="aclassGridFormat_1_1Writer_html"><div class="ttname"><a href="classGridFormat_1_1Writer.html">GridFormat::Writer</a></div><div class="ttdoc">Interface to the writers for all supported file formats. Depending on the chosen format,...</div><div class="ttdef"><b>Definition:</b> writer.hpp:90</div></div>
 </div><!-- fragment --><p>You can also let <code>GridFormat</code> select a default for you: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{<a class="code hl_function" href="group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5">GridFormat::default_for</a>(grid), grid};</div>
-<div class="ttc" id="agroup__API_html_ga19ce8850e7c649e701a6cab52a3ad5a5"><div class="ttname"><a href="group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5">GridFormat::Formats::default_for</a></div><div class="ttdeci">constexpr auto default_for()</div><div class="ttdoc">Selects a default format suitable to write the given grid.</div><div class="ttdef"><b>Definition:</b> gridformat.hpp:569</div></div>
+<div class="ttc" id="agroup__API_html_ga19ce8850e7c649e701a6cab52a3ad5a5"><div class="ttname"><a href="group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5">GridFormat::Formats::default_for</a></div><div class="ttdeci">constexpr auto default_for()</div><div class="ttdoc">Selects a default format suitable to write the given grid.</div><div class="ttdef"><b>Definition:</b> gridformat.hpp:918</div></div>
 </div><!-- fragment --><p>Some file formats take configuration options. For instance, the .vtu file format allows you to specify (among other options) an encoder to be used: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{</div>
 <div class="line">   GridFormat::vtu({.encoder = <a class="code hl_variable" href="group__Encoding.html#ga28e611764de2305f0cbced6c2b6af869">GridFormat::Encoding::base64</a>}),</div>
 <div class="line">   grid</div>
 <div class="line">};</div>
-<div class="ttc" id="agroup__Encoding_html_ga28e611764de2305f0cbced6c2b6af869"><div class="ttname"><a href="group__Encoding.html#ga28e611764de2305f0cbced6c2b6af869">GridFormat::Encoding::base64</a></div><div class="ttdeci">constexpr Base64 base64</div><div class="ttdoc">Instance of the base64 encoder.</div><div class="ttdef"><b>Definition:</b> base64.hpp:181</div></div>
+<div class="ttc" id="agroup__Encoding_html_ga28e611764de2305f0cbced6c2b6af869"><div class="ttname"><a href="group__Encoding.html#ga28e611764de2305f0cbced6c2b6af869">GridFormat::Encoding::base64</a></div><div class="ttdeci">constexpr Base64 base64</div><div class="ttdoc">Instance of the base64 encoder.</div><div class="ttdef"><b>Definition:</b> base64.hpp:262</div></div>
 </div><!-- fragment --><p>For more information on these options, see <a class="el" href="structGridFormat_1_1FileFormat_1_1VTU.html" title="Selector for the .vtu/.pvtu file format for general unstructured grids.">GridFormat::FileFormat::VTU</a>. Note that all writers take the given grid by reference, and thus, their validity is bound to the lifetime of the grid. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="files" name="files"></a>
 Files</h2></td></tr>
 <tr class="memitem:gridformat_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gridformat_8hpp.html">gridformat.hpp</a></td></tr>
-<tr class="memdesc:gridformat_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">This file is the entrypoint to the high-level API exposing all provided writers through a unified interface. <br /></td></tr>
+<tr class="memdesc:gridformat_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">This file is the entrypoint to the high-level API exposing all provided readers/writers through a unified interface. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:writer_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="writer_8hpp.html">writer.hpp</a></td></tr>
 <tr class="memdesc:writer_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">A generic writer providing access to the writers for all supported formats. <br /></td></tr>
@@ -145,6 +145,9 @@ Files</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1FileFormat_1_1Any.html">GridFormat::FileFormat::Any</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selector for an unspecified file format. When using this format, GridFormat will automatically select a format or deduce from a file being read, for instance.  <a href="structGridFormat_1_1FileFormat_1_1Any.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1FileFormat_1_1VTI.html">GridFormat::FileFormat::VTI</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selector for the .vti/.pvti image grid file format to be passed to the <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a>.  <a href="structGridFormat_1_1FileFormat_1_1VTI.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,6 +199,15 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ga9b4d2325c9f5caed7dcb52bd022dbcf7"><td class="memTemplParams" colspan="2">template&lt;typename OutFormat , typename InFormat  = FileFormat::Any&gt; <br />
+requires (!Concepts::Communicator&lt;InFormat&gt;)</td></tr>
+<tr class="memitem:ga9b4d2325c9f5caed7dcb52bd022dbcf7"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__API.html#ga9b4d2325c9f5caed7dcb52bd022dbcf7">GridFormat::convert</a> (const std::string &amp;in, const std::string &amp;out, const OutFormat &amp;out_format, const InFormat &amp;in_format={})</td></tr>
+<tr class="memdesc:ga9b4d2325c9f5caed7dcb52bd022dbcf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert between grid file formats.  <br /></td></tr>
+<tr class="separator:ga9b4d2325c9f5caed7dcb52bd022dbcf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad4a7a7a5caa86c0b786d2bc085f59a26"><td class="memTemplParams" colspan="2">template&lt;typename OutFormat , Concepts::Communicator C, typename InFormat  = FileFormat::Any&gt; </td></tr>
+<tr class="memitem:gad4a7a7a5caa86c0b786d2bc085f59a26"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__API.html#gad4a7a7a5caa86c0b786d2bc085f59a26">GridFormat::convert</a> (const std::string &amp;in, const std::string &amp;out, const OutFormat &amp;out_format, const C &amp;communicator, const InFormat &amp;in_format={})</td></tr>
+<tr class="memdesc:gad4a7a7a5caa86c0b786d2bc085f59a26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert between parallel grid file formats.  <br /></td></tr>
+<tr class="separator:gad4a7a7a5caa86c0b786d2bc085f59a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga19ce8850e7c649e701a6cab52a3ad5a5"><td class="memTemplParams" colspan="2">template&lt;Concepts::Grid G&gt; </td></tr>
 <tr class="memitem:ga19ce8850e7c649e701a6cab52a3ad5a5"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5">GridFormat::Formats::default_for</a> ()</td></tr>
 <tr class="memdesc:ga19ce8850e7c649e701a6cab52a3ad5a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects a default format suitable to write the given grid.  <br /></td></tr>
@@ -206,6 +218,9 @@ Functions</h2></td></tr>
 <tr class="separator:gaa73c41aeab2861bb23872f1498cb0eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">File Format Selectors</h2></td></tr>
+<tr class="memitem:gaf8bbefbeb22feda2f7ad0dd6c7d272e3"><td class="memItemLeft" align="right" valign="top"><a id="gaf8bbefbeb22feda2f7ad0dd6c7d272e3" name="gaf8bbefbeb22feda2f7ad0dd6c7d272e3"></a>
+constexpr <a class="el" href="structGridFormat_1_1FileFormat_1_1Any.html">FileFormat::Any</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::any</b></td></tr>
+<tr class="separator:gaf8bbefbeb22feda2f7ad0dd6c7d272e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gada0823d3c326f9ad36f25dd758c81a67"><td class="memItemLeft" align="right" valign="top"><a id="gada0823d3c326f9ad36f25dd758c81a67" name="gada0823d3c326f9ad36f25dd758c81a67"></a>
 constexpr <a class="el" href="structGridFormat_1_1FileFormat_1_1VTI.html">FileFormat::VTI</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::vti</b></td></tr>
 <tr class="separator:gada0823d3c326f9ad36f25dd758c81a67"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -221,9 +236,12 @@ constexpr <a class="el" href="structGridFormat_1_1FileFormat_1_1VTP.html">FileFo
 <tr class="memitem:ga9bc302a0e0248a09c98f2f37d335375c"><td class="memItemLeft" align="right" valign="top"><a id="ga9bc302a0e0248a09c98f2f37d335375c" name="ga9bc302a0e0248a09c98f2f37d335375c"></a>
 constexpr <a class="el" href="structGridFormat_1_1FileFormat_1_1VTU.html">FileFormat::VTU</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::vtu</b></td></tr>
 <tr class="separator:ga9bc302a0e0248a09c98f2f37d335375c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga19ec6cc0c616ec2d3843f84bea19011b"><td class="memItemLeft" align="right" valign="top"><a id="ga19ec6cc0c616ec2d3843f84bea19011b" name="ga19ec6cc0c616ec2d3843f84bea19011b"></a>
-constexpr <a class="el" href="structGridFormat_1_1FileFormat_1_1PVDClosure.html">FileFormat::PVDClosure</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::pvd</b></td></tr>
-<tr class="separator:ga19ec6cc0c616ec2d3843f84bea19011b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga231cf8060433b66090b44263bc3ce8e1"><td class="memItemLeft" align="right" valign="top"><a id="ga231cf8060433b66090b44263bc3ce8e1" name="ga231cf8060433b66090b44263bc3ce8e1"></a>
+constexpr <a class="el" href="structGridFormat_1_1FileFormat_1_1PVD.html">FileFormat::PVD</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::pvd</b></td></tr>
+<tr class="separator:ga231cf8060433b66090b44263bc3ce8e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gacf6b1820c942e3bb74cd28b2cf44b0cd"><td class="memItemLeft" align="right" valign="top"><a id="gacf6b1820c942e3bb74cd28b2cf44b0cd" name="gacf6b1820c942e3bb74cd28b2cf44b0cd"></a>
+constexpr <a class="el" href="structGridFormat_1_1FileFormat_1_1PVDClosure.html">FileFormat::PVDClosure</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::pvd_with</b></td></tr>
+<tr class="separator:gacf6b1820c942e3bb74cd28b2cf44b0cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa385d91dc7f7cce60faf7da4f5976ce6"><td class="memItemLeft" align="right" valign="top"><a id="gaa385d91dc7f7cce60faf7da4f5976ce6" name="gaa385d91dc7f7cce60faf7da4f5976ce6"></a>
 constexpr <a class="el" href="structGridFormat_1_1FileFormat_1_1TimeSeriesClosure.html">FileFormat::TimeSeriesClosure</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Formats::time_series</b></td></tr>
 <tr class="separator:gaa385d91dc7f7cce60faf7da4f5976ce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -235,6 +253,118 @@ constexpr <a class="el" href="structGridFormat_1_1FileFormat_1_1VTKHDFTransient.
 <tr class="separator:gacccf8c35694118c14d7cbe26d1c507dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="gad4a7a7a5caa86c0b786d2bc085f59a26" name="gad4a7a7a5caa86c0b786d2bc085f59a26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad4a7a7a5caa86c0b786d2bc085f59a26">&#9670;&#160;</a></span>convert() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename OutFormat , Concepts::Communicator C, typename InFormat  = FileFormat::Any&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string GridFormat::convert </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const OutFormat &amp;&#160;</td>
+          <td class="paramname"><em>out_format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C &amp;&#160;</td>
+          <td class="paramname"><em>communicator</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const InFormat &amp;&#160;</td>
+          <td class="paramname"><em>in_format</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in</td><td>The input filename. </td></tr>
+    <tr><td class="paramname">out</td><td>The output filename. </td></tr>
+    <tr><td class="paramname">out_format</td><td>The desired output format. </td></tr>
+    <tr><td class="paramname">communicator</td><td>The communicator. </td></tr>
+    <tr><td class="paramname">in_format</td><td>(optional) The format of the input file. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Converting into .vtp file format does not work yet. </dd></dl>
+
+</div>
+</div>
+<a id="ga9b4d2325c9f5caed7dcb52bd022dbcf7" name="ga9b4d2325c9f5caed7dcb52bd022dbcf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9b4d2325c9f5caed7dcb52bd022dbcf7">&#9670;&#160;</a></span>convert() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename OutFormat , typename InFormat  = FileFormat::Any&gt; <br />
+requires (!Concepts::Communicator&lt;InFormat&gt;)</div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string GridFormat::convert </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const OutFormat &amp;&#160;</td>
+          <td class="paramname"><em>out_format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const InFormat &amp;&#160;</td>
+          <td class="paramname"><em>in_format</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in</td><td>The input filename. </td></tr>
+    <tr><td class="paramname">out</td><td>The output filename. </td></tr>
+    <tr><td class="paramname">out_format</td><td>The desired output format. </td></tr>
+    <tr><td class="paramname">in_format</td><td>(optional) The format of the input file. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Converting into .vtp file format does not work yet. </dd></dl>
+
+</div>
+</div>
 <a id="ga19ce8850e7c649e701a6cab52a3ad5a5" name="ga19ce8850e7c649e701a6cab52a3ad5a5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga19ce8850e7c649e701a6cab52a3ad5a5">&#9670;&#160;</a></span>default_for() <span class="overload">[1/2]</span></h2>
 

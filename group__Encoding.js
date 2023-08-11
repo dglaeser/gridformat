@@ -6,6 +6,7 @@ var group__Encoding =
     [ "encoded_field.hpp", "encoded__field_8hpp.html", null ],
     [ "raw.hpp", "raw_8hpp.html", null ],
     [ "GridFormat::Concepts::Encoder", "conceptGridFormat_1_1Concepts_1_1Encoder.html", null ],
+    [ "GridFormat::Concepts::Decoder", "conceptGridFormat_1_1Concepts_1_1Decoder.html", null ],
     [ "GridFormat::AsciiFormatOptions", "structGridFormat_1_1AsciiFormatOptions.html", [
       [ "num_cached_lines", "structGridFormat_1_1AsciiFormatOptions.html#ab0a15b8c0114db7c1ba34ed848e8013d", null ]
     ] ],
@@ -14,6 +15,7 @@ var group__Encoding =
       [ "operator()", "structGridFormat_1_1Encoding_1_1Ascii.html#a34f11d4b786bbc8ff59ee01b0cc85822", null ],
       [ "options", "structGridFormat_1_1Encoding_1_1Ascii.html#a6052411ab879536cf9a598a2635b7c0b", null ]
     ] ],
+    [ "GridFormat::Base64Decoder", "structGridFormat_1_1Base64Decoder.html", null ],
     [ "GridFormat::Base64EncoderOptions", "structGridFormat_1_1Base64EncoderOptions.html", [
       [ "num_cached_buffers", "structGridFormat_1_1Base64EncoderOptions.html#a3a4f39c2fc7f18903b5006d3cbf3381a", null ]
     ] ],
@@ -23,6 +25,7 @@ var group__Encoding =
       [ "operator()", "structGridFormat_1_1Encoding_1_1Base64.html#a40cd9b8fb1e7e574666a74c3b36493e7", null ]
     ] ],
     [ "GridFormat::EncodedField< F, Encoder >", "classGridFormat_1_1EncodedField.html", null ],
+    [ "GridFormat::RawDecoder", "structGridFormat_1_1RawDecoder.html", null ],
     [ "GridFormat::RawBinaryStream< OStream >", "classGridFormat_1_1RawBinaryStream.html", null ],
     [ "GridFormat::Encoding::RawBinary", "structGridFormat_1_1Encoding_1_1RawBinary.html", null ],
     [ "GridFormat::Encoding::ascii", "group__Encoding.html#ga150bd54d1e4f1575af983d6b94965cc2", null ],

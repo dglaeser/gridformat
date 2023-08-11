@@ -26,7 +26,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2023-06-29 16:36:32</td>
+      <td>2023-08-11 16:40:15</td>
     </tr>
   </table>
 </div>
@@ -46,9 +46,9 @@
     </tr>
     <tr>
       <th scope="row">Branches:</th>
-      <td>43</td>
-      <td>100</td>
-      <td class="coverage-low">43.0%</td>
+      <td>49</td>
+      <td>121</td>
+      <td class="coverage-low">40.5%</td>
     </tr>
   </table>
 </div>
@@ -303,7 +303,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">namespace</span><span class="w"> </span><span class="nn">Detail</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="k">namespace</span><span class="w"> </span><span class="nn">WriterDetail</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -615,7 +615,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// namespace Detail</span></td>
+      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// namespace WriterDetail</span></td>
     </tr>
 
     <tr class="source-line">
@@ -855,7 +855,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Detail</span><span class="o">::</span><span class="n">Compatible</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_Grid</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">WriterDetail</span><span class="o">::</span><span class="n">Compatible</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_Grid</span><span class="o">&gt;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -863,14 +863,14 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">        </span><span class="k">requires</span><span class="p">(</span><span class="n">Detail</span><span class="o">::</span><span class="n">has_sequential_factory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Grid</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
+      <td class="src "><span class="w">        </span><span class="k">requires</span><span class="p">(</span><span class="n">WriterDetail</span><span class="o">::</span><span class="n">has_sequential_factory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Grid</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l101" href="#l101">101</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">30</td>
+      <td class="linecount coveredLine">42</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FileFormat</span><span class="o">&amp;</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">_Grid</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
@@ -880,14 +880,14 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 15 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 21 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-          <div class="takenBranch">&check; Branch 4 taken 15 times.</div>
+          <div class="takenBranch">&check; Branch 4 taken 21 times.</div>
           <div class="notTakenBranch">&cross; Branch 5 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">30</td>
+      <td class="linecount coveredLine">42</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">Writer</span><span class="p">(</span><span class="n">WriterFactory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="o">&gt;::</span><span class="n">make</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">grid</span><span class="p">))</span><span class="w"></span></td>
     </tr>
 
@@ -895,7 +895,7 @@
       <td class="lineno"><a id="l103" href="#l103">103</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">30</td>
+      <td class="linecount coveredLine">42</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span><span class="w"></span></td>
     </tr>
 
@@ -960,7 +960,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Detail</span><span class="o">::</span><span class="n">Compatible</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_Grid</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">WriterDetail</span><span class="o">::</span><span class="n">Compatible</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_Grid</span><span class="o">&gt;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -968,14 +968,14 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">        </span><span class="k">requires</span><span class="p">(</span><span class="n">Detail</span><span class="o">::</span><span class="n">has_sequential_time_series_factory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Grid</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
+      <td class="src "><span class="w">        </span><span class="k">requires</span><span class="p">(</span><span class="n">WriterDetail</span><span class="o">::</span><span class="n">has_sequential_time_series_factory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Grid</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l113" href="#l113">113</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">22</td>
+      <td class="linecount coveredLine">25</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FileFormat</span><span class="o">&amp;</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">_Grid</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">base_filename</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
@@ -985,14 +985,14 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 11 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 13 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-          <div class="takenBranch">&check; Branch 4 taken 11 times.</div>
+          <div class="takenBranch">&check; Branch 4 taken 13 times.</div>
           <div class="notTakenBranch">&cross; Branch 5 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">22</td>
+      <td class="linecount coveredLine">25</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">Writer</span><span class="p">(</span><span class="n">WriterFactory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="o">&gt;::</span><span class="n">make</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">base_filename</span><span class="p">))</span><span class="w"></span></td>
     </tr>
 
@@ -1000,7 +1000,7 @@
       <td class="lineno"><a id="l115" href="#l115">115</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">22</td>
+      <td class="linecount coveredLine">25</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span><span class="w"></span></td>
     </tr>
 
@@ -1065,7 +1065,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Detail</span><span class="o">::</span><span class="n">Compatible</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_Grid</span><span class="p">,</span><span class="w"> </span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">Comm</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">WriterDetail</span><span class="o">::</span><span class="n">Compatible</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_Grid</span><span class="p">,</span><span class="w"> </span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">Comm</span><span class="o">&gt;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -1073,14 +1073,14 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">        </span><span class="k">requires</span><span class="p">(</span><span class="n">Detail</span><span class="o">::</span><span class="n">has_parallel_factory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Grid</span><span class="p">,</span><span class="w"> </span><span class="n">Comm</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
+      <td class="src "><span class="w">        </span><span class="k">requires</span><span class="p">(</span><span class="n">WriterDetail</span><span class="o">::</span><span class="n">has_parallel_factory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Grid</span><span class="p">,</span><span class="w"> </span><span class="n">Comm</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l125" href="#l125">125</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">32</td>
+      <td class="linecount coveredLine">56</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FileFormat</span><span class="o">&amp;</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">_Grid</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Comm</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
@@ -1090,14 +1090,14 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 16 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 28 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-          <div class="takenBranch">&check; Branch 4 taken 16 times.</div>
+          <div class="takenBranch">&check; Branch 4 taken 28 times.</div>
           <div class="notTakenBranch">&cross; Branch 5 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">32</td>
+      <td class="linecount coveredLine">56</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">Writer</span><span class="p">(</span><span class="n">WriterFactory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="o">&gt;::</span><span class="n">make</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">comm</span><span class="p">))</span><span class="w"></span></td>
     </tr>
 
@@ -1105,7 +1105,7 @@
       <td class="lineno"><a id="l127" href="#l127">127</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">32</td>
+      <td class="linecount coveredLine">56</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span><span class="w"></span></td>
     </tr>
 
@@ -1178,7 +1178,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Detail</span><span class="o">::</span><span class="n">Compatible</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_Grid</span><span class="p">,</span><span class="w"> </span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">Comm</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">WriterDetail</span><span class="o">::</span><span class="n">Compatible</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_Grid</span><span class="p">,</span><span class="w"> </span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">Comm</span><span class="o">&gt;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -1186,14 +1186,14 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">        </span><span class="k">requires</span><span class="p">(</span><span class="n">Detail</span><span class="o">::</span><span class="n">has_parallel_time_series_factory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Grid</span><span class="p">,</span><span class="w"> </span><span class="n">Comm</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
+      <td class="src "><span class="w">        </span><span class="k">requires</span><span class="p">(</span><span class="n">WriterDetail</span><span class="o">::</span><span class="n">has_parallel_time_series_factory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="p">,</span><span class="w"> </span><span class="n">Grid</span><span class="p">,</span><span class="w"> </span><span class="n">Comm</span><span class="o">&gt;</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l138" href="#l138">138</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">48</td>
+      <td class="linecount coveredLine">54</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FileFormat</span><span class="o">&amp;</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">_Grid</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Comm</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">base_filename</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
@@ -1203,14 +1203,14 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 24 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 28 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-          <div class="takenBranch">&check; Branch 4 taken 24 times.</div>
+          <div class="takenBranch">&check; Branch 4 taken 28 times.</div>
           <div class="notTakenBranch">&cross; Branch 5 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">48</td>
+      <td class="linecount coveredLine">54</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">Writer</span><span class="p">(</span><span class="n">WriterFactory</span><span class="o">&lt;</span><span class="n">FileFormat</span><span class="o">&gt;::</span><span class="n">make</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">base_filename</span><span class="p">))</span><span class="w"></span></td>
     </tr>
 
@@ -1218,7 +1218,7 @@
       <td class="lineno"><a id="l140" href="#l140">140</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">48</td>
+      <td class="linecount coveredLine">54</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span><span class="w"></span></td>
     </tr>
 
@@ -1258,7 +1258,7 @@
       <td class="lineno"><a id="l145" href="#l145">145</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">62</td>
+      <td class="linecount coveredLine">98</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">Writer</span><span class="p">(</span><span class="n">W</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
@@ -1268,12 +1268,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 31 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 49 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">62</td>
+      <td class="linecount coveredLine">98</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">_writer</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">W</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">writer</span><span class="p">)))</span><span class="w"></span></td>
     </tr>
 
@@ -1281,7 +1281,7 @@
       <td class="lineno"><a id="l147" href="#l147">147</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">62</td>
+      <td class="linecount coveredLine">98</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span><span class="w"></span></td>
     </tr>
 
@@ -1321,7 +1321,7 @@
       <td class="lineno"><a id="l152" href="#l152">152</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">70</td>
+      <td class="linecount coveredLine">79</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">Writer</span><span class="p">(</span><span class="n">W</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
@@ -1331,12 +1331,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 3 taken 35 times.</div>
+          <div class="takenBranch">&check; Branch 3 taken 41 times.</div>
           <div class="notTakenBranch">&cross; Branch 4 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">70</td>
+      <td class="linecount coveredLine">79</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">_time_series_writer</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">W</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">writer</span><span class="p">)))</span><span class="w"></span></td>
     </tr>
 
@@ -1344,7 +1344,7 @@
       <td class="lineno"><a id="l154" href="#l154">154</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">70</td>
+      <td class="linecount coveredLine">79</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span><span class="w"></span></td>
     </tr>
 
@@ -1416,7 +1416,7 @@
       <td class="lineno"><a id="l163" href="#l163">163</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">25</td>
+      <td class="linecount coveredLine">43</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">filename</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1427,11 +1427,11 @@
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
           <div class="notTakenBranch">&cross; Branch 1 not taken.</div>
-          <div class="takenBranch">&check; Branch 2 taken 25 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 43 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">25</td>
+      <td class="linecount coveredLine">43</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">_writer</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
@@ -1463,7 +1463,7 @@
       <td class="lineno"><a id="l168" href="#l168">168</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">25</td>
+      <td class="linecount coveredLine">43</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_writer</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -1551,7 +1551,7 @@
       <td class="lineno"><a id="l179" href="#l179">179</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">105</td>
+      <td class="linecount coveredLine">129</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">time_value</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1562,11 +1562,11 @@
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
           <div class="notTakenBranch">&cross; Branch 1 not taken.</div>
-          <div class="takenBranch">&check; Branch 2 taken 105 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 129 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">105</td>
+      <td class="linecount coveredLine">129</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">_time_series_writer</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
@@ -1598,7 +1598,7 @@
       <td class="lineno"><a id="l184" href="#l184">184</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">105</td>
+      <td class="linecount coveredLine">129</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_time_series_writer</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">(</span><span class="n">time_value</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -1678,7 +1678,7 @@
       <td class="lineno"><a id="l194" href="#l194">194</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">394</td>
+      <td class="linecount coveredLine">430</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">set_meta_data</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">Field</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1688,12 +1688,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 197 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 215 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">985</td>
+      <td class="linecount coveredLine">1075</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">_visit_writer</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1705,20 +1705,20 @@
         <div class="linebranchContents">
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 4 not taken.</div>
-          <div class="takenBranch">&check; Branch 7 taken 35 times.</div>
+          <div class="takenBranch">&check; Branch 7 taken 38 times.</div>
           <div class="notTakenBranch">&cross; Branch 8 not taken.</div>
           <div class="takenBranch">&check; Branch 10 taken 12 times.</div>
           <div class="notTakenBranch">&cross; Branch 11 not taken.</div>
-          <div class="takenBranch">&check; Branch 14 taken 16 times.</div>
+          <div class="takenBranch">&check; Branch 14 taken 18 times.</div>
           <div class="notTakenBranch">&cross; Branch 15 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 21 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 22 not taken.</div>
-          <div class="takenBranch">&check; Branch 28 taken 10 times.</div>
+          <div class="takenBranch">&check; Branch 28 taken 11 times.</div>
           <div class="notTakenBranch">&cross; Branch 29 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">197</td>
+      <td class="linecount coveredLine">215</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">writer</span><span class="p">.</span><span class="n">set_meta_data</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Field</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">));</span><span class="w"></span></td>
     </tr>
 
@@ -1734,7 +1734,7 @@
       <td class="lineno"><a id="l198" href="#l198">198</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">394</td>
+      <td class="linecount coveredLine">430</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
@@ -1830,7 +1830,7 @@
       <td class="lineno"><a id="l210" href="#l210">210</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">149</td>
+      <td class="linecount coveredLine">222</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">set_point_field</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">Field</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1840,15 +1840,15 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">3/5</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 135 times.</div>
-          <div class="takenBranch">&check; Branch 2 taken 105 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 177 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 114 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
-          <div class="takenBranch">&check; Branch 6 taken 16 times.</div>
+          <div class="takenBranch">&check; Branch 6 taken 18 times.</div>
           <div class="notTakenBranch">&cross; Branch 7 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">917</td>
+      <td class="linecount coveredLine">1149</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">_visit_writer</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1856,20 +1856,41 @@
       <td class="lineno"><a id="l212" href="#l212">212</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
-        <summary class="linebranchSummary">2/8</summary>
+        <summary class="linebranchSummary">8/29</summary>
         <div class="linebranchContents">
+          <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 4 not taken.</div>
+          <div class="takenBranch">&check; Branch 6 taken 3 times.</div>
+          <div class="notTakenBranch">&cross; Branch 7 not taken.</div>
           <div class="takenBranch">&check; Branch 10 taken 4 times.</div>
           <div class="notTakenBranch">&cross; Branch 11 not taken.</div>
+          <div class="takenBranch">&check; Branch 14 taken 3 times.</div>
+          <div class="notTakenBranch">&cross; Branch 15 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 16 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 17 not taken.</div>
-          <div class="takenBranch">&check; Branch 20 taken 10 times.</div>
+          <div class="notTakenBranch">&cross; Branch 18 not taken.</div>
+          <div class="notTakenBranch">&cross; Branch 19 not taken.</div>
+          <div class="takenBranch">&check; Branch 20 taken 11 times.</div>
           <div class="notTakenBranch">&cross; Branch 21 not taken.</div>
+          <div class="takenBranch">&check; Branch 22 taken 3 times.</div>
+          <div class="notTakenBranch">&cross; Branch 23 not taken.</div>
+          <div class="notTakenBranch">&cross; Branch 26 not taken.</div>
+          <div class="notTakenBranch">&cross; Branch 27 not taken.</div>
+          <div class="takenBranch">&check; Branch 30 taken 3 times.</div>
+          <div class="notTakenBranch">&cross; Branch 31 not taken.</div>
+          <div class="notTakenBranch">&cross; Branch 34 not taken.</div>
+          <div class="notTakenBranch">&cross; Branch 35 not taken.</div>
+          <div class="takenBranch">&check; Branch 38 taken 3 times.</div>
+          <div class="notTakenBranch">&cross; Branch 39 not taken.</div>
+          <div class="takenBranch">&check; Branch 42 taken 15 times.</div>
+          <div class="notTakenBranch">&cross; Branch 43 not taken.</div>
+          <div class="notTakenBranch">&cross; Branch 46 not taken.</div>
+          <div class="notTakenBranch">&cross; Branch 47 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">14</td>
+      <td class="linecount coveredLine">45</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">writer</span><span class="p">.</span><span class="n">set_point_field</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Field</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">));</span><span class="w"></span></td>
     </tr>
 
@@ -1885,7 +1906,7 @@
       <td class="lineno"><a id="l214" href="#l214">214</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">149</td>
+      <td class="linecount coveredLine">222</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
@@ -2085,7 +2106,7 @@
       <td class="lineno"><a id="l239" href="#l239">239</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">149</td>
+      <td class="linecount coveredLine">177</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">set_cell_field</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">Field</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -2095,15 +2116,15 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">3/5</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 135 times.</div>
-          <div class="takenBranch">&check; Branch 2 taken 105 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 162 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 129 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
-          <div class="takenBranch">&check; Branch 6 taken 16 times.</div>
+          <div class="takenBranch">&check; Branch 6 taken 18 times.</div>
           <div class="notTakenBranch">&cross; Branch 7 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">917</td>
+      <td class="linecount coveredLine">1104</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">_visit_writer</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -2119,12 +2140,12 @@
           <div class="notTakenBranch">&cross; Branch 11 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 16 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 17 not taken.</div>
-          <div class="takenBranch">&check; Branch 20 taken 10 times.</div>
+          <div class="takenBranch">&check; Branch 20 taken 11 times.</div>
           <div class="notTakenBranch">&cross; Branch 21 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">14</td>
+      <td class="linecount coveredLine">15</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">writer</span><span class="p">.</span><span class="n">set_cell_field</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Field</span><span class="o">&gt;</span><span class="p">(</span><span class="n">field</span><span class="p">));</span><span class="w"></span></td>
     </tr>
 
@@ -2140,7 +2161,7 @@
       <td class="lineno"><a id="l243" href="#l243">243</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">149</td>
+      <td class="linecount coveredLine">177</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
@@ -2585,7 +2606,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="cm">/*!</span></td>
+      <td class="src "><span class="w">    </span><span class="c1">//! Ignore/consider warnings (default: true)</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2593,7 +2614,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \brief Copy all inserted fields into another writer.</span></td>
+      <td class="src "><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">set_ignore_warnings</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2601,7 +2622,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \param out The writer into which to copy all fields of this writer.</span></td>
+      <td class="src "><span class="w">        </span><span class="n">_visit_writer</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2609,7 +2630,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     */</span><span class="w"></span></td>
+      <td class="src "><span class="w">            </span><span class="n">writer</span><span class="p">.</span><span class="n">set_ignore_warnings</span><span class="p">(</span><span class="n">value</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2617,11 +2638,67 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Writer</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="w">        </span><span class="p">});</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l300" href="#l300">300</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l301" href="#l301">301</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l302" href="#l302">302</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="cm">/*!</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l303" href="#l303">303</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     * \brief Copy all inserted fields into another writer.</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l304" href="#l304">304</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     * \param out The writer into which to copy all fields of this writer.</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l305" href="#l305">305</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     */</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l306" href="#l306">306</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Writer</span><span class="o">&gt;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l307" href="#l307">307</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">4</td>
@@ -2629,7 +2706,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l301" href="#l301">301</a></td>
+      <td class="lineno"><a id="l308" href="#l308">308</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
@@ -2644,7 +2721,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l302" href="#l302">302</a></td>
+      <td class="lineno"><a id="l309" href="#l309">309</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -2652,7 +2729,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l303" href="#l303">303</a></td>
+      <td class="lineno"><a id="l310" href="#l310">310</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -2660,7 +2737,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l304" href="#l304">304</a></td>
+      <td class="lineno"><a id="l311" href="#l311">311</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">4</td>
@@ -2668,7 +2745,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l305" href="#l305">305</a></td>
+      <td class="lineno"><a id="l312" href="#l312">312</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -2676,7 +2753,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l306" href="#l306">306</a></td>
+      <td class="lineno"><a id="l313" href="#l313">313</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -2684,7 +2761,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l307" href="#l307">307</a></td>
+      <td class="lineno"><a id="l314" href="#l314">314</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -2692,7 +2769,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l308" href="#l308">308</a></td>
+      <td class="lineno"><a id="l315" href="#l315">315</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -2700,7 +2777,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l309" href="#l309">309</a></td>
+      <td class="lineno"><a id="l316" href="#l316">316</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -2708,7 +2785,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l310" href="#l310">310</a></td>
+      <td class="lineno"><a id="l317" href="#l317">317</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">8</td>
@@ -2716,7 +2793,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l311" href="#l311">311</a></td>
+      <td class="lineno"><a id="l318" href="#l318">318</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
@@ -2731,7 +2808,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l312" href="#l312">312</a></td>
+      <td class="lineno"><a id="l319" href="#l319">319</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -2739,74 +2816,11 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l313" href="#l313">313</a></td>
+      <td class="lineno"><a id="l320" href="#l320">320</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">16</td>
       <td class="src coveredLine"><span class="w">        </span><span class="p">});</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l314" href="#l314">314</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l315" href="#l315">315</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l316" href="#l316">316</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="cm">/*!</span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l317" href="#l317">317</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \brief Return a reference to the underlying grid.</span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l318" href="#l318">318</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="cm">     */</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l319" href="#l319">319</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">61</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">Grid</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l320" href="#l320">320</a></td>
-      <td class="linebranch">
-        <details class="linebranchDetails">
-        <summary class="linebranchSummary">1/2</summary>
-        <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 61 times.</div>
-          <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-        </div>
-        </details>
-      </td>
-      <td class="linecount coveredLine">244</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_visit_writer</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Grid</span><span class="o">&amp;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2814,15 +2828,15 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">writer</span><span class="p">.</span><span class="n">grid</span><span class="p">();</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l322" href="#l322">322</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">122</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="p">});</span><span class="w"></span></td>
+      <td class="linecount "></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -2830,7 +2844,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="cm">/*!</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2838,7 +2852,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="cm">     * \brief Return a reference to the underlying grid.</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2846,23 +2860,30 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="cm">/*!</span></td>
+      <td class="src "><span class="cm">     */</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l326" href="#l326">326</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \brief Return a range over all point fields that were added to the given writer.</span></td>
+      <td class="linecount coveredLine">67</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">Grid</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l327" href="#l327">327</a></td>
       <td class="linebranch">
+        <details class="linebranchDetails">
+        <summary class="linebranchSummary">1/2</summary>
+        <div class="linebranchContents">
+          <div class="takenBranch">&check; Branch 1 taken 67 times.</div>
+          <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
+        </div>
+        </details>
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \param w The writer whose fields to return</span></td>
+      <td class="linecount coveredLine">268</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_visit_writer</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Grid</span><span class="o">&amp;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2870,15 +2891,15 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \return A range over key-value pairs containing the name and a pointer to actual field.</span></td>
+      <td class="src "><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">writer</span><span class="p">.</span><span class="n">grid</span><span class="p">();</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l329" href="#l329">329</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \note You can use range-based for loops with structured bindings, for instance:</span></td>
+      <td class="linecount coveredLine">134</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="p">});</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2886,7 +2907,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \code{.cpp}</span></td>
+      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2894,7 +2915,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     *  for (const auto&amp; [name, field_ptr] : point_fields(writer)) { ... }</span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -2902,7 +2923,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \endcode</span></td>
+      <td class="src "><span class="w">    </span><span class="cm">/*!</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2910,30 +2931,23 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     */</span><span class="w"></span></td>
+      <td class="src "><span class="cm">     * \brief Return a range over all point fields that were added to the given writer.</span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l334" href="#l334">334</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">friend</span><span class="w"> </span><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">point_fields</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Writer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     * \param w The writer whose fields to return</span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l335" href="#l335">335</a></td>
       <td class="linebranch">
-        <details class="linebranchDetails">
-        <summary class="linebranchSummary">1/2</summary>
-        <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 4 times.</div>
-          <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-        </div>
-        </details>
       </td>
-      <td class="linecount coveredLine">16</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">w</span><span class="p">.</span><span class="n">_visit_writer</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     * \return A range over key-value pairs containing the name and a pointer to actual field.</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2941,15 +2955,15 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">point_fields</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "><span class="cm">     * \note You can use range-based for loops with structured bindings, for instance:</span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l337" href="#l337">337</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="p">});</span><span class="w"></span></td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     * \code{.cpp}</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2957,7 +2971,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="cm">     *  for (const auto&amp; [name, field_ptr] : point_fields(writer)) { ... }</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2965,7 +2979,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="cm">     * \endcode</span></td>
     </tr>
 
     <tr class="source-line">
@@ -2973,23 +2987,30 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="cm">/*!</span></td>
+      <td class="src "><span class="cm">     */</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l341" href="#l341">341</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \brief Return a range over all cell fields that were added to the given writer.</span></td>
+      <td class="linecount coveredLine">4</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">friend</span><span class="w"> </span><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">point_fields</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Writer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l342" href="#l342">342</a></td>
       <td class="linebranch">
+        <details class="linebranchDetails">
+        <summary class="linebranchSummary">1/2</summary>
+        <div class="linebranchContents">
+          <div class="takenBranch">&check; Branch 1 taken 4 times.</div>
+          <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
+        </div>
+        </details>
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \param w The writer whose fields to return</span></td>
+      <td class="linecount coveredLine">16</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">w</span><span class="p">.</span><span class="n">_visit_writer</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -2997,15 +3018,15 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \return A range over key-value pairs containing the name and a pointer to actual field.</span></td>
+      <td class="src "><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">point_fields</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l344" href="#l344">344</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \note You can use range-based for loops with structured bindings, for instance:</span></td>
+      <td class="linecount coveredLine">8</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="p">});</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3013,7 +3034,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \code{.cpp}</span></td>
+      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3021,7 +3042,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     *  for (const auto&amp; [name, field_ptr] : cell_fields(writer)) { ... }</span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3029,7 +3050,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \endcode</span></td>
+      <td class="src "><span class="w">    </span><span class="cm">/*!</span></td>
     </tr>
 
     <tr class="source-line">
@@ -3037,82 +3058,11 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     */</span><span class="w"></span></td>
+      <td class="src "><span class="cm">     * \brief Return a range over all cell fields that were added to the given writer.</span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l349" href="#l349">349</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">4</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">friend</span><span class="w"> </span><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">cell_fields</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Writer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l350" href="#l350">350</a></td>
-      <td class="linebranch">
-        <details class="linebranchDetails">
-        <summary class="linebranchSummary">1/2</summary>
-        <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 4 times.</div>
-          <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-        </div>
-        </details>
-      </td>
-      <td class="linecount coveredLine">16</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">w</span><span class="p">.</span><span class="n">_visit_writer</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l351" href="#l351">351</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">cell_fields</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l352" href="#l352">352</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">8</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="p">});</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l353" href="#l353">353</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l354" href="#l354">354</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l355" href="#l355">355</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="cm">/*!</span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l356" href="#l356">356</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="cm">     * \brief Return a range over all meta data fields that were added to the given writer.</span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l357" href="#l357">357</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3120,7 +3070,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l358" href="#l358">358</a></td>
+      <td class="lineno"><a id="l350" href="#l350">350</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3128,7 +3078,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l359" href="#l359">359</a></td>
+      <td class="lineno"><a id="l351" href="#l351">351</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3136,7 +3086,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l360" href="#l360">360</a></td>
+      <td class="lineno"><a id="l352" href="#l352">352</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3144,15 +3094,15 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l361" href="#l361">361</a></td>
+      <td class="lineno"><a id="l353" href="#l353">353</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm">     *  for (const auto&amp; [name, field_ptr] : meta_data_fields(writer)) { ... }</span></td>
+      <td class="src "><span class="cm">     *  for (const auto&amp; [name, field_ptr] : cell_fields(writer)) { ... }</span></td>
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l362" href="#l362">362</a></td>
+      <td class="lineno"><a id="l354" href="#l354">354</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3160,7 +3110,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l363" href="#l363">363</a></td>
+      <td class="lineno"><a id="l355" href="#l355">355</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3168,15 +3118,15 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l364" href="#l364">364</a></td>
+      <td class="lineno"><a id="l356" href="#l356">356</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">4</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">friend</span><span class="w"> </span><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">meta_data_fields</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Writer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">friend</span><span class="w"> </span><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">cell_fields</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Writer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l365" href="#l365">365</a></td>
+      <td class="lineno"><a id="l357" href="#l357">357</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
@@ -3191,15 +3141,15 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l366" href="#l366">366</a></td>
+      <td class="lineno"><a id="l358" href="#l358">358</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">meta_data_fields</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src "><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">cell_fields</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l367" href="#l367">367</a></td>
+      <td class="lineno"><a id="l359" href="#l359">359</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">8</td>
@@ -3207,11 +3157,75 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l368" href="#l368">368</a></td>
+      <td class="lineno"><a id="l360" href="#l360">360</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
       <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l361" href="#l361">361</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l362" href="#l362">362</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="cm">/*!</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l363" href="#l363">363</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     * \brief Return a range over all meta data fields that were added to the given writer.</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l364" href="#l364">364</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     * \param w The writer whose fields to return</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l365" href="#l365">365</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     * \return A range over key-value pairs containing the name and a pointer to actual field.</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l366" href="#l366">366</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     * \note You can use range-based for loops with structured bindings, for instance:</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l367" href="#l367">367</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     * \code{.cpp}</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l368" href="#l368">368</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cm">     *  for (const auto&amp; [name, field_ptr] : meta_data_fields(writer)) { ... }</span></td>
     </tr>
 
     <tr class="source-line">
@@ -3219,7 +3233,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="cm">     * \endcode</span></td>
     </tr>
 
     <tr class="source-line">
@@ -3227,46 +3241,46 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w"> </span><span class="k">private</span><span class="o">:</span><span class="w"></span></td>
+      <td class="src "><span class="cm">     */</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l371" href="#l371">371</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Visitor</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="linecount coveredLine">4</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">friend</span><span class="w"> </span><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">meta_data_fields</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Writer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l372" href="#l372">372</a></td>
       <td class="linebranch">
+        <details class="linebranchDetails">
+        <summary class="linebranchSummary">1/2</summary>
+        <div class="linebranchContents">
+          <div class="takenBranch">&check; Branch 1 taken 4 times.</div>
+          <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
+        </div>
+        </details>
       </td>
-      <td class="linecount coveredLine">942</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">_visit_writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Visitor</span><span class="o">&amp;</span><span class="w"> </span><span class="n">visitor</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="linecount coveredLine">16</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">w</span><span class="p">.</span><span class="n">_visit_writer</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">writer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l373" href="#l373">373</a></td>
       <td class="linebranch">
-        <details class="linebranchDetails">
-        <summary class="linebranchSummary">2/2</summary>
-        <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 156 times.</div>
-          <div class="takenBranch">&check; Branch 2 taken 315 times.</div>
-        </div>
-        </details>
       </td>
-      <td class="linecount coveredLine">942</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_writer</span><span class="p">)</span><span class="w"></span></td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">meta_data_fields</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l374" href="#l374">374</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">312</td>
-      <td class="src coveredLine"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invoke</span><span class="p">(</span><span class="n">visitor</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">_writer</span><span class="p">);</span><span class="w"></span></td>
+      <td class="linecount coveredLine">8</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="p">});</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3274,58 +3288,11 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l376" href="#l376">376</a></td>
-      <td class="linebranch">
-        <details class="linebranchDetails">
-        <summary class="linebranchSummary">1/2</summary>
-        <div class="linebranchContents">
-          <div class="notTakenBranch">&cross; Branch 1 not taken.</div>
-          <div class="takenBranch">&check; Branch 2 taken 315 times.</div>
-        </div>
-        </details>
-      </td>
-      <td class="linecount coveredLine">630</td>
-      <td class="src coveredLine"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">_time_series_writer</span><span class="p">)</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l377" href="#l377">377</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount uncoveredLine">&cross;</td>
-      <td class="src uncoveredLine"><span class="w">                </span><span class="k">throw</span><span class="w"> </span><span class="n">InvalidState</span><span class="p">(</span><span class="s">&quot;No writer set&quot;</span><span class="p">);</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l378" href="#l378">378</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">630</td>
-      <td class="src coveredLine"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invoke</span><span class="p">(</span><span class="n">visitor</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">_time_series_writer</span><span class="p">);</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l379" href="#l379">379</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">        </span><span class="p">}</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l380" href="#l380">380</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
       <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l381" href="#l381">381</a></td>
+      <td class="lineno"><a id="l376" href="#l376">376</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3333,7 +3300,15 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l382" href="#l382">382</a></td>
+      <td class="lineno"><a id="l377" href="#l377">377</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w"> </span><span class="k">private</span><span class="o">:</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l378" href="#l378">378</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3341,38 +3316,38 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l383" href="#l383">383</a></td>
+      <td class="lineno"><a id="l379" href="#l379">379</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">85</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">_visit_writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Visitor</span><span class="o">&amp;</span><span class="w"> </span><span class="n">visitor</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="linecount coveredLine">1071</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">_visit_writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Visitor</span><span class="o">&amp;</span><span class="w"> </span><span class="n">visitor</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l384" href="#l384">384</a></td>
+      <td class="lineno"><a id="l380" href="#l380">380</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 16 times.</div>
-          <div class="takenBranch">&check; Branch 2 taken 35 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 171 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 342 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">85</td>
+      <td class="linecount coveredLine">1071</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_writer</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l385" href="#l385">385</a></td>
+      <td class="lineno"><a id="l381" href="#l381">381</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">50</td>
+      <td class="linecount coveredLine">357</td>
       <td class="src coveredLine"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invoke</span><span class="p">(</span><span class="n">visitor</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">_writer</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l386" href="#l386">386</a></td>
+      <td class="lineno"><a id="l382" href="#l382">382</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3380,22 +3355,22 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l387" href="#l387">387</a></td>
+      <td class="lineno"><a id="l383" href="#l383">383</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
           <div class="notTakenBranch">&cross; Branch 1 not taken.</div>
-          <div class="takenBranch">&check; Branch 2 taken 35 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 342 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">35</td>
+      <td class="linecount coveredLine">714</td>
       <td class="src coveredLine"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">_time_series_writer</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l388" href="#l388">388</a></td>
+      <td class="lineno"><a id="l384" href="#l384">384</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount uncoveredLine">&cross;</td>
@@ -3403,15 +3378,15 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l389" href="#l389">389</a></td>
+      <td class="lineno"><a id="l385" href="#l385">385</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">35</td>
+      <td class="linecount coveredLine">714</td>
       <td class="src coveredLine"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invoke</span><span class="p">(</span><span class="n">visitor</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">_time_series_writer</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l390" href="#l390">390</a></td>
+      <td class="lineno"><a id="l386" href="#l386">386</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3419,7 +3394,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l391" href="#l391">391</a></td>
+      <td class="lineno"><a id="l387" href="#l387">387</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3427,11 +3402,50 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l392" href="#l392">392</a></td>
+      <td class="lineno"><a id="l388" href="#l388">388</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
       <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l389" href="#l389">389</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Visitor</span><span class="o">&gt;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l390" href="#l390">390</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount coveredLine">91</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span><span class="w"> </span><span class="n">_visit_writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Visitor</span><span class="o">&amp;</span><span class="w"> </span><span class="n">visitor</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l391" href="#l391">391</a></td>
+      <td class="linebranch">
+        <details class="linebranchDetails">
+        <summary class="linebranchSummary">2/2</summary>
+        <div class="linebranchContents">
+          <div class="takenBranch">&check; Branch 1 taken 18 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 38 times.</div>
+        </div>
+        </details>
+      </td>
+      <td class="linecount coveredLine">91</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_writer</span><span class="p">)</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l392" href="#l392">392</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount coveredLine">53</td>
+      <td class="src coveredLine"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invoke</span><span class="p">(</span><span class="n">visitor</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">_writer</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3439,31 +3453,38 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">GridWriter</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">_writer</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span><span class="w"></span></td>
+      <td class="src "><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l394" href="#l394">394</a></td>
       <td class="linebranch">
+        <details class="linebranchDetails">
+        <summary class="linebranchSummary">1/2</summary>
+        <div class="linebranchContents">
+          <div class="notTakenBranch">&cross; Branch 1 not taken.</div>
+          <div class="takenBranch">&check; Branch 2 taken 38 times.</div>
+        </div>
+        </details>
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">TimeSeriesGridWriter</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">_time_series_writer</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span><span class="w"></span></td>
+      <td class="linecount coveredLine">38</td>
+      <td class="src coveredLine"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">_time_series_writer</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l395" href="#l395">395</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="p">};</span><span class="w"></span></td>
+      <td class="linecount uncoveredLine">&cross;</td>
+      <td class="src uncoveredLine"><span class="w">                </span><span class="k">throw</span><span class="w"> </span><span class="n">InvalidState</span><span class="p">(</span><span class="s">&quot;No writer set&quot;</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l396" href="#l396">396</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="linecount coveredLine">38</td>
+      <td class="src coveredLine"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invoke</span><span class="p">(</span><span class="n">visitor</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">_time_series_writer</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3471,7 +3492,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="w">        </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3479,7 +3500,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">requires</span><span class="p">(</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Grid</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">)</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3487,7 +3508,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">F</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Writer</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3495,7 +3516,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">GridWriter</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">_writer</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3503,7 +3524,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="p">,</span><span class="w"> </span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">C</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">TimeSeriesGridWriter</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">_time_series_writer</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3511,7 +3532,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">requires</span><span class="p">(</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Grid</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">)</span><span class="w"></span></td>
+      <td class="src "><span class="p">};</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3519,7 +3540,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">F</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&amp;&amp;</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Writer</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3527,7 +3548,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="o">&gt;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3535,7 +3556,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="k">requires</span><span class="p">(</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Grid</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3543,7 +3564,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">requires</span><span class="p">(</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Grid</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">)</span><span class="w"></span></td>
+      <td class="src "><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">F</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Writer</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3551,7 +3572,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">F</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&amp;&amp;</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Writer</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3559,7 +3580,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="p">,</span><span class="w"> </span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">C</span><span class="o">&gt;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3567,7 +3588,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="p">,</span><span class="w"> </span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">C</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="k">requires</span><span class="p">(</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Grid</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3575,7 +3596,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">requires</span><span class="p">(</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Grid</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">)</span><span class="w"></span></td>
+      <td class="src "><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">F</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&amp;&amp;</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Writer</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3583,7 +3604,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">F</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&amp;&amp;</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Writer</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3591,7 +3612,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="o">&gt;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3599,7 +3620,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// namespace GridFormat</span></td>
+      <td class="src "><span class="w">    </span><span class="k">requires</span><span class="p">(</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Grid</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3607,7 +3628,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">F</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&amp;&amp;</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Writer</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3615,11 +3636,67 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">#endif  </span><span class="c1">// GRIDFORMAT_WRITER_HPP_</span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l416" href="#l416">416</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="p">,</span><span class="w"> </span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">C</span><span class="o">&gt;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l417" href="#l417">417</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="k">requires</span><span class="p">(</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Grid</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">)</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l418" href="#l418">418</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="n">Writer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">F</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&amp;&amp;</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Writer</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">remove_cvref_t</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="p">;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l419" href="#l419">419</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l420" href="#l420">420</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// namespace GridFormat</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l421" href="#l421">421</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l422" href="#l422">422</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cp">#endif  </span><span class="c1">// GRIDFORMAT_WRITER_HPP_</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l423" href="#l423">423</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>

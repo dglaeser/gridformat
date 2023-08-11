@@ -121,12 +121,18 @@ $(document).ready(function(){initNavTree('raw_8hpp.html',''); initResizable(); }
 
 <p>Encoder and stream for raw binary output.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;gridformat/common/output_stream.hpp&gt;</code><br />
+<div class="textblock"><code>#include &lt;span&gt;</code><br />
+<code>#include &lt;istream&gt;</code><br />
+<code>#include &lt;gridformat/common/serialization.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/output_stream.hpp&gt;</code><br />
 </div>
 <p><a href="raw_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1RawDecoder.html">GridFormat::RawDecoder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">For compatibility with Base64.  <a href="structGridFormat_1_1RawDecoder.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1RawBinaryStream.html">GridFormat::RawBinaryStream&lt; OStream &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper around a given stream to write raw binary data.  <a href="classGridFormat_1_1RawBinaryStream.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
