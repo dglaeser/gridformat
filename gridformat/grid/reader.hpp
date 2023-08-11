@@ -62,6 +62,11 @@ class GridReader {
     explicit GridReader(const std::string& filename) { open(filename); }
     virtual ~GridReader() = default;
 
+    //! Return the name of this reader
+    std::string name() const {
+        return _name();
+    }
+
     //! Open the given grid file
     void open(const std::string& filename) {
         _filename = filename;

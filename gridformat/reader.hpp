@@ -104,7 +104,9 @@ class Reader : public GridReader {
     }
 
     std::string _name() const override {
-        return "Reader";
+        if (_reader_is_set())
+            return _access_reader().name();
+        return "undefined";
     }
 
     void _open(const std::string& filename, typename GridReader::FieldNames& names) override {
@@ -205,8 +207,12 @@ class Reader : public GridReader {
     }
 
     void _check_reader_access() const {
-        if (!_reader)
+        if (!_reader_is_set())
             throw InvalidState("No file has been read");
+    }
+
+    bool _reader_is_set() const {
+        return static_cast<bool>(_reader);
     }
 
     std::unique_ptr<GridReader> _reader;

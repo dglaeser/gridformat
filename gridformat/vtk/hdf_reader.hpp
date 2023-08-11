@@ -64,6 +64,8 @@ class VTKHDFReader : public GridReader {
     }
 
     std::string _name() const override {
+        if (_reader)
+            return _reader->name();
         return "VTKHDFReader";
     }
 

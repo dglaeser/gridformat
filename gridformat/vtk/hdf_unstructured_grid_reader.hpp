@@ -47,6 +47,8 @@ class VTKHDFUnstructuredGridReader : public GridReader {
 
  private:
     std::string _name() const override {
+        if (_is_transient())
+            return "VTKHDFUnstructuredGridReader (transient)";
         return "VTKHDFUnstructuredGridReader";
     }
 
