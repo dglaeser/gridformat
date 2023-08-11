@@ -169,6 +169,12 @@ int test_reader(const std::filesystem::path& folder,
     std::ranges::for_each(test_filenames(folder, extension), [&] (const std::string& filename) {
         test_reader(GridFormat::Reader{std::forward<ConstructorArgs>(args)...}, filename);
         visited = true;
+
+        if (extension == ".vtu") { // exemplarily test that reader propagates names
+            GridFormat::Reader reader{GridFormat::vtu};
+            reader.open(filename);
+            GridFormat::Testing::expect(reader.name() == "VTUReader");
+        }
     });
     if (!visited)
         std::cout << "Could not find test data files for extension "
