@@ -96,7 +96,7 @@ class Field {
         const auto my_layout = layout();
         const auto serialization = serialized();
         if (my_layout.number_of_entries() != 1)
-                throw ValueError("Field cannot be exported into a scalar");
+            throw TypeError("Field cannot be exported into a scalar");
         visit_field_values([&] <typename T> (std::span<const T> data) {
             out = static_cast<S>(data[0]);
         });

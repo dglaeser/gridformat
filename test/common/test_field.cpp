@@ -82,5 +82,22 @@ int main() {
         expect(std::ranges::equal(values | std::views::drop(4), std::vector{42, 42, 42}));
     };
 
+    "field_template_export_throws_when_size_not_interoperable"_test = [] () {
+        std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
+        auto values = field->template export_to<std::vector<std::array<int, 2>>>();
+        expect(std::ranges::equal(values[0], std::vector{1, 2}));
+        expect(std::ranges::equal(values[1], std::vector{3, 4}));
+
+        expect(throws<GridFormat::TypeError>([&] () { field->template export_to<std::vector<std::array<int, 3>>>(); }));
+    };
+
+    "field_export_to_scalar_throws_for_non_scalar_field"_test = [] () {
+        std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
+
+        int value;
+        expect(throws<GridFormat::TypeError>([&] () { field->export_to(value); }));
+        expect(throws<GridFormat::TypeError>([&] () { field->template export_to<int>(); }));
+    };
+
     return 0;
 }
