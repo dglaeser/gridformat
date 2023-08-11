@@ -62,6 +62,10 @@ int main() {
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;
 
+    "vtr_reader_name"_test = [&] () {
+        expect(reader.name() == "VTRReader");
+    };
+
     "vtk_written_vtr_files"_test = [&] () {
         for (const std::string& vtr_filepath : vtr_files) {
             std::cout << "Testing '" << GridFormat::as_highlight(vtr_filepath) << "'" << std::endl;

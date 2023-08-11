@@ -61,6 +61,10 @@ int main(int argc, char** argv) {
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;
 
+    "pvti_reader_name"_test = [&] () {
+        expect(reader.name() == "PVTIReader");
+    };
+
     "parallel_pvti_read_number_of_pieces"_test = [&] () {
         expect(eq(reader.number_of_pieces(), static_cast<std::size_t>(size)));
     };

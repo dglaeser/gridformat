@@ -39,7 +39,7 @@ class PVTUReader : public VTK::PXMLUnstructuredGridReader<VTUReader> {
 
  private:
     std::string _name() const override {
-        return "PVTPReader";
+        return "PVTUReader";
     }
 };
 

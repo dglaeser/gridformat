@@ -32,6 +32,9 @@ int main() {
             "vtk_hdf_reader_num_pieces"_test = [&] () {
                 expect(eq(reader.number_of_pieces(), std::size_t{1}));
             };
+            "vtk_hdf_unstructured_grid_reader_name"_test  = [&] () {
+                expect(reader.name().starts_with("VTKHDFUnstructuredGridReader"));
+            };
         }
     }
     {
