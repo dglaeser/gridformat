@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 gridformat_add_test(test_type_traits test_type_traits.cpp)
+gridformat_add_test(test_buffer_field test_buffer_field.cpp)
 gridformat_add_test(test_concepts test_concepts.cpp)
 gridformat_add_test(test_enumerated_range test_enumerated_range.cpp)
 gridformat_add_test(test_filtered_range test_filtered_range.cpp)
