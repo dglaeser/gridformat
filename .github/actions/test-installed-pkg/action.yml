@@ -19,11 +19,19 @@ runs:
         cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
               -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
               -DGRIDFORMAT_BUILD_TESTS=OFF \
+              -DGRIDFORMAT_BUILD_BINARIES=ON \
               -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
               -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
               -B build
         cmake --build build
         cmake --install build
+      shell: bash
+
+    - name: test-readme-cli-snippets
+      run: |
+        export PATH=$PATH:$(pwd)/install/bin
+        python3 test/test_readme_cli_snippets.py \
+          -c "-DCMAKE_C_COMPILER=${{inputs.c_compiler}} -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}}"
       shell: bash
 
     - name: test-installed-pkg
