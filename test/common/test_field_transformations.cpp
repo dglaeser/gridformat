@@ -224,6 +224,29 @@ int main() {
         TransformedField{field_ptr, extend_to(GridFormat::MDLayout{{4}})}.layout();
     };
 
+    "transformed_reshaped_field"_test = [] () {
+        auto field_ptr = GridFormat::make_field_ptr(RangeField{
+            std::vector<std::array<int, 2>>{{2, 3}, {2, 3}},
+            GridFormat::Precision<double>{}
+        });
+        auto reshaped = GridFormat::ReshapedField{field_ptr, GridFormat::MDLayout{{4, 1}}};
+        expect(eq(reshaped.layout().dimension(), 2_ul));
+        expect(eq(reshaped.layout().extent(0), 4_ul));
+        expect(eq(reshaped.layout().extent(1), 1_ul));
+        auto serialized = reshaped.serialized();
+        expect(std::ranges::equal(serialized.template as_span_of<double>(), std::vector{2., 3., 2., 3.}));
+    };
+
+    "transformed_reshaped_field_throws_upon_layout_mismatch"_test = [] () {
+        auto field_ptr = GridFormat::make_field_ptr(RangeField{
+            std::vector<std::array<int, 2>>{{2, 3}, {2, 3}},
+            GridFormat::Precision<double>{}
+        });
+        expect(throws<GridFormat::SizeError>([&] () {
+            GridFormat::ReshapedField{field_ptr, GridFormat::MDLayout{{5, 1}}};
+        }));
+    };
+
     "merged_scalar_fields"_test = [] () {
         GridFormat::MergedField merged{
             GridFormat::make_field_ptr(GridFormat::ScalarField{42}),
