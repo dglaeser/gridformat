@@ -36,6 +36,7 @@ INPUT                 += @CMAKE_SOURCE_DIR@/README.md \
                          @DOXYGEN_SOURCE_DIR@/groups.md \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/gridformat.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/writer.hpp \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/reader.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/common/field.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/image_grid.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/concepts.hpp \
