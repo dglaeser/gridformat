@@ -141,6 +141,8 @@ int main() {
         expect(eq(transformed_field.precision().is_integral(), true));
         expect(eq(transformed_field.precision().is_signed(), true));
         expect(eq(transformed_field.precision().size_in_bytes(), sizeof(int)));
+        auto s = transformed_field.serialized();
+        expect(std::ranges::equal(s.template as_span_of<int>(), std::vector{1, 2, 3, 4}));
     };
 
     "transformed_field_extend"_test = [] () {
