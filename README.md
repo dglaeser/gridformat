@@ -8,10 +8,11 @@
 [![API Documentation](https://img.shields.io/badge/doc-API-ff69b4)](https://dglaeser.github.io/gridformat)
 [![REUSE status](https://api.reuse.software/badge/git.fsfe.org/reuse/api)](https://api.reuse.software/info/git.fsfe.org/reuse/api)
 
-`GridFormat` is a header-only C++ library for reading/writing data from/to grid file formats that can be visualized with tools
-such as [ParaView](https://www.paraview.org/). The typical use case for `GridFormat` is within codes for numerical simulations
-that want to export numerical results into visualizable file formats, and read them back in, for instance, in order to restart
-a simulation. A variety of simulation frameworks exist, such as
+`GridFormat` is a header-only C++ library for reading/writing data from/to standardized grid file formats that are supported by visualization tools such as e.g. [ParaView](https://www.paraview.org/).
+Thus, applications that operate on grid-like data structures such as numerical simulations, GIS or computational geometry applications, can leverage `GridFormat` to import/export their data from/into interoperable file formats.
+The typical use case for `GridFormat` is within codes for numerical simulations, for visualization of results or for importing
+them for further processing.
+A variety of simulation frameworks exist, such as
 [Dune](https://www.dune-project.org/), [DuMuX](https://dumux.org/), [Deal.II](https://www.dealii.org/), [Fenics](https://fenicsproject.org/)
 or [MFEM](https://mfem.org/),
 which usually provide mechanisms to export/import data produced with the framework into some file formats. However, there are situations
@@ -87,7 +88,7 @@ int main () {
 }
 ```
 
-Many more formats and options are available, see the [API documentation](https://dglaeser.github.io/gridformat/)
+Many more formats, options and functions are available, see the [API documentation](https://dglaeser.github.io/gridformat/)
 or have a look at the [examples](./examples).
 
 
