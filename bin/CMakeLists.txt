@@ -9,3 +9,4 @@ function(gridformat_add_app NAME SOURCE)
 endfunction()
 
 gridformat_add_app(gridformat-info info.cpp)
+gridformat_add_app(gridformat-convert convert.cpp)
