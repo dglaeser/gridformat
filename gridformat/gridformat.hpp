@@ -416,6 +416,130 @@ struct TimeSeriesClosure {
 #ifndef DOXYGEN
 namespace APIDetail {
 
+    // Meta-Reader for file formats that have different format flavours in parallel/sequential
+    template<typename SeqReader, typename ParReader>
+    class SequentialOrParallelReader : public GridReader {
+        template<typename R> using CommunicatorAccess = Traits::CommunicatorAccess<R>;
+        template<typename R> using Communicator = decltype(CommunicatorAccess<R>::get(std::declval<const R&>()));
+        using ParCommunicator = Communicator<ParReader>;
+        using SeqCommunicator = Communicator<SeqReader>;
+
+     public:
+        SequentialOrParallelReader(SeqReader&& seq, ParReader&& par)
+        : _seq_reader{std::move(seq)}
+        , _par_reader{std::move(par)}
+        {}
+
+        ParCommunicator communicator() const {
+            const bool is_parallel = !_use_sequential.value_or(true);
+            if (!is_parallel) {
+                if constexpr (!std::is_same_v<ParCommunicator, SeqCommunicator>)
+                    throw InvalidState("Cannot access communicator for sequential variant of the reader");
+                else
+                    return CommunicatorAccess<SeqReader>::get(_seq_reader);
+            }
+            return CommunicatorAccess<ParReader>::get(_par_reader);
+        }
+
+     private:
+        SeqReader _seq_reader;
+        ParReader _par_reader;
+        std::optional<bool> _use_sequential = {};
+
+        std::string _name() const override {
+            return _is_set() ? _access().name() : std::string{"undefined"};
+        }
+
+        void _open(const std::string& filename, typename GridReader::FieldNames& names) override {
+            _close();
+            std::string seq_error;
+            try {
+                _seq_reader.open(filename);
+                _use_sequential = true;
+            } catch (const std::exception& e) {
+                seq_error = e.what();
+                _use_sequential.reset();
+                _seq_reader.close();
+                try {
+                    _par_reader.open(filename);
+                    _use_sequential = false;
+                } catch (const std::exception& par_err) {
+                    _use_sequential.reset();
+                    _par_reader.close();
+                    throw IOError(
+                        "Could not read '" + filename + "' neither as sequential nor parallel format.\n"
+                        "Error with sequential format (" + _seq_reader.name() + "): " + seq_error + "\n"
+                        "Error with parallel format (" + _par_reader.name() + "): " + par_err.what()
+                    );
+                }
+            }
+
+            ReaderDetail::copy_field_names(_access(), names);
+        }
+
+        void _close() override {
+            if (_is_set())
+                _access().close();
+        }
+
+        std::size_t _number_of_cells() const override { return _access().number_of_cells(); }
+        std::size_t _number_of_points() const override { return _access().number_of_points(); }
+        std::size_t _number_of_pieces() const override { return _access().number_of_pieces(); }
+
+        FieldPtr _cell_field(std::string_view n) const override { return _access().cell_field(n); }
+        FieldPtr _point_field(std::string_view n) const override { return _access().point_field(n); }
+        FieldPtr _meta_data_field(std::string_view n) const override { return _access().meta_data_field(n); }
+
+        FieldPtr _points() const override { return _access().points(); }
+        void _visit_cells(const typename GridReader::CellVisitor& v) const override { _access().visit_cells(v); }
+        std::vector<double> _ordinates(unsigned int i) const { return _access().ordinates(i); }
+
+        typename GridReader::PieceLocation _location() const override { return _access().location(); }
+        typename GridReader::Vector _spacing() const override { return _access().spacing(); }
+        typename GridReader::Vector _origin() const override { return _access().origin(); }
+        typename GridReader::Vector _basis_vector(unsigned int i) const override { return _access().basis_vector(i); }
+
+        bool _is_sequence() const override { return _access().is_sequence(); }
+        std::size_t _number_of_steps() const override { return _access().number_of_steps(); }
+        double _time_at_step(std::size_t i) const override { return _access().time_at_step(i); }
+        void _set_step(std::size_t i, typename GridReader::FieldNames& names) override {
+            _access().set_step(i);
+            names.clear();
+            ReaderDetail::copy_field_names(_access(), names);
+        }
+
+        bool _is_set() const { return _use_sequential.has_value(); }
+        void _throw_if_not_set() const {
+            if (!_is_set())
+                throw IOError("No data has been read");
+        }
+
+        GridReader& _access() {
+            _throw_if_not_set();
+            return _use_sequential.value()
+                ? static_cast<GridReader&>(_seq_reader)
+                : static_cast<GridReader&>(_par_reader);
+        }
+
+        const GridReader& _access() const {
+            _throw_if_not_set();
+            return _use_sequential.value()
+                ? static_cast<const GridReader&>(_seq_reader)
+                : static_cast<const GridReader&>(_par_reader);
+        }
+    };
+
+    template<typename S, typename P>
+    SequentialOrParallelReader(S&&, P&&) -> SequentialOrParallelReader<std::remove_cvref_t<S>, std::remove_cvref_t<P>>;
+
+    template<typename Format, typename SeqReader, typename ParReader>
+    struct SequentialOrParallelReaderFactory {
+        template<Concepts::Communicator C = NullCommunicator>
+        static auto make(const Format&, const C& comm = null_communicator) {
+            return SequentialOrParallelReader{SeqReader{}, ParReader{comm}};
+        }
+    };
+
     template<typename Format, typename SequentialReader, typename ParallelReader>
     struct DefaultReaderFactory {
         static auto make(const Format&) { return SequentialReader{}; }
@@ -433,6 +557,16 @@ namespace APIDetail {
 }  // namespace APIDetail
 #endif  // DOXYGEN
 
+// Traits specializations for SequentialOrParallelReader
+namespace Traits {
+
+template<typename S, typename P>
+struct WritesConnectivity<APIDetail::SequentialOrParallelReader<S, P>>
+: public std::bool_constant<WritesConnectivity<S>::value || WritesConnectivity<P>::value>
+{};
+
+}  // namespace Traits
+
 //! Specialization of the WriterFactory for the .vti format
 template<> struct WriterFactory<FileFormat::VTI> {
     static auto make(const FileFormat::VTI& format,
@@ -449,7 +583,7 @@ template<> struct WriterFactory<FileFormat::VTI> {
 
 //! Specialization of the ReaderFactory for the .vti format
 template<>
-struct ReaderFactory<FileFormat::VTI> : APIDetail::DefaultReaderFactory<FileFormat::VTI, VTIReader, PVTIReader> {};
+struct ReaderFactory<FileFormat::VTI> : APIDetail::SequentialOrParallelReaderFactory<FileFormat::VTI, VTIReader, PVTIReader> {};
 
 //! Specialization of the WriterFactory for the .vtr format
 template<> struct WriterFactory<FileFormat::VTR> {
@@ -466,7 +600,7 @@ template<> struct WriterFactory<FileFormat::VTR> {
 
 //! Specialization of the ReaderFactory for the .vtr format
 template<>
-struct ReaderFactory<FileFormat::VTR> : APIDetail::DefaultReaderFactory<FileFormat::VTR, VTRReader, PVTRReader> {};
+struct ReaderFactory<FileFormat::VTR> : APIDetail::SequentialOrParallelReaderFactory<FileFormat::VTR, VTRReader, PVTRReader> {};
 
 //! Specialization of the WriterFactory for the .vts format
 template<> struct WriterFactory<FileFormat::VTS> {
@@ -483,7 +617,7 @@ template<> struct WriterFactory<FileFormat::VTS> {
 
 //! Specialization of the ReaderFactory for the .vts format
 template<>
-struct ReaderFactory<FileFormat::VTS> : APIDetail::DefaultReaderFactory<FileFormat::VTS, VTSReader, PVTSReader> {};
+struct ReaderFactory<FileFormat::VTS> : APIDetail::SequentialOrParallelReaderFactory<FileFormat::VTS, VTSReader, PVTSReader> {};
 
 //! Specialization of the WriterFactory for the .vtp format
 template<> struct WriterFactory<FileFormat::VTP> {
@@ -500,7 +634,7 @@ template<> struct WriterFactory<FileFormat::VTP> {
 
 //! Specialization of the ReaderFactory for the .vtp format
 template<>
-struct ReaderFactory<FileFormat::VTP> : APIDetail::DefaultReaderFactory<FileFormat::VTP, VTPReader, PVTPReader> {};
+struct ReaderFactory<FileFormat::VTP> : APIDetail::SequentialOrParallelReaderFactory<FileFormat::VTP, VTPReader, PVTPReader> {};
 
 //! Specialization of the WriterFactory for the .vtu format
 template<> struct WriterFactory<FileFormat::VTU> {
@@ -517,7 +651,7 @@ template<> struct WriterFactory<FileFormat::VTU> {
 
 //! Specialization of the ReaderFactory for the .vtu format
 template<>
-struct ReaderFactory<FileFormat::VTU> : APIDetail::DefaultReaderFactory<FileFormat::VTU, VTUReader, PVTUReader> {};
+struct ReaderFactory<FileFormat::VTU> : APIDetail::SequentialOrParallelReaderFactory<FileFormat::VTU, VTUReader, PVTUReader> {};
 
 //! Specialization of the WriterFactory for vtk-xml time series.
 template<typename F> struct WriterFactory<FileFormat::VTKXMLTimeSeries<F>> {
