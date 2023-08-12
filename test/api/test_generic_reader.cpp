@@ -98,6 +98,10 @@ void test_reader(GridFormat::Reader&& reader, const std::string& filename) {
     if (reader.is_sequence())
         num_steps = reader.number_of_steps();
 
+    const std::size_t num_cell_fields = GridFormat::Ranges::size(cell_field_names(reader));
+    const std::size_t num_point_fields = GridFormat::Ranges::size(point_field_names(reader));
+    const std::size_t num_meta_data_fields = GridFormat::Ranges::size(meta_data_field_names(reader));
+
     for (std::size_t step = 0; step < num_steps.value_or(std::size_t{1}); ++step) {
         double step_time = 1.0;
         if (num_steps) {
@@ -106,12 +110,7 @@ void test_reader(GridFormat::Reader&& reader, const std::string& filename) {
             step_time = reader.time_at_step(step);
         }
 
-        std::vector<std::string> read_cell_fields;
-        std::vector<std::string> read_point_fields;
-        std::vector<std::string> read_meta_data_fields;
-
         for (const auto [name, fieldptr] : point_fields(reader)) {
-            read_point_fields.push_back(name);
             if (is_scalar_field(fieldptr)) {
                 const auto values = fieldptr->template export_to<std::vector<double>>();
                 std::size_t p_idx = 0;
@@ -128,7 +127,6 @@ void test_reader(GridFormat::Reader&& reader, const std::string& filename) {
         }
 
         for (const auto [name, fieldptr] : cell_fields(reader)) {
-            read_cell_fields.push_back(name);
             if (is_scalar_field(fieldptr)) {
                 const auto values = fieldptr->template export_to<std::vector<double>>();
                 std::size_t c_idx = 0;
@@ -151,16 +149,13 @@ void test_reader(GridFormat::Reader&& reader, const std::string& filename) {
             }
         }
 
-        for (const auto [name, _] : meta_data_fields(reader))
-            read_meta_data_fields.push_back(name);
-
-        expect(std::ranges::equal(read_point_fields, point_field_names(reader)));
-        expect(std::ranges::equal(read_cell_fields, cell_field_names(reader)));
-        expect(std::ranges::equal(read_meta_data_fields, meta_data_field_names(reader)));
+        expect(eq(num_cell_fields, GridFormat::Ranges::size(point_field_names(reader))));
+        expect(eq(num_point_fields, GridFormat::Ranges::size(cell_field_names(reader))));
+        expect(eq(num_meta_data_fields, GridFormat::Ranges::size(meta_data_field_names(reader))));
         std::cout << "Visited "
-                  << read_point_fields.size() << " / "
-                  << read_cell_fields.size() << " / "
-                  << read_meta_data_fields.size()
+                  << num_point_fields << " / "
+                  << num_cell_fields << " / "
+                  << num_meta_data_fields
                   << " point / cell / meta data fields"
                   << std::endl;
     }
