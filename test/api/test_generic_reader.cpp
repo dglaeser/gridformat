@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <ranges>
+#include <cmath>
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/logging.hpp>
@@ -28,6 +29,7 @@
 #include "../grid/structured_grid.hpp"
 #include "../make_test_data.hpp"
 #include "../reader_tests.hpp"
+#include "../testing.hpp"
 
 #ifndef TEST_VTK_DATA_PATH
 #define TEST_VTK_DATA_PATH ""
@@ -257,11 +259,15 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
         make_writer(GridFormat::vtp, grid, comm), generated_data_folder / make_filename("vtp")
     }));
     add_test_file(write_test_time_series<2>(GridFormat::PVDWriter{
-        make_writer(GridFormat::vti, grid, comm), generated_data_folder / make_filename("pvi")
+        make_writer(GridFormat::vti, grid, comm), generated_data_folder / make_filename("vti")
     }));
+    const auto vti_filename = test_filenames.back();
+
     add_test_file(write_test_time_series<2>(GridFormat::PVDWriter{
         make_writer(GridFormat::vtr, grid, comm), generated_data_folder / make_filename("vtr")
     }));
+    const auto vtr_filename = test_filenames.back();
+
     add_test_file(write_test_time_series<2>(GridFormat::PVDWriter{
         make_writer(GridFormat::vts, grid, comm), generated_data_folder / make_filename("vts")
     }));
@@ -271,6 +277,49 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     } else {
         test_reader(generated_data_folder, ".pvd", GridFormat::pvd);
         test_reader(generated_data_folder, ".pvd", GridFormat::any);
+    }
+
+    // check that reader exposes image/rectilinear grid-specific interfaces
+    if (!is_parallel) {
+        using GridFormat::Testing::operator""_test;
+        using GridFormat::Testing::expect;
+        using GridFormat::Testing::eq;
+
+        "generic_reader_vti_interfaces"_test = [&] () {
+            GridFormat::Reader vti_reader;
+            vti_reader.open(generated_data_folder / vti_filename);
+
+            expect(eq(vti_reader.extents()[0], std::size_t{4}));
+            expect(eq(vti_reader.extents()[1], std::size_t{5}));
+            expect(eq(vti_reader.extents()[2], std::size_t{0}));
+
+            expect(eq(vti_reader.location().lower_left[0], std::size_t{0}));
+            expect(eq(vti_reader.location().lower_left[1], std::size_t{0}));
+            expect(eq(vti_reader.location().lower_left[2], std::size_t{0}));
+
+            expect(eq(vti_reader.location().upper_right[0], std::size_t{4}));
+            expect(eq(vti_reader.location().upper_right[1], std::size_t{5}));
+            expect(eq(vti_reader.location().upper_right[2], std::size_t{0}));
+
+            expect(eq(vti_reader.origin()[0], 0.0));
+            expect(eq(vti_reader.origin()[1], 0.0));
+            expect(eq(vti_reader.origin()[2], 0.0));
+
+            expect(std::abs(vti_reader.spacing()[0] - 1.0/4.0) < 1e-6);
+            expect(std::abs(vti_reader.spacing()[1] - 1.0/5.0) < 1e-6);
+            expect(std::abs(vti_reader.spacing()[2] - 0.0) < 1e-6);
+        };
+
+        "generic_reader_vtr_interfaces"_test = [&] () {
+            GridFormat::Reader vtr_reader;
+            vtr_reader.open(generated_data_folder / vtr_filename);
+            for (unsigned int dir = 0; dir < 3; ++dir) {
+                const double spacing = std::array{1.0/4.0, 1.0/5.0, 0.0}[dir];
+                expect(std::ranges::all_of(vtr_reader.ordinates(dir), [&, i=0] (const auto& x) mutable {
+                    return std::abs(x - spacing*static_cast<double>(i++)) < 1e-6;
+                }));
+            }
+        };
     }
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE
