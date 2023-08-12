@@ -164,7 +164,7 @@ Quick Start</h1>
 <div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> written_file = writer.write(<span class="stringliteral">&quot;my_test_file&quot;</span>); <span class="comment">// extension is added by the writer</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// read the data back in (here we create a generic reader, but you can also select specific ones)</span></div>
-<div class="line">    GridFormat::Reader reader; reader.open(written_file);</div>
+<div class="line">    <a class="code hl_class" href="classGridFormat_1_1Reader.html">GridFormat::Reader</a> reader; reader.open(written_file);</div>
 <div class="line">    std::vector&lt;double&gt; cell_field_values(reader.number_of_cells());</div>
 <div class="line">    std::vector&lt;double&gt; point_field_values(reader.number_of_points());</div>
 <div class="line">    reader.cell_field(<span class="stringliteral">&quot;cell_field&quot;</span>)-&gt;export_to(cell_field_values);</div>
@@ -173,6 +173,7 @@ Quick Start</h1>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 <div class="ttc" id="aclassGridFormat_1_1ImageGrid_html"><div class="ttname"><a href="classGridFormat_1_1ImageGrid.html">GridFormat::ImageGrid</a></div><div class="ttdoc">Predefined grid implementation that represents a structured, equispaced grid.</div><div class="ttdef"><b>Definition:</b> image_grid.hpp:41</div></div>
+<div class="ttc" id="aclassGridFormat_1_1Reader_html"><div class="ttname"><a href="classGridFormat_1_1Reader.html">GridFormat::Reader</a></div><div class="ttdoc">Interface to the readers for all supported file formats.</div><div class="ttdef"><b>Definition:</b> reader.hpp:85</div></div>
 <div class="ttc" id="aclassGridFormat_1_1Writer_html"><div class="ttname"><a href="classGridFormat_1_1Writer.html">GridFormat::Writer</a></div><div class="ttdoc">Interface to the writers for all supported file formats. Depending on the chosen format,...</div><div class="ttdef"><b>Definition:</b> writer.hpp:90</div></div>
 <div class="ttc" id="aclassGridFormat_1_1Writer_html_aceba61d4867ddb47d0286827fae8cfc1"><div class="ttname"><a href="classGridFormat_1_1Writer.html#aceba61d4867ddb47d0286827fae8cfc1">GridFormat::Writer::set_meta_data</a></div><div class="ttdeci">void set_meta_data(const std::string &amp;name, Field &amp;&amp;field)</div><div class="ttdoc">Set a meta data field to be added to the output.</div><div class="ttdef"><b>Definition:</b> writer.hpp:194</div></div>
 <div class="ttc" id="agridformat_8hpp_html"><div class="ttname"><a href="gridformat_8hpp.html">gridformat.hpp</a></div><div class="ttdoc">This file is the entrypoint to the high-level API exposing all provided readers/writers through a uni...</div></div>
@@ -192,7 +193,14 @@ Installation</h1>
 Dependencies</h2>
 <p><code>GridFormat</code> has no required dependencies, however, some features are only available if certain dependencies are present. For instance, the <a href="https://examples.vtk.org/site/VTKFileFormats/#hdf-file-formats">VTK-HDF file formats</a> are only available if <a href="https://github.com/BlueBrain/HighFive"><code>HighFive</code></a> is found, which itself requires <code>libhdf5-dev</code>. If the latter is found on your system, including <code>GridFormat</code> via cmake's <code>FetchContent</code> (see quickstart) automatically brings in <code>HighFive</code>, as it is included in <code>GridFormat</code> as a git submodule. However, when installing <code>GridFormat</code> from the cloned sources (as described above), make sure to use <code>git clone --recursive</code> in case you want to use the HDF file formats.</p>
 <p>The availability of some specific features of a file format may also depend on the availability of certain dependencies. For instance, compression of data (e.g. for the VTK-XML file formats) can only be used if the respective compression libraries are found on the system. Dependencies of those features are stated in the <a href="https://dglaeser.github.io/gridformat/">API documentation</a>.</p>
-<h1><a class="anchor" id="compatibility-with-userdefined-grids"></a>
+<h1><a class="anchor" id="commandline-interface"></a>
+Command-line interface</h1>
+<p><code>GridFormat</code> comes with a few command-line apps that you can build and install alongside the library. To include them in the build, pass the option <code>-DGRIDFORMAT_BUILD_BINARIES=ON</code> to <code>cmake</code> when configuring (see above). For performance reasons, you should set <code>-DCMAKE_BUILD_TYPE=Release</code> when configuring. If successfully built, you can then use the command-line apps to print information on a grid file to the terminal, or convert between different file formats. For instance:</p>
+<div class="fragment"><div class="line">gridformat-info my_vti_file.vti        # prints info on the contents of the vti file</div>
+<div class="line">gridformat-convert my_vti_file.vti vtu # converts an image grid format (.vti) to vtu format</div>
+<div class="line">gridformat-convert my_vti_file.vti vtu encoder=ascii # format options can be set as key-value pairs</div>
+<div class="line">gridformat-convert my_vti_file.vti vtu -o some_file  # choose an output filename</div>
+</div><!-- fragment --><h1><a class="anchor" id="compatibility-with-userdefined-grids"></a>
 Compatibility with user-defined grids</h1>
 <p><code>GridFormat</code> does not operate on a specific grid data structure, but instead, it can be made compatible with any user-defined grid types by implementing specializations for a few traits classes. For information on how to do this, please have a look at the <a class="el" href="grid-traits.html#md____w_gridformat_gridformat_docs_pages_traits">traits classes overview</a>, the <a href="./examples">examples</a>, the predefined <a href="https://github.com/dglaeser/gridformat/blob/main/gridformat/grid/image_grid.hpp">image grid implementation</a> or the predefined <a href="https://github.com/dglaeser/gridformat/blob/main/gridformat/traits">traits for several frameworks</a>.</p>
 <h1><a class="anchor" id="predefined-traits"></a>
@@ -213,7 +221,7 @@ Development and test suite</h2>
 <div class="line">cd build</div>
 <div class="line">make build_tests</div>
 <div class="line">ctest</div>
-</div><!-- fragment --><p>Note that an internet connection is required for the call to <code>cmake</code> as it pulls in <a href="https://github.com/boost-ext/ut">ut</a> on-the-fly.</p>
+</div><!-- fragment --><p>Note that an internet connection is required for the call to <code>cmake</code> as it pulls in <a href="https://github.com/boost-ext/ut">ut</a> on-the-fly. Moreover, in the configure step a Python script is invoked that produces some test data using <a href="https://pypi.org/project/vtk/">VTK</a>. If your Python environment does not have <code>VTK</code>, this step is skipped. Note that some tests in the test suite will be skipped in this case.</p>
 <h1><a class="anchor" id="license"></a>
 License</h1>
 <p><code>GridFormat</code> is licensed under the terms and conditions of the MIT License. It can be <a href="https://opensource.org/license/mit/">read online</a> or in the <a href="https://github.com/dglaeser/gridformat/blob/main/LICENSES/MIT.txt">LICENSES/MIT.txt</a> file. See <a href="https://github.com/dglaeser/gridformat/blob/main/LICENSES/MIT.txt">LICENSES/MIT.txt</a> for full copying permissions. </p>

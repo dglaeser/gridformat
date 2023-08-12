@@ -7,5 +7,6 @@ var dir_e7c175008ea20c864d9ef3009d7f4301 =
     [ "traits", "dir_e3c16a4d562f37f7380f531bc4a86d92.html", "dir_e3c16a4d562f37f7380f531bc4a86d92" ],
     [ "vtk", "dir_d0390f0727238e67894f11fe1a76445e.html", "dir_d0390f0727238e67894f11fe1a76445e" ],
     [ "gridformat.hpp", "gridformat_8hpp.html", "gridformat_8hpp" ],
+    [ "reader.hpp", "reader_8hpp.html", "reader_8hpp" ],
     [ "writer.hpp", "writer_8hpp.html", null ]
 ];

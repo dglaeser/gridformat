@@ -123,17 +123,27 @@ $(document).ready(function(){initNavTree('group__API.html',''); initResizable();
 <p>The high-level API and recommended way of using <code>GridFormat</code>  
 <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>The high-level API exposes all available file formats and the generic <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">GridFormat::Writer</a>, which takes an instance of one of the formats and a grid that is to be written. It is recommended to use the provided file format selectors for construction of a <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">GridFormat::Writer</a>. As an example, to construct a writer for the .vtu file format for your <code>grid</code>, you may write </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{GridFormat::vtu, grid};</div>
+<p>The high-level API exposes all available file formats and the generic <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">GridFormat::Writer</a> (and <a class="el" href="classGridFormat_1_1Reader.html" title="Interface to the readers for all supported file formats.">GridFormat::Reader</a>, see below), which takes an instance of one of the formats and a grid that is to be written. It is recommended to use the provided file format selectors for construction of a <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">GridFormat::Writer</a>. As an example, to construct a writer for the .vtu file format for your <code>grid</code>, you may write </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{GridFormat::vtu, grid};</div>
 <div class="ttc" id="aclassGridFormat_1_1Writer_html"><div class="ttname"><a href="classGridFormat_1_1Writer.html">GridFormat::Writer</a></div><div class="ttdoc">Interface to the writers for all supported file formats. Depending on the chosen format,...</div><div class="ttdef"><b>Definition:</b> writer.hpp:90</div></div>
 </div><!-- fragment --><p>You can also let <code>GridFormat</code> select a default for you: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{<a class="code hl_function" href="group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5">GridFormat::default_for</a>(grid), grid};</div>
-<div class="ttc" id="agroup__API_html_ga19ce8850e7c649e701a6cab52a3ad5a5"><div class="ttname"><a href="group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5">GridFormat::Formats::default_for</a></div><div class="ttdeci">constexpr auto default_for()</div><div class="ttdoc">Selects a default format suitable to write the given grid.</div><div class="ttdef"><b>Definition:</b> gridformat.hpp:918</div></div>
+<div class="ttc" id="agroup__API_html_ga19ce8850e7c649e701a6cab52a3ad5a5"><div class="ttname"><a href="group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5">GridFormat::Formats::default_for</a></div><div class="ttdeci">constexpr auto default_for()</div><div class="ttdoc">Selects a default format suitable to write the given grid.</div><div class="ttdef"><b>Definition:</b> gridformat.hpp:1065</div></div>
 </div><!-- fragment --><p>Some file formats take configuration options. For instance, the .vtu file format allows you to specify (among other options) an encoder to be used: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{</div>
 <div class="line">   GridFormat::vtu({.encoder = <a class="code hl_variable" href="group__Encoding.html#ga28e611764de2305f0cbced6c2b6af869">GridFormat::Encoding::base64</a>}),</div>
 <div class="line">   grid</div>
 <div class="line">};</div>
 <div class="ttc" id="agroup__Encoding_html_ga28e611764de2305f0cbced6c2b6af869"><div class="ttname"><a href="group__Encoding.html#ga28e611764de2305f0cbced6c2b6af869">GridFormat::Encoding::base64</a></div><div class="ttdeci">constexpr Base64 base64</div><div class="ttdoc">Instance of the base64 encoder.</div><div class="ttdef"><b>Definition:</b> base64.hpp:262</div></div>
-</div><!-- fragment --><p>For more information on these options, see <a class="el" href="structGridFormat_1_1FileFormat_1_1VTU.html" title="Selector for the .vtu/.pvtu file format for general unstructured grids.">GridFormat::FileFormat::VTU</a>. Note that all writers take the given grid by reference, and thus, their validity is bound to the lifetime of the grid. </p>
-<table class="memberdecls">
+</div><!-- fragment --><p>For more information on these options, see <a class="el" href="structGridFormat_1_1FileFormat_1_1VTU.html" title="Selector for the .vtu/.pvtu file format for general unstructured grids.">GridFormat::FileFormat::VTU</a>. Note that all writers take the given grid by reference, and thus, their validity is bound to the lifetime of the grid.</p>
+<p>The <a class="el" href="classGridFormat_1_1Reader.html" title="Interface to the readers for all supported file formats.">GridFormat::Reader</a> can be constructed without any format argument, in which case the format will be deduced from the extension of the given file. For example, with the following code you can read both a .vtu and a .vti file with the same reader: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGridFormat_1_1Reader.html">GridFormat::Reader</a> reader;</div>
+<div class="line">reader.open(<span class="stringliteral">&quot;my_vti_file.vti&quot;</span>);</div>
+<div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;Number of cells in vti file: &quot;</span> &lt;&lt; reader.number_of_cells() &lt;&lt; std::endl;</div>
+<div class="line">reader.open(<span class="stringliteral">&quot;my_vtu_file.vtu&quot;</span>);</div>
+<div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;Number of cells in vtu file: &quot;</span> &lt;&lt; reader.number_of_cells() &lt;&lt; std::endl;</div>
+<div class="ttc" id="aclassGridFormat_1_1Reader_html"><div class="ttname"><a href="classGridFormat_1_1Reader.html">GridFormat::Reader</a></div><div class="ttdoc">Interface to the readers for all supported file formats.</div><div class="ttdef"><b>Definition:</b> reader.hpp:85</div></div>
+</div><!-- fragment --><p>To create a reader for a specific file format, pass a format specifier to the constructor: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGridFormat_1_1Reader.html">GridFormat::Reader</a> vti_reader{GridFormat::vti};</div>
+<div class="line">reader.open(<span class="stringliteral">&quot;my_vti_file.vti&quot;</span>);</div>
+<div class="line">reader.open(<span class="stringliteral">&quot;my_vti_file_without_extension&quot;</span>);</div>
+<div class="line"><span class="comment">// reader.open(&quot;my_vtu_file&quot;);  // this would not work</span></div>
+</div><!-- fragment --> <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="files" name="files"></a>
 Files</h2></td></tr>
 <tr class="memitem:gridformat_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gridformat_8hpp.html">gridformat.hpp</a></td></tr>
@@ -141,6 +151,9 @@ Files</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:writer_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="writer_8hpp.html">writer.hpp</a></td></tr>
 <tr class="memdesc:writer_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">A generic writer providing access to the writers for all supported formats. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:reader_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="reader_8hpp.html">reader.hpp</a></td></tr>
+<tr class="memdesc:reader_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">A generic reader providing access to the readers for all supported formats. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -195,6 +208,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Writer.html">GridFormat::Writer&lt; G &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface to the writers for all supported file formats. Depending on the chosen format, this exposes the interface of grid file or time series writers.  <a href="classGridFormat_1_1Writer.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Reader.html">GridFormat::Reader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface to the readers for all supported file formats.  <a href="classGridFormat_1_1Reader.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>

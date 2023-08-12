@@ -138,6 +138,7 @@ var annotated_dup =
         [ "Spacing< ConverterDetail::ConverterGrid >", "structGridFormat_1_1Traits_1_1Spacing_3_01ConverterDetail_1_1ConverterGrid_01_4.html", null ],
         [ "Spacing< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Spacing_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
         [ "WritesConnectivity", "structGridFormat_1_1Traits_1_1WritesConnectivity.html", null ],
+        [ "WritesConnectivity< APIDetail::SequentialOrParallelReader< S, P > >", "structGridFormat_1_1Traits_1_1WritesConnectivity_3_01APIDetail_1_1SequentialOrParallelReader_3_01S_00_01P_01_4_01_4.html", null ],
         [ "WritesConnectivity< PVDWriter< VTKWriter > >", "structGridFormat_1_1Traits_1_1WritesConnectivity_3_01PVDWriter_3_01VTKWriter_01_4_01_4.html", null ],
         [ "WritesConnectivity< PVTIWriter< Args... > >", "structGridFormat_1_1Traits_1_1WritesConnectivity_3_01PVTIWriter_3_01Args_8_8_8_01_4_01_4.html", null ],
         [ "WritesConnectivity< PVTRWriter< Args... > >", "structGridFormat_1_1Traits_1_1WritesConnectivity_3_01PVTRWriter_3_01Args_8_8_8_01_4_01_4.html", null ],
@@ -168,6 +169,7 @@ var annotated_dup =
         [ "DataSetField", "classGridFormat_1_1VTKHDF_1_1DataSetField.html", null ],
         [ "IOContext", "structGridFormat_1_1VTKHDF_1_1IOContext.html", null ]
       ] ],
+      [ "AnyReaderFactory", "classGridFormat_1_1AnyReaderFactory.html", null ],
       [ "AsciiFormatOptions", "structGridFormat_1_1AsciiFormatOptions.html", "structGridFormat_1_1AsciiFormatOptions" ],
       [ "AsciiOutputStream", "classGridFormat_1_1AsciiOutputStream.html", null ],
       [ "Base64Decoder", "structGridFormat_1_1Base64Decoder.html", null ],
@@ -192,6 +194,7 @@ var annotated_dup =
       [ "PVTUWriter", "classGridFormat_1_1PVTUWriter.html", null ],
       [ "RawBinaryStream", "classGridFormat_1_1RawBinaryStream.html", null ],
       [ "RawDecoder", "structGridFormat_1_1RawDecoder.html", null ],
+      [ "Reader", "classGridFormat_1_1Reader.html", null ],
       [ "ReaderFactory", "structGridFormat_1_1ReaderFactory.html", null ],
       [ "ReaderFactory< FileFormat::PVD< PieceFormat > >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVD_3_01PieceFormat_01_4_01_4.html", null ],
       [ "ReaderFactory< FileFormat::PVDClosure >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVDClosure_01_4.html", null ],

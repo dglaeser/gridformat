@@ -4,6 +4,7 @@ var index =
     [ "Installation", "index.html#installation", [
       [ "Dependencies", "index.html#dependencies", null ]
     ] ],
+    [ "Command-line interface", "index.html#commandline-interface", null ],
     [ "Compatibility with user-defined grids", "index.html#compatibility-with-userdefined-grids", null ],
     [ "Predefined traits", "index.html#predefined-traits", null ],
     [ "Contribution Guidelines", "index.html#contribution-guidelines", [

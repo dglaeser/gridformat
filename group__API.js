@@ -2,6 +2,7 @@ var group__API =
 [
     [ "gridformat.hpp", "gridformat_8hpp.html", null ],
     [ "writer.hpp", "writer_8hpp.html", null ],
+    [ "reader.hpp", "reader_8hpp.html", null ],
     [ "GridFormat::FileFormat::Any", "structGridFormat_1_1FileFormat_1_1Any.html", null ],
     [ "GridFormat::FileFormat::VTI", "structGridFormat_1_1FileFormat_1_1VTI.html", null ],
     [ "GridFormat::FileFormat::VTR", "structGridFormat_1_1FileFormat_1_1VTR.html", null ],
@@ -46,6 +47,7 @@ var group__API =
       [ "meta_data_fields", "classGridFormat_1_1Writer.html#a20c677573e50e2d2bd0bd14e2a8d5193", null ],
       [ "point_fields", "classGridFormat_1_1Writer.html#a8ff537d09be2f0c5782873a026048c24", null ]
     ] ],
+    [ "GridFormat::Reader", "classGridFormat_1_1Reader.html", null ],
     [ "GridFormat::convert", "group__API.html#gad4a7a7a5caa86c0b786d2bc085f59a26", null ],
     [ "GridFormat::convert", "group__API.html#ga9b4d2325c9f5caed7dcb52bd022dbcf7", null ],
     [ "GridFormat::Formats::default_for", "group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5", null ],

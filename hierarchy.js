@@ -1,6 +1,7 @@
 var hierarchy =
 [
     [ "GridFormat::FileFormat::Any", "structGridFormat_1_1FileFormat_1_1Any.html", null ],
+    [ "GridFormat::AnyReaderFactory< C >", "classGridFormat_1_1AnyReaderFactory.html", null ],
     [ "GridFormat::VTK::DataFormat::Appended", "structGridFormat_1_1VTK_1_1DataFormat_1_1Appended.html", null ],
     [ "GridFormat::VTK::Appendix", "classGridFormat_1_1VTK_1_1Appendix.html", null ],
     [ "GridFormat::VTK::AppendixStreamObserver", "classGridFormat_1_1VTK_1_1AppendixStreamObserver.html", null ],
@@ -11,6 +12,9 @@ var hierarchy =
     [ "GridFormat::Base64EncoderOptions", "structGridFormat_1_1Base64EncoderOptions.html", null ],
     [ "GridFormat::Traits::Basis< ConverterDetail::ConverterGrid >", "structGridFormat_1_1Traits_1_1Basis_3_01ConverterDetail_1_1ConverterGrid_01_4.html", null ],
     [ "GridFormat::Compression::Blocks< HeaderType >", "structGridFormat_1_1Compression_1_1Blocks.html", null ],
+    [ "std::bool_constant", null, [
+      [ "GridFormat::Traits::WritesConnectivity< APIDetail::SequentialOrParallelReader< S, P > >", "structGridFormat_1_1Traits_1_1WritesConnectivity_3_01APIDetail_1_1SequentialOrParallelReader_3_01S_00_01P_01_4_01_4.html", null ]
+    ] ],
     [ "GridFormat::DolfinX::Cell", "structGridFormat_1_1DolfinX_1_1Cell.html", null ],
     [ "GridFormat::Dune::LagrangeMesh< GV >::Cell", "structGridFormat_1_1Dune_1_1LagrangeMesh_1_1Cell.html", null ],
     [ "GridFormat::Traits::CellPoints< ConverterDetail::ConverterGrid, std::size_t >", "structGridFormat_1_1Traits_1_1CellPoints_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1size__t_01_4.html", null ],
@@ -75,13 +79,8 @@ var hierarchy =
     ] ],
     [ "GridFormat::VTK::DataArray< Encoder, Compressor, HeaderType >", "classGridFormat_1_1VTK_1_1DataArray.html", null ],
     [ "APIDetail::DefaultReaderFactory", null, [
-      [ "GridFormat::ReaderFactory< FileFormat::VTI >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTI_01_4.html", null ],
       [ "GridFormat::ReaderFactory< FileFormat::VTKHDFImage >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFImage_01_4.html", null ],
-      [ "GridFormat::ReaderFactory< FileFormat::VTKHDFImageTransient >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFImageTransient_01_4.html", null ],
-      [ "GridFormat::ReaderFactory< FileFormat::VTP >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTP_01_4.html", null ],
-      [ "GridFormat::ReaderFactory< FileFormat::VTR >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTR_01_4.html", null ],
-      [ "GridFormat::ReaderFactory< FileFormat::VTS >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTS_01_4.html", null ],
-      [ "GridFormat::ReaderFactory< FileFormat::VTU >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTU_01_4.html", null ]
+      [ "GridFormat::ReaderFactory< FileFormat::VTKHDFImageTransient >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTKHDFImageTransient_01_4.html", null ]
     ] ],
     [ "APIDetail::DefaultTemplatedReaderFactory", null, [
       [ "GridFormat::ReaderFactory< FileFormat::PVD< PieceFormat > >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVD_3_01PieceFormat_01_4_01_4.html", null ],
@@ -150,6 +149,7 @@ var hierarchy =
     [ "GridFormat::FileFormat::FormatWithOptions< VTU, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", null ],
     [ "GridReader", null, [
       [ "GridFormat::PVDReader< C >", "classGridFormat_1_1PVDReader.html", null ],
+      [ "GridFormat::Reader", "classGridFormat_1_1Reader.html", null ],
       [ "GridFormat::VTIReader", "classGridFormat_1_1VTIReader.html", null ],
       [ "GridFormat::VTK::PXMLReaderBase< PieceReader >", "classGridFormat_1_1VTK_1_1PXMLReaderBase.html", [
         [ "GridFormat::VTK::PXMLStructuredGridReader< VTIReader >", "classGridFormat_1_1VTK_1_1PXMLStructuredGridReader.html", [
@@ -283,6 +283,13 @@ var hierarchy =
     [ "GridFormat::Encoding::RawBinary", "structGridFormat_1_1Encoding_1_1RawBinary.html", null ],
     [ "GridFormat::RawDecoder", "structGridFormat_1_1RawDecoder.html", null ],
     [ "GridFormat::ReaderFactory< FileFormat >", "structGridFormat_1_1ReaderFactory.html", null ],
+    [ "APIDetail::SequentialOrParallelReaderFactory", null, [
+      [ "GridFormat::ReaderFactory< FileFormat::VTI >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTI_01_4.html", null ],
+      [ "GridFormat::ReaderFactory< FileFormat::VTP >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTP_01_4.html", null ],
+      [ "GridFormat::ReaderFactory< FileFormat::VTR >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTR_01_4.html", null ],
+      [ "GridFormat::ReaderFactory< FileFormat::VTS >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTS_01_4.html", null ],
+      [ "GridFormat::ReaderFactory< FileFormat::VTU >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTU_01_4.html", null ]
+    ] ],
     [ "GridFormat::Traits::Spacing< ConverterDetail::ConverterGrid >", "structGridFormat_1_1Traits_1_1Spacing_3_01ConverterDetail_1_1ConverterGrid_01_4.html", null ],
     [ "GridFormat::Traits::Spacing< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Spacing_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
     [ "GridFormat::PVTK::StructuredGridMapper< dim >", "classGridFormat_1_1PVTK_1_1StructuredGridMapper.html", null ],

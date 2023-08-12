@@ -2,6 +2,7 @@ var gridformat_8hpp =
 [
     [ "GridFormat::FileFormat::FormatWithOptions< Format, Opts >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", "structGridFormat_1_1FileFormat_1_1FormatWithOptions" ],
     [ "GridFormat::FileFormat::VTKXMLFormatBase< VTKFormat >", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase.html", "structGridFormat_1_1FileFormat_1_1VTKXMLFormatBase" ],
+    [ "GridFormat::Traits::WritesConnectivity< APIDetail::SequentialOrParallelReader< S, P > >", "structGridFormat_1_1Traits_1_1WritesConnectivity_3_01APIDetail_1_1SequentialOrParallelReader_3_01S_00_01P_01_4_01_4.html", null ],
     [ "GridFormat::WriterFactory< FileFormat::VTI >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTI_01_4.html", null ],
     [ "GridFormat::ReaderFactory< FileFormat::VTI >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1VTI_01_4.html", null ],
     [ "GridFormat::WriterFactory< FileFormat::VTR >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1VTR_01_4.html", null ],
