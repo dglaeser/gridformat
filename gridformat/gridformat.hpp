@@ -115,8 +115,7 @@ struct VTKHDFAsserter {
     static constexpr bool do_assert() {
         static_assert(
             APIDetail::always_false<T...>,
-            "\033[1m\033[31mVTKHDF reader/writers require libhdf5 and HighFive. "
-            "For the latter, use `git submodule init && git submodule update` to pull it.\033[0"
+            "\033[1m\033[31mVTKHDF reader/writers require HighFive.\033[0"
         );
         return false;
     }
