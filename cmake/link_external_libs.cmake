@@ -33,8 +33,20 @@ option(GRIDFORMAT_BUILD_HIGH_FIVE "Controls whether HighFive should be included 
 set(HDF5_PREFER_PARALLEL true)
 find_package(HDF5 QUIET)
 find_package(HighFive QUIET)
+set(HIGHFIVE_TARGET_NAME HighFive)
 if (HighFive_FOUND)
     message(STATUS "Using preinstalled HighFive package")
+    if (GRIDFORMAT_SUBPROJECT)
+        # When using gridformat via fetchcontent (maybe also as git submodule),
+        # cmake raises an error when downstream projects link against gridformat
+        # in case highfive is found on the system (and thus not included again when)
+        # configuring gridformat. The error says that high five targets are not found.
+        # Another find_package call is required in the downstream project for some reason.
+        # Without yet fully understanding why, it seems resolved if we link against HighFive_Highfive.
+        # Interestingly, we could also not reproduce this locally with cmake 3.26, while in the CI
+        # with cmake 3.22 the error occurs.
+        set(HIGHFIVE_TARGET_NAME HighFive_HighFive)
+    endif ()
 elseif (GRIDFORMAT_BUILD_HIGH_FIVE)
     set(GRIDFORMAT_HIGH_FIVE_PATH "${CMAKE_CURRENT_LIST_DIR}/../deps/HighFive")
     if (NOT HDF5_FOUND)
@@ -55,7 +67,7 @@ elseif (GRIDFORMAT_BUILD_HIGH_FIVE)
 endif ()
 
 if (HighFive_FOUND OR GRIDFORMAT_HIGHFIVE_SOURCE_INCLUDED)
-    target_link_libraries(${PROJECT_NAME} INTERFACE HighFive)
+    target_link_libraries(${PROJECT_NAME} INTERFACE ${HIGHFIVE_TARGET_NAME})
     target_compile_definitions(${PROJECT_NAME} INTERFACE GRIDFORMAT_HAVE_HIGH_FIVE GRIDFORMAT_HAVE_VTK_HDF)
     set(GRIDFORMAT_HAVE_HIGH_FIVE true)
     set(GRIDFORMAT_HAVE_VTK_HDF true)
