@@ -246,7 +246,8 @@ void print_help() {
               << "}" << std::endl
               << "'TARGET_FORMAT_OPTIONS' are pairs of 'key=value'. "
               << "Use gridformat-convert --help-TARGET_FORMAT for more info." << std::endl
-              << "'OUT_FILENAME' defaults to FILE_WITHOUT_EXTENSION_converted.NEW_EXTENSION" << std::endl;
+              << "'OUT_FILENAME' defaults to FILE_WITHOUT_EXTENSION_converted.NEW_EXTENSION" << std::endl
+              << "\nImportant: input & output filenames cannot be the same as data is read/written lazily." << std::endl;
 }
 
 void print_format_help(const std::string& format) {

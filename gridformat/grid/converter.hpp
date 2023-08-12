@@ -133,6 +133,8 @@ template<std::derived_from<GridReader> Reader, ConverterDetail::WriterFactory Fa
 std::string convert(const Reader& reader, const std::string& filename, const Factory& factory) {
     ConverterDetail::ConverterGrid grid{reader};
     auto writer = factory(grid);
+    if (reader.filename() == filename + writer.extension())
+        throw GridFormat::IOError("Cannot read/write from/to the same file");
     if constexpr (Traits::WritesConnectivity<std::remove_cvref_t<decltype(writer)>>::value)
         grid.make_grid();
     return ConverterDetail::write_piece(reader, writer, filename);
