@@ -52,6 +52,7 @@ jobs:
                 -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}} \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
+                -DGRIDFORMAT_BUILD_BINARIES=ON \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -B build | tee gfmt_cmake_log.txt
 
@@ -73,6 +74,9 @@ jobs:
             -o "${GFMT_ORIGIN}"
           python3 test/test_readme_tested_versions.py --cmake-log-file gfmt_cmake_log.txt
         shell: bash
+
+      - name: build-binaries
+        run: cmake --build build
 
       - name: build-tests
         run: pushd build && make build_tests && popd
