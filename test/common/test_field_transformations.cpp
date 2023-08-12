@@ -141,6 +141,8 @@ int main() {
         expect(eq(transformed_field.precision().is_integral(), true));
         expect(eq(transformed_field.precision().is_signed(), true));
         expect(eq(transformed_field.precision().size_in_bytes(), sizeof(int)));
+        auto s = transformed_field.serialized();
+        expect(std::ranges::equal(s.template as_span_of<int>(), std::vector{1, 2, 3, 4}));
     };
 
     "transformed_field_extend"_test = [] () {
@@ -222,6 +224,29 @@ int main() {
         TransformedField{field_ptr, extend_to(GridFormat::MDLayout{{4}})}.layout();
     };
 
+    "transformed_reshaped_field"_test = [] () {
+        auto field_ptr = GridFormat::make_field_ptr(RangeField{
+            std::vector<std::array<int, 2>>{{2, 3}, {2, 3}},
+            GridFormat::Precision<double>{}
+        });
+        auto reshaped = GridFormat::ReshapedField{field_ptr, GridFormat::MDLayout{{4, 1}}};
+        expect(eq(reshaped.layout().dimension(), 2_ul));
+        expect(eq(reshaped.layout().extent(0), 4_ul));
+        expect(eq(reshaped.layout().extent(1), 1_ul));
+        auto serialized = reshaped.serialized();
+        expect(std::ranges::equal(serialized.template as_span_of<double>(), std::vector{2., 3., 2., 3.}));
+    };
+
+    "transformed_reshaped_field_throws_upon_layout_mismatch"_test = [] () {
+        auto field_ptr = GridFormat::make_field_ptr(RangeField{
+            std::vector<std::array<int, 2>>{{2, 3}, {2, 3}},
+            GridFormat::Precision<double>{}
+        });
+        expect(throws<GridFormat::SizeError>([&] () {
+            GridFormat::ReshapedField{field_ptr, GridFormat::MDLayout{{5, 1}}};
+        }));
+    };
+
     "merged_scalar_fields"_test = [] () {
         GridFormat::MergedField merged{
             GridFormat::make_field_ptr(GridFormat::ScalarField{42}),
@@ -283,6 +308,40 @@ int main() {
     "merged_fields_throw_with_zero_dimension"_test = [] () {
         expect(throws<GridFormat::ValueError>([] () {
             GridFormat::MergedField merged{GridFormat::make_field_ptr(ZeroField{})};
+        }));
+    };
+
+    "sliced_field"_test = [&] () {
+        auto field_ptr = GridFormat::make_field_ptr(RangeField{
+            std::vector<std::array<int, 2>>{
+                {2, 42},
+                {2, 43}
+            },
+            GridFormat::Precision<double>{}
+        });
+        GridFormat::SlicedField sliced{field_ptr, {
+            .from = {0, 1},
+            .to = {2, 2}
+        }};
+        auto serialization = sliced.serialized();
+        expect(std::ranges::equal(serialization.template as_span_of<double>(), std::vector{42., 43.}));
+    };
+
+    "sliced_field_dimension_mismatch_throws"_test = [&] () {
+        auto field_ptr = GridFormat::make_field_ptr(RangeField{
+            std::vector<std::array<int, 2>>{{2, 42}, {2, 43}}
+        });
+        expect(throws<GridFormat::SizeError>([&] () {
+            GridFormat::SlicedField f{field_ptr, {.from = {0, 0}, .to = {2}}};
+            f.layout();
+        }));
+        expect(throws<GridFormat::SizeError>([&] () {
+            GridFormat::SlicedField f{field_ptr, {.from = {0}, .to = {2}}};
+            f.layout();
+        }));
+        expect(throws<GridFormat::SizeError>([&] () {
+            GridFormat::SlicedField f{field_ptr, {.from = {0, 0, 0}, .to = {1, 1, 1}}};
+            f.layout();
         }));
     };
 

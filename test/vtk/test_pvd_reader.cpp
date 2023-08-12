@@ -51,6 +51,10 @@ int main() {
         return std::make_unique<GridFormat::VTUReader>();
     }};
 
+    "pvd_reader_name"_test = [&] () {
+        expect(pvd_vtu_reader.name() == "PVDReader");
+    };
+
     "bound_pvd_reader_throws_with_wrong_piece_format"_test = [&] () {
         expect(throws([&] () { pvd_vtu_reader.open(pvd_vtp_file); }));
     };

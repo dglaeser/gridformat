@@ -141,6 +141,7 @@ class VTKHDFReader : public GridReader {
 
     void _set_step(std::size_t step, typename GridReader::FieldNames& names) override {
         _access().set_step(step);
+        names.clear();
         _copy_fields(names);
     }
 

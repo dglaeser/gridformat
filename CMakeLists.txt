@@ -27,6 +27,15 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 include(cmake/link_external_libs.cmake)
 
 if (NOT GRIDFORMAT_SUBPROJECT)
+    option(GRIDFORMAT_BUILD_BINARIES "whether or not binaries should be built" OFF)
+    if (GRIDFORMAT_BUILD_BINARIES)
+        add_subdirectory(bin)
+        get_property(BIN_TARGETS DIRECTORY bin PROPERTY BUILDSYSTEM_TARGETS)
+        install(
+            TARGETS ${BIN_TARGETS}
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+    endif ()
 
     set(GRIDFORMAT_INSTALL_CMAKE_DATA_DIR "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake")
     install(

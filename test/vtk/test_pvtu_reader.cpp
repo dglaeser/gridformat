@@ -50,6 +50,10 @@ int main(int argc, char** argv) {
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;
 
+    "pvtu_reader_name"_test = [&] () {
+        expect(reader.name() == "PVTUReader");
+    };
+
     "parallel_pvtu_read_number_of_pieces"_test = [&] () {
         expect(eq(reader.number_of_pieces(), static_cast<std::size_t>(GridFormat::Parallel::size(comm))));
     };

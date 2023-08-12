@@ -208,6 +208,7 @@ std::string test_reader(Writer& writer,
     if (verbose > 0)
         std::cout << "Opening '" << as_highlight(filename) << "'" << std::endl;
     reader.open(filename);
+
     using Testing::operator""_test;
     using Testing::expect;
     using Testing::eq;
@@ -241,6 +242,7 @@ std::string test_reader(Writer& writer,
                 std::cout << "Testing field values at time = " << time_at_step << std::endl;
 
             reader.set_step(step);
+            expect(check_equal_fields(writer, reader));
             out_grid = make_grid_from_reader(UnstructuredGridFactory<dim, space_dim>{}, reader);
             for (auto [name, fieldptr] : cell_fields(reader)) {
                 out_writer.set_cell_field(name, fieldptr);

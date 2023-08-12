@@ -31,7 +31,7 @@ class BufferField : public Field {
     , _md_layout{std::move(layout)},
     _span{_serialization.template as_span_of<T>()} {
         if (data.size() != _md_layout.number_of_entries())
-            throw ValueError("Given buffer size does not match layout");
+            throw SizeError("Given buffer size does not match layout");
         std::ranges::move(std::move(data), _serialization.as_span_of<T>().data());
     }
 

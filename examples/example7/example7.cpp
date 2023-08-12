@@ -44,27 +44,14 @@ int main(int argc, char** argv) {
     std::cout << out.str();
 
     // Alternatively, we can read in the parallel grid sequentially by concatenating all pieces.
-    // Passing a NullCommunicator instances signals to use sequential I/O for parallel formats.
-    GridFormat::Reader sequential_reader{GridFormat::vtu, GridFormat::null_communicator};
+    // Simply omitting the communicator in the constructur signals to use sequential I/O for parallel formats.
+    GridFormat::Reader sequential_reader{GridFormat::vtu};
     sequential_reader.open(filename);
 
     std::stringstream seq_out;
     seq_out << "Sequential reader on rank " << rank << " has " << sequential_reader.number_of_points() << " points" << std::endl;
     seq_out << "Sequential reader on rank " << rank << " has " << sequential_reader.number_of_cells() << " cells" << std::endl;
     std::cout << seq_out.str();
-
-    // Finally, you can also omit the file format specifier and construct a generic reader.
-    // In this case, to read in a .pvtu file sequentially you can again pass in a NullCommunicator
-    // or simply pass in no communicator at all. Note, however, that without specifying a format,
-    // the reader tries to deduce the format from the file extension, which fails if you use custom
-    // extensions.
-    GridFormat::Reader sequential_generic_reader;
-    sequential_generic_reader.open(filename);
-
-    std::stringstream seq_generic_out;
-    seq_generic_out << "Sequential generic reader on rank " << rank << " has " << sequential_reader.number_of_points() << " points" << std::endl;
-    seq_generic_out << "Sequential generic reader on rank " << rank << " has " << sequential_reader.number_of_cells() << " cells" << std::endl;
-    std::cout << seq_generic_out.str();
 
     MPI_Finalize();
     return 0;

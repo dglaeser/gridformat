@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <ranges>
+#include <cmath>
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/logging.hpp>
@@ -28,6 +29,7 @@
 #include "../grid/structured_grid.hpp"
 #include "../make_test_data.hpp"
 #include "../reader_tests.hpp"
+#include "../testing.hpp"
 
 #ifndef TEST_VTK_DATA_PATH
 #define TEST_VTK_DATA_PATH ""
@@ -96,6 +98,10 @@ void test_reader(GridFormat::Reader&& reader, const std::string& filename) {
     if (reader.is_sequence())
         num_steps = reader.number_of_steps();
 
+    const std::size_t num_cell_fields = GridFormat::Ranges::size(cell_field_names(reader));
+    const std::size_t num_point_fields = GridFormat::Ranges::size(point_field_names(reader));
+    const std::size_t num_meta_data_fields = GridFormat::Ranges::size(meta_data_field_names(reader));
+
     for (std::size_t step = 0; step < num_steps.value_or(std::size_t{1}); ++step) {
         double step_time = 1.0;
         if (num_steps) {
@@ -104,12 +110,7 @@ void test_reader(GridFormat::Reader&& reader, const std::string& filename) {
             step_time = reader.time_at_step(step);
         }
 
-        std::vector<std::string> read_cell_fields;
-        std::vector<std::string> read_point_fields;
-        std::vector<std::string> read_meta_data_fields;
-
         for (const auto [name, fieldptr] : point_fields(reader)) {
-            read_point_fields.push_back(name);
             if (is_scalar_field(fieldptr)) {
                 const auto values = fieldptr->template export_to<std::vector<double>>();
                 std::size_t p_idx = 0;
@@ -126,7 +127,6 @@ void test_reader(GridFormat::Reader&& reader, const std::string& filename) {
         }
 
         for (const auto [name, fieldptr] : cell_fields(reader)) {
-            read_cell_fields.push_back(name);
             if (is_scalar_field(fieldptr)) {
                 const auto values = fieldptr->template export_to<std::vector<double>>();
                 std::size_t c_idx = 0;
@@ -149,16 +149,13 @@ void test_reader(GridFormat::Reader&& reader, const std::string& filename) {
             }
         }
 
-        for (const auto [name, _] : meta_data_fields(reader))
-            read_meta_data_fields.push_back(name);
-
-        expect(std::ranges::equal(read_point_fields, point_field_names(reader)));
-        expect(std::ranges::equal(read_cell_fields, cell_field_names(reader)));
-        expect(std::ranges::equal(read_meta_data_fields, meta_data_field_names(reader)));
+        expect(eq(num_cell_fields, GridFormat::Ranges::size(point_field_names(reader))));
+        expect(eq(num_point_fields, GridFormat::Ranges::size(cell_field_names(reader))));
+        expect(eq(num_meta_data_fields, GridFormat::Ranges::size(meta_data_field_names(reader))));
         std::cout << "Visited "
-                  << read_point_fields.size() << " / "
-                  << read_cell_fields.size() << " / "
-                  << read_meta_data_fields.size()
+                  << num_point_fields << " / "
+                  << num_cell_fields << " / "
+                  << num_meta_data_fields
                   << " point / cell / meta data fields"
                   << std::endl;
     }
@@ -172,6 +169,12 @@ int test_reader(const std::filesystem::path& folder,
     std::ranges::for_each(test_filenames(folder, extension), [&] (const std::string& filename) {
         test_reader(GridFormat::Reader{std::forward<ConstructorArgs>(args)...}, filename);
         visited = true;
+
+        if (extension == ".vtu") { // exemplarily test that reader propagates names
+            GridFormat::Reader reader{GridFormat::vtu};
+            reader.open(filename);
+            GridFormat::Testing::expect(reader.name() == "VTUReader");
+        }
     });
     if (!visited)
         std::cout << "Could not find test data files for extension "
@@ -257,11 +260,15 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
         make_writer(GridFormat::vtp, grid, comm), generated_data_folder / make_filename("vtp")
     }));
     add_test_file(write_test_time_series<2>(GridFormat::PVDWriter{
-        make_writer(GridFormat::vti, grid, comm), generated_data_folder / make_filename("pvi")
+        make_writer(GridFormat::vti, grid, comm), generated_data_folder / make_filename("vti")
     }));
+    const auto vti_filename = test_filenames.back();
+
     add_test_file(write_test_time_series<2>(GridFormat::PVDWriter{
         make_writer(GridFormat::vtr, grid, comm), generated_data_folder / make_filename("vtr")
     }));
+    const auto vtr_filename = test_filenames.back();
+
     add_test_file(write_test_time_series<2>(GridFormat::PVDWriter{
         make_writer(GridFormat::vts, grid, comm), generated_data_folder / make_filename("vts")
     }));
@@ -271,6 +278,49 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     } else {
         test_reader(generated_data_folder, ".pvd", GridFormat::pvd);
         test_reader(generated_data_folder, ".pvd", GridFormat::any);
+    }
+
+    // check that reader exposes image/rectilinear grid-specific interfaces
+    if (!is_parallel) {
+        using GridFormat::Testing::operator""_test;
+        using GridFormat::Testing::expect;
+        using GridFormat::Testing::eq;
+
+        "generic_reader_vti_interfaces"_test = [&] () {
+            GridFormat::Reader vti_reader;
+            vti_reader.open(generated_data_folder / vti_filename);
+
+            expect(eq(vti_reader.extents()[0], std::size_t{4}));
+            expect(eq(vti_reader.extents()[1], std::size_t{5}));
+            expect(eq(vti_reader.extents()[2], std::size_t{0}));
+
+            expect(eq(vti_reader.location().lower_left[0], std::size_t{0}));
+            expect(eq(vti_reader.location().lower_left[1], std::size_t{0}));
+            expect(eq(vti_reader.location().lower_left[2], std::size_t{0}));
+
+            expect(eq(vti_reader.location().upper_right[0], std::size_t{4}));
+            expect(eq(vti_reader.location().upper_right[1], std::size_t{5}));
+            expect(eq(vti_reader.location().upper_right[2], std::size_t{0}));
+
+            expect(eq(vti_reader.origin()[0], 0.0));
+            expect(eq(vti_reader.origin()[1], 0.0));
+            expect(eq(vti_reader.origin()[2], 0.0));
+
+            expect(std::abs(vti_reader.spacing()[0] - 1.0/4.0) < 1e-6);
+            expect(std::abs(vti_reader.spacing()[1] - 1.0/5.0) < 1e-6);
+            expect(std::abs(vti_reader.spacing()[2] - 0.0) < 1e-6);
+        };
+
+        "generic_reader_vtr_interfaces"_test = [&] () {
+            GridFormat::Reader vtr_reader;
+            vtr_reader.open(generated_data_folder / vtr_filename);
+            for (unsigned int dir = 0; dir < 3; ++dir) {
+                const double spacing = std::array{1.0/4.0, 1.0/5.0, 0.0}[dir];
+                expect(std::ranges::all_of(vtr_reader.ordinates(dir), [&, i=0] (const auto& x) mutable {
+                    return std::abs(x - spacing*static_cast<double>(i++)) < 1e-6;
+                }));
+            }
+        };
     }
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE

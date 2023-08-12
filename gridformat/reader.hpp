@@ -43,7 +43,7 @@ class AnyReaderFactory {
 };
 
 #ifndef DOXYGEN
-namespace Detail {
+namespace ReaderDetail {
 
     template<typename FileFormat>
     concept SequentiallyConstructible
@@ -60,7 +60,14 @@ namespace Detail {
             { ReaderFactory<FileFormat>::make(f, comm) } -> std::derived_from<GridReader>;
         };
 
-}  // namespace Detail
+    template<typename FieldNameStorage>
+    void copy_field_names(const GridReader& reader, FieldNameStorage& names) {
+        std::ranges::copy(cell_field_names(reader), std::back_inserter(names.cell_fields));
+        std::ranges::copy(point_field_names(reader), std::back_inserter(names.point_fields));
+        std::ranges::copy(meta_data_field_names(reader), std::back_inserter(names.meta_data_fields));
+    }
+
+}  // namespace ReaderDetail
 #endif  // DOXYGEN
 
 /*!
@@ -87,12 +94,12 @@ class Reader : public GridReader {
     : _any_factory{[factory = AnyReaderFactory{c}] (const std::string& f) { return factory.make_for(f); }}
     {}
 
-    template<Detail::SequentiallyConstructible FileFormat>
+    template<ReaderDetail::SequentiallyConstructible FileFormat>
     explicit Reader(const FileFormat& f) : _reader{_make_unique(ReaderFactory<FileFormat>::make(f))} {}
 
     template<typename FileFormat,
              Concepts::Communicator Communicator>
-        requires(Detail::ParallelConstructible<FileFormat, Communicator>)
+        requires(ReaderDetail::ParallelConstructible<FileFormat, Communicator>)
     explicit Reader(const FileFormat& f, const Communicator& c)
     : _reader{_make_unique(ReaderFactory<FileFormat>::make(f, c))}
     {}
@@ -114,7 +121,7 @@ class Reader : public GridReader {
             _reader = (*_any_factory)(filename);
         _access_reader().close();
         _access_reader().open(filename);
-        _copy_field_names(names);
+        ReaderDetail::copy_field_names(_access_reader(), names);
     };
 
     void _close() override {
@@ -187,13 +194,8 @@ class Reader : public GridReader {
 
     void _set_step(std::size_t step, typename GridReader::FieldNames& field_names) override {
         _access_reader().set_step(step);
-        _copy_field_names(field_names);
-    }
-
-    void _copy_field_names(typename GridReader::FieldNames& names) const {
-        std::ranges::copy(cell_field_names(*_reader), std::back_inserter(names.cell_fields));
-        std::ranges::copy(point_field_names(*_reader), std::back_inserter(names.point_fields));
-        std::ranges::copy(meta_data_field_names(*_reader), std::back_inserter(names.meta_data_fields));
+        field_names.clear();
+        ReaderDetail::copy_field_names(_access_reader(), field_names);
     }
 
     const GridReader& _access_reader() const {

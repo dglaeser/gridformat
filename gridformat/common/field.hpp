@@ -14,6 +14,7 @@
 #include <type_traits>
 #include <utility>
 #include <ranges>
+#include <cmath>
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
@@ -77,7 +78,7 @@ class Field {
         const auto input_range_layout = get_md_layout(output_range);
 
         if (input_range_layout.number_of_entries() < my_layout.number_of_entries())
-            throw TypeError(
+            throw SizeError(
                 std::string{"Cannot fill the given range. Too few entries. "} +
                 "Number of field entries: '" + std::to_string(my_layout.number_of_entries()) + "'; " +
                 "Number of range entries: '" + std::to_string(input_range_layout.number_of_entries()) + "'"
@@ -95,7 +96,7 @@ class Field {
         const auto my_layout = layout();
         const auto serialization = serialized();
         if (my_layout.number_of_entries() != 1)
-                throw ValueError("Field cannot be exported into a scalar");
+            throw TypeError("Field cannot be exported into a scalar");
         visit_field_values([&] <typename T> (std::span<const T> data) {
             out = static_cast<S>(data[0]);
         });
@@ -145,9 +146,13 @@ class Field {
                 _export_to(sub_range, data, offset);
             });
         else
-            std::ranges::for_each(range, [&] <typename V> (V& value) {
-                value = static_cast<V>(data[offset++]);
-            });
+            std::ranges::for_each_n(
+                std::ranges::begin(range),
+                std::min(Ranges::size(range), data.size() - offset),
+                [&] <typename V> (V& value) {
+                    value = static_cast<V>(data[offset++]);
+                }
+            );
     }
 };
 

@@ -318,6 +318,10 @@ class GridWriter : public GridWriterBase<Grid> {
         _write(s);
     }
 
+    const std::string& extension() const {
+        return _extension;
+    }
+
  private:
     std::string _extension;
 
