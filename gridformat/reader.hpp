@@ -35,7 +35,7 @@ struct ReaderFactory;
 template<Concepts::Communicator C = NullCommunicator>
 class AnyReaderFactory {
  public:
-    AnyReaderFactory() = default;
+    AnyReaderFactory() requires(std::same_as<C, NullCommunicator>) = default;
     explicit AnyReaderFactory(const C& comm) : _comm{comm} {}
     std::unique_ptr<GridReader> make_for(const std::string& filename) const;
  private:
@@ -67,6 +67,15 @@ namespace ReaderDetail {
         std::ranges::copy(meta_data_field_names(reader), std::back_inserter(names.meta_data_fields));
     }
 
+    using ReaderFactoryFunctor = std::function<std::unique_ptr<GridReader>(const std::string&)>;
+
+    template<Concepts::Communicator C = NullCommunicator>
+    ReaderFactoryFunctor default_reader_factory(const C& c = {}) {
+        if (!std::same_as<C, NullCommunicator>)
+            return [fac = AnyReaderFactory<C>{c}] (const std::string& f) { return fac.make_for(f); };
+        return [fac = AnyReaderFactory<>{}] (const std::string& f) { return fac.make_for(f); };
+    }
+
 }  // namespace ReaderDetail
 #endif  // DOXYGEN
 
@@ -78,24 +87,31 @@ namespace ReaderDetail {
  *          \code{.cpp}
  *            GridFormat::Reader reader{GridFormat::vtu};
  *          \endcode
- * \note This requires the AnyReaderFactory to be defined. Thus, this header cannot
- *       be included without the general API header gridformat.hpp which defines all
- *       formats.
+ * \note Unless you pass in a custom ReaderFactoryFunctor, this class requires the
+ *       AnyReaderFactory to be defined. Thus, this header cannot be included
+ *       without the general API header gridformat.hpp which defines all formats.
  */
 class Reader : public GridReader {
-    using AnyFactoryFunctor = std::function<std::unique_ptr<GridReader>(const std::string&)>;
-
  public:
-    Reader() : _any_factory{[fac = AnyReaderFactory<>{}] (const std::string& f) { return fac.make_for(f); }} {}
-    explicit Reader(const FileFormat::Any&) : Reader() {}
+    using ReaderFactoryFunctor = ReaderDetail::ReaderFactoryFunctor;
+
+    Reader(ReaderFactoryFunctor f = ReaderDetail::default_reader_factory())
+    : _reader_factory{f}
+    {}
+
+    explicit Reader(const FileFormat::Any&, ReaderFactoryFunctor f = ReaderDetail::default_reader_factory())
+    : Reader(f)
+    {}
 
     template<Concepts::Communicator C>
     explicit Reader(const FileFormat::Any&, const C& c)
-    : _any_factory{[factory = AnyReaderFactory{c}] (const std::string& f) { return factory.make_for(f); }}
+    : Reader(ReaderDetail::default_reader_factory(c))
     {}
 
     template<ReaderDetail::SequentiallyConstructible FileFormat>
-    explicit Reader(const FileFormat& f) : _reader{_make_unique(ReaderFactory<FileFormat>::make(f))} {}
+    explicit Reader(const FileFormat& f)
+    : _reader{_make_unique(ReaderFactory<FileFormat>::make(f))}
+    {}
 
     template<typename FileFormat,
              Concepts::Communicator Communicator>
@@ -117,8 +133,8 @@ class Reader : public GridReader {
     }
 
     void _open(const std::string& filename, typename GridReader::FieldNames& names) override {
-        if (_any_factory)
-            _reader = (*_any_factory)(filename);
+        if (_reader_factory)
+            _reader = (*_reader_factory)(filename);
         _access_reader().close();
         _access_reader().open(filename);
         ReaderDetail::copy_field_names(_access_reader(), names);
@@ -218,7 +234,7 @@ class Reader : public GridReader {
     }
 
     std::unique_ptr<GridReader> _reader;
-    std::optional<AnyFactoryFunctor> _any_factory;
+    std::optional<ReaderFactoryFunctor> _reader_factory;
 };
 
 }  // namespace GridFormat

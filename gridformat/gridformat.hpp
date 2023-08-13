@@ -924,11 +924,10 @@ namespace APIDetail {
             || filename.ends_with(".h5");
     }
 
-    template<std::derived_from<GridReader> Reader, typename Communicator = NullCommunicator>
-    std::unique_ptr<Reader> make_reader(const Communicator& c = {}) {
+    template<std::derived_from<GridReader> Reader, typename Communicator>
+    std::unique_ptr<Reader> make_reader(const Communicator& c) {
         if constexpr (std::is_same_v<Communicator, NullCommunicator> ||
                         !std::is_constructible_v<Reader, const Communicator&>) {
-            // if we get here although the communicator size is > 1, something probably went wrong
             if (Parallel::size(c) > 1)
                 throw ValueError("Cannot construct given reader for parallel I/O");
             return std::make_unique<Reader>();
