@@ -10,20 +10,6 @@
 #include <gridformat/gridformat.hpp>
 #include "common.hpp"
 
-std::string wrapped(std::string word, std::string prefix, std::optional<std::string> suffix = {}) {
-    auto suffix_str = std::move(suffix).value_or(prefix);
-    prefix.reserve(prefix.size() + word.size() + suffix_str.size());
-    std::ranges::move(std::move(word), std::back_inserter(prefix));
-    std::ranges::move(std::move(suffix_str), std::back_inserter(prefix));
-    return prefix;
-}
-
-std::string as_cell(std::string word, std::size_t count = 20) {
-    if (word.size() < count)
-        word.resize(count, ' ');
-    return word;
-}
-
 template<std::ranges::range R>
 void print_fields_info(R&& field_range) {
     std::vector<std::string> names;
@@ -40,6 +26,8 @@ void print_fields_info(R&& field_range) {
         return a.size() < b.size();
     })->size();
 
+    using GridFormat::Apps::as_cell;
+    using GridFormat::Apps::wrapped;
     for (unsigned int i = 0; i < names.size(); ++i)
         std::cout << " - " << as_cell(wrapped(names[i], "'"), max_cell_width + 3)
                            << " shape=(" << shapes[i] << ")"
@@ -54,6 +42,7 @@ void print_file_info(const std::string& filename) {
     GridFormat::Reader reader;
     reader.open(filename);
 
+    using GridFormat::Apps::as_cell;
     std::cout << as_cell("Filename:" ) << filename << std::endl;
     std::cout << as_cell("Reader:") << reader.name() << std::endl;
     std::cout << as_cell("Number of cells:")  << reader.number_of_cells() << std::endl;

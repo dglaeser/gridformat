@@ -6,6 +6,7 @@
 
 #include <ranges>
 #include <algorithm>
+#include <optional>
 
 namespace GridFormat::Apps {
 
@@ -15,6 +16,20 @@ bool args_ask_for_help(int argc, char** argv) {
         | std::views::transform([&] (int i) { return std::string{argv[i]}; }),
         [] (const std::string& arg) { return arg == "--help"; }
     );
+}
+
+std::string wrapped(std::string word, std::string prefix, std::optional<std::string> suffix = {}) {
+    auto suffix_str = std::move(suffix).value_or(prefix);
+    prefix.reserve(prefix.size() + word.size() + suffix_str.size());
+    std::ranges::move(std::move(word), std::back_inserter(prefix));
+    std::ranges::move(std::move(suffix_str), std::back_inserter(prefix));
+    return prefix;
+}
+
+std::string as_cell(std::string word, std::size_t count = 20) {
+    if (word.size() < count)
+        word.resize(count, ' ');
+    return word;
 }
 
 }  // namespace GridFormat::Apps

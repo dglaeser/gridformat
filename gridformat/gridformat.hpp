@@ -860,6 +860,9 @@ struct ReaderFactory<FileFormat::PVDClosure>
 //! Specialization of the WriterFactory for the any format selector.
 template<> struct WriterFactory<FileFormat::Any> {
  private:
+    template<typename G>
+    static constexpr bool is_converter_grid = std::same_as<G, ConverterDetail::ConverterGrid>;
+
     template<typename F, typename... Args>
     static auto _make(F&& format, Args&&... args) {
         return WriterFactory<F>::make(format, std::forward<Args>(args)...);
@@ -868,11 +871,11 @@ template<> struct WriterFactory<FileFormat::Any> {
  public:
     template<Concepts::Grid G>
     static constexpr auto default_format_for() {
-        if constexpr (Concepts::ImageGrid<G>)
+        if constexpr (Concepts::ImageGrid<G> && !is_converter_grid<G>)
             return FileFormat::VTI{};
-        else if constexpr (Concepts::RectilinearGrid<G>)
+        else if constexpr (Concepts::RectilinearGrid<G> && !is_converter_grid<G>)
             return FileFormat::VTR{};
-        else if constexpr (Concepts::StructuredGrid<G>)
+        else if constexpr (Concepts::StructuredGrid<G> && !is_converter_grid<G>)
             return FileFormat::VTS{};
         else if constexpr (Concepts::UnstructuredGrid<G>)
             return FileFormat::VTU{};
@@ -969,7 +972,7 @@ template<typename OutFormat, typename InFormat = FileFormat::Any>
 struct ConversionOptions {
     OutFormat out_format;
     InFormat in_format = {};
-    bool verbose = false;
+    int verbosity = 0;
 };
 
 /*!
@@ -1010,8 +1013,8 @@ std::string convert(const std::string& in,
         else return has_sequential_time_series_factory<OutFormat, CG>;
     } ();
 
-    if (opts.verbose)
-        std::cout << "Reading '" << in << "'" << std::endl;
+    if (opts.verbosity > 0)
+        std::cout << "Opening '" << in << "'" << std::endl;
 
     auto reader = [&] () {
         if constexpr (use_communicator) return Reader{opts.in_format, communicator};
@@ -1027,7 +1030,7 @@ std::string convert(const std::string& in,
                 "(" + std::to_string(reader.number_of_pieces()) + ")"
             );
 
-    const bool print_progress_output = opts.verbose && [&] () {
+    const bool print_progress_output = opts.verbosity > 1 && [&] () {
         if constexpr (use_communicator) return GridFormat::Parallel::rank(communicator) == 0;
         else return true;
     } ();
