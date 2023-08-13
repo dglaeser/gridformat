@@ -205,6 +205,13 @@ struct Any {};
 
 /*!
  * \ingroup API
+ * \brief Time series variant of the Any format selector
+ */
+struct AnyTimeSeries {};
+
+
+/*!
+ * \ingroup API
  * \brief Selector for the .vti/.pvti image grid file format to be passed to the Writer.
  * \details For more details on the file format, see
  *          <a href="https://examples.vtk.org/site/VTKFileFormats/#imagedata">here</a>
@@ -399,6 +406,8 @@ struct TimeSeriesClosure {
             return VTKHDFUnstructuredTransient{};
         else if constexpr (std::same_as<VTKHDF, Format>)
             return VTKHDFTransient{};
+        else if constexpr (std::same_as<Any, Format>)
+            return AnyTimeSeries{};
         else {
             static_assert(
                 APIDetail::always_false<Format>,
@@ -879,6 +888,30 @@ template<> struct WriterFactory<FileFormat::Any> {
     template<Concepts::Grid G, Concepts::Communicator C>
     static auto make(const FileFormat::Any&, const G& grid, const C& comm) {
         return _make(default_format_for<G>(), grid, comm);
+    }
+};
+
+//! Specialization of the WriterFactory for the time series variant of the any format selector.
+template<> struct WriterFactory<FileFormat::AnyTimeSeries> {
+    static auto make(const FileFormat::AnyTimeSeries&,
+                     const Concepts::Grid auto& grid,
+                     const std::string& base_filename) {
+        return _make(grid, base_filename);
+    }
+
+    static auto make(const FileFormat::AnyTimeSeries&,
+                     const Concepts::Grid auto& grid,
+                     const Concepts::Communicator auto& comm,
+                     const std::string& base_filename) {
+        return _make(grid, comm, base_filename);
+    }
+
+ private:
+    template<typename Grid, typename... Args>
+    static auto _make(const Grid& grid, Args&&... args) {
+        auto fmt = WriterFactory<FileFormat::Any>::template default_format_for<Grid>();
+        auto ts_fmt = FileFormat::TimeSeriesClosure{}(fmt);
+        return WriterFactory<decltype(ts_fmt)>::make(ts_fmt, grid, std::forward<Args>(args)...);
     }
 };
 
