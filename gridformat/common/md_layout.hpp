@@ -65,6 +65,8 @@ class MDLayout {
     }
 
     std::size_t number_of_entries() const {
+        if (dimension() == 0)
+            return 0;
         return std::accumulate(
             _extents.begin(),
             _extents.end(),
