@@ -80,5 +80,14 @@ int main() {
         expect(throws<GridFormat::ValueError>([&] () { GridFormat::ReservedString{data}; }));
     };
 
+    "reserved_string_eq_operator"_test = [] () {
+        GridFormat::ReservedString<10> a{"hello"};
+        GridFormat::ReservedString<10> b{"hello"};
+        GridFormat::ReservedString<10> c{"hell"};
+        expect(a == b);
+        expect(a != c);
+        expect(c != a);
+    };
+
     return 0;
 }
