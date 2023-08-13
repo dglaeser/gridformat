@@ -970,7 +970,7 @@ std::unique_ptr<GridReader> AnyReaderFactory<C>::make_for(const std::string& fil
 //! Options for format conversions
 template<typename OutFormat, typename InFormat = FileFormat::Any>
 struct ConversionOptions {
-    OutFormat out_format;
+    OutFormat out_format = {};
     InFormat in_format = {};
     int verbosity = 0;
 };

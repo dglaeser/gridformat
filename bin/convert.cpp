@@ -277,14 +277,13 @@ void convert_file(std::string in_filename,
     bool is_rank_0 = GridFormat::Parallel::rank(c) == 0;
     auto options_map = make_options_map(opts | std::views::all);
     FormatSelector::with(out_fmt, [&] <typename Format> (Format fmt) {
-        FormatSelector::with(in_fmt, [&] <typename InFormat> (InFormat in_fmt) {
+        FormatSelector::with(in_fmt, [&] <typename InFormat> (InFormat) {
             auto fmt_opts = OptionsParser<Format>::parse(options_map);
             if constexpr (ExposesOptions<Format>)
                 fmt.opts = fmt_opts;
 
-            const GridFormat::ConversionOptions conversion_opts{
+            const GridFormat::ConversionOptions<Format, InFormat> conversion_opts{
                 .out_format = fmt,
-                .in_format = in_fmt,
                 .verbosity = (
                     quiet ? 0 : (
                         is_rank_0 ? 2 : (
