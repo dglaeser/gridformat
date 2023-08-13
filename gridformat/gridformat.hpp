@@ -946,7 +946,13 @@ template<typename OutFormat, typename InFormat = FileFormat::Any>
 std::string convert(const std::string& in,
                     const std::string& out,
                     const OutFormat& out_format,
-                    const InFormat& in_format = {}) {
+                    const InFormat& in_format = {},
+                    bool verbose = false) {
+    if (verbose) std::cout << "Reading '" << in << "'" << std::endl;
+    const auto step_call_back = [v=verbose] (std::size_t step_idx, const std::string& filename) {
+        if (v) std::cout << "Wrote step " << step_idx << " to '" << filename << "'" << std::endl;
+    };
+
     Reader reader{in_format};
     reader.open(in);
 
@@ -958,15 +964,18 @@ std::string convert(const std::string& in,
             auto ts_fmt = FileFormat::TimeSeriesClosure{}(out_format);
             return convert(reader, [&] (const auto& grid) {
                 return WriterFactory<decltype(ts_fmt)>::make(ts_fmt, grid, out);
-            });
+            }, step_call_back);
         }
-        return convert(reader, out, [&] (const auto& grid) {
+        const auto filename = convert(reader, out, [&] (const auto& grid) {
             return WriterFactory<OutFormat>::make(out_format, grid);
         });
+        if (verbose)
+            std::cout << "Wrote '" << filename << "'" << std::endl;
+        return filename;
     } else if constexpr (has_sequential_time_series_factory<OutFormat, CG>) {
         return convert(reader, [&] (const auto& grid) {
             return WriterFactory<OutFormat>::make(out_format, grid, out);
-        });
+        }, step_call_back);
     } else {
         static_assert(
             APIDetail::always_false<OutFormat>,
@@ -992,7 +1001,13 @@ std::string convert(const std::string& in,
                     const std::string& out,
                     const OutFormat& out_format,
                     const C& communicator,
-                    const InFormat& in_format = {}) {
+                    const InFormat& in_format = {},
+                    bool verbose = false) {
+    if (verbose) std::cout << "Reading '" << in << "'" << std::endl;
+    const auto step_call_back = [v=verbose] (std::size_t step_idx, const std::string& filename) {
+        if (v) std::cout << "Wrote step " << step_idx << " to '" << filename << "'" << std::endl;
+    };
+
     Reader reader{in_format, communicator};
     reader.open(in);
     if (reader.number_of_pieces() != static_cast<unsigned>(Parallel::size(communicator)))
@@ -1010,15 +1025,18 @@ std::string convert(const std::string& in,
             auto ts_fmt = FileFormat::TimeSeriesClosure{}(out_format);
             return convert(reader, [&] (const auto& grid) {
                 return WriterFactory<decltype(ts_fmt)>::make(ts_fmt, grid, communicator, out);
-            });
+            }, step_call_back);
         }
-        return convert(reader, out, [&] (const auto& grid) {
+        const auto filename = convert(reader, out, [&] (const auto& grid) {
             return WriterFactory<OutFormat>::make(out_format, grid, communicator);
         });
+        if (verbose)
+            std::cout << "Wrote '" << filename << "'" << std::endl;
+        return filename;
     } else if constexpr (has_parallel_time_series_factory<OutFormat, CG, C>) {
         return convert(reader, [&] (const auto& grid) {
             return WriterFactory<OutFormat>::make(out_format, grid, communicator, out);
-        });
+        }, step_call_back);
     } else {
         static_assert(
             APIDetail::always_false<OutFormat>,
