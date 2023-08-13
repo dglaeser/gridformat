@@ -280,12 +280,19 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
         test_reader(generated_data_folder, ".pvd", GridFormat::any);
     }
 
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::throws;
+    using GridFormat::Testing::eq;
+
+    "generic_reader_throws_on_non_matching_format"_test = [&] () {
+        GridFormat::Reader r{GridFormat::vtr};
+        r.open(vtr_filename);
+        GridFormat::Testing::expect(throws<GridFormat::IOError>([&] () { r.open(vti_filename); }));
+    };
+
     // check that reader exposes image/rectilinear grid-specific interfaces
     if (!is_parallel) {
-        using GridFormat::Testing::operator""_test;
-        using GridFormat::Testing::expect;
-        using GridFormat::Testing::eq;
-
         "generic_reader_vti_interfaces"_test = [&] () {
             GridFormat::Reader vti_reader;
             vti_reader.open(generated_data_folder / vti_filename);
