@@ -1,5 +1,5 @@
 ---
-title: 'GridFormat: header-only C++-library for writing grid files'
+title: 'GridFormat: header-only C++-library for grid file I/O'
 tags:
   - C++
   - simulation
@@ -47,7 +47,7 @@ without runtime and memory overhead due to data conversions, since the implement
 As a consequence, the work of implementing I/O into standard file formats is currently repeated in every framework and remains inaccessible for
 researchers developing new simulation frameworks or other research codes relying on I/O for visualization.
 
-To address this issue, `GridFormat` aims to provide an easy-to-use framework-agnostic API for writing grid files in various formats.
+To address this issue, `GridFormat` aims to provide an easy-to-use and framework-agnostic API for reading from and writing to a variety of grid file formats.
 By utilizing generic programming with C++ templates and traits, `GridFormat` is data-structure agnostic and allows developers to achieve
 full interoperability with their data structures by implementing a small number of trait classes (see discussion below). Users of both
 simulation frameworks and self-written small codes can write grid-based data into standard file formats with minimal effort and without significant
@@ -151,7 +151,7 @@ We can specialize the traits required for the `ImageGrid` concept
 for the type `MyGrid` (see the code comments for more details).
 
 ```cpp
-// Include the GridFormat library header, this also brings in the traits declarations
+// Include the GridFormat library header (brings in the traits declarations)
 #include <gridformat/gridformat.hpp>
 
 namespace GridFormat::Traits {
@@ -159,6 +159,8 @@ namespace GridFormat::Traits {
 // Expose a range over grid cells. Here, we simply use the MDIndexRange provided
 // by GridFormat, which allows iterating over all index tuples within the given
 // dimensions (in our case the number of cells in each coordinate direction)
+// MDIndexRange yields objects of type MDIndex, and thus, GridFormat deduces
+// that MDIndex is the cell type of `MyGrid`.
 template<> struct Cells<MyGrid> {
     static auto get(const MyGrid& grid) {
         return GridFormat::MDIndexRange{{grid.cells[0], grid.cells[1]}};
@@ -194,9 +196,9 @@ template<> struct Origin<MyGrid> {
     }
 };
 
-// For a given point or cell, expose its location (i.e. index tuple) within the
-// structured grid arrangement. Our point/cell types are the same, namely
-// GridFormat::MDIndex, because we used MDIndexRange in the Points/Cells traits.
+// For a given point or cell, expose its location (i.e. index tuple) within
+// the structured grid arrangement. Our point/cell types are the same, i.e.
+// GridFormat::MDIndex, since we used MDIndexRange in the Points/Cells traits.
 template<> struct Location<MyGrid, GridFormat::MDIndex> {
     static auto get(const MyGrid& grid, const GridFormat::MDIndex& i) {
         return std::array{i.get(0), i.get(1)};
@@ -216,7 +218,7 @@ int main() {
 
     // Here, there could be a call to our simulation code, for example:
     // std::vector<double> = solve_problem(nx, ny, dx, dy);
-    // But for this simple example, let's just create a vector filled with 1.0 ...
+    // But for this simple example, let's just create a vector of ones.
     std::vector<double> values(nx*ny, 1.0);
 
     // To write out this solution, let's construct an instance of `MyGrid`
@@ -233,14 +235,24 @@ int main() {
         return values[flat_index];
     });
 
-    // But we can also just set an analytical function evaluated at cells/points
+    // But we can also set an analytical function evaluated at cells/points
     writer.set_point_field("pfield", [&] (const MDIndex& point_location) {
         const double x = point_location.get(0)*dx;
         const double y = point_location.get(1)*dy;
         return x*y;
     });
 
-    writer.write("example"); // GridFormat adds the right file extension
+    // GridFormat adds the extension to the provided filename
+    const auto written_filename = writer.write("example");
+
+    // To read the data back in, we can create a reader class, open our
+    // file and access/extract the fields contained in it. Note that we
+    // can also get the grid points, cell connectivity and more. See the
+    // documentation for details.
+    GridFormat::Reader reader;
+    reader.open(written_filename);
+    reader.cell_field("cfield")->export_to(values);
+
     return 0;
 }
 ```

@@ -62,19 +62,20 @@ template<> struct Location<MyGrid, GridFormat::MDIndex> {
 int main() {
     std::size_t nx = 15, ny = 20;
     double dx = 0.1, dy = 0.2;
-    // Here, there could be a call to our simulation code:
+
+    // Here, there could be a call to our simulation code, for example:
     // std::vector<double> = solve_problem(nx, ny, dx, dy);
-    // But for this example, let's just create a vector filled with 1.0 ...
+    // But for this simple example, let's just create a vector filled with 1.0 ...
     std::vector<double> values(nx*ny, 1.0);
 
     // To write out this solution, let's construct an instance of `MyGrid`
     MyGrid grid{.cells = {nx, ny}, .dx = {dx, dy}};
 
-    // ... and construct a writer, letting GridFormat choose a format.
+    // ... and construct a writer, letting GridFormat choose a format
     const auto file_format = GridFormat::default_for(grid);
     GridFormat::Writer writer{file_format, grid};
 
-    // We can now write out our numerical solution as a field on grid cells:
+    // We can now write out our numerical solution as a field on grid cells
     using GridFormat::MDIndex;
     writer.set_cell_field("cfield", [&] (const MDIndex& cell_location) {
         const auto flat_index = cell_location.get(1)*nx + cell_location.get(0);
@@ -88,6 +89,15 @@ int main() {
         return x*y;
     });
 
-    writer.write("example"); // gridformat adds the extension
+    // GridFormat adds the extension to the provided filename
+    const auto written_filename = writer.write("example");
+
+    // To read the data back in, we can create a reader class, open our file and
+    // access/extract the fields contained in it. Note that we can also get the
+    // grid points and cell connectivity. See the documentation for details.
+    GridFormat::Reader reader;
+    reader.open(written_filename);
+    reader.cell_field("cfield")->export_to(values);
+
     return 0;
 }
