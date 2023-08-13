@@ -145,9 +145,14 @@ std::string convert(const Reader& reader, const std::string& filename, const Fac
  * \brief Overload for time series formats.
  * \param reader A grid reader on which a file was opened.
  * \param factory A factory to construct a time series writer with the desired output format.
+ * \param call_back (optional) A callback that is invoked after writing each step.
  */
-template<std::derived_from<GridReader> Reader, ConverterDetail::TimeSeriesWriterFactory Factory>
-std::string convert(Reader& reader, const Factory& factory) {
+template<std::derived_from<GridReader> Reader,
+         ConverterDetail::TimeSeriesWriterFactory Factory,
+         std::invocable<std::size_t, const std::string&> StepCallBack = decltype([] (std::size_t, const std::string&) {})>
+std::string convert(Reader& reader,
+                    const Factory& factory,
+                    const StepCallBack& call_back = {}) {
     if (!reader.is_sequence())
         throw ValueError("Cannot convert data from reader to a sequence as reader is no sequence.");
 
@@ -159,6 +164,7 @@ std::string convert(Reader& reader, const Factory& factory) {
         if constexpr (Traits::WritesConnectivity<std::remove_cvref_t<decltype(writer)>>::value)
             grid.make_grid();
         filename = ConverterDetail::write_piece(reader, writer, reader.time_at_step(step));
+        call_back(step, filename);
     }
     return filename;
 }
