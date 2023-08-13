@@ -174,6 +174,7 @@ if (GRIDFORMAT_DO_COVERAGE)
 endif ()
 
 add_subdirectory(common)
+add_subdirectory(parallel)
 add_subdirectory(compression)
 add_subdirectory(encoding)
 add_subdirectory(grid)

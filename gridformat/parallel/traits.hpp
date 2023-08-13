@@ -127,7 +127,7 @@ struct Gather<NullCommunicator> {
     }
 
     template<Concepts::Scalar T>
-    static constexpr std::vector<T>& get(const NullCommunicator&, const std::vector<T>& vec, [[maybe_unused]] int root_rank = 0) {
+    static constexpr const std::vector<T>& get(const NullCommunicator&, const std::vector<T>& vec, [[maybe_unused]] int root_rank = 0) {
         return vec;
     }
 
