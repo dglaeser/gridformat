@@ -333,7 +333,17 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
     typename GridReader::Vector _origin() const override {
         if (!_specs().origin.has_value())
             throw ValueError("PVTK file does not define the origin for '" + this->_grid_type() + "'");
-        return _specs().origin.value();
+        if (this->_num_process_pieces() == 1) {
+            const auto& specs = _specs();
+            return CommonDetail::compute_piece_origin(
+                specs.origin.value(),
+                _spacing(),
+                this->_readers().at(0).location().lower_left,
+                specs.direction
+            );
+        } else {  // use global origin
+            return _specs().origin.value();
+        }
     }
 
     typename GridReader::Vector _spacing() const override {
@@ -350,10 +360,7 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
     typename GridReader::PieceLocation _location() const override {
         typename GridReader::PieceLocation result;
 
-        if (this->_num_process_pieces() == 0) {
-            std::ranges::fill(result.lower_left, 0);
-            std::ranges::fill(result.upper_right, 0);
-        } else if (this->_num_process_pieces() == 1) {
+        if (this->_num_process_pieces() == 1) {
             result = this->_readers().at(0).location();
         } else {  // use "WholeExtent"
             const auto& specs = _specs();
