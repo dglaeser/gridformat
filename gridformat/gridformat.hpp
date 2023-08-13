@@ -964,110 +964,101 @@ std::unique_ptr<GridReader> AnyReaderFactory<C>::make_for(const std::string& fil
     return APIDetail::make_reader_for(filename, _comm);
 }
 
-/*!
- * \ingroup API
- * \brief Convert between grid file formats.
- * \param in The input filename.
- * \param out The output filename.
- * \param out_format The desired output format.
- * \param in_format (optional) The format of the input file.
- * \note Converting into .vtp file format does not work yet.
- */
+//! Options for format conversions
 template<typename OutFormat, typename InFormat = FileFormat::Any>
-    requires(!Concepts::Communicator<InFormat>)
-std::string convert(const std::string& in,
-                    const std::string& out,
-                    const OutFormat& out_format,
-                    const InFormat& in_format = {},
-                    bool verbose = false) {
-    if (verbose) std::cout << "Reading '" << in << "'" << std::endl;
-    const auto step_call_back = [v=verbose] (std::size_t step_idx, const std::string& filename) {
-        if (v) std::cout << "Wrote step " << step_idx << " to '" << filename << "'" << std::endl;
-    };
-
-    Reader reader{in_format};
-    reader.open(in);
-
-    using WriterDetail::has_sequential_factory;
-    using WriterDetail::has_sequential_time_series_factory;
-    using CG = ConverterDetail::ConverterGrid;
-    if constexpr (has_sequential_factory<OutFormat, CG>) {
-        if (reader.is_sequence()) {
-            auto ts_fmt = FileFormat::TimeSeriesClosure{}(out_format);
-            return convert(reader, [&] (const auto& grid) {
-                return WriterFactory<decltype(ts_fmt)>::make(ts_fmt, grid, out);
-            }, step_call_back);
-        }
-        const auto filename = convert(reader, out, [&] (const auto& grid) {
-            return WriterFactory<OutFormat>::make(out_format, grid);
-        });
-        if (verbose)
-            std::cout << "Wrote '" << filename << "'" << std::endl;
-        return filename;
-    } else if constexpr (has_sequential_time_series_factory<OutFormat, CG>) {
-        return convert(reader, [&] (const auto& grid) {
-            return WriterFactory<OutFormat>::make(out_format, grid, out);
-        }, step_call_back);
-    } else {
-        static_assert(
-            APIDetail::always_false<OutFormat>,
-            "No viable factory found for the requested format"
-        );
-    }
-}
+struct ConversionOptions {
+    OutFormat out_format;
+    InFormat in_format = {};
+    bool verbose = false;
+};
 
 /*!
  * \ingroup API
  * \brief Convert between parallel grid file formats.
  * \param in The input filename.
  * \param out The output filename.
- * \param out_format The desired output format.
- * \param communicator The communicator.
- * \param in_format (optional) The format of the input file.
+ * \param opts Conversion options.
+ * \param communicator The communicator (for parallel I/O).
  * \note Converting into .vtp file format does not work yet.
  */
 template<typename OutFormat,
-         Concepts::Communicator C,
-         typename InFormat = FileFormat::Any>
+         typename InFormat,
+         typename Communicator = None>
 std::string convert(const std::string& in,
                     const std::string& out,
-                    const OutFormat& out_format,
-                    const C& communicator,
-                    const InFormat& in_format = {},
-                    bool verbose = false) {
-    if (verbose) std::cout << "Reading '" << in << "'" << std::endl;
-    const auto step_call_back = [v=verbose] (std::size_t step_idx, const std::string& filename) {
-        if (v) std::cout << "Wrote step " << step_idx << " to '" << filename << "'" << std::endl;
-    };
-
-    Reader reader{in_format, communicator};
-    reader.open(in);
-    if (reader.number_of_pieces() != static_cast<unsigned>(Parallel::size(communicator)))
-        throw IOError(
-            "Can only convert parallel files if the number of processes matches "
-            "the number of processes that were used to write the original file "
-            "(" + std::to_string(reader.number_of_pieces()) + ")"
-        );
+                    const ConversionOptions<OutFormat, InFormat>& opts,
+                    const Communicator& communicator = {}) {
+    static constexpr bool use_communicator = !std::same_as<Communicator, None>;
+    static_assert(
+        !use_communicator || Concepts::Communicator<Communicator>,
+        "Given communicator does not satisfy the communicator concepts."
+    );
 
     using WriterDetail::has_parallel_factory;
+    using WriterDetail::has_sequential_factory;
     using WriterDetail::has_parallel_time_series_factory;
+    using WriterDetail::has_sequential_time_series_factory;
     using CG = ConverterDetail::ConverterGrid;
-    if constexpr (has_parallel_factory<OutFormat, CG, C>) {
-        if (reader.is_sequence()) {
-            auto ts_fmt = FileFormat::TimeSeriesClosure{}(out_format);
+
+    static constexpr bool is_single_file_out_format = [&] () {
+        if constexpr (use_communicator) return has_parallel_factory<OutFormat, CG, Communicator>;
+        else return has_sequential_factory<OutFormat, CG>;
+    } ();
+
+    static constexpr bool is_time_series_out_format = [&] () {
+        if constexpr (use_communicator) return has_parallel_time_series_factory<OutFormat, CG, Communicator>;
+        else return has_sequential_time_series_factory<OutFormat, CG>;
+    } ();
+
+    if (opts.verbose)
+        std::cout << "Reading '" << in << "'" << std::endl;
+
+    auto reader = [&] () {
+        if constexpr (use_communicator) return Reader{opts.in_format, communicator};
+        else return Reader{opts.in_format};
+    } ();
+    reader.open(in);
+    if constexpr (use_communicator)
+        if (reader.number_of_pieces() > 1
+            && reader.number_of_pieces() != static_cast<unsigned>(Parallel::size(communicator)))
+            throw IOError(
+                "Can only convert parallel files if the number of processes matches "
+                "the number of processes that were used to write the original file "
+                "(" + std::to_string(reader.number_of_pieces()) + ")"
+            );
+
+    const bool print_progress_output = opts.verbose && [&] () {
+        if constexpr (use_communicator) return GridFormat::Parallel::rank(communicator) == 0;
+        else return true;
+    } ();
+
+    const auto step_call_back = [&] (std::size_t step_idx, const std::string& filename) {
+        if (print_progress_output)
+            std::cout << "Wrote step " << step_idx << " to '" << filename << "'" << std::endl;
+    };
+
+    const auto invoke_factory = [&] <typename Fmt, typename... T> (const Fmt& fmt, const auto& grid, T&&... args) {
+        if constexpr (use_communicator)
+            return WriterFactory<Fmt>::make(fmt, grid, communicator, std::forward<T>(args)...);
+        else
+            return WriterFactory<Fmt>::make(fmt, grid, std::forward<T>(args)...);
+    };
+
+    if constexpr (is_single_file_out_format) {
+        if (reader.is_sequence())
             return convert(reader, [&] (const auto& grid) {
-                return WriterFactory<decltype(ts_fmt)>::make(ts_fmt, grid, communicator, out);
+                return invoke_factory(FileFormat::TimeSeriesClosure{}(opts.out_format), grid, out);
             }, step_call_back);
-        }
+
         const auto filename = convert(reader, out, [&] (const auto& grid) {
-            return WriterFactory<OutFormat>::make(out_format, grid, communicator);
+            return invoke_factory(opts.out_format, grid);
         });
-        if (verbose)
+        if (print_progress_output)
             std::cout << "Wrote '" << filename << "'" << std::endl;
         return filename;
-    } else if constexpr (has_parallel_time_series_factory<OutFormat, CG, C>) {
+    } else if constexpr (is_time_series_out_format) {
         return convert(reader, [&] (const auto& grid) {
-            return WriterFactory<OutFormat>::make(out_format, grid, communicator, out);
+            return invoke_factory(opts.out_format, grid, out);
         }, step_call_back);
     } else {
         static_assert(

@@ -154,7 +154,7 @@ std::string convert(Reader& reader,
                     const Factory& factory,
                     const StepCallBack& call_back = {}) {
     if (!reader.is_sequence())
-        throw ValueError("Cannot convert data from reader to a sequence as reader is no sequence.");
+        throw ValueError("Cannot convert data from reader to a sequence as the file read is no sequence.");
 
     ConverterDetail::ConverterGrid grid{reader};
     auto writer = factory(grid);

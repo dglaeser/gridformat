@@ -52,9 +52,9 @@ void test(const Grid& grid,
     const auto out_filename = filename_prefix() + suffix + "_out_2d_in_2d";
     const auto converted = [&] () {
         if constexpr (is_parallel)
-            return GridFormat::convert(in_filename, out_filename, out_fmt, comm);
+            return GridFormat::convert(in_filename, out_filename, GridFormat::ConversionOptions{.out_format = out_fmt}, comm);
         else
-            return GridFormat::convert(in_filename, out_filename, out_fmt);
+            return GridFormat::convert(in_filename, out_filename, GridFormat::ConversionOptions{.out_format = out_fmt});
     } ();
     std::cout << "Wrote '" << converted << "'" << std::endl;
 
@@ -132,8 +132,15 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
 
     const auto ts_converted_filename_base = "generic_" + parallel_suffix + "time_series_converter_2d_in_2d";
     const auto ts_converted_filename = is_parallel
-        ? GridFormat::convert(ts_filename, ts_converted_filename_base, GridFormat::pvd_with(GridFormat::vtu), comm)
-        : GridFormat::convert(ts_filename, ts_converted_filename_base, GridFormat::pvd_with(GridFormat::vtu));
+        ? GridFormat::convert(
+            ts_filename, ts_converted_filename_base,
+            GridFormat::ConversionOptions{.out_format = GridFormat::pvd_with(GridFormat::vtu)},
+            comm
+        )
+        : GridFormat::convert(
+            ts_filename, ts_converted_filename_base,
+            GridFormat::ConversionOptions{.out_format = GridFormat::pvd_with(GridFormat::vtu)}
+        );
 
     if (rank == 0)
         std::cout << "Wrote converted time series to '" << ts_converted_filename << "'" << std::endl;
