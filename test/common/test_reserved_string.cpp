@@ -75,5 +75,10 @@ int main() {
         expect(eq(std::string_view{str}, std::string_view{"hello"}));
     };
 
+    "reserved_string_ctor_throws_on_missing_null_terminator"_test = [] () {
+        char data[4] = {'a', 'b', 'c', 'd'};
+        expect(throws<GridFormat::ValueError>([&] () { GridFormat::ReservedString{data}; }));
+    };
+
     return 0;
 }
