@@ -18,7 +18,7 @@ gridformat_add_regression_test(test_vtu_reader test_vtu_reader.cpp "reader_vtu_*
 target_compile_definitions(test_vtu_reader PRIVATE TEST_DATA_PATH="${CMAKE_CURRENT_LIST_DIR}/test_data")
 
 gridformat_add_parallel_regression_test(test_pvtu_writer test_pvtu_writer.cpp 2 "pvtu_*.pvtu")
-gridformat_add_parallel_regression_test(test_pvtu_reader test_pvtu_reader.cpp 2 "reader_pvtu_*.pvtu")
+gridformat_add_parallel_regression_test(test_pvtu_reader test_pvtu_reader.cpp 4 "reader_pvtu_*.pvtu")
 gridformat_add_parallel_regression_test(test_pvti_reader test_pvti_reader.cpp 2 "reader_pvti_*.pvti||reader_pvti_*.vtu")
 gridformat_add_parallel_regression_test(test_pvtr_reader test_pvtr_reader.cpp 2 "reader_pvtr_*.pvtr||reader_pvtr_*.vtu")
 gridformat_add_parallel_regression_test(test_pvts_reader test_pvts_reader.cpp 2 "reader_pvts_*.pvts||reader_pvts_*.vtu")
