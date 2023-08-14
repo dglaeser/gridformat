@@ -78,7 +78,6 @@ std::string test_pvd(const std::string& acronym, const Communicator& comm) {
 
             expect(eq(GridFormat::number_of_cells(sequential_grid), GridFormat::number_of_cells(grid)*size));
             expect(eq(sequential_reader.number_of_cells(), GridFormat::number_of_cells(grid)*size));
-            expect(eq(sequential_reader.number_of_pieces(), std::size_t{1}));
 
             for (unsigned int step = 0; step < sequential_reader.number_of_steps(); ++step) {
                 sequential_reader.set_step(step);

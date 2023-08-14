@@ -500,7 +500,8 @@ class File {
 
     template<typename T, typename Source>
     auto _read_buffer_field(const Source& source) const {
-        MDLayout layout{source.getMemSpace().getDimensions()};
+        auto dims = source.getMemSpace().getDimensions();
+        MDLayout layout = dims.empty() ? MDLayout{{1}} : MDLayout{std::move(dims)};
         std::vector<T> out(layout.number_of_entries());
         source.read(out.data());
         return BufferField(std::move(out), std::move(layout));

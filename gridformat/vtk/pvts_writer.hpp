@@ -74,7 +74,7 @@ class PVTSWriter : public VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator
 
     virtual void _write(const std::string& filename_with_ext) const override {
         const auto& local_extents = extents(this->grid());
-        const auto [origin, is_negative_axis] = _get_origin_and_orientations();
+        const auto [origin, is_negative_axis] = _get_origin_and_orientations(local_extents);
 
         PVTK::StructuredParallelGridHelper helper{_comm};
         const auto all_origins = Parallel::gather(_comm, origin, root_rank);
@@ -95,10 +95,13 @@ class PVTSWriter : public VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator
         Parallel::barrier(_comm);  // ensure .pvts file is written before returning
     }
 
-    auto _get_origin_and_orientations() const {
-        std::array<bool, dim> is_negative_axis;
-        for (std::size_t dir = 0; dir < dim; ++dir)
-            is_negative_axis[dir] = _is_negative_axis(dir);
+    auto _get_origin_and_orientations(const std::ranges::range auto& extents) const {
+        auto is_negative_axis = Ranges::filled_array<dim>(false);
+        std::ranges::for_each(extents, [&, dir=0] (const auto& e) mutable {
+            if (e > 0)
+                is_negative_axis[dir] = _is_negative_axis(dir);
+            dir++;
+        });
 
         std::array<CT, dim> origin;
         static constexpr auto origin_loc = _origin_location();

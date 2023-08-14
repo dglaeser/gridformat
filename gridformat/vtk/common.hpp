@@ -353,6 +353,34 @@ namespace CommonDetail {
     }
 
     template<typename T>
+    std::array<T, 3> compute_location(const std::array<T, 3>& origin,
+                                      const std::array<T, 3>& coordinate,
+                                      const std::array<T, 9>& direction) {
+        const auto& [x, y, z] = coordinate;
+        return {
+            origin[0] + x*direction[0] + y*direction[1] + z*direction[2],
+            origin[1] + x*direction[3] + y*direction[4] + z*direction[5],
+            origin[2] + x*direction[6] + y*direction[7] + z*direction[8]
+        };
+    }
+
+    template<typename T>
+    std::array<T, 3> compute_piece_origin(const std::array<T, 3>& global_origin,
+                                          const std::array<T, 3>& spacing,
+                                          const std::array<std::size_t, 3>& extents_begin,
+                                          const std::array<T, 9>& direction) {
+        return compute_location(
+            global_origin,
+            {
+                spacing[0]*static_cast<T>(extents_begin[0]),
+                spacing[1]*static_cast<T>(extents_begin[1]),
+                spacing[2]*static_cast<T>(extents_begin[2])
+            },
+            direction
+        );
+    }
+
+    template<typename T>
     Serialization serialize_structured_points(const std::array<std::size_t, 6>& extents,
                                               const std::array<T, 3>& origin,
                                               const std::array<T, 3>& spacing,
@@ -363,12 +391,9 @@ namespace CommonDetail {
             extents[5] - extents[4]
         }};
         const FlatIndexMapper mapper{layout};
-
-        std::array<T, 3> piece_origin{
-            origin[0] + spacing[0]*extents[0],
-            origin[1] + spacing[1]*extents[2],
-            origin[2] + spacing[2]*extents[4]
-        };
+        const auto piece_origin = compute_piece_origin(
+            origin, spacing, {extents[0], extents[2], extents[4]}, direction
+        );
 
         static constexpr unsigned int vtk_space_dim = 3;
         Serialization result(layout.number_of_entries()*sizeof(T)*vtk_space_dim);
@@ -376,13 +401,14 @@ namespace CommonDetail {
         for (const auto& md_index : MDIndexRange{layout}) {
             const auto offset = mapper.map(md_index)*vtk_space_dim;
             assert(offset + 2 < span_out.size());
-
-            const T dx = static_cast<T>(md_index.get(0))*spacing[0];
-            const T dy = static_cast<T>(md_index.get(1))*spacing[1];
-            const T dz = static_cast<T>(md_index.get(2))*spacing[2];
-            span_out[offset + 0] = piece_origin[0] + dx*direction[0] + dy*direction[1] + dz*direction[2];
-            span_out[offset + 1] = piece_origin[1] + dx*direction[3] + dy*direction[4] + dz*direction[5];
-            span_out[offset + 2] = piece_origin[2] + dx*direction[6] + dy*direction[7] + dz*direction[8];
+            std::ranges::copy(
+                compute_location(piece_origin, {
+                    static_cast<T>(md_index.get(0))*spacing[0],
+                    static_cast<T>(md_index.get(1))*spacing[1],
+                    static_cast<T>(md_index.get(2))*spacing[2]
+                }, direction),
+                span_out.data() + offset
+            );
         }
         return result;
     }

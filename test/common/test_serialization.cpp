@@ -13,6 +13,7 @@ int main() {
 
     using GridFormat::Testing::operator""_test;
     using GridFormat::Testing::expect;
+    using GridFormat::Testing::throws;
 
     "serialization_push_back"_test = [] () {
         GridFormat::Serialization s;
@@ -33,6 +34,12 @@ int main() {
         std::ranges::copy(std::vector{1, 2, 3, 4}, span.begin());
         s.cut_front(2*sizeof(int));
         expect(std::ranges::equal(s.template as_span_of<int>(), std::vector{3, 4}));
+    };
+
+    "serialization_cut_front_throws_on_exceeding_size"_test = [] () {
+        GridFormat::Serialization s;
+        s.resize(4);
+        expect(throws<GridFormat::SizeError>([&] () { s.cut_front(5); }));
     };
 
     return 0;

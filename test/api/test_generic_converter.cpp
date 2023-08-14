@@ -52,9 +52,9 @@ void test(const Grid& grid,
     const auto out_filename = filename_prefix() + suffix + "_out_2d_in_2d";
     const auto converted = [&] () {
         if constexpr (is_parallel)
-            return GridFormat::convert(in_filename, out_filename, out_fmt, comm);
+            return GridFormat::convert(in_filename, out_filename, GridFormat::ConversionOptions<OutFmt>{}, comm);
         else
-            return GridFormat::convert(in_filename, out_filename, out_fmt);
+            return GridFormat::convert(in_filename, out_filename, GridFormat::ConversionOptions<OutFmt>{});
     } ();
     std::cout << "Wrote '" << converted << "'" << std::endl;
 
@@ -106,6 +106,21 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     };
 #endif
 
+    // test merging of sequential files into one parallel file
+    if (is_parallel)
+        "generic_converter_sequential_to_parallel"_test = [&] () {
+            GridFormat::VTUWriter sequential_writer{grid};
+            const auto seq_file = sequential_writer.write("_generic_converter_vtu_per_rank-" + std::to_string(rank));
+            const auto converted_parallel_file = GridFormat::convert(
+                seq_file,
+                "generic_parallel_converter_sequential_files_to_parallel_file_2d_in_2d_out",
+                GridFormat::ConversionOptions<GridFormat::FileFormat::VTU>{},
+                comm
+            );
+            if (rank == 0)
+                std::cout << "Wrote sequential file converted to parallel '" << converted_parallel_file << "'" << std::endl;
+        };
+
     // test time series conversion
     const auto parallel_suffix = is_parallel ? std::string{"parallel_"} : std::string{""};
     const auto ts_in_filename = "generic_" + parallel_suffix + "ts_converter_in";
@@ -130,13 +145,34 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
         return _ts_filename;
     } ();
 
-    const auto ts_converted_filename_base = "generic_" + parallel_suffix + "time_series_converter_2d_in_2d";
-    const auto ts_converted_filename = is_parallel
-        ? GridFormat::convert(ts_filename, ts_converted_filename_base, GridFormat::pvd_with(GridFormat::vtu), comm)
-        : GridFormat::convert(ts_filename, ts_converted_filename_base, GridFormat::pvd_with(GridFormat::vtu));
+    const auto convert_time_series_to = [&] <typename O> (const O&, const std::string& out_name) {
+        return is_parallel
+            ? GridFormat::convert(ts_filename, out_name, GridFormat::ConversionOptions<O>{}, comm)
+            : GridFormat::convert(ts_filename, out_name, GridFormat::ConversionOptions<O>{});
+    };
 
+    const auto ts_converted_filename = convert_time_series_to(
+        GridFormat::pvd_with(GridFormat::vtu),
+        "generic_" + parallel_suffix + "time_series_converter_2d_in_2d"
+    );
     if (rank == 0)
         std::cout << "Wrote converted time series to '" << ts_converted_filename << "'" << std::endl;
+
+    // test automatic format conversion to time series when non-time-series format is given
+    const auto ts_auto_converted_filename = convert_time_series_to(
+        GridFormat::vtu,
+        "generic_" + parallel_suffix + "automatic_time_series_converter_2d_in_2d"
+    );
+    if (rank == 0)
+        std::cout << "Wrote converted (automatic) time series to '" << ts_auto_converted_filename << "'" << std::endl;
+
+    // test automatic time series when no format is given
+    const auto ts_any_converted_filename = convert_time_series_to(
+        GridFormat::any,
+        "generic_" + parallel_suffix + "any_time_series_converter_2d_in_2d"
+    );
+    if (rank == 0)
+        std::cout << "Wrote converted (to any format) time series to '" << ts_any_converted_filename << "'" << std::endl;
 
 #if RUN_PARALLEL
     MPI_Finalize();

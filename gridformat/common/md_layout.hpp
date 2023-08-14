@@ -15,6 +15,7 @@
 #include <iterator>
 #include <algorithm>
 #include <initializer_list>
+#include <type_traits>
 #include <string>
 
 #include <gridformat/common/reserved_vector.hpp>
@@ -37,7 +38,10 @@ class MDLayout {
     template<Concepts::MDRange<1> R>
     explicit MDLayout(R&& extents) {
         _extents.reserve(Ranges::size(extents));
-        std::ranges::copy(extents, std::back_inserter(_extents));
+        if constexpr (!std::is_lvalue_reference_v<R>)
+            std::ranges::move(std::move(extents), std::back_inserter(_extents));
+        else
+            std::ranges::copy(extents, std::back_inserter(_extents));
     }
 
     template<std::integral T>
@@ -61,6 +65,8 @@ class MDLayout {
     }
 
     std::size_t number_of_entries() const {
+        if (dimension() == 0)
+            return 0;
         return std::accumulate(
             _extents.begin(),
             _extents.end(),
@@ -134,7 +140,7 @@ namespace Detail {
 template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
 MDLayout get_md_layout() {
     if constexpr (Concepts::Scalar<T>)
-        return MDLayout{};
+        return MDLayout{{1}};
     else {
         std::array<std::size_t, mdrange_dimension<T>> extents;
         extents[0] = static_size<T>;
@@ -176,7 +182,7 @@ MDLayout get_md_layout(R&& r) {
  */
 template<Concepts::Scalar T>
 MDLayout get_md_layout(const T&) {
-    return MDLayout{};
+    return MDLayout{{1}};
 }
 
 }  // namespace GridFormat

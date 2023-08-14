@@ -4,8 +4,10 @@
 #include <unordered_map>
 #include <filesystem>
 #include <type_traits>
+#include <algorithm>
 #include <iterator>
 #include <iostream>
+#include <optional>
 #include <utility>
 #include <ranges>
 
@@ -57,7 +59,7 @@ using OptionsMap = std::unordered_map<std::string, std::string>;
 auto split_key_and_value(const std::string& key_value_pair) {
     auto split_pos = key_value_pair.find("=");
     if (split_pos == std::string::npos || split_pos == key_value_pair.size() - 1)
-        throw std::runtime_error("Could not parse option from string '" + key_value_pair + "'");
+        throw std::runtime_error("Could not parse option (in the form key=value) from string '" + key_value_pair + "'");
     return std::make_pair(key_value_pair.substr(0, split_pos), key_value_pair.substr(split_pos + 1));
 }
 
@@ -91,7 +93,7 @@ template<typename Options = GridFormat::None>
 struct OptsParser {
     static auto parse(const OptionsMap& opts) {
         if (GridFormat::Ranges::size(opts) != 0)
-            throw std::runtime_error("Format does not take any options");
+            throw std::runtime_error("Error: chosen format does not take any options");
         return GridFormat::none;
     }
 
@@ -182,7 +184,9 @@ using OptionsParser = typename OptionsParserSelector<Format>::type;
 struct FormatSelector {
     template<typename Action>
     static void with(const std::string& fmt, const Action& action) {
-        if (fmt == "vtu")
+        if (fmt == "any")
+            action(GridFormat::any);
+        else if (fmt == "vtu")
             action(GridFormat::vtu);
         else if (fmt == "vti")
             action(GridFormat::vti);
@@ -201,62 +205,161 @@ struct FormatSelector {
     }
 
     static std::vector<std::string> supported_formats() {
-        return std::vector<std::string>{"vtu", "vti", "vtr", "vts", "vtk-hdf"};
+        return std::vector<std::string>{"vtu", "vti", "vtr", "vts", "vtk-hdf", "any"};
     }
 };
 
 template<GridFormat::Concepts::Communicator Communicator>
-void convert_file(const std::string& in_filename,
+void convert_file(std::string in_filename,
                   const std::string& out_fmt,
                   const Communicator& c,
                   std::vector<std::string> opts) {
+
+    // (maybe) adjust input file name
+    bool rank_specific_files = false;
+    if (auto pos = in_filename.find("{RANK}"); pos != std::string::npos) {
+        in_filename.replace(pos, 6, std::to_string(GridFormat::Parallel::rank(c)));
+        rank_specific_files = true;
+    } else if (auto pos = in_filename.find("{RANK:"); pos != std::string::npos) {
+        auto width_pos = pos + 6;
+        auto end = in_filename.find_first_of("}", width_pos);
+        if (end == std::string::npos)
+            throw std::runtime_error("Invalid rank placeholder");
+        const auto width = GridFormat::from_string<int>(in_filename.substr(width_pos, end-width_pos));
+        if (width <= 0)
+            throw std::runtime_error("Invalid rank placeholder width");
+        auto rank_str = GridFormat::as_string(GridFormat::Parallel::rank(c));
+        const int replace_width = width - rank_str.size();
+        rank_str.insert(0, (replace_width <= 0 ? 0 : replace_width), '0');
+        in_filename.replace(pos, end + 1 - pos, rank_str);
+        rank_specific_files = true;
+    }
+
     std::filesystem::path in_path{in_filename};
     if (!std::filesystem::exists(in_path))
         throw std::runtime_error("Given file '" + in_filename + "' does not exist.");
 
-    std::string out_filename = (in_path.parent_path() / in_path.stem()).string() + "_converted";
-    if (auto it = std::ranges::find(opts, "-o"); it != opts.end()) {
-        auto out_name_it = it;
-        if (++out_name_it; out_name_it == std::ranges::end(opts))
-            throw std::runtime_error("No filename given after '-o'");
-        out_filename = *out_name_it;
-        ++out_name_it;
-        opts.erase(it, out_name_it);
-    }
-    if (auto it = std::ranges::find(opts, "-o"); it != opts.end())
-        throw std::runtime_error("Option '-o' given multiple times");
+    const auto parse_arg = [&] (const std::string& short_key, const std::string& long_key) -> std::optional<std::string> {
+        const auto process = [&] (const std::string& key) -> std::optional<std::string> {
+            if (auto it = std::ranges::find(opts, key); it != opts.end()) {
+                auto value_it = it;
+                if (++value_it; value_it == opts.end())
+                    throw std::runtime_error("Missing value for option '" + key + "'.");
+                std::string result = *value_it;
+                opts.erase(it, ++value_it);
+                return result;
+            }
+            return {};
+        };
+        if (auto result = process(short_key); result) return result;
+        if (auto result = process(long_key); result) return result;
+        return {};
+    };
+    const auto parse_single_arg = [&] (const std::string& short_key, const std::string& long_key) -> std::optional<std::string> {
+        if (auto result = parse_arg(short_key, long_key); result) {
+            if (std::ranges::find(opts, short_key) != opts.end() || std::ranges::find(opts, long_key) != opts.end())
+                throw std::runtime_error("Option '" + short_key + " | " + long_key + "' given multiple times");
+            return result;
+        }
+        return {};
+    };
 
+    std::string out_filename = (in_path.parent_path() / in_path.stem()).string() + "_converted";
+    if (auto f = parse_single_arg("-o", "--out-filename"); f) out_filename = f.value();
+
+    std::string in_fmt = "any";
+    if (auto f = parse_single_arg("-i", "--input-format"); f) in_fmt = f.value();
+
+    bool quiet = false;
+    if (auto it = std::ranges::find(opts, "-q"); it != opts.end()) { opts.erase(it); quiet = true; }
+    if (auto it = std::ranges::find(opts, "--quiet"); it != opts.end()) { opts.erase(it); quiet = true; }
+
+    bool is_rank_0 = GridFormat::Parallel::rank(c) == 0;
     auto options_map = make_options_map(opts | std::views::all);
     FormatSelector::with(out_fmt, [&] <typename Format> (Format fmt) {
-        auto fmt_opts = OptionsParser<Format>::parse(options_map);
-        if constexpr (ExposesOptions<Format>)
-            fmt.opts = fmt_opts;
+        FormatSelector::with(in_fmt, [&] <typename InFormat> (InFormat) {
+            auto fmt_opts = OptionsParser<Format>::parse(options_map);
+            if constexpr (ExposesOptions<Format>)
+                fmt.opts = fmt_opts;
 
-        if (std::is_same_v<Communicator, GridFormat::NullCommunicator> || GridFormat::Parallel::size(c) == 1)
-            GridFormat::convert(in_filename, out_filename, fmt);
-        else
-            GridFormat::convert(in_filename, out_filename, fmt, c);
+            const GridFormat::ConversionOptions<Format, InFormat> conversion_opts{
+                .out_format = fmt,
+                .verbosity = (
+                    quiet ? 0 : (
+                        is_rank_0 ? 2 : (
+                            rank_specific_files ? 1 : 0
+                        )
+                    )
+                )
+            };
+
+            const auto written_file = [&] () {
+                if (std::is_same_v<Communicator, GridFormat::NullCommunicator> || GridFormat::Parallel::size(c) == 1)
+                    return GridFormat::convert(in_filename, out_filename, conversion_opts);
+                else
+                    return GridFormat::convert(in_filename, out_filename, conversion_opts, c);
+            } ();
+        });
     });
 }
 
 void print_help() {
-    std::cout << "usage: gridformat-convert FILE TARGET_FORMAT [TARGET_FORMAT_OPTIONS] [-o OUT_FILENAME]\n" << std::endl;
-    std::cout << "'TARGET_FORMAT' can be any of: {"
-              << GridFormat::as_string(FormatSelector::supported_formats(), ", ")
-              << "}" << std::endl
-              << "'TARGET_FORMAT_OPTIONS' are pairs of 'key=value'. "
-              << "Use gridformat-convert --help-TARGET_FORMAT for more info." << std::endl
-              << "'OUT_FILENAME' defaults to FILE_WITHOUT_EXTENSION_converted.NEW_EXTENSION" << std::endl
-              << "\nImportant: input & output filenames cannot be the same as data is read/written lazily." << std::endl;
+    const auto print_arg_line = [] (std::string arg, std::string description) {
+        static constexpr std::size_t arg_width = 25;
+        static constexpr std::size_t indentation = 25 + 4;
+        std::cout << GridFormat::Apps::as_cell(std::move(arg), arg_width) << std::string(4, ' ');
+        int i = 0;
+        for (const auto& description_line : description | std::views::split('\n')) {
+            std::cout << (i++ > 0 ? std::string(indentation, ' ') : std::string{})
+                      << std::string{std::ranges::begin(description_line), std::ranges::end(description_line)}
+                      << std::endl;
+        }
+        std::cout << std::endl;
+    };
+
+    std::cout << "usage: [mpirun -n NUM_RANKS] gridformat-convert FILE TARGET_FORMAT [TARGET_FORMAT_OPTIONS] "
+              << "[-o | --out-filename OUT_FILENAME] [-q --quiet] [-i --input-format]" << std::endl;
+    std::cout << std::endl;
+    print_arg_line(
+        "FILE",
+        "The file to be converted. May contain '{RANK}', a placeholder that is substituted\n"
+        "by the process rank and which allows you to read different files per process (e.g. to\n"
+        "merge them into one parallel file). Use '{RANK:N}' in order to specify a fixed width\n"
+        "that is filled with leading zeros. For instance: '{RANK:3}' will yield 001 on rank 0."
+    );
+    print_arg_line(
+        "TARGET_FORMAT",
+        "Specify the format into which to convert. Can be any of {"
+        + GridFormat::as_string(FormatSelector::supported_formats(), ", ")
+        + "}.\nNote: if 'any' is selected, gridformat will select a default format."
+    );
+    print_arg_line(
+        "TARGET_FORMAT_OPTIONS",
+        "Specify further options for the chosen TARGET_FORMAT as pairs of 'key=value'.\n"
+        "Use 'gridformat-convert --help-TARGET_FORMAT for more info."
+    );
+    print_arg_line(
+        "-o | --out-filename",
+        "The name of the file to be written (without extension).\n"
+        "Defaults to '${FILE*}_converted.NEW_EXTENSION'., where FILE* is the name of\n"
+        "the given file without the extension."
+    );
+    print_arg_line("-q | --quiet", "Use this flag to suppress progress output.");
+    print_arg_line(
+        "-i | --input-format",
+        "Specify the format of FILE. If unspecified, it is deduced from its extension.\n"
+        "See 'TARGET_FORMAT' for the available format specifiers."
+    );
+    std::cout << "Important: input & output filenames cannot be the same since data is read/written lazily to reduce memory usage." << std::endl;
 }
 
 void print_format_help(const std::string& format) {
     FormatSelector::with(format, [&] <typename Fmt> (const Fmt&) {
         const auto all_opts = OptionsParser<Fmt>::get_all_opts();
         if (all_opts.empty()) {
-            std::cout << "Format '" << format << "' takes no options" << std::endl;
+            std::cout << "[gridformat-convert]: Format '" << format << "' takes no options" << std::endl;
         } else {
-            std::cout << "Format '" << format << "' accepts the following options:" << std::endl;
+            std::cout << "[gridformat-convert]: Format '" << format << "' accepts the following options:" << std::endl;
             print_options(all_opts);
         }
     });

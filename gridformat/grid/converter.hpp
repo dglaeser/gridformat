@@ -15,6 +15,7 @@
 #include <utility>
 #include <numeric>
 #include <optional>
+#include <cstdint>
 
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/exceptions.hpp>
@@ -145,11 +146,16 @@ std::string convert(const Reader& reader, const std::string& filename, const Fac
  * \brief Overload for time series formats.
  * \param reader A grid reader on which a file was opened.
  * \param factory A factory to construct a time series writer with the desired output format.
+ * \param call_back (optional) A callback that is invoked after writing each step.
  */
-template<std::derived_from<GridReader> Reader, ConverterDetail::TimeSeriesWriterFactory Factory>
-std::string convert(Reader& reader, const Factory& factory) {
+template<std::derived_from<GridReader> Reader,
+         ConverterDetail::TimeSeriesWriterFactory Factory,
+         std::invocable<std::size_t, const std::string&> StepCallBack = decltype([] (std::size_t, const std::string&) {})>
+std::string convert(Reader& reader,
+                    const Factory& factory,
+                    const StepCallBack& call_back = {}) {
     if (!reader.is_sequence())
-        throw ValueError("Cannot convert data from reader to a sequence as reader is no sequence.");
+        throw ValueError("Cannot convert data from reader to a sequence as the file read is no sequence.");
 
     ConverterDetail::ConverterGrid grid{reader};
     auto writer = factory(grid);
@@ -159,11 +165,14 @@ std::string convert(Reader& reader, const Factory& factory) {
         if constexpr (Traits::WritesConnectivity<std::remove_cvref_t<decltype(writer)>>::value)
             grid.make_grid();
         filename = ConverterDetail::write_piece(reader, writer, reader.time_at_step(step));
+        call_back(step, filename);
     }
     return filename;
 }
 
 namespace Traits {
+
+// to distinguish points/cells we use different integer types
 
 template<>
 struct Points<ConverterDetail::ConverterGrid> {
@@ -175,7 +184,10 @@ struct Points<ConverterDetail::ConverterGrid> {
 template<>
 struct Cells<ConverterDetail::ConverterGrid> {
     static std::ranges::range auto get(const ConverterDetail::ConverterGrid& grid) {
-        return std::views::iota(std::size_t{0}, grid.reader.number_of_cells());
+        const auto max = static_cast<std::int64_t>(grid.reader.number_of_cells());
+        if (max < 0)
+            throw TypeError("Integer overflow. Too many grid cells.");
+        return std::views::iota(std::int64_t{0}, max);
     }
 };
 
@@ -194,15 +206,15 @@ struct NumberOfCells<ConverterDetail::ConverterGrid> {
 };
 
 template<>
-struct CellPoints<ConverterDetail::ConverterGrid, std::size_t> {
-    static std::ranges::range auto get(const ConverterDetail::ConverterGrid& grid, const std::size_t i) {
+struct CellPoints<ConverterDetail::ConverterGrid, std::int64_t> {
+    static std::ranges::range auto get(const ConverterDetail::ConverterGrid& grid, const std::int64_t i) {
         return grid.cells.at(i).second | std::views::all;
     }
 };
 
 template<>
-struct CellType<ConverterDetail::ConverterGrid, std::size_t> {
-    static GridFormat::CellType get(const ConverterDetail::ConverterGrid& grid, const std::size_t i) {
+struct CellType<ConverterDetail::ConverterGrid, std::int64_t> {
+    static GridFormat::CellType get(const ConverterDetail::ConverterGrid& grid, const std::int64_t i) {
         return grid.cells.at(i).first;
     }
 };
@@ -222,8 +234,8 @@ struct PointId<ConverterDetail::ConverterGrid, std::size_t> {
 };
 
 template<>
-struct NumberOfCellPoints<ConverterDetail::ConverterGrid, std::size_t> {
-    static std::size_t get(const ConverterDetail::ConverterGrid& grid, const std::size_t i) {
+struct NumberOfCellPoints<ConverterDetail::ConverterGrid, std::int64_t> {
+    static std::size_t get(const ConverterDetail::ConverterGrid& grid, const std::int64_t i) {
         return grid.cells.at(i).second.size();
     }
 };
@@ -268,8 +280,35 @@ struct Ordinates<ConverterDetail::ConverterGrid> {
 
 template<typename Entity>
 struct Location<ConverterDetail::ConverterGrid, Entity> {
-    static std::array<std::size_t, 3> get(const ConverterDetail::ConverterGrid&, const Entity&) {
-        throw NotImplemented("Entity location for converter grid");
+    static std::array<std::size_t, 3> get(const ConverterDetail::ConverterGrid& grid, const std::size_t point) {
+        return _get(Ranges::incremented(Extents<ConverterDetail::ConverterGrid>::get(grid), 1), point);
+    }
+
+    static std::array<std::size_t, 3> get(const ConverterDetail::ConverterGrid& grid, const std::int64_t cell) {
+        return _get(Extents<ConverterDetail::ConverterGrid>::get(grid), cell);
+    }
+
+ private:
+    static std::array<std::size_t, 3> _get(std::ranges::range auto extents, std::integral auto index) {
+        // avoid zero extents
+        std::ranges::for_each(extents, [] <std::integral T> (T& e) { e = std::max(e, T{1}); });
+        const auto accumulate_until = [&] (int dim) {
+            auto range = extents | std::views::take(dim);
+            return std::accumulate(
+                std::ranges::begin(range),
+                std::ranges::end(range),
+                std::size_t{1},
+                std::multiplies{}
+            );
+        };
+
+        const auto divisor1 = accumulate_until(1);
+        const auto divisor2 = accumulate_until(2);
+        return {
+            index%divisor2%divisor1,
+            index%divisor2/divisor1,
+            index/divisor2
+        };
     }
 };
 

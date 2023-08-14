@@ -22,6 +22,7 @@
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/concepts.hpp>
+#include <gridformat/common/logging.hpp>
 #include <gridformat/grid/cell_type.hpp>
 
 namespace GridFormat::Concepts {
@@ -96,7 +97,8 @@ class GridReader {
         return _number_of_points();
     }
 
-    //! Return the number of pieces read from the file (may be > 1 for parallel file formats)
+    //! Return the number of pieces contained in the read file (when constructing readers
+    //! in parallel, this reader instance contains the data of only one or some of these pieces)
     std::size_t number_of_pieces() const {
         return _number_of_pieces();
     }
@@ -163,25 +165,27 @@ class GridReader {
     //! Export the grid read from the file into the given grid factory
     template<std::size_t space_dim = 3, Concepts::GridFactory<space_dim> Factory>
     void export_grid(Factory& factory) const {
-        const auto point_field = points();
-        const auto point_layout = point_field->layout();
-        const auto read_space_dim = point_layout.extent(1);
-        const auto copied_space_dim = std::min(space_dim, read_space_dim);
-        if (point_layout.extent(0) != number_of_points()) {
-            std::ostringstream s; s << point_layout;
-            throw SizeError(
-                "Point layout " + s.str() + " does not match number of points: " + std::to_string(number_of_points())
-            );
-        }
-
-        point_field->visit_field_values([&] <typename T> (std::span<const T> coords) {
-            auto p = Ranges::filled_array<space_dim>(typename Factory::ctype{0.0});
-            for (std::size_t i = 0; i < point_layout.extent(0); ++i) {
-                for (std::size_t dir = 0; dir < copied_space_dim; ++dir)
-                    p[dir] = static_cast<typename Factory::ctype>(coords[i*read_space_dim + dir]);
-                factory.insert_point(std::as_const(p));
+        if (number_of_points() > 0) {
+            const auto point_field = points();
+            const auto point_layout = point_field->layout();
+            const auto read_space_dim = point_layout.extent(1);
+            const auto copied_space_dim = std::min(space_dim, read_space_dim);
+            if (point_layout.extent(0) != number_of_points()) {
+                std::ostringstream s; s << point_layout;
+                throw SizeError(
+                    "Point layout " + s.str() + " does not match number of points: " + std::to_string(number_of_points())
+                );
             }
-        });
+
+            point_field->visit_field_values([&] <typename T> (std::span<const T> coords) {
+                auto p = Ranges::filled_array<space_dim>(typename Factory::ctype{0.0});
+                for (std::size_t i = 0; i < point_layout.extent(0); ++i) {
+                    for (std::size_t dir = 0; dir < copied_space_dim; ++dir)
+                        p[dir] = static_cast<typename Factory::ctype>(coords[i*read_space_dim + dir]);
+                    factory.insert_point(std::as_const(p));
+                }
+            });
+        }
         visit_cells([&] (GridFormat::CellType ct, const std::vector<std::size_t>& corners) {
             factory.insert_cell(std::move(ct), corners);
         });
@@ -248,6 +252,10 @@ class GridReader {
         });
     }
 
+    void set_ignore_warnings(bool value) {
+        _ignore_warnings = value;
+    }
+
  protected:
     struct FieldNames {
         std::vector<std::string> cell_fields;
@@ -261,9 +269,19 @@ class GridReader {
         }
     };
 
+    void _log_warning(std::string_view warning) const {
+        if (!_ignore_warnings)
+            log_warning(
+                std::string{warning}
+                + (warning.ends_with("\n") ? "" : "\n")
+                + "To deactivate this warning, call set_ignore_warnings(true);"
+            );
+    }
+
  private:
     std::string _filename = "";
     FieldNames _field_names;
+    bool _ignore_warnings = false;
 
     virtual std::string _name() const = 0;
     virtual void _open(const std::string&, FieldNames&) = 0;

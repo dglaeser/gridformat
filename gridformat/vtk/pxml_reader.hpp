@@ -26,7 +26,6 @@
 #include <gridformat/common/empty_field.hpp>
 #include <gridformat/common/field_transformations.hpp>
 #include <gridformat/common/exceptions.hpp>
-#include <gridformat/common/logging.hpp>
 
 #include <gridformat/grid/reader.hpp>
 #include <gridformat/parallel/communication.hpp>
@@ -90,6 +89,7 @@ class PXMLReaderBase : public GridReader {
     XMLReaderHelper _read_pvtk_file(const std::string& filename, typename GridReader::FieldNames& fields) {
         _filename = filename;
          auto helper = XMLReaderHelper::make_from(filename, _vtk_grid_type);
+        _num_pieces_in_file = Ranges::size(_pieces_paths(helper));
         _read_pieces(helper);
         if (_piece_readers.size() > 0) {
             std::ranges::copy(point_field_names(_piece_readers.front()), std::back_inserter(fields.point_fields));
@@ -111,6 +111,7 @@ class PXMLReaderBase : public GridReader {
     void _close_pvtk_file() {
         _filename.reset();
         _piece_readers.clear();
+        _num_pieces_in_file = 0;
     }
 
  private:
@@ -134,7 +135,7 @@ class PXMLReaderBase : public GridReader {
     }
 
     std::size_t _number_of_pieces() const override {
-        return _num_ranks.value_or(std::size_t{1});
+        return _num_pieces_in_file;
     }
 
     bool _is_sequence() const override {
@@ -201,18 +202,18 @@ class PXMLReaderBase : public GridReader {
     void _read_parallel_piece(const XMLReaderHelper& helper) {
         const auto num_pieces = Ranges::size(_pieces_paths(helper));
         if (num_pieces < _num_ranks.value() && _rank.value() == 0)
-            log_warning(
+            this->_log_warning(
                 "PVTK file defines less pieces than there are ranks. The grids on some ranks will be empty."
             );
         if (num_pieces > _num_ranks.value() && !_merge_exceeding.has_value() && _rank.value() == 0)
-            log_warning(
+            this->_log_warning(
                 "PVTK file defines more pieces than used ranks. Will only read the first "
                 + std::to_string(_num_ranks.value()) + " pieces"
             );
 
         const bool is_last_rank = _rank.value() == _num_ranks.value() - 1;
         const bool merge_final_pieces = is_last_rank && _merge_exceeding.value_or(false);
-        const std::size_t my_num_pieces = merge_final_pieces ? _num_ranks.value() - _rank.value() : 1;
+        const std::size_t my_num_pieces = merge_final_pieces ? Ranges::size(_pieces_paths(helper)) - _rank.value() : 1;
 
         std::ranges::for_each(
             _pieces_paths(helper)
@@ -232,6 +233,7 @@ class PXMLReaderBase : public GridReader {
 
     std::optional<std::string> _filename;
     std::vector<PieceReader> _piece_readers;
+    std::size_t _num_pieces_in_file = 0;
 };
 
 
@@ -333,7 +335,17 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
     typename GridReader::Vector _origin() const override {
         if (!_specs().origin.has_value())
             throw ValueError("PVTK file does not define the origin for '" + this->_grid_type() + "'");
-        return _specs().origin.value();
+        if (this->_num_process_pieces() == 1) {
+            const auto& specs = _specs();
+            return CommonDetail::compute_piece_origin(
+                specs.origin.value(),
+                _spacing(),
+                this->_readers().at(0).location().lower_left,
+                specs.direction
+            );
+        } else {  // use global origin
+            return _specs().origin.value();
+        }
     }
 
     typename GridReader::Vector _spacing() const override {
@@ -350,10 +362,7 @@ class PXMLStructuredGridReader : public PXMLReaderBase<PieceReader> {
     typename GridReader::PieceLocation _location() const override {
         typename GridReader::PieceLocation result;
 
-        if (this->_num_process_pieces() == 0) {
-            std::ranges::fill(result.lower_left, 0);
-            std::ranges::fill(result.upper_right, 0);
-        } else if (this->_num_process_pieces() == 1) {
+        if (this->_num_process_pieces() == 1) {
             result = this->_readers().at(0).location();
         } else {  // use "WholeExtent"
             const auto& specs = _specs();

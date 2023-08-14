@@ -280,14 +280,20 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
         test_reader(generated_data_folder, ".pvd", GridFormat::any);
     }
 
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::throws;
+    using GridFormat::Testing::eq;
+
+    "generic_reader_throws_on_non_matching_format"_test = [&] () {
+        GridFormat::Reader r{GridFormat::pvd_with(GridFormat::vtr)};
+        r.open(generated_data_folder / vtr_filename);
+        GridFormat::Testing::expect(throws<GridFormat::IOError>([&] () { r.open(vti_filename); }));
+    };
+
     // check that reader exposes image/rectilinear grid-specific interfaces
     if (!is_parallel) {
-        using GridFormat::Testing::operator""_test;
-        using GridFormat::Testing::expect;
-        using GridFormat::Testing::eq;
-
-        "generic_reader_vti_interfaces"_test = [&] () {
-            GridFormat::Reader vti_reader;
+        const auto _vti_test = [&] (auto& vti_reader) {
             vti_reader.open(generated_data_folder / vti_filename);
 
             expect(eq(vti_reader.extents()[0], std::size_t{4}));
@@ -311,8 +317,17 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
             expect(std::abs(vti_reader.spacing()[2] - 0.0) < 1e-6);
         };
 
-        "generic_reader_vtr_interfaces"_test = [&] () {
-            GridFormat::Reader vtr_reader;
+        "generic_reader_vti_interfaces_unbound"_test = [&] () {
+            GridFormat::Reader generic_reader;
+            _vti_test(generic_reader);
+        };
+
+        "generic_reader_vti_interfaces_bound"_test = [&] () {
+            GridFormat::Reader bound_reader{GridFormat::pvd_with(GridFormat::vti)};
+            _vti_test(bound_reader);
+        };
+
+        const auto _vtr_test = [&] (auto& vtr_reader) {
             vtr_reader.open(generated_data_folder / vtr_filename);
             for (unsigned int dir = 0; dir < 3; ++dir) {
                 const double spacing = std::array{1.0/4.0, 1.0/5.0, 0.0}[dir];
@@ -320,6 +335,16 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
                     return std::abs(x - spacing*static_cast<double>(i++)) < 1e-6;
                 }));
             }
+        };
+
+        "generic_reader_vtr_interfaces_unbound"_test = [&] () {
+            GridFormat::Reader generic_reader;
+            _vtr_test(generic_reader);
+        };
+
+        "generic_reader_vtr_interfaces_bound"_test = [&] () {
+            GridFormat::Reader bound_reader{GridFormat::pvd_with(GridFormat::vtr)};
+            _vtr_test(bound_reader);
         };
     }
 

@@ -10,6 +10,7 @@
 int main() {
     using GridFormat::Testing::operator""_test;
     using GridFormat::Testing::expect;
+    using GridFormat::Testing::throws;
     using GridFormat::Testing::eq;
 
     "md_layout"_test = [] () {
@@ -24,7 +25,7 @@ int main() {
     "md_layout_scalar"_test = [] () {
         const auto layout = GridFormat::get_md_layout(double{});
         expect(eq(layout.number_of_entries(), std::size_t{1}));
-        expect(eq(layout.dimension(), std::size_t{0}));
+        expect(eq(layout.dimension(), std::size_t{1}));
     };
 
     "md_layout_vector"_test = [] () {
@@ -52,6 +53,27 @@ int main() {
         std::ostringstream s;
         s << layout;
         expect(eq(s.str(), std::string{"(2,4)"}));
+    };
+
+    "md_layout_export"_test = [] () {
+        GridFormat::MDLayout layout{{4}};
+        std::array<std::size_t, 1> dims{0};
+        layout.export_to(dims);
+        expect(eq(dims.at(0), std::size_t{4}));
+    };
+
+    "md_layout_export_throws_on_too_small_range"_test = [] () {
+        GridFormat::MDLayout layout{{4, 1}};
+        std::array<std::size_t, 1> dims{0};
+        expect(throws<GridFormat::SizeError>([&] () { layout.export_to(dims); }));
+    };
+
+    "md_layout_sub_layout_fails_on_too_large_codim"_test = [] () {
+        std::vector<std::array<double, 4>> vector(2);
+        const auto layout = GridFormat::get_md_layout(vector);
+        expect(throws<GridFormat::ValueError>([&] () {
+            layout.sub_layout(2);
+        }));
     };
 
     return 0;

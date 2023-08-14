@@ -63,7 +63,7 @@ class Serialization {
 
     void cut_front(std::size_t number_of_bytes) {
         if (number_of_bytes > size())
-            throw ValueError("Cannot cut more bytes than stored");
+            throw SizeError("Cannot cut more bytes than stored");
         const auto new_size = _data.size() - number_of_bytes;
         std::span trail{_data.data() + number_of_bytes, new_size};
         std::ranges::move(trail, _data.begin());

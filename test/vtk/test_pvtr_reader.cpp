@@ -89,10 +89,6 @@ int main(int argc, char** argv) {
         GridFormat::PVTRReader sequential_reader{};
         sequential_reader.open(test_filename);
 
-        "sequential_pvtr_read_number_of_pieces"_test = [&] () {
-            expect(eq(sequential_reader.number_of_pieces(), std::size_t{1}));
-        };
-
         "sequential_pvtr_read_number_of_entities"_test = [&] () {
             expect(eq(sequential_reader.number_of_cells(), num_total_cells));
             expect(eq(sequential_reader.number_of_points(), num_total_points));

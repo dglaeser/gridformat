@@ -42,6 +42,7 @@ INPUT                 += @CMAKE_SOURCE_DIR@/README.md \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/concepts.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/converter.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/writer.hpp \
+                         @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/grid/reader.hpp \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/vtk/ \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/encoding/ \
                          @CMAKE_SOURCE_DIR@/@PROJECT_NAME@/compression/ \

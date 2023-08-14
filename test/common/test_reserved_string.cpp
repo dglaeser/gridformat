@@ -75,5 +75,19 @@ int main() {
         expect(eq(std::string_view{str}, std::string_view{"hello"}));
     };
 
+    "reserved_string_ctor_throws_on_missing_null_terminator"_test = [] () {
+        char data[4] = {'a', 'b', 'c', 'd'};
+        expect(throws<GridFormat::ValueError>([&] () { GridFormat::ReservedString{data}; }));
+    };
+
+    "reserved_string_eq_operator"_test = [] () {
+        GridFormat::ReservedString<10> a{"hello"};
+        GridFormat::ReservedString<10> b{"hello"};
+        GridFormat::ReservedString<10> c{"hell"};
+        expect(a == b);
+        expect(a != c);
+        expect(c != a);
+    };
+
     return 0;
 }
