@@ -90,6 +90,7 @@ class PXMLReaderBase : public GridReader {
     XMLReaderHelper _read_pvtk_file(const std::string& filename, typename GridReader::FieldNames& fields) {
         _filename = filename;
          auto helper = XMLReaderHelper::make_from(filename, _vtk_grid_type);
+        _num_pieces_in_file = Ranges::size(_pieces_paths(helper));
         _read_pieces(helper);
         if (_piece_readers.size() > 0) {
             std::ranges::copy(point_field_names(_piece_readers.front()), std::back_inserter(fields.point_fields));
@@ -111,6 +112,7 @@ class PXMLReaderBase : public GridReader {
     void _close_pvtk_file() {
         _filename.reset();
         _piece_readers.clear();
+        _num_pieces_in_file = 0;
     }
 
  private:
@@ -134,7 +136,7 @@ class PXMLReaderBase : public GridReader {
     }
 
     std::size_t _number_of_pieces() const override {
-        return _num_ranks.value_or(std::size_t{1});
+        return _num_pieces_in_file;
     }
 
     bool _is_sequence() const override {
@@ -232,6 +234,7 @@ class PXMLReaderBase : public GridReader {
 
     std::optional<std::string> _filename;
     std::vector<PieceReader> _piece_readers;
+    std::size_t _num_pieces_in_file = 0;
 };
 
 

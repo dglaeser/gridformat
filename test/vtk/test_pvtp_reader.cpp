@@ -63,10 +63,6 @@ int main(int argc, char** argv) {
         reader = GridFormat::PVTPReader{};
         reader.open(test_filename);
 
-        "sequential_pvtp_read_number_of_pieces"_test = [&] () {
-            expect(eq(reader.number_of_pieces(), std::size_t{1}));
-        };
-
         "sequential_pvtp_read_number_of_entities"_test = [&] () {
             expect(eq(reader.number_of_cells(), num_all_cells));
             expect(eq(reader.number_of_points(), num_all_points));

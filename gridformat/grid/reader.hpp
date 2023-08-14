@@ -96,7 +96,8 @@ class GridReader {
         return _number_of_points();
     }
 
-    //! Return the number of pieces read from the file (may be > 1 for parallel file formats)
+    //! Return the number of pieces contained in the read file (when constructing readers
+    //! in parallel, this reader instance contains the data of only one or some of these pieces)
     std::size_t number_of_pieces() const {
         return _number_of_pieces();
     }

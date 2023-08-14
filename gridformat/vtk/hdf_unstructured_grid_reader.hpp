@@ -216,9 +216,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
     }
 
     std::size_t _number_of_pieces() const override {
-        if (Parallel::size(_comm) > 1)
-            return _number_of_pieces_in_file();
-        return 1;
+        return _number_of_pieces_in_file();
     }
 
     std::size_t _number_of_pieces_in_file() const {
