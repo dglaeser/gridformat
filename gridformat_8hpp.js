@@ -30,8 +30,9 @@ var gridformat_8hpp =
     [ "GridFormat::ReaderFactory< FileFormat::PVD< PieceFormat > >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVD_3_01PieceFormat_01_4_01_4.html", null ],
     [ "GridFormat::ReaderFactory< FileFormat::PVDClosure >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVDClosure_01_4.html", null ],
     [ "GridFormat::WriterFactory< FileFormat::Any >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1Any_01_4.html", null ],
-    [ "convert", "gridformat_8hpp.html#gad4a7a7a5caa86c0b786d2bc085f59a26", null ],
-    [ "convert", "gridformat_8hpp.html#ga9b4d2325c9f5caed7dcb52bd022dbcf7", null ],
+    [ "GridFormat::WriterFactory< FileFormat::AnyTimeSeries >", "structGridFormat_1_1WriterFactory_3_01FileFormat_1_1AnyTimeSeries_01_4.html", null ],
+    [ "GridFormat::ConversionOptions< OutFormat, InFormat >", "structGridFormat_1_1ConversionOptions.html", null ],
+    [ "convert", "gridformat_8hpp.html#gaa262c55af3c1c39cf82bded8f77db38c", null ],
     [ "default_for", "gridformat_8hpp.html#ga19ce8850e7c649e701a6cab52a3ad5a5", null ],
     [ "default_for", "gridformat_8hpp.html#gaa73c41aeab2861bb23872f1498cb0eb4", null ],
     [ "null_communicator", "gridformat_8hpp.html#a86b425aee0f2f7c0a0deb3bd0ed5a7db", null ]

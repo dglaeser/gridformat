@@ -139,6 +139,9 @@ Files</h2></td></tr>
 <tr class="memitem:grid_2writer_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grid_2writer_8hpp.html">writer.hpp</a></td></tr>
 <tr class="memdesc:grid_2writer_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base classes for grid data writers. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:grid_2reader_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grid_2reader_8hpp.html">reader.hpp</a></td></tr>
+<tr class="memdesc:grid_2reader_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for grid data readers. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
 Concepts</h2></td></tr>
@@ -169,6 +172,9 @@ Concepts</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptGridFormat_1_1Concepts_1_1CellFunction.html">GridFormat::Concepts::CellFunction</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concept for functions invocable with grid cells, usable as cell field data. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptGridFormat_1_1Concepts_1_1GridFactory.html">GridFormat::Concepts::GridFactory</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concept for grid factories, to allow for convenient creation of grids from grid files. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -187,17 +193,20 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1TimeSeriesGridWriter.html">GridFormat::TimeSeriesGridWriter&lt; Grid &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract base class for time series file writers.  <a href="classGridFormat_1_1TimeSeriesGridWriter.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1GridReader.html">GridFormat::GridReader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract base class for all readers, defines the common interface.  <a href="classGridFormat_1_1GridReader.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gab143956e469694e5bb3cc534958e674e"><td class="memTemplParams" colspan="2">template&lt;std::derived_from&lt; GridReader &gt; Reader, ConverterDetail::WriterFactory Factory&gt; </td></tr>
+<tr class="memitem:gab143956e469694e5bb3cc534958e674e"><td class="memTemplParams" colspan="2">template&lt;std::derived_from&lt; <a class="el" href="classGridFormat_1_1GridReader.html">GridReader</a> &gt; Reader, ConverterDetail::WriterFactory Factory&gt; </td></tr>
 <tr class="memitem:gab143956e469694e5bb3cc534958e674e"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Grid.html#gab143956e469694e5bb3cc534958e674e">GridFormat::convert</a> (const <a class="el" href="classGridFormat_1_1Reader.html">Reader</a> &amp;reader, const std::string &amp;filename, const Factory &amp;factory)</td></tr>
 <tr class="memdesc:gab143956e469694e5bb3cc534958e674e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert between grid formats.  <br /></td></tr>
 <tr class="separator:gab143956e469694e5bb3cc534958e674e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacfdca599d26be7db93a94fb21896b342"><td class="memTemplParams" colspan="2">template&lt;std::derived_from&lt; GridReader &gt; Reader, ConverterDetail::TimeSeriesWriterFactory Factory&gt; </td></tr>
-<tr class="memitem:gacfdca599d26be7db93a94fb21896b342"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Grid.html#gacfdca599d26be7db93a94fb21896b342">GridFormat::convert</a> (<a class="el" href="classGridFormat_1_1Reader.html">Reader</a> &amp;reader, const Factory &amp;factory)</td></tr>
-<tr class="memdesc:gacfdca599d26be7db93a94fb21896b342"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overload for time series formats.  <br /></td></tr>
-<tr class="separator:gacfdca599d26be7db93a94fb21896b342"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae2314869ca15e46fcf61729285d2d39d"><td class="memTemplParams" colspan="2">template&lt;std::derived_from&lt; <a class="el" href="classGridFormat_1_1GridReader.html">GridReader</a> &gt; Reader, ConverterDetail::TimeSeriesWriterFactory Factory, std::invocable&lt; std::size_t, const std::string &amp; &gt; StepCallBack = decltype([] (std::size_t, const std::string&amp;) {})&gt; </td></tr>
+<tr class="memitem:gae2314869ca15e46fcf61729285d2d39d"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Grid.html#gae2314869ca15e46fcf61729285d2d39d">GridFormat::convert</a> (<a class="el" href="classGridFormat_1_1Reader.html">Reader</a> &amp;reader, const Factory &amp;factory, const StepCallBack &amp;call_back={})</td></tr>
+<tr class="memdesc:gae2314869ca15e46fcf61729285d2d39d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overload for time series formats.  <br /></td></tr>
+<tr class="separator:gae2314869ca15e46fcf61729285d2d39d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="gab143956e469694e5bb3cc534958e674e" name="gab143956e469694e5bb3cc534958e674e"></a>
@@ -206,7 +215,7 @@ Functions</h2></td></tr>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;std::derived_from&lt; GridReader &gt; Reader, ConverterDetail::WriterFactory Factory&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classGridFormat_1_1GridReader.html">GridReader</a> &gt; Reader, ConverterDetail::WriterFactory Factory&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::string GridFormat::convert </td>
@@ -244,13 +253,13 @@ template&lt;std::derived_from&lt; GridReader &gt; Reader, ConverterDetail::Write
 
 </div>
 </div>
-<a id="gacfdca599d26be7db93a94fb21896b342" name="gacfdca599d26be7db93a94fb21896b342"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gacfdca599d26be7db93a94fb21896b342">&#9670;&#160;</a></span>convert() <span class="overload">[2/2]</span></h2>
+<a id="gae2314869ca15e46fcf61729285d2d39d" name="gae2314869ca15e46fcf61729285d2d39d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae2314869ca15e46fcf61729285d2d39d">&#9670;&#160;</a></span>convert() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;std::derived_from&lt; GridReader &gt; Reader, ConverterDetail::TimeSeriesWriterFactory Factory&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classGridFormat_1_1GridReader.html">GridReader</a> &gt; Reader, ConverterDetail::TimeSeriesWriterFactory Factory, std::invocable&lt; std::size_t, const std::string &amp; &gt; StepCallBack = decltype([] (std::size_t, const std::string&amp;) {})&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::string GridFormat::convert </td>
@@ -262,7 +271,13 @@ template&lt;std::derived_from&lt; GridReader &gt; Reader, ConverterDetail::TimeS
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const Factory &amp;&#160;</td>
-          <td class="paramname"><em>factory</em>&#160;</td>
+          <td class="paramname"><em>factory</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const StepCallBack &amp;&#160;</td>
+          <td class="paramname"><em>call_back</em> = <code>{}</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -275,6 +290,7 @@ template&lt;std::derived_from&lt; GridReader &gt; Reader, ConverterDetail::TimeS
   <table class="params">
     <tr><td class="paramname">reader</td><td>A grid reader on which a file was opened. </td></tr>
     <tr><td class="paramname">factory</td><td>A factory to construct a time series writer with the desired output format. </td></tr>
+    <tr><td class="paramname">call_back</td><td>(optional) A callback that is invoked after writing each step. </td></tr>
   </table>
   </dd>
 </dl>

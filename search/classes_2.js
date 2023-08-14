@@ -1,7 +1,7 @@
 var searchData=
 [
   ['cell_0',['Cell',['../structGridFormat_1_1DolfinX_1_1Cell.html',1,'GridFormat::DolfinX::Cell'],['../structGridFormat_1_1Dune_1_1LagrangeMesh_1_1Cell.html',1,'GridFormat::Dune::LagrangeMesh&lt; GV &gt;::Cell']]],
-  ['cellpoints_3c_20converterdetail_3a_3aconvertergrid_2c_20std_3a_3asize_5ft_20_3e_1',['CellPoints&lt; ConverterDetail::ConverterGrid, std::size_t &gt;',['../structGridFormat_1_1Traits_1_1CellPoints_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1size__t_01_4.html',1,'GridFormat::Traits']]],
+  ['cellpoints_3c_20converterdetail_3a_3aconvertergrid_2c_20std_3a_3aint64_5ft_20_3e_1',['CellPoints&lt; ConverterDetail::ConverterGrid, std::int64_t &gt;',['../structGridFormat_1_1Traits_1_1CellPoints_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1int64__t_01_4.html',1,'GridFormat::Traits']]],
   ['cellpoints_3c_20dolfinx_3a_3alagrangemesh_2c_20dolfinx_3a_3acell_20_3e_2',['CellPoints&lt; DolfinX::LagrangeMesh, DolfinX::Cell &gt;',['../structGridFormat_1_1Traits_1_1CellPoints_3_01DolfinX_1_1LagrangeMesh_00_01DolfinX_1_1Cell_01_4.html',1,'GridFormat::Traits']]],
   ['cellpoints_3c_20dolfinx_3a_3amesh_3a_3amesh_2c_20dolfinx_3a_3acell_20_3e_3',['CellPoints&lt; dolfinx::mesh::Mesh, DolfinX::Cell &gt;',['../structGridFormat_1_1Traits_1_1CellPoints_3_01dolfinx_1_1mesh_1_1Mesh_00_01DolfinX_1_1Cell_01_4.html',1,'GridFormat::Traits']]],
   ['cellpoints_3c_20dune_3a_3agridview_3c_20traits_20_3e_2c_20dunedetail_3a_3aelement_3c_20dune_3a_3agridview_3c_20traits_20_3e_20_3e_20_3e_4',['CellPoints&lt; Dune::GridView&lt; Traits &gt;, DuneDetail::Element&lt; Dune::GridView&lt; Traits &gt; &gt; &gt;',['../structGridFormat_1_1Traits_1_1CellPoints_3_01Dune_1_1GridView_3_01Traits_01_4_00_01DuneDetail_1_e589cfc75a52019bf0ee3db3dbd5361e.html',1,'GridFormat::Traits']]],
@@ -17,7 +17,7 @@ var searchData=
   ['cells_3c_20grid_20_3e_14',['Cells&lt; Grid &gt;',['../structGridFormat_1_1Traits_1_1Cells_3_01Grid_01_4.html',1,'GridFormat::Traits']]],
   ['cells_3c_20mfem_3a_3amesh_20_3e_15',['Cells&lt; mfem::Mesh &gt;',['../structGridFormat_1_1Traits_1_1Cells_3_01mfem_1_1Mesh_01_4.html',1,'GridFormat::Traits']]],
   ['cells_3c_20t_20_3e_16',['Cells&lt; T &gt;',['../structGridFormat_1_1Traits_1_1Cells_3_01T_01_4.html',1,'GridFormat::Traits']]],
-  ['celltype_3c_20converterdetail_3a_3aconvertergrid_2c_20std_3a_3asize_5ft_20_3e_17',['CellType&lt; ConverterDetail::ConverterGrid, std::size_t &gt;',['../structGridFormat_1_1Traits_1_1CellType_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1size__t_01_4.html',1,'GridFormat::Traits']]],
+  ['celltype_3c_20converterdetail_3a_3aconvertergrid_2c_20std_3a_3aint64_5ft_20_3e_17',['CellType&lt; ConverterDetail::ConverterGrid, std::int64_t &gt;',['../structGridFormat_1_1Traits_1_1CellType_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1int64__t_01_4.html',1,'GridFormat::Traits']]],
   ['celltype_3c_20dolfinx_3a_3alagrangemesh_2c_20dolfinx_3a_3acell_20_3e_18',['CellType&lt; DolfinX::LagrangeMesh, DolfinX::Cell &gt;',['../structGridFormat_1_1Traits_1_1CellType_3_01DolfinX_1_1LagrangeMesh_00_01DolfinX_1_1Cell_01_4.html',1,'GridFormat::Traits']]],
   ['celltype_3c_20dolfinx_3a_3amesh_3a_3amesh_2c_20dolfinx_3a_3acell_20_3e_19',['CellType&lt; dolfinx::mesh::Mesh, DolfinX::Cell &gt;',['../structGridFormat_1_1Traits_1_1CellType_3_01dolfinx_1_1mesh_1_1Mesh_00_01DolfinX_1_1Cell_01_4.html',1,'GridFormat::Traits']]],
   ['celltype_3c_20dune_3a_3agridview_3c_20traits_20_3e_2c_20dunedetail_3a_3aelement_3c_20dune_3a_3agridview_3c_20traits_20_3e_20_3e_20_3e_20',['CellType&lt; Dune::GridView&lt; Traits &gt;, DuneDetail::Element&lt; Dune::GridView&lt; Traits &gt; &gt; &gt;',['../structGridFormat_1_1Traits_1_1CellType_3_01Dune_1_1GridView_3_01Traits_01_4_00_01DuneDetail_1_1E709549ea0b505252d35b075ac199bf86.html',1,'GridFormat::Traits']]],
@@ -27,5 +27,6 @@ var searchData=
   ['celltype_3c_20t_2c_20dealii_3a_3acell_3c_20t_20_3e_20_3e_24',['CellType&lt; T, DealII::Cell&lt; T &gt; &gt;',['../structGridFormat_1_1Traits_1_1CellType_3_01T_00_01DealII_1_1Cell_3_01T_01_4_01_4.html',1,'GridFormat::Traits']]],
   ['communicatoraccess_25',['CommunicatorAccess',['../structGridFormat_1_1Traits_1_1CommunicatorAccess.html',1,'GridFormat::Traits']]],
   ['communicatoraccess_3c_20writer_20_3e_26',['CommunicatorAccess&lt; Writer &gt;',['../structGridFormat_1_1Traits_1_1CommunicatorAccess_3_01Writer_01_4.html',1,'GridFormat::Traits']]],
-  ['compressedblocks_27',['CompressedBlocks',['../structGridFormat_1_1Compression_1_1CompressedBlocks.html',1,'GridFormat::Compression']]]
+  ['compressedblocks_27',['CompressedBlocks',['../structGridFormat_1_1Compression_1_1CompressedBlocks.html',1,'GridFormat::Compression']]],
+  ['conversionoptions_28',['ConversionOptions',['../structGridFormat_1_1ConversionOptions.html',1,'GridFormat']]]
 ];

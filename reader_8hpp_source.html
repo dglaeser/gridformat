@@ -134,7 +134,7 @@ $(document).ready(function(){initNavTree('reader_8hpp_source.html',''); initResi
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;gridformat/common/type_traits.hpp&gt;</span></div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;gridformat/parallel/concepts.hpp&gt;</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;gridformat/parallel/communication.hpp&gt;</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;gridformat/grid/reader.hpp&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;<a class="code" href="grid_2reader_8hpp.html">gridformat/grid/reader.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">namespace </span>GridFormat {</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
@@ -147,7 +147,7 @@ $(document).ready(function(){initNavTree('reader_8hpp_source.html',''); initResi
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">template</span>&lt;Concepts::Communicator C = NullCommunicator&gt;</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classGridFormat_1_1AnyReaderFactory.html">   36</a></span><span class="keyword">class </span><a class="code hl_class" href="classGridFormat_1_1AnyReaderFactory.html">AnyReaderFactory</a> {</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_class" href="classGridFormat_1_1AnyReaderFactory.html">AnyReaderFactory</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_class" href="classGridFormat_1_1AnyReaderFactory.html">AnyReaderFactory</a>() <span class="keyword">requires</span>(std::same_as&lt;C, NullCommunicator&gt;) = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1AnyReaderFactory.html">AnyReaderFactory</a>(<span class="keyword">const</span> C&amp; comm) : _comm{comm} {}</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::unique_ptr&lt;GridReader&gt; make_for(<span class="keyword">const</span> std::string&amp; filename) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> <span class="keyword">private</span>:</div>
@@ -179,155 +179,196 @@ $(document).ready(function(){initNavTree('reader_8hpp_source.html',''); initResi
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        std::ranges::copy(meta_data_field_names(reader), std::back_inserter(names.meta_data_fields));</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    }</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}  <span class="comment">// namespace ReaderDetail</span></div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="preprocessor">#endif  </span><span class="comment">// DOXYGEN</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classGridFormat_1_1Reader.html">   85</a></span><span class="keyword">class </span><a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a> : <span class="keyword">public</span> GridReader {</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">using </span>AnyFactoryFunctor = std::function&lt;std::unique_ptr&lt;GridReader&gt;(<span class="keyword">const</span> std::string&amp;)&gt;;</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>() : _any_factory{[fac = <a class="code hl_class" href="classGridFormat_1_1AnyReaderFactory.html">AnyReaderFactory&lt;&gt;</a>{}] (<span class="keyword">const</span> std::string&amp; f) { <span class="keywordflow">return</span> fac.make_for(f); }} {}</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structGridFormat_1_1FileFormat_1_1Any.html">FileFormat::Any</a>&amp;) : <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>() {}</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">template</span>&lt;Concepts::Communicator C&gt;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structGridFormat_1_1FileFormat_1_1Any.html">FileFormat::Any</a>&amp;, <span class="keyword">const</span> C&amp; c)</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    : _any_factory{[factory = <a class="code hl_class" href="classGridFormat_1_1AnyReaderFactory.html">AnyReaderFactory</a>{c}] (<span class="keyword">const</span> std::string&amp; f) { <span class="keywordflow">return</span> factory.make_for(f); }}</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    {}</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">template</span>&lt;ReaderDetail::SequentiallyConstructible FileFormat&gt;</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>(<span class="keyword">const</span> FileFormat&amp; f) : _reader{_make_unique(<a class="code hl_struct" href="structGridFormat_1_1ReaderFactory.html">ReaderFactory&lt;FileFormat&gt;::make</a>(f))} {}</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> FileFormat,</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>             Concepts::Communicator Communicator&gt;</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keyword">requires</span>(ReaderDetail::ParallelConstructible&lt;FileFormat, Communicator&gt;)</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>(<span class="keyword">const</span> FileFormat&amp; f, <span class="keyword">const</span> Communicator&amp; c)</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    : _reader{_make_unique(<a class="code hl_struct" href="structGridFormat_1_1ReaderFactory.html">ReaderFactory&lt;FileFormat&gt;::make</a>(f, c))}</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    {}</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReaderImpl&gt;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keyword">auto</span> _make_unique(ReaderImpl&amp;&amp; reader)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">return</span> std::make_unique&lt;std::remove_cvref_t&lt;ReaderImpl&gt;&gt;(std::move(reader));</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    std::string _name()<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordflow">if</span> (_reader_is_set())</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            <span class="keywordflow">return</span> _access_reader().name();</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">return</span> <span class="stringliteral">&quot;undefined&quot;</span>;</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    }</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">void</span> _open(<span class="keyword">const</span> std::string&amp; filename, <span class="keyword">typename</span> GridReader::FieldNames&amp; names)<span class="keyword"> override </span>{</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">if</span> (_any_factory)</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            _reader = (*_any_factory)(filename);</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        _access_reader().close();</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        _access_reader().open(filename);</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        ReaderDetail::copy_field_names(_access_reader(), names);</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    };</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">void</span> _close()<span class="keyword"> override </span>{</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        _access_reader().close();</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    }</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    std::size_t _number_of_cells()<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <span class="keywordflow">return</span> _access_reader().number_of_cells();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">using </span>ReaderFactoryFunctor = std::function&lt;std::unique_ptr&lt;GridReader&gt;(<span class="keyword">const</span> std::string&amp;)&gt;;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">template</span>&lt;Concepts::Communicator C = NullCommunicator&gt;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    ReaderFactoryFunctor default_reader_factory(<span class="keyword">const</span> C&amp; c = {}) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">if</span> (!std::same_as&lt;C, NullCommunicator&gt;)</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordflow">return</span> [fac = AnyReaderFactory&lt;C&gt;{c}] (<span class="keyword">const</span> std::string&amp; f) { <span class="keywordflow">return</span> fac.make_for(f); };</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">return</span> [fac = AnyReaderFactory&lt;&gt;{}] (<span class="keyword">const</span> std::string&amp; f) { <span class="keywordflow">return</span> fac.make_for(f); };</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}  <span class="comment">// namespace ReaderDetail</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#endif  </span><span class="comment">// DOXYGEN</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classGridFormat_1_1Reader.html">   94</a></span><span class="keyword">class </span><a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a> : <span class="keyword">public</span> <a class="code hl_class" href="classGridFormat_1_1GridReader.html">GridReader</a> {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">using </span>ReaderFactoryFunctor = ReaderDetail::ReaderFactoryFunctor;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>(ReaderFactoryFunctor f = ReaderDetail::default_reader_factory())</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    : _reader_factory{f}</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    {}</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structGridFormat_1_1FileFormat_1_1Any.html">FileFormat::Any</a>&amp;, ReaderFactoryFunctor f = ReaderDetail::default_reader_factory())</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    : <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>(f)</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    {}</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">template</span>&lt;Concepts::Communicator C&gt;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structGridFormat_1_1FileFormat_1_1Any.html">FileFormat::Any</a>&amp;, <span class="keyword">const</span> C&amp; c)</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    : <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>(ReaderDetail::default_reader_factory(c))</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    {}</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">template</span>&lt;ReaderDetail::SequentiallyConstructible FileFormat&gt;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>(<span class="keyword">const</span> FileFormat&amp; f)</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    : _reader{_make_unique(<a class="code hl_struct" href="structGridFormat_1_1ReaderFactory.html">ReaderFactory&lt;FileFormat&gt;::make</a>(f))}</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    {}</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> FileFormat,</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>             Concepts::Communicator Communicator&gt;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keyword">requires</span>(ReaderDetail::ParallelConstructible&lt;FileFormat, Communicator&gt;)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classGridFormat_1_1Reader.html">Reader</a>(<span class="keyword">const</span> FileFormat&amp; f, <span class="keyword">const</span> Communicator&amp; c)</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    : _reader{_make_unique(<a class="code hl_struct" href="structGridFormat_1_1ReaderFactory.html">ReaderFactory&lt;FileFormat&gt;::make</a>(f, c))}</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    {}</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReaderImpl&gt;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keyword">auto</span> _make_unique(ReaderImpl&amp;&amp; reader)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keywordflow">return</span> std::make_unique&lt;std::remove_cvref_t&lt;ReaderImpl&gt;&gt;(std::move(reader));</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    std::string _name()<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="keywordflow">if</span> (_reader_is_set())</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f">name</a>();</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <span class="keywordflow">return</span> <span class="stringliteral">&quot;undefined&quot;</span>;</div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    }</div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    std::size_t _number_of_points()<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keywordflow">return</span> _access_reader().number_of_points();</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    }</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    std::size_t _number_of_pieces()<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keywordflow">return</span> _access_reader().number_of_pieces();</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    }</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">void</span> _open(<span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classGridFormat_1_1GridReader.html#a49cbb90dd99a1de160968dd4761dfdad">filename</a>, <span class="keyword">typename</span> <a class="code hl_struct" href="structGridFormat_1_1GridReader_1_1FieldNames.html">GridReader::FieldNames</a>&amp; names)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keywordflow">if</span> (_reader_factory)</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            _reader = (*_reader_factory)(<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a49cbb90dd99a1de160968dd4761dfdad">filename</a>);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#aaa1449ee1a9c8b0663adcf34c7c931aa">close</a>();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a6dc525bc4e87929a93ed07f60f7e95b9">open</a>(<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a49cbb90dd99a1de160968dd4761dfdad">filename</a>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        ReaderDetail::copy_field_names(_access_reader(), names);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    };</div>
 <div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> _cell_field(std::string_view name)<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keywordflow">return</span> _access_reader().cell_field(name);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordtype">void</span> _close()<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#aaa1449ee1a9c8b0663adcf34c7c931aa">close</a>();</div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    }</div>
 <div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> _point_field(std::string_view name)<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">return</span> _access_reader().point_field(name);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    std::size_t _number_of_cells()<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#abc668e99c9a53df337797cdcdeb9a9d3">number_of_cells</a>();</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    }</div>
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> _meta_data_field(std::string_view name)<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordflow">return</span> _access_reader().meta_data_field(name);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    std::size_t _number_of_points()<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#ad6ab48d38abf1273d9642082ec8f7459">number_of_points</a>();</div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    }</div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">void</span> _visit_cells(<span class="keyword">const</span> CellVisitor&amp; v)<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        _access_reader().visit_cells(v);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    std::size_t _number_of_pieces()<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a1ddb71f9a8f815e62eb89787df5df891">number_of_pieces</a>();</div>
 <div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    }</div>
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> _points()<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordflow">return</span> _access_reader().points();</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> _cell_field(std::string_view <a class="code hl_function" href="classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f">name</a>)<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a938af138287ba87dc3ada72e0babee2b">cell_field</a>(<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f">name</a>);</div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    }</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keyword">typename</span> GridReader::PieceLocation _location()<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordflow">return</span> _access_reader().location();</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> _point_field(std::string_view <a class="code hl_function" href="classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f">name</a>)<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a88d13f651a8a7df9d7cd5ea1328cef53">point_field</a>(<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f">name</a>);</div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    }</div>
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    std::vector&lt;double&gt; _ordinates(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> dir)<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keywordflow">return</span> _access_reader().ordinates(dir);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> _meta_data_field(std::string_view <a class="code hl_function" href="classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f">name</a>)<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a47c771e2676bf620a35bc97c932da170">meta_data_field</a>(<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f">name</a>);</div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    }</div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    std::array&lt;double, 3&gt; _spacing()<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keywordflow">return</span> _access_reader().spacing();</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordtype">void</span> _visit_cells(<span class="keyword">const</span> CellVisitor&amp; v)<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a010bbd751b31889df26bd2c2436d31ac">visit_cells</a>(v);</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    }</div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    std::array&lt;double, 3&gt; _origin()<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="keywordflow">return</span> _access_reader().origin();</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> _points()<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#aaa8980cdf3d9fc563096fd3ba91023cc">points</a>();</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    }</div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    std::array&lt;double, 3&gt; _basis_vector(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> dir)<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keywordflow">return</span> _access_reader().basis_vector(dir);</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">typename</span> <a class="code hl_struct" href="structGridFormat_1_1GridReader_1_1PieceLocation.html">GridReader::PieceLocation</a> _location()<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a92d8fd371140f0ad711119b1aa7e8eab">location</a>();</div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    }</div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordtype">bool</span> _is_sequence()<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keywordflow">return</span> _access_reader().is_sequence();</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    std::vector&lt;double&gt; _ordinates(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> dir)<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#aaffc5117c36765ef91dd2ba842d860b4">ordinates</a>(dir);</div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    }</div>
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    std::size_t _number_of_steps()<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordflow">return</span> _access_reader().number_of_steps();</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    std::array&lt;double, 3&gt; _spacing()<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#ad7498ba87048b44dfdecabed21ac0a5f">spacing</a>();</div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    }</div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordtype">double</span> _time_at_step(std::size_t step)<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keywordflow">return</span> _access_reader().time_at_step(step);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    std::array&lt;double, 3&gt; _origin()<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a68779b9dc1d5f103d52a1dfc86146467">origin</a>();</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    }</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordtype">void</span> _set_step(std::size_t step, <span class="keyword">typename</span> GridReader::FieldNames&amp; field_names)<span class="keyword"> override </span>{</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        _access_reader().set_step(step);</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        field_names.clear();</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        ReaderDetail::copy_field_names(_access_reader(), field_names);</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    }</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keyword">const</span> GridReader&amp; _access_reader()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        _check_reader_access();</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keywordflow">return</span> *_reader;</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    }</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    GridReader&amp; _access_reader() {</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        _check_reader_access();</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordflow">return</span> *_reader;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    std::array&lt;double, 3&gt; _basis_vector(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> dir)<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#aea8a764566cdfa86df27da88baccdad0">basis_vector</a>(dir);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    }</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordtype">bool</span> _is_sequence()<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a029f6fb959fd98718508f714cf870966">is_sequence</a>();</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    }</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    std::size_t _number_of_steps()<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#aefef1efe22a2e1adb76ed7015f95842e">number_of_steps</a>();</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    }</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordtype">double</span> _time_at_step(std::size_t step)<span class="keyword"> const override </span>{</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordflow">return</span> _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a91022c45350b1f01e73d75af82fdea56">time_at_step</a>(step);</div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    }</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordtype">void</span> _check_reader_access()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordflow">if</span> (!_reader_is_set())</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            <span class="keywordflow">throw</span> InvalidState(<span class="stringliteral">&quot;No file has been read&quot;</span>);</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    }</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordtype">bool</span> _reader_is_set()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">bool</span><span class="keyword">&gt;</span>(_reader);</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    }</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    std::unique_ptr&lt;GridReader&gt; _reader;</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    std::optional&lt;AnyFactoryFunctor&gt; _any_factory;</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>};</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>}  <span class="comment">// namespace GridFormat</span></div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_WRITER_HPP_</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordtype">void</span> _set_step(std::size_t step, <span class="keyword">typename</span> <a class="code hl_struct" href="structGridFormat_1_1GridReader_1_1FieldNames.html">GridReader::FieldNames</a>&amp; field_names)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        _access_reader().<a class="code hl_function" href="classGridFormat_1_1GridReader.html#a7880f09cdd8cd4c48d3eb1a51b505209">set_step</a>(step);</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        field_names.clear();</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        ReaderDetail::copy_field_names(_access_reader(), field_names);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    }</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keyword">const</span> <a class="code hl_class" href="classGridFormat_1_1GridReader.html">GridReader</a>&amp; _access_reader()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        _check_reader_access();</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="keywordflow">return</span> *_reader;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    }</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <a class="code hl_class" href="classGridFormat_1_1GridReader.html">GridReader</a>&amp; _access_reader() {</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        _check_reader_access();</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordflow">return</span> *_reader;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    }</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keywordtype">void</span> _check_reader_access()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="keywordflow">if</span> (!_reader_is_set())</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>            <span class="keywordflow">throw</span> InvalidState(<span class="stringliteral">&quot;No file has been read&quot;</span>);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    }</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordtype">bool</span> _reader_is_set()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">bool</span><span class="keyword">&gt;</span>(_reader);</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    }</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    std::unique_ptr&lt;GridReader&gt; _reader;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    std::optional&lt;ReaderFactoryFunctor&gt; _reader_factory;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>};</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>}  <span class="comment">// namespace GridFormat</span></div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_WRITER_HPP_</span></div>
 <div class="ttc" id="aclassGridFormat_1_1AnyReaderFactory_html"><div class="ttname"><a href="classGridFormat_1_1AnyReaderFactory.html">GridFormat::AnyReaderFactory</a></div><div class="ttdef"><b>Definition:</b> reader.hpp:36</div></div>
-<div class="ttc" id="aclassGridFormat_1_1Reader_html"><div class="ttname"><a href="classGridFormat_1_1Reader.html">GridFormat::Reader</a></div><div class="ttdoc">Interface to the readers for all supported file formats.</div><div class="ttdef"><b>Definition:</b> reader.hpp:85</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html"><div class="ttname"><a href="classGridFormat_1_1GridReader.html">GridFormat::GridReader</a></div><div class="ttdoc">Abstract base class for all readers, defines the common interface.</div><div class="ttdef"><b>Definition:</b> reader.hpp:51</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a010bbd751b31889df26bd2c2436d31ac"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a010bbd751b31889df26bd2c2436d31ac">GridFormat::GridReader::visit_cells</a></div><div class="ttdeci">void visit_cells(const CellVisitor &amp;visitor) const</div><div class="ttdoc">Visit all cells in the grid read from the file.</div><div class="ttdef"><b>Definition:</b> reader.hpp:195</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a029f6fb959fd98718508f714cf870966"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a029f6fb959fd98718508f714cf870966">GridFormat::GridReader::is_sequence</a></div><div class="ttdeci">bool is_sequence() const</div><div class="ttdoc">Return true if the read file is a sequence.</div><div class="ttdef"><b>Definition:</b> reader.hpp:146</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a1ddb71f9a8f815e62eb89787df5df891"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a1ddb71f9a8f815e62eb89787df5df891">GridFormat::GridReader::number_of_pieces</a></div><div class="ttdeci">std::size_t number_of_pieces() const</div><div class="ttdef"><b>Definition:</b> reader.hpp:102</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a47c771e2676bf620a35bc97c932da170"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a47c771e2676bf620a35bc97c932da170">GridFormat::GridReader::meta_data_field</a></div><div class="ttdeci">FieldPtr meta_data_field(std::string_view name) const</div><div class="ttdoc">Return the meta data field with the given name.</div><div class="ttdef"><b>Definition:</b> reader.hpp:215</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a49cbb90dd99a1de160968dd4761dfdad"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a49cbb90dd99a1de160968dd4761dfdad">GridFormat::GridReader::filename</a></div><div class="ttdeci">const std::string &amp; filename() const</div><div class="ttdoc">Return the name of the opened grid file (empty string until open() is called)</div><div class="ttdef"><b>Definition:</b> reader.hpp:86</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a516bc066601c9020b97113cc3151373f"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f">GridFormat::GridReader::name</a></div><div class="ttdeci">std::string name() const</div><div class="ttdoc">Return the name of this reader.</div><div class="ttdef"><b>Definition:</b> reader.hpp:67</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a68779b9dc1d5f103d52a1dfc86146467"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a68779b9dc1d5f103d52a1dfc86146467">GridFormat::GridReader::origin</a></div><div class="ttdeci">Vector origin() const</div><div class="ttdoc">Return the origin of the grid (only available for image grid formats)</div><div class="ttdef"><b>Definition:</b> reader.hpp:134</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a6dc525bc4e87929a93ed07f60f7e95b9"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a6dc525bc4e87929a93ed07f60f7e95b9">GridFormat::GridReader::open</a></div><div class="ttdeci">void open(const std::string &amp;filename)</div><div class="ttdoc">Open the given grid file.</div><div class="ttdef"><b>Definition:</b> reader.hpp:72</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a7880f09cdd8cd4c48d3eb1a51b505209"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a7880f09cdd8cd4c48d3eb1a51b505209">GridFormat::GridReader::set_step</a></div><div class="ttdeci">void set_step(std::size_t step_idx)</div><div class="ttdoc">Set the step from which to read data (only available for sequence formats)</div><div class="ttdef"><b>Definition:</b> reader.hpp:161</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a88d13f651a8a7df9d7cd5ea1328cef53"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a88d13f651a8a7df9d7cd5ea1328cef53">GridFormat::GridReader::point_field</a></div><div class="ttdeci">FieldPtr point_field(std::string_view name) const</div><div class="ttdoc">Return the point field with the given name.</div><div class="ttdef"><b>Definition:</b> reader.hpp:210</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a91022c45350b1f01e73d75af82fdea56"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a91022c45350b1f01e73d75af82fdea56">GridFormat::GridReader::time_at_step</a></div><div class="ttdeci">double time_at_step(std::size_t step_idx) const</div><div class="ttdoc">Return the time at the current step (only available for sequence formats)</div><div class="ttdef"><b>Definition:</b> reader.hpp:156</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a92d8fd371140f0ad711119b1aa7e8eab"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a92d8fd371140f0ad711119b1aa7e8eab">GridFormat::GridReader::location</a></div><div class="ttdeci">PieceLocation location() const</div><div class="ttdoc">Return the location of this piece in a structured grid (only available for structured grid formats)</div><div class="ttdef"><b>Definition:</b> reader.hpp:117</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_a938af138287ba87dc3ada72e0babee2b"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#a938af138287ba87dc3ada72e0babee2b">GridFormat::GridReader::cell_field</a></div><div class="ttdeci">FieldPtr cell_field(std::string_view name) const</div><div class="ttdoc">Return the cell field with the given name.</div><div class="ttdef"><b>Definition:</b> reader.hpp:205</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_aaa1449ee1a9c8b0663adcf34c7c931aa"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#aaa1449ee1a9c8b0663adcf34c7c931aa">GridFormat::GridReader::close</a></div><div class="ttdeci">void close()</div><div class="ttdoc">Close the grid file.</div><div class="ttdef"><b>Definition:</b> reader.hpp:79</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_aaa8980cdf3d9fc563096fd3ba91023cc"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#aaa8980cdf3d9fc563096fd3ba91023cc">GridFormat::GridReader::points</a></div><div class="ttdeci">FieldPtr points() const</div><div class="ttdoc">Return the points of the grid as field.</div><div class="ttdef"><b>Definition:</b> reader.hpp:200</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_aaffc5117c36765ef91dd2ba842d860b4"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#aaffc5117c36765ef91dd2ba842d860b4">GridFormat::GridReader::ordinates</a></div><div class="ttdeci">std::vector&lt; double &gt; ordinates(unsigned int direction) const</div><div class="ttdoc">Return the ordinates of the grid (only available for rectilinear grid formats)</div><div class="ttdef"><b>Definition:</b> reader.hpp:122</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_abc668e99c9a53df337797cdcdeb9a9d3"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#abc668e99c9a53df337797cdcdeb9a9d3">GridFormat::GridReader::number_of_cells</a></div><div class="ttdeci">std::size_t number_of_cells() const</div><div class="ttdoc">Return the number of cells in the grid read from the file.</div><div class="ttdef"><b>Definition:</b> reader.hpp:91</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_ad6ab48d38abf1273d9642082ec8f7459"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#ad6ab48d38abf1273d9642082ec8f7459">GridFormat::GridReader::number_of_points</a></div><div class="ttdeci">std::size_t number_of_points() const</div><div class="ttdoc">Return the number of points in the grid read from the file.</div><div class="ttdef"><b>Definition:</b> reader.hpp:96</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_ad7498ba87048b44dfdecabed21ac0a5f"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#ad7498ba87048b44dfdecabed21ac0a5f">GridFormat::GridReader::spacing</a></div><div class="ttdeci">Vector spacing() const</div><div class="ttdoc">Return the spacing of the grid (only available for image grid formats)</div><div class="ttdef"><b>Definition:</b> reader.hpp:129</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_aea8a764566cdfa86df27da88baccdad0"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#aea8a764566cdfa86df27da88baccdad0">GridFormat::GridReader::basis_vector</a></div><div class="ttdeci">Vector basis_vector(unsigned int direction) const</div><div class="ttdoc">Return the basis vector of the grid in the given direction (only available for image grid formats)</div><div class="ttdef"><b>Definition:</b> reader.hpp:139</div></div>
+<div class="ttc" id="aclassGridFormat_1_1GridReader_html_aefef1efe22a2e1adb76ed7015f95842e"><div class="ttname"><a href="classGridFormat_1_1GridReader.html#aefef1efe22a2e1adb76ed7015f95842e">GridFormat::GridReader::number_of_steps</a></div><div class="ttdeci">std::size_t number_of_steps() const</div><div class="ttdoc">Return the number of available steps (only available for sequence formats)</div><div class="ttdef"><b>Definition:</b> reader.hpp:151</div></div>
+<div class="ttc" id="aclassGridFormat_1_1Reader_html"><div class="ttname"><a href="classGridFormat_1_1Reader.html">GridFormat::Reader</a></div><div class="ttdoc">Interface to the readers for all supported file formats.</div><div class="ttdef"><b>Definition:</b> reader.hpp:94</div></div>
+<div class="ttc" id="agrid_2reader_8hpp_html"><div class="ttname"><a href="grid_2reader_8hpp.html">reader.hpp</a></div><div class="ttdoc">Base class for grid data readers.</div></div>
 <div class="ttc" id="agroup__Common_html_ga06474c8fd20c465d2ea250e7749f68b9"><div class="ttname"><a href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">GridFormat::FieldPtr</a></div><div class="ttdeci">std::shared_ptr&lt; const Field &gt; FieldPtr</div><div class="ttdoc">Pointer type used by writers/readers for fields.</div><div class="ttdef"><b>Definition:</b> field.hpp:160</div></div>
 <div class="ttc" id="astructGridFormat_1_1FileFormat_1_1Any_html"><div class="ttname"><a href="structGridFormat_1_1FileFormat_1_1Any.html">GridFormat::FileFormat::Any</a></div><div class="ttdoc">Selector for an unspecified file format. When using this format, GridFormat will automatically select...</div><div class="ttdef"><b>Definition:</b> gridformat.hpp:203</div></div>
+<div class="ttc" id="astructGridFormat_1_1GridReader_1_1FieldNames_html"><div class="ttname"><a href="structGridFormat_1_1GridReader_1_1FieldNames.html">GridFormat::GridReader::FieldNames</a></div><div class="ttdef"><b>Definition:</b> reader.hpp:260</div></div>
+<div class="ttc" id="astructGridFormat_1_1GridReader_1_1PieceLocation_html"><div class="ttname"><a href="structGridFormat_1_1GridReader_1_1PieceLocation.html">GridFormat::GridReader::PieceLocation</a></div><div class="ttdoc">Describes the location of a piece within a distributed structured grid.</div><div class="ttdef"><b>Definition:</b> reader.hpp:57</div></div>
 <div class="ttc" id="astructGridFormat_1_1ReaderFactory_html"><div class="ttname"><a href="structGridFormat_1_1ReaderFactory.html">GridFormat::ReaderFactory</a></div><div class="ttdoc">Factory class to create a reader for the given file format.</div><div class="ttdef"><b>Definition:</b> gridformat.hpp:149</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

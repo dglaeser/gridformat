@@ -131,6 +131,7 @@ Inheritance diagram for GridFormat::PVTPReader:</div>
   <map id="GridFormat::PVTPReader_map" name="GridFormat::PVTPReader_map">
 <area href="classGridFormat_1_1VTK_1_1PXMLUnstructuredGridReader.html" alt="GridFormat::VTK::PXMLUnstructuredGridReader&lt; VTPReader &gt;" shape="rect" coords="0,112,372,136"/>
 <area href="classGridFormat_1_1VTK_1_1PXMLReaderBase.html" title="Base class for readers of parallel vtk-xml file formats." alt="GridFormat::VTK::PXMLReaderBase&lt; PieceReader &gt;" shape="rect" coords="0,56,372,80"/>
+<area href="classGridFormat_1_1GridReader.html" title="Abstract base class for all readers, defines the common interface." alt="GridFormat::GridReader" shape="rect" coords="0,0,372,24"/>
   </map>
 </div></div>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -155,9 +156,114 @@ template&lt;Concepts::Communicator C&gt; </td></tr>
 template&lt;Concepts::Communicator C&gt; </td></tr>
 <tr class="memitem:a2087ca4ec2dcee87615d8e03b48bdf7b inherit pub_methods_classGridFormat_1_1VTK_1_1PXMLReaderBase"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>PXMLReaderBase</b> (std::string vtk_grid_type, const C &amp;comm, std::optional&lt; bool &gt; merge_exceeding_pieces={})</td></tr>
 <tr class="separator:a2087ca4ec2dcee87615d8e03b48bdf7b inherit pub_methods_classGridFormat_1_1VTK_1_1PXMLReaderBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classGridFormat_1_1GridReader"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGridFormat_1_1GridReader')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGridFormat_1_1GridReader.html">GridFormat::GridReader</a></td></tr>
+<tr class="memitem:a52a16bc153c251eebc71de1a02bd7562 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a52a16bc153c251eebc71de1a02bd7562" name="a52a16bc153c251eebc71de1a02bd7562"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>GridReader</b> (const std::string &amp;<a class="el" href="classGridFormat_1_1GridReader.html#a49cbb90dd99a1de160968dd4761dfdad">filename</a>)</td></tr>
+<tr class="separator:a52a16bc153c251eebc71de1a02bd7562 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a516bc066601c9020b97113cc3151373f inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a516bc066601c9020b97113cc3151373f" name="a516bc066601c9020b97113cc3151373f"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const</td></tr>
+<tr class="memdesc:a516bc066601c9020b97113cc3151373f inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the name of this reader. <br /></td></tr>
+<tr class="separator:a516bc066601c9020b97113cc3151373f inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dc525bc4e87929a93ed07f60f7e95b9 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a6dc525bc4e87929a93ed07f60f7e95b9" name="a6dc525bc4e87929a93ed07f60f7e95b9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>open</b> (const std::string &amp;<a class="el" href="classGridFormat_1_1GridReader.html#a49cbb90dd99a1de160968dd4761dfdad">filename</a>)</td></tr>
+<tr class="memdesc:a6dc525bc4e87929a93ed07f60f7e95b9 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open the given grid file. <br /></td></tr>
+<tr class="separator:a6dc525bc4e87929a93ed07f60f7e95b9 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa1449ee1a9c8b0663adcf34c7c931aa inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="aaa1449ee1a9c8b0663adcf34c7c931aa" name="aaa1449ee1a9c8b0663adcf34c7c931aa"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>close</b> ()</td></tr>
+<tr class="memdesc:aaa1449ee1a9c8b0663adcf34c7c931aa inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close the grid file. <br /></td></tr>
+<tr class="separator:aaa1449ee1a9c8b0663adcf34c7c931aa inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49cbb90dd99a1de160968dd4761dfdad inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a49cbb90dd99a1de160968dd4761dfdad" name="a49cbb90dd99a1de160968dd4761dfdad"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>filename</b> () const</td></tr>
+<tr class="memdesc:a49cbb90dd99a1de160968dd4761dfdad inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the name of the opened grid file (empty string until <a class="el" href="classGridFormat_1_1GridReader.html#a6dc525bc4e87929a93ed07f60f7e95b9" title="Open the given grid file.">open()</a> is called) <br /></td></tr>
+<tr class="separator:a49cbb90dd99a1de160968dd4761dfdad inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc668e99c9a53df337797cdcdeb9a9d3 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="abc668e99c9a53df337797cdcdeb9a9d3" name="abc668e99c9a53df337797cdcdeb9a9d3"></a>
+std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>number_of_cells</b> () const</td></tr>
+<tr class="memdesc:abc668e99c9a53df337797cdcdeb9a9d3 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of cells in the grid read from the file. <br /></td></tr>
+<tr class="separator:abc668e99c9a53df337797cdcdeb9a9d3 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6ab48d38abf1273d9642082ec8f7459 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="ad6ab48d38abf1273d9642082ec8f7459" name="ad6ab48d38abf1273d9642082ec8f7459"></a>
+std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>number_of_points</b> () const</td></tr>
+<tr class="memdesc:ad6ab48d38abf1273d9642082ec8f7459 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of points in the grid read from the file. <br /></td></tr>
+<tr class="separator:ad6ab48d38abf1273d9642082ec8f7459 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ddb71f9a8f815e62eb89787df5df891 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1GridReader.html#a1ddb71f9a8f815e62eb89787df5df891">number_of_pieces</a> () const</td></tr>
+<tr class="separator:a1ddb71f9a8f815e62eb89787df5df891 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a183ca596c6582ab5245466a5019fab48 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a183ca596c6582ab5245466a5019fab48" name="a183ca596c6582ab5245466a5019fab48"></a>
+std::array&lt; std::size_t, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>extents</b> () const</td></tr>
+<tr class="memdesc:a183ca596c6582ab5245466a5019fab48 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the extents of the grid (only available for structured grid formats) <br /></td></tr>
+<tr class="separator:a183ca596c6582ab5245466a5019fab48 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92d8fd371140f0ad711119b1aa7e8eab inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a92d8fd371140f0ad711119b1aa7e8eab" name="a92d8fd371140f0ad711119b1aa7e8eab"></a>
+<a class="el" href="structGridFormat_1_1GridReader_1_1PieceLocation.html">PieceLocation</a>&#160;</td><td class="memItemRight" valign="bottom"><b>location</b> () const</td></tr>
+<tr class="memdesc:a92d8fd371140f0ad711119b1aa7e8eab inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the location of this piece in a structured grid (only available for structured grid formats) <br /></td></tr>
+<tr class="separator:a92d8fd371140f0ad711119b1aa7e8eab inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaffc5117c36765ef91dd2ba842d860b4 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="aaffc5117c36765ef91dd2ba842d860b4" name="aaffc5117c36765ef91dd2ba842d860b4"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ordinates</b> (unsigned int direction) const</td></tr>
+<tr class="memdesc:aaffc5117c36765ef91dd2ba842d860b4 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the ordinates of the grid (only available for rectilinear grid formats) <br /></td></tr>
+<tr class="separator:aaffc5117c36765ef91dd2ba842d860b4 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7498ba87048b44dfdecabed21ac0a5f inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="ad7498ba87048b44dfdecabed21ac0a5f" name="ad7498ba87048b44dfdecabed21ac0a5f"></a>
+Vector&#160;</td><td class="memItemRight" valign="bottom"><b>spacing</b> () const</td></tr>
+<tr class="memdesc:ad7498ba87048b44dfdecabed21ac0a5f inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the spacing of the grid (only available for image grid formats) <br /></td></tr>
+<tr class="separator:ad7498ba87048b44dfdecabed21ac0a5f inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68779b9dc1d5f103d52a1dfc86146467 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a68779b9dc1d5f103d52a1dfc86146467" name="a68779b9dc1d5f103d52a1dfc86146467"></a>
+Vector&#160;</td><td class="memItemRight" valign="bottom"><b>origin</b> () const</td></tr>
+<tr class="memdesc:a68779b9dc1d5f103d52a1dfc86146467 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the origin of the grid (only available for image grid formats) <br /></td></tr>
+<tr class="separator:a68779b9dc1d5f103d52a1dfc86146467 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea8a764566cdfa86df27da88baccdad0 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="aea8a764566cdfa86df27da88baccdad0" name="aea8a764566cdfa86df27da88baccdad0"></a>
+Vector&#160;</td><td class="memItemRight" valign="bottom"><b>basis_vector</b> (unsigned int direction) const</td></tr>
+<tr class="memdesc:aea8a764566cdfa86df27da88baccdad0 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the basis vector of the grid in the given direction (only available for image grid formats) <br /></td></tr>
+<tr class="separator:aea8a764566cdfa86df27da88baccdad0 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a029f6fb959fd98718508f714cf870966 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a029f6fb959fd98718508f714cf870966" name="a029f6fb959fd98718508f714cf870966"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_sequence</b> () const</td></tr>
+<tr class="memdesc:a029f6fb959fd98718508f714cf870966 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the read file is a sequence. <br /></td></tr>
+<tr class="separator:a029f6fb959fd98718508f714cf870966 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefef1efe22a2e1adb76ed7015f95842e inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="aefef1efe22a2e1adb76ed7015f95842e" name="aefef1efe22a2e1adb76ed7015f95842e"></a>
+std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>number_of_steps</b> () const</td></tr>
+<tr class="memdesc:aefef1efe22a2e1adb76ed7015f95842e inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of available steps (only available for sequence formats) <br /></td></tr>
+<tr class="separator:aefef1efe22a2e1adb76ed7015f95842e inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91022c45350b1f01e73d75af82fdea56 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a91022c45350b1f01e73d75af82fdea56" name="a91022c45350b1f01e73d75af82fdea56"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>time_at_step</b> (std::size_t step_idx) const</td></tr>
+<tr class="memdesc:a91022c45350b1f01e73d75af82fdea56 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the time at the current step (only available for sequence formats) <br /></td></tr>
+<tr class="separator:a91022c45350b1f01e73d75af82fdea56 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7880f09cdd8cd4c48d3eb1a51b505209 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a7880f09cdd8cd4c48d3eb1a51b505209" name="a7880f09cdd8cd4c48d3eb1a51b505209"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_step</b> (std::size_t step_idx)</td></tr>
+<tr class="memdesc:a7880f09cdd8cd4c48d3eb1a51b505209 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the step from which to read data (only available for sequence formats) <br /></td></tr>
+<tr class="separator:a7880f09cdd8cd4c48d3eb1a51b505209 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70f42a1f4d1980c629f7ccbe0ffb00bb inherit pub_methods_classGridFormat_1_1GridReader"><td class="memTemplParams" colspan="2"><a id="a70f42a1f4d1980c629f7ccbe0ffb00bb" name="a70f42a1f4d1980c629f7ccbe0ffb00bb"></a>
+template&lt;std::size_t space_dim = 3, Concepts::GridFactory&lt; space_dim &gt; Factory&gt; </td></tr>
+<tr class="memitem:a70f42a1f4d1980c629f7ccbe0ffb00bb inherit pub_methods_classGridFormat_1_1GridReader"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>export_grid</b> (Factory &amp;factory) const</td></tr>
+<tr class="memdesc:a70f42a1f4d1980c629f7ccbe0ffb00bb inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export the grid read from the file into the given grid factory. <br /></td></tr>
+<tr class="separator:a70f42a1f4d1980c629f7ccbe0ffb00bb inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a010bbd751b31889df26bd2c2436d31ac inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a010bbd751b31889df26bd2c2436d31ac" name="a010bbd751b31889df26bd2c2436d31ac"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>visit_cells</b> (const CellVisitor &amp;visitor) const</td></tr>
+<tr class="memdesc:a010bbd751b31889df26bd2c2436d31ac inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visit all cells in the grid read from the file. <br /></td></tr>
+<tr class="separator:a010bbd751b31889df26bd2c2436d31ac inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa8980cdf3d9fc563096fd3ba91023cc inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="aaa8980cdf3d9fc563096fd3ba91023cc" name="aaa8980cdf3d9fc563096fd3ba91023cc"></a>
+<a class="el" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><b>points</b> () const</td></tr>
+<tr class="memdesc:aaa8980cdf3d9fc563096fd3ba91023cc inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the points of the grid as field. <br /></td></tr>
+<tr class="separator:aaa8980cdf3d9fc563096fd3ba91023cc inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a938af138287ba87dc3ada72e0babee2b inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a938af138287ba87dc3ada72e0babee2b" name="a938af138287ba87dc3ada72e0babee2b"></a>
+<a class="el" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><b>cell_field</b> (std::string_view <a class="el" href="classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f">name</a>) const</td></tr>
+<tr class="memdesc:a938af138287ba87dc3ada72e0babee2b inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the cell field with the given name. <br /></td></tr>
+<tr class="separator:a938af138287ba87dc3ada72e0babee2b inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88d13f651a8a7df9d7cd5ea1328cef53 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a88d13f651a8a7df9d7cd5ea1328cef53" name="a88d13f651a8a7df9d7cd5ea1328cef53"></a>
+<a class="el" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><b>point_field</b> (std::string_view <a class="el" href="classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f">name</a>) const</td></tr>
+<tr class="memdesc:a88d13f651a8a7df9d7cd5ea1328cef53 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the point field with the given name. <br /></td></tr>
+<tr class="separator:a88d13f651a8a7df9d7cd5ea1328cef53 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47c771e2676bf620a35bc97c932da170 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a47c771e2676bf620a35bc97c932da170" name="a47c771e2676bf620a35bc97c932da170"></a>
+<a class="el" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><b>meta_data_field</b> (std::string_view <a class="el" href="classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f">name</a>) const</td></tr>
+<tr class="memdesc:a47c771e2676bf620a35bc97c932da170 inherit pub_methods_classGridFormat_1_1GridReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the meta data field with the given name. <br /></td></tr>
+<tr class="separator:a47c771e2676bf620a35bc97c932da170 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd23c4112921f60344eb12f122ece42c inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="acd23c4112921f60344eb12f122ece42c" name="acd23c4112921f60344eb12f122ece42c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_ignore_warnings</b> (bool value)</td></tr>
+<tr class="separator:acd23c4112921f60344eb12f122ece42c inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_types_classGridFormat_1_1GridReader"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classGridFormat_1_1GridReader')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classGridFormat_1_1GridReader.html">GridFormat::GridReader</a></td></tr>
+<tr class="memitem:a48dc58f182d836da0abc3ebaca74ec01 inherit pub_types_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a48dc58f182d836da0abc3ebaca74ec01" name="a48dc58f182d836da0abc3ebaca74ec01"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Vector</b> = std::array&lt; double, 3 &gt;</td></tr>
+<tr class="separator:a48dc58f182d836da0abc3ebaca74ec01 inherit pub_types_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dbf981702c0ab04ec88a1fd79e4b0aa inherit pub_types_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a0dbf981702c0ab04ec88a1fd79e4b0aa" name="a0dbf981702c0ab04ec88a1fd79e4b0aa"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>CellVisitor</b> = std::function&lt; void(CellType, const std::vector&lt; std::size_t &gt; &amp;)&gt;</td></tr>
+<tr class="separator:a0dbf981702c0ab04ec88a1fd79e4b0aa inherit pub_types_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_types_classGridFormat_1_1VTK_1_1PXMLReaderBase"><td colspan="2" onclick="javascript:toggleInherit('pro_types_classGridFormat_1_1VTK_1_1PXMLReaderBase')"><img src="closed.png" alt="-"/>&#160;Protected Types inherited from <a class="el" href="classGridFormat_1_1VTK_1_1PXMLReaderBase.html">GridFormat::VTK::PXMLReaderBase&lt; PieceReader &gt;</a></td></tr>
 <tr class="memitem:a2d6c21cea951002140264ec6911a5df8 inherit pro_types_classGridFormat_1_1VTK_1_1PXMLReaderBase"><td class="memItemLeft" align="right" valign="top"><a id="a2d6c21cea951002140264ec6911a5df8" name="a2d6c21cea951002140264ec6911a5df8"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>FieldType</b> { <b>point</b>
 , <b>cell</b>
@@ -177,11 +283,15 @@ std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>_num_process_p
 std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_merge_exceeding_pieces_option</b> () const</td></tr>
 <tr class="separator:ae15d34c44f7e5783e941311d8a8e8853 inherit pro_methods_classGridFormat_1_1VTK_1_1PXMLReaderBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc8eda360fd2d2fcf82d2724c6b05ba9 inherit pro_methods_classGridFormat_1_1VTK_1_1PXMLReaderBase"><td class="memItemLeft" align="right" valign="top"><a id="adc8eda360fd2d2fcf82d2724c6b05ba9" name="adc8eda360fd2d2fcf82d2724c6b05ba9"></a>
-<a class="el" href="classGridFormat_1_1VTK_1_1XMLReaderHelper.html">XMLReaderHelper</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_read_pvtk_file</b> (const std::string &amp;filename, typename GridReader::FieldNames &amp;fields)</td></tr>
+<a class="el" href="classGridFormat_1_1VTK_1_1XMLReaderHelper.html">XMLReaderHelper</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_read_pvtk_file</b> (const std::string &amp;<a class="el" href="classGridFormat_1_1GridReader.html#a49cbb90dd99a1de160968dd4761dfdad">filename</a>, typename <a class="el" href="structGridFormat_1_1GridReader_1_1FieldNames.html">GridReader::FieldNames</a> &amp;fields)</td></tr>
 <tr class="separator:adc8eda360fd2d2fcf82d2724c6b05ba9 inherit pro_methods_classGridFormat_1_1VTK_1_1PXMLReaderBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb51e6e860607b8309a732a1121dcebb inherit pro_methods_classGridFormat_1_1VTK_1_1PXMLReaderBase"><td class="memItemLeft" align="right" valign="top"><a id="abb51e6e860607b8309a732a1121dcebb" name="abb51e6e860607b8309a732a1121dcebb"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>_close_pvtk_file</b> ()</td></tr>
 <tr class="separator:abb51e6e860607b8309a732a1121dcebb inherit pro_methods_classGridFormat_1_1VTK_1_1PXMLReaderBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classGridFormat_1_1GridReader"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGridFormat_1_1GridReader')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classGridFormat_1_1GridReader.html">GridFormat::GridReader</a></td></tr>
+<tr class="memitem:a9c19e822b40da738357ce8b4535262f9 inherit pro_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a9c19e822b40da738357ce8b4535262f9" name="a9c19e822b40da738357ce8b4535262f9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>_log_warning</b> (std::string_view warning) const</td></tr>
+<tr class="separator:a9c19e822b40da738357ce8b4535262f9 inherit pro_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/__w/gridformat/gridformat/gridformat/vtk/<a class="el" href="pvtp__reader_8hpp_source.html">pvtp_reader.hpp</a></li>

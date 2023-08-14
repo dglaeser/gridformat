@@ -6,7 +6,7 @@ var searchData=
   ['rawbinarystream_3',['RawBinaryStream',['../classGridFormat_1_1RawBinaryStream.html',1,'GridFormat']]],
   ['rawdecoder_4',['RawDecoder',['../structGridFormat_1_1RawDecoder.html',1,'GridFormat']]],
   ['reader_5',['Reader',['../classGridFormat_1_1Reader.html',1,'GridFormat']]],
-  ['reader_2ehpp_6',['reader.hpp',['../reader_8hpp.html',1,'']]],
+  ['reader_2ehpp_6',['reader.hpp',['../reader_8hpp.html',1,'(Global Namespace)'],['../grid_2reader_8hpp.html',1,'(Global Namespace)']]],
   ['readerfactory_7',['ReaderFactory',['../structGridFormat_1_1ReaderFactory.html',1,'GridFormat']]],
   ['readerfactory_3c_20fileformat_3a_3apvd_3c_20pieceformat_20_3e_20_3e_8',['ReaderFactory&lt; FileFormat::PVD&lt; PieceFormat &gt; &gt;',['../structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVD_3_01PieceFormat_01_4_01_4.html',1,'GridFormat']]],
   ['readerfactory_3c_20fileformat_3a_3apvdclosure_20_3e_9',['ReaderFactory&lt; FileFormat::PVDClosure &gt;',['../structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVDClosure_01_4.html',1,'GridFormat']]],

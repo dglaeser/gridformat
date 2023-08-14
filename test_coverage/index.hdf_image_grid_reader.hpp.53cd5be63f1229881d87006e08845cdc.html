@@ -26,7 +26,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2023-08-12 18:58:20</td>
+      <td>2023-08-14 22:35:23</td>
     </tr>
   </table>
 </div>
@@ -406,7 +406,7 @@
       <td class="lineno"><a id="l43" href="#l43">43</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">41</td>
+      <td class="linecount coveredLine">43</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">VTKHDFImageGridReader</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -556,7 +556,7 @@
       <td class="lineno"><a id="l60" href="#l60">60</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">42</td>
+      <td class="linecount coveredLine">44</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">_open</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">GridReader</span><span class="o">::</span><span class="n">FieldNames</span><span class="o">&amp;</span><span class="w"> </span><span class="n">field_names</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -566,14 +566,14 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 42 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 44 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-          <div class="takenBranch">&check; Branch 4 taken 42 times.</div>
+          <div class="takenBranch">&check; Branch 4 taken 44 times.</div>
           <div class="notTakenBranch">&cross; Branch 5 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">42</td>
+      <td class="linecount coveredLine">44</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HDF5File</span><span class="p">{</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">_comm</span><span class="p">,</span><span class="w"> </span><span class="n">HDF5File</span><span class="o">::</span><span class="n">read_only</span><span class="p">};</span><span class="w"></span></td>
     </tr>
 
@@ -591,14 +591,14 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 42 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 44 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-          <div class="takenBranch">&check; Branch 4 taken 42 times.</div>
+          <div class="takenBranch">&check; Branch 4 taken 44 times.</div>
           <div class="notTakenBranch">&cross; Branch 5 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">42</td>
+      <td class="linecount coveredLine">44</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VTKHDF</span><span class="o">::</span><span class="n">get_file_type</span><span class="p">(</span><span class="n">_file</span><span class="p">.</span><span class="n">value</span><span class="p">());</span><span class="w"></span></td>
     </tr>
 
@@ -608,12 +608,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 24 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 26 times.</div>
           <div class="takenBranch">&check; Branch 2 taken 18 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">42</td>
+      <td class="linecount coveredLine">44</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">type</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">&quot;ImageData&quot;</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
@@ -623,16 +623,16 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">3/6</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 24 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 26 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
-          <div class="takenBranch">&check; Branch 5 taken 24 times.</div>
+          <div class="takenBranch">&check; Branch 5 taken 26 times.</div>
           <div class="notTakenBranch">&cross; Branch 6 not taken.</div>
-          <div class="takenBranch">&check; Branch 9 taken 24 times.</div>
+          <div class="takenBranch">&check; Branch 9 taken 26 times.</div>
           <div class="notTakenBranch">&cross; Branch 10 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">26</td>
       <td class="src coveredLine"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="n">ValueError</span><span class="p">(</span><span class="s">&quot;Incompatible VTK-HDF type: &#39;&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;&#39;, expected &#39;ImageData&#39;.&quot;</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -685,7 +685,7 @@
         </details>
       </td>
       <td class="linecount coveredLine">18</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_file</span><span class="o">-&gt;</span><span class="n">exists</span><span class="p">(</span><span class="s">&quot;VTKHDF/Steps&quot;</span><span class="p">))</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_file</span><span class="o">-&gt;</span><span class="n">exists</span><span class="p">(</span><span class="s">&quot;/VTKHDF/Steps&quot;</span><span class="p">))</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -702,7 +702,7 @@
         </details>
       </td>
       <td class="linecount coveredLine">27</td>
-      <td class="src coveredLine"><span class="w">            </span><span class="n">_file</span><span class="o">-&gt;</span><span class="n">visit_attribute</span><span class="p">(</span><span class="s">&quot;VTKHDF/Steps/NSteps&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">            </span><span class="n">_file</span><span class="o">-&gt;</span><span class="n">visit_attribute</span><span class="p">(</span><span class="s">&quot;/VTKHDF/Steps/NSteps&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">field</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -1173,7 +1173,7 @@
       <td class="lineno"><a id="l108" href="#l108">108</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">42</td>
+      <td class="linecount coveredLine">44</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
@@ -1457,7 +1457,7 @@
       <td class="lineno"><a id="l141" href="#l141">141</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">865</td>
+      <td class="linecount coveredLine">899</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_number_of_points</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1467,12 +1467,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 865 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 899 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">865</td>
+      <td class="linecount coveredLine">899</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">counts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Ranges</span><span class="o">::</span><span class="n">incremented</span><span class="p">(</span><span class="n">_get_extents</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -1480,7 +1480,7 @@
       <td class="lineno"><a id="l143" href="#l143">143</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">865</td>
+      <td class="linecount coveredLine">899</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span><span class="w"></span></td>
     </tr>
 
@@ -1520,7 +1520,7 @@
       <td class="lineno"><a id="l148" href="#l148">148</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1730</td>
+      <td class="linecount coveredLine">1798</td>
       <td class="src coveredLine"><span class="w">        </span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
@@ -3299,7 +3299,7 @@
       <td class="lineno"><a id="l300" href="#l300">300</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">3230</td>
+      <td class="linecount coveredLine">3264</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_get_extents</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -3315,7 +3315,7 @@
       <td class="lineno"><a id="l302" href="#l302">302</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">3230</td>
+      <td class="linecount coveredLine">3264</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">_piece_location</span><span class="p">.</span><span class="n">upper_right</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">_piece_location</span><span class="p">.</span><span class="n">lower_left</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"></span></td>
     </tr>
 
@@ -3323,7 +3323,7 @@
       <td class="lineno"><a id="l303" href="#l303">303</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">3230</td>
+      <td class="linecount coveredLine">3264</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">_piece_location</span><span class="p">.</span><span class="n">upper_right</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">_piece_location</span><span class="p">.</span><span class="n">lower_left</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"></span></td>
     </tr>
 
@@ -3331,7 +3331,7 @@
       <td class="lineno"><a id="l304" href="#l304">304</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">3230</td>
+      <td class="linecount coveredLine">3264</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">_piece_location</span><span class="p">.</span><span class="n">upper_right</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">_piece_location</span><span class="p">.</span><span class="n">lower_left</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"></span></td>
     </tr>
 
@@ -3339,7 +3339,7 @@
       <td class="lineno"><a id="l305" href="#l305">305</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">9690</td>
+      <td class="linecount coveredLine">9792</td>
       <td class="src coveredLine"><span class="w">        </span><span class="p">};</span><span class="w"></span></td>
     </tr>
 

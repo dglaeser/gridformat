@@ -7,5 +7,6 @@ var searchData=
   ['base64encoderoptions_4',['Base64EncoderOptions',['../structGridFormat_1_1Base64EncoderOptions.html',1,'GridFormat']]],
   ['base64stream_5',['Base64Stream',['../classGridFormat_1_1Base64Stream.html',1,'GridFormat']]],
   ['basis_3c_20converterdetail_3a_3aconvertergrid_20_3e_6',['Basis&lt; ConverterDetail::ConverterGrid &gt;',['../structGridFormat_1_1Traits_1_1Basis_3_01ConverterDetail_1_1ConverterGrid_01_4.html',1,'GridFormat::Traits']]],
-  ['blocks_7',['Blocks',['../structGridFormat_1_1Compression_1_1Blocks.html',1,'GridFormat::Compression']]]
+  ['basis_5fvector_7',['basis_vector',['../classGridFormat_1_1GridReader.html#aea8a764566cdfa86df27da88baccdad0',1,'GridFormat::GridReader']]],
+  ['blocks_8',['Blocks',['../structGridFormat_1_1Compression_1_1Blocks.html',1,'GridFormat::Compression']]]
 ];

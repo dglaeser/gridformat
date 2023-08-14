@@ -128,10 +128,11 @@ $(document).ready(function(){initNavTree('converter_8hpp.html',''); initResizabl
 <code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;numeric&gt;</code><br />
 <code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
 <code>#include &lt;<a class="el" href="field_8hpp_source.html">gridformat/common/field.hpp</a>&gt;</code><br />
 <code>#include &lt;gridformat/common/exceptions.hpp&gt;</code><br />
 <code>#include &lt;gridformat/grid/cell_type.hpp&gt;</code><br />
-<code>#include &lt;gridformat/grid/reader.hpp&gt;</code><br />
+<code>#include &lt;<a class="el" href="grid_2reader_8hpp_source.html">gridformat/grid/reader.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="grid_2writer_8hpp_source.html">gridformat/grid/writer.hpp</a>&gt;</code><br />
 </div>
 <p><a href="converter_8hpp_source.html">Go to the source code of this file.</a></p>
@@ -146,15 +147,15 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1NumberOfCells_3_01ConverterDetail_1_1ConverterGrid_01_4.html">GridFormat::Traits::NumberOfCells&lt; ConverterDetail::ConverterGrid &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1CellPoints_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1size__t_01_4.html">GridFormat::Traits::CellPoints&lt; ConverterDetail::ConverterGrid, std::size_t &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1CellPoints_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1int64__t_01_4.html">GridFormat::Traits::CellPoints&lt; ConverterDetail::ConverterGrid, std::int64_t &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1CellType_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1size__t_01_4.html">GridFormat::Traits::CellType&lt; ConverterDetail::ConverterGrid, std::size_t &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1CellType_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1int64__t_01_4.html">GridFormat::Traits::CellType&lt; ConverterDetail::ConverterGrid, std::int64_t &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1PointCoordinates_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1size__t_01_4.html">GridFormat::Traits::PointCoordinates&lt; ConverterDetail::ConverterGrid, std::size_t &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1PointId_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1size__t_01_4.html">GridFormat::Traits::PointId&lt; ConverterDetail::ConverterGrid, std::size_t &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1NumberOfCellPoints_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1size__t_01_4.html">GridFormat::Traits::NumberOfCellPoints&lt; ConverterDetail::ConverterGrid, std::size_t &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1NumberOfCellPoints_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1int64__t_01_4.html">GridFormat::Traits::NumberOfCellPoints&lt; ConverterDetail::ConverterGrid, std::int64_t &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1Origin_3_01ConverterDetail_1_1ConverterGrid_01_4.html">GridFormat::Traits::Origin&lt; ConverterDetail::ConverterGrid &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -175,10 +176,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gab143956e469694e5bb3cc534958e674e"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Grid.html#gab143956e469694e5bb3cc534958e674e">GridFormat::convert</a> (const Reader &amp;reader, const std::string &amp;filename, const Factory &amp;factory)</td></tr>
 <tr class="memdesc:gab143956e469694e5bb3cc534958e674e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert between grid formats.  <br /></td></tr>
 <tr class="separator:gab143956e469694e5bb3cc534958e674e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacfdca599d26be7db93a94fb21896b342"><td class="memTemplParams" colspan="2">template&lt;std::derived_from&lt; GridReader &gt; Reader, ConverterDetail::TimeSeriesWriterFactory Factory&gt; </td></tr>
-<tr class="memitem:gacfdca599d26be7db93a94fb21896b342"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Grid.html#gacfdca599d26be7db93a94fb21896b342">GridFormat::convert</a> (Reader &amp;reader, const Factory &amp;factory)</td></tr>
-<tr class="memdesc:gacfdca599d26be7db93a94fb21896b342"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overload for time series formats.  <br /></td></tr>
-<tr class="separator:gacfdca599d26be7db93a94fb21896b342"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae2314869ca15e46fcf61729285d2d39d"><td class="memTemplParams" colspan="2">template&lt;std::derived_from&lt; GridReader &gt; Reader, ConverterDetail::TimeSeriesWriterFactory Factory, std::invocable&lt; std::size_t, const std::string &amp; &gt; StepCallBack = decltype([] (std::size_t, const std::string&amp;) {})&gt; </td></tr>
+<tr class="memitem:gae2314869ca15e46fcf61729285d2d39d"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__Grid.html#gae2314869ca15e46fcf61729285d2d39d">GridFormat::convert</a> (Reader &amp;reader, const Factory &amp;factory, const StepCallBack &amp;call_back={})</td></tr>
+<tr class="memdesc:gae2314869ca15e46fcf61729285d2d39d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overload for time series formats.  <br /></td></tr>
+<tr class="separator:gae2314869ca15e46fcf61729285d2d39d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

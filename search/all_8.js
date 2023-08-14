@@ -6,5 +6,6 @@ var searchData=
   ['inlined_3',['Inlined',['../structGridFormat_1_1VTK_1_1DataFormat_1_1Inlined.html',1,'GridFormat::VTK::DataFormat']]],
   ['inlined_4',['inlined',['../vtk_2common_8hpp.html#a209e28e3268494b4aa1a32bc89b288f9',1,'GridFormat::VTK::DataFormat']]],
   ['introduction_5',['Introduction',['../index.html',1,'']]],
-  ['iocontext_6',['IOContext',['../structGridFormat_1_1VTKHDF_1_1IOContext.html',1,'GridFormat::VTKHDF']]]
+  ['iocontext_6',['IOContext',['../structGridFormat_1_1VTKHDF_1_1IOContext.html',1,'GridFormat::VTKHDF']]],
+  ['is_5fsequence_7',['is_sequence',['../classGridFormat_1_1GridReader.html#a029f6fb959fd98718508f714cf870966',1,'GridFormat::GridReader']]]
 ];

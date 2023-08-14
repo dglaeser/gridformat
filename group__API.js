@@ -4,6 +4,7 @@ var group__API =
     [ "writer.hpp", "writer_8hpp.html", null ],
     [ "reader.hpp", "reader_8hpp.html", null ],
     [ "GridFormat::FileFormat::Any", "structGridFormat_1_1FileFormat_1_1Any.html", null ],
+    [ "GridFormat::FileFormat::AnyTimeSeries", "structGridFormat_1_1FileFormat_1_1AnyTimeSeries.html", null ],
     [ "GridFormat::FileFormat::VTI", "structGridFormat_1_1FileFormat_1_1VTI.html", null ],
     [ "GridFormat::FileFormat::VTR", "structGridFormat_1_1FileFormat_1_1VTR.html", null ],
     [ "GridFormat::FileFormat::VTS", "structGridFormat_1_1FileFormat_1_1VTS.html", null ],
@@ -48,8 +49,7 @@ var group__API =
       [ "point_fields", "classGridFormat_1_1Writer.html#a8ff537d09be2f0c5782873a026048c24", null ]
     ] ],
     [ "GridFormat::Reader", "classGridFormat_1_1Reader.html", null ],
-    [ "GridFormat::convert", "group__API.html#gad4a7a7a5caa86c0b786d2bc085f59a26", null ],
-    [ "GridFormat::convert", "group__API.html#ga9b4d2325c9f5caed7dcb52bd022dbcf7", null ],
+    [ "GridFormat::convert", "group__API.html#gaa262c55af3c1c39cf82bded8f77db38c", null ],
     [ "GridFormat::Formats::default_for", "group__API.html#ga19ce8850e7c649e701a6cab52a3ad5a5", null ],
     [ "GridFormat::Formats::default_for", "group__API.html#gaa73c41aeab2861bb23872f1498cb0eb4", null ]
 ];

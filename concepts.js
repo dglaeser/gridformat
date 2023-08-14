@@ -11,6 +11,7 @@ var concepts =
         [ "Grid", "conceptGridFormat_1_1Concepts_1_1Grid.html", null ],
         [ "PointFunction", "conceptGridFormat_1_1Concepts_1_1PointFunction.html", null ],
         [ "CellFunction", "conceptGridFormat_1_1Concepts_1_1CellFunction.html", null ],
+        [ "GridFactory", "conceptGridFormat_1_1Concepts_1_1GridFactory.html", null ],
         [ "Encoder", "conceptGridFormat_1_1Concepts_1_1Encoder.html", null ],
         [ "Decoder", "conceptGridFormat_1_1Concepts_1_1Decoder.html", null ],
         [ "Compressor", "conceptGridFormat_1_1Concepts_1_1Compressor.html", null ],

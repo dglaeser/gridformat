@@ -52,7 +52,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"structGridFormat_1_1AsciiFormatOptions.html"
+"index.html#compatibility-with-userdefined-grids"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
