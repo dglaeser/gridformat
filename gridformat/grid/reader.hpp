@@ -164,25 +164,27 @@ class GridReader {
     //! Export the grid read from the file into the given grid factory
     template<std::size_t space_dim = 3, Concepts::GridFactory<space_dim> Factory>
     void export_grid(Factory& factory) const {
-        const auto point_field = points();
-        const auto point_layout = point_field->layout();
-        const auto read_space_dim = point_layout.extent(1);
-        const auto copied_space_dim = std::min(space_dim, read_space_dim);
-        if (point_layout.extent(0) != number_of_points()) {
-            std::ostringstream s; s << point_layout;
-            throw SizeError(
-                "Point layout " + s.str() + " does not match number of points: " + std::to_string(number_of_points())
-            );
-        }
-
-        point_field->visit_field_values([&] <typename T> (std::span<const T> coords) {
-            auto p = Ranges::filled_array<space_dim>(typename Factory::ctype{0.0});
-            for (std::size_t i = 0; i < point_layout.extent(0); ++i) {
-                for (std::size_t dir = 0; dir < copied_space_dim; ++dir)
-                    p[dir] = static_cast<typename Factory::ctype>(coords[i*read_space_dim + dir]);
-                factory.insert_point(std::as_const(p));
+        if (number_of_points() > 0) {
+            const auto point_field = points();
+            const auto point_layout = point_field->layout();
+            const auto read_space_dim = point_layout.extent(1);
+            const auto copied_space_dim = std::min(space_dim, read_space_dim);
+            if (point_layout.extent(0) != number_of_points()) {
+                std::ostringstream s; s << point_layout;
+                throw SizeError(
+                    "Point layout " + s.str() + " does not match number of points: " + std::to_string(number_of_points())
+                );
             }
-        });
+
+            point_field->visit_field_values([&] <typename T> (std::span<const T> coords) {
+                auto p = Ranges::filled_array<space_dim>(typename Factory::ctype{0.0});
+                for (std::size_t i = 0; i < point_layout.extent(0); ++i) {
+                    for (std::size_t dir = 0; dir < copied_space_dim; ++dir)
+                        p[dir] = static_cast<typename Factory::ctype>(coords[i*read_space_dim + dir]);
+                    factory.insert_point(std::as_const(p));
+                }
+            });
+        }
         visit_cells([&] (GridFormat::CellType ct, const std::vector<std::size_t>& corners) {
             factory.insert_cell(std::move(ct), corners);
         });
