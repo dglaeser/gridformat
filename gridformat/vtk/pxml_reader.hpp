@@ -214,7 +214,7 @@ class PXMLReaderBase : public GridReader {
 
         const bool is_last_rank = _rank.value() == _num_ranks.value() - 1;
         const bool merge_final_pieces = is_last_rank && _merge_exceeding.value_or(false);
-        const std::size_t my_num_pieces = merge_final_pieces ? _num_ranks.value() - _rank.value() : 1;
+        const std::size_t my_num_pieces = merge_final_pieces ? Ranges::size(_pieces_paths(helper)) - _rank.value() : 1;
 
         std::ranges::for_each(
             _pieces_paths(helper)
