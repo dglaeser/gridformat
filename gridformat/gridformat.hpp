@@ -930,13 +930,10 @@ namespace APIDetail {
     template<std::derived_from<GridReader> Reader, typename Communicator>
     std::unique_ptr<Reader> make_reader(const Communicator& c) {
         if constexpr (std::is_same_v<Communicator, NullCommunicator> ||
-                        !std::is_constructible_v<Reader, const Communicator&>) {
-            if (Parallel::size(c) > 1)
-                throw ValueError("Cannot construct given reader for parallel I/O");
+                        !std::is_constructible_v<Reader, const Communicator&>)
             return std::make_unique<Reader>();
-        } else {
+        else
             return std::make_unique<Reader>(c);
-        }
     }
 
     template<Concepts::Communicator C>

@@ -106,6 +106,21 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     };
 #endif
 
+    // test merging of sequential files into one parallel file
+    if (is_parallel)
+        "generic_converter_sequential_to_parallel"_test = [&] () {
+            GridFormat::VTUWriter sequential_writer{grid};
+            const auto seq_file = sequential_writer.write("_generic_converter_vtu_per_rank-" + std::to_string(rank));
+            const auto converted_parallel_file = GridFormat::convert(
+                seq_file,
+                "generic_parallel_converter_sequential_files_to_parallel_file_2d_in_2d_out",
+                GridFormat::ConversionOptions<GridFormat::FileFormat::VTU>{},
+                comm
+            );
+            if (rank == 0)
+                std::cout << "Wrote sequential file converted to parallel '" << converted_parallel_file << "'" << std::endl;
+        };
+
     // test time series conversion
     const auto parallel_suffix = is_parallel ? std::string{"parallel_"} : std::string{""};
     const auto ts_in_filename = "generic_" + parallel_suffix + "ts_converter_in";
