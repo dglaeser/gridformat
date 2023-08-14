@@ -314,13 +314,12 @@ struct BroadCast<MPI_Comm> {
         return result;
     }
 
-    template<std::ranges::contiguous_range R> requires(
-        !Concepts::StaticallySizedRange<R> and
-        std::ranges::sized_range<R>)
+    template<std::ranges::contiguous_range R> requires(!Concepts::StaticallySizedRange<R>)
     static auto get(MPI_Comm comm, const R& values, int root_rank = 0) {
         using T = std::ranges::range_value_t<R>;
-        const auto num_values = std::ranges::size(values);
-        std::vector<T> result(values.begin(), values.end());
+        const auto num_values = BroadCast<MPI_Comm>::get(comm, std::ranges::size(values), root_rank);
+        std::vector<T> result(num_values);
+        std::ranges::copy(values, result.begin());
         MPI_Bcast(
             result.data(),
             num_values,
@@ -399,9 +398,8 @@ struct Scatter<MPI_Comm> {
         std::ranges::sized_range<R>)
     static auto get(MPI_Comm comm, const R& values, int root_rank = 0) {
         using T = std::ranges::range_value_t<R>;
-        const int num_values = static_cast<int>(std::ranges::size(values));
+        const int num_values = static_cast<int>(BroadCast<MPI_Comm>::get(comm, std::ranges::size(values), root_rank));
         const int size = Size<MPI_Comm>::get(comm);
-
         if (num_values%size != 0)
             throw SizeError("Cannot scatter data with unequal chunks per process");
 
