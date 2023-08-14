@@ -12,6 +12,7 @@
 #include <iterator>
 #include <optional>
 #include <algorithm>
+#include <type_traits>
 #include <concepts>
 #include <numeric>
 #include <utility>
@@ -35,6 +36,7 @@ template<Concepts::Communicator Communicator = NullCommunicator>
 class VTKHDFUnstructuredGridReader : public GridReader {
     using HDF5File = HDF5::File<Communicator>;
     static constexpr std::size_t vtk_space_dim = 3;
+    static constexpr bool read_rank_piece_only = !std::is_same_v<Communicator, NullCommunicator>;
 
  public:
     explicit VTKHDFUnstructuredGridReader() requires(std::is_same_v<Communicator, NullCommunicator>)
@@ -53,8 +55,8 @@ class VTKHDFUnstructuredGridReader : public GridReader {
     }
 
     void _open(const std::string& filename, typename GridReader::FieldNames& field_names) override {
+        _close();
         _file = HDF5File{filename, _comm, HDF5File::read_only};
-
         const auto type = VTKHDF::get_file_type(_file.value());
         if (type != "UnstructuredGrid")
             throw ValueError("Incompatible VTK-HDF type: '" + type + "', expected 'UnstructuredGrid'.");
@@ -82,23 +84,27 @@ class VTKHDFUnstructuredGridReader : public GridReader {
         _file = {};
         _num_cells = 0;
         _num_points = 0;
+        _cell_offset = 0;
+        _point_offset = 0;
+        _num_steps = {};
+        _step_index = {};
     }
 
     void _compute_piece_offsets() {
         _cell_offset = 0;
         _point_offset = 0;
-        _num_cells = _read_rank_scalar<std::size_t>("/VTKHDF/NumberOfCells", _get_part_offset());
-        _num_points = _read_rank_scalar<std::size_t>("/VTKHDF/NumberOfPoints", _get_part_offset());
-
-        if (Parallel::size(_comm) > 1) {
-            _check_communicator_size();
-            const auto proc_cells = Parallel::broadcast(_comm, Parallel::gather(_comm, _num_cells));
-            const auto proc_points = Parallel::broadcast(_comm, Parallel::gather(_comm, _num_points));
-            const auto compute_offset = [&] (const auto& v) {
-                return std::accumulate(v.begin(), v.begin() + Parallel::rank(_comm), std::size_t{0});
-            };
-            _cell_offset += compute_offset(proc_cells);
-            _point_offset += compute_offset(proc_points);
+        _check_communicator_size();
+        const auto num_step_cells = _number_of_all_piece_entities("Cells");
+        const auto num_step_points = _number_of_all_piece_entities("Points");
+        if constexpr (read_rank_piece_only) {
+            const auto my_rank = Parallel::rank(_comm);
+            _num_cells = num_step_cells.at(my_rank);
+            _num_points = num_step_points.at(my_rank);
+            _cell_offset += _accumulate_until(my_rank, num_step_cells);
+            _point_offset += _accumulate_until(my_rank, num_step_points);
+        } else {
+            _num_cells = _accumulate_until(num_step_cells.size(), num_step_cells);
+            _num_points = _accumulate_until(num_step_points.size(), num_step_points);
         }
     }
 
@@ -113,7 +119,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
             : std::size_t{0};
     }
 
-    std::size_t _get_cells_offset() const {
+    std::size_t _get_step_cells_offset() const {
         return _is_transient()
             ? _access_file().template read_dataset_to<std::size_t>(
                 "VTKHDF/Steps/CellOffsets",
@@ -124,7 +130,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
             : std::size_t{0};
     }
 
-    std::size_t _get_points_offset() const {
+    std::size_t _get_step_points_offset() const {
         return _is_transient()
             ? _access_file().template read_dataset_to<std::size_t>(
                 "VTKHDF/Steps/PointOffsets",
@@ -216,69 +222,108 @@ class VTKHDFUnstructuredGridReader : public GridReader {
     }
 
     std::size_t _number_of_pieces() const override {
-        return _number_of_pieces_in_file();
+        return _number_of_current_pieces_in_file();
     }
 
-    std::size_t _number_of_pieces_in_file() const {
-        using V = std::vector<std::size_t>;
-        return _is_transient()
-            ? _access_file().template read_dataset_to<V>("/VTKHDF/Steps/NumberOfParts").at(_step_index.value())
-            : _access_file().template read_dataset_to<V>("/VTKHDF/NumberOfCells").size();
+    std::size_t _number_of_current_pieces_in_file() const {
+        if (_is_transient())
+            return _number_of_pieces_in_file_at_step(_step_index.value());
+        return _total_number_of_pieces();
+    }
+
+    std::size_t _total_number_of_pieces() const {
+        auto ncells = _access_file().get_dimensions("/VTKHDF/NumberOfCells");
+        if (!ncells) throw IOError("Missing dataset at '/VTKHDF/NumberOfCells'");
+        if (ncells->size() != 1) throw IOError("Unexpected dimension of '/VTKHDF/NumberOfCells'");
+        return ncells->at(0);
+    }
+
+    std::size_t _number_of_pieces_in_file_at_step(std::size_t step) const {
+        if (!_is_transient())
+            throw InvalidState("Step data only available in transient files");
+        if (const auto& file = _access_file(); file.exists("/VTKHDF/Steps/NumberOfParts"))
+            return file.template read_dataset_to<std::vector<std::size_t>>("/VTKHDF/Steps/NumberOfParts").at(step);
+
+        // all steps have the same number of parts
+        if (_total_number_of_pieces()%_num_steps.value() != 0)
+            throw IOError(
+                "Cannot deduce the number of pieces. "
+                "The dataset '/VTKHDF/Steps/NumberOfParts' is not available, "
+                "but the total number of pieces is not divisble by the number of steps"
+            );
+        return _total_number_of_pieces()/_num_steps.value();
     }
 
     void _check_communicator_size() const {
-        const auto nprocs = _number_of_pieces_in_file();
-        if (nprocs != static_cast<std::size_t>(Parallel::size(_comm)))
-            throw SizeError(
-                "Can only read the file in parallel if the size of the communicator matches the size "
-                "of that used when writing the file. Please read in the file sequentially on one process "
-                "and distribute the grid yourself, or restart the parallel run with "
-                + std::to_string(nprocs) + " processes."
-            );
+        if constexpr (!std::is_same_v<Communicator, NullCommunicator>)
+            if (_number_of_current_pieces_in_file() != static_cast<std::size_t>(Parallel::size(_comm)))
+                throw SizeError(
+                    "Can only read the file in parallel if the size of the communicator matches the size "
+                    "of that used when writing the file. Please read in the file sequentially on one process "
+                    "and distribute the grid yourself, or restart the parallel run with "
+                    + std::to_string(_number_of_current_pieces_in_file()) + " processes."
+                );
     }
 
     void _visit_cells(const typename GridReader::CellVisitor& visitor) const override {
-        const auto num_connectivity_ids = _file.value().template read_dataset_to<std::vector<std::size_t>>(
+        if constexpr (read_rank_piece_only)
+            _visit_cells_for_rank(Parallel::rank(_comm), 0, visitor);
+        else
+            std::ranges::for_each(
+                std::views::iota(std::size_t{0}, _number_of_current_pieces_in_file()),
+                [&] (int rank) mutable {
+                    const auto [_, base_offset] = _number_of_entities_and_offset_at_rank(rank, "Points");
+                    _visit_cells_for_rank(rank, base_offset, visitor);
+                }
+            );
+    }
+
+    void _visit_cells_for_rank(int piece_rank,
+                               std::size_t point_base_offset,
+                               const typename GridReader::CellVisitor& visitor) const {
+        const auto& file = _access_file();
+        const auto [my_num_cells, my_cell_offset] = _number_of_entities_and_offset_at_rank(piece_rank, "Cells");
+        const auto num_connectivity_ids = file.template read_dataset_to<std::vector<std::size_t>>(
             "VTKHDF/NumberOfConnectivityIds",
             HDF5::Slice{
                 .offset = {_get_part_offset()},
-                .count = {static_cast<std::size_t>(Parallel::size(_comm))}
+                .count = {_number_of_current_pieces_in_file()}
             }
         );
-        const auto my_num_connectivity_ids = num_connectivity_ids.at(Parallel::rank(_comm));
-        const auto my_id_offset = _get_connectivity_id_offset() + std::accumulate(
+        const auto my_num_connectivity_ids = num_connectivity_ids.at(piece_rank);
+        const auto my_id_offset = std::accumulate(
             num_connectivity_ids.begin(),
-            num_connectivity_ids.begin() + Parallel::rank(_comm),
+            num_connectivity_ids.begin() + piece_rank,
             std::size_t{0}
         );
-        auto offsets = _file.value().template read_dataset_to<std::vector<std::size_t>>(
-            "VTKHDF/Offsets",
-            HDF5::Slice{
-                // offsets have length num_cells+1, so we need to add +1 per rank to the cell offsets
-                .offset = {
-                    _get_cells_offset() + _cell_offset
-                    + Parallel::size(_comm)*_step_index.value_or(0) +
-                    + Parallel::rank(_comm)
-                },
-                .count = {_num_cells + 1}
-            }
-        );
-        auto types = _file.value().template read_dataset_to<std::vector<std::uint_least8_t>>(
+
+        auto offsets = file.template read_dataset_to<std::vector<std::size_t>>("VTKHDF/Offsets", {{
+            // offsets have length num_cells+1, so we need to add +1 per rank to the cell offsets
+            .offset = {
+                _get_step_cells_offset() + _accumulate_over_pieces_until_step(_step_index.value_or(0), 1)  // offset from step
+                + my_cell_offset + piece_rank  // offset from this piece in the pieces of the current step
+            },
+            .count = {my_num_cells + 1}
+        }});
+        auto types = file.template read_dataset_to<std::vector<std::uint_least8_t>>(
             "VTKHDF/Types",
-            HDF5::Slice{.offset = {_get_cells_offset() + _cell_offset}, .count = {_num_cells}}
+            {{.offset = {_get_step_cells_offset() + my_cell_offset}, .count = {my_num_cells}}}
         );
-        auto connectivity = _file.value().template read_dataset_to<std::vector<std::size_t>>(
+        auto connectivity = file.template read_dataset_to<std::vector<std::size_t>>(
             "VTKHDF/Connectivity",
-            HDF5::Slice{.offset = {my_id_offset}, .count = {my_num_connectivity_ids}}
+            {{.offset = {_get_connectivity_id_offset() + my_id_offset}, .count = {my_num_connectivity_ids}}}
         );
 
         std::vector<std::size_t> corners;
         for (std::size_t i = 0; i < types.size(); ++i) {
+            assert(i < offsets.size() - 1);
             assert(offsets.at(i+1) > offsets.at(i));
-            const auto num_corners = offsets.at(i+1) - offsets.at(i);
+            const auto p0_offset = offsets.at(i);
+            const auto num_corners = offsets.at(i+1) - p0_offset;
+
             corners.resize(num_corners);
             for (std::size_t c = 0; c < num_corners; ++c)
-                corners[c] = connectivity.at(offsets.at(i) + c);
+                corners[c] = connectivity.at(p0_offset + c) + point_base_offset;
             visitor(VTK::cell_type(types.at(i)), corners);
         }
     }
@@ -290,7 +335,7 @@ class VTKHDFUnstructuredGridReader : public GridReader {
             MDLayout{{_num_points, vtk_space_dim}},
             _file.value().get_precision(path).value(),
             _serialization_callback(path, HDF5::Slice{
-                .offset = {_point_offset + _get_points_offset(), 0},
+                .offset = {_point_offset + _get_step_points_offset(), 0},
                 .count = {_num_points, vtk_space_dim}
             })
         });
@@ -385,12 +430,44 @@ class VTKHDFUnstructuredGridReader : public GridReader {
         return _file.value();
     }
 
+    std::vector<std::size_t> _number_of_all_piece_entities(const std::string& entity_type) const {
+        return _access_file().template read_dataset_to<std::vector<std::size_t>>("/VTKHDF/NumberOf" + entity_type, {{
+            .offset = {_get_part_offset()},
+            .count = {_number_of_current_pieces_in_file()}
+        }});
+    }
+
+    template<std::integral T>
+    std::array<std::size_t, 2> _number_of_entities_and_offset_at_rank(T rank, const std::string& entity_type) const {
+        const auto entities = _number_of_all_piece_entities(entity_type);
+        return std::array{entities.at(rank), _accumulate_until(rank, entities)};
+    }
+
+    template<typename T>
+    T _accumulate_until(std::integral auto rank, const std::vector<T>& values) const {
+        return std::accumulate(values.begin(), values.begin() + rank, T{0});
+    }
+
+    std::size_t _accumulate_over_pieces_until_step(std::size_t step, std::size_t count_per_piece) const {
+        if (step == 0)
+            return 0;
+        if (!_is_transient())
+            throw InvalidState("Step data only available in transient files");
+
+        std::size_t result = 0;
+        std::ranges::for_each(std::views::iota(std::size_t{0}, step), [&] (std::size_t step_idx) {
+            const auto num_step_pieces = _number_of_pieces_in_file_at_step(step_idx);
+            result += count_per_piece*num_step_pieces;
+        });
+        return result;
+    }
+
     Communicator _comm;
     std::optional<HDF5File> _file;
-    std::size_t _num_cells;
-    std::size_t _num_points;
-    std::size_t _cell_offset;
-    std::size_t _point_offset;
+    std::size_t _num_cells = 0;
+    std::size_t _num_points = 0;
+    std::size_t _cell_offset = 0;
+    std::size_t _point_offset = 0;
     std::optional<std::size_t> _num_steps;
     std::optional<std::size_t> _step_index;
 };
