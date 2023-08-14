@@ -54,6 +54,9 @@ void print_file_info(const std::string& filename) {
 
     std::cout << "Point fields:" << std::endl;
     print_fields_info(point_fields(reader));
+
+    std::cout << "Meta data fields:" << std::endl;
+    print_fields_info(meta_data_fields(reader));
 }
 
 void print_help() {
