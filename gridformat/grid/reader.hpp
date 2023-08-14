@@ -22,6 +22,7 @@
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/concepts.hpp>
+#include <gridformat/common/logging.hpp>
 #include <gridformat/grid/cell_type.hpp>
 
 namespace GridFormat::Concepts {
@@ -251,6 +252,10 @@ class GridReader {
         });
     }
 
+    void set_ignore_warnings(bool value) {
+        _ignore_warnings = value;
+    }
+
  protected:
     struct FieldNames {
         std::vector<std::string> cell_fields;
@@ -264,9 +269,19 @@ class GridReader {
         }
     };
 
+    void _log_warning(std::string_view warning) const {
+        if (!_ignore_warnings)
+            log_warning(
+                std::string{warning}
+                + (warning.ends_with("\n") ? "" : "\n")
+                + "To deactivate this warning, call set_ignore_warnings(true);"
+            );
+    }
+
  private:
     std::string _filename = "";
     FieldNames _field_names;
+    bool _ignore_warnings = false;
 
     virtual std::string _name() const = 0;
     virtual void _open(const std::string&, FieldNames&) = 0;

@@ -26,7 +26,6 @@
 #include <gridformat/common/empty_field.hpp>
 #include <gridformat/common/field_transformations.hpp>
 #include <gridformat/common/exceptions.hpp>
-#include <gridformat/common/logging.hpp>
 
 #include <gridformat/grid/reader.hpp>
 #include <gridformat/parallel/communication.hpp>
@@ -203,11 +202,11 @@ class PXMLReaderBase : public GridReader {
     void _read_parallel_piece(const XMLReaderHelper& helper) {
         const auto num_pieces = Ranges::size(_pieces_paths(helper));
         if (num_pieces < _num_ranks.value() && _rank.value() == 0)
-            log_warning(
+            this->_log_warning(
                 "PVTK file defines less pieces than there are ranks. The grids on some ranks will be empty."
             );
         if (num_pieces > _num_ranks.value() && !_merge_exceeding.has_value() && _rank.value() == 0)
-            log_warning(
+            this->_log_warning(
                 "PVTK file defines more pieces than used ranks. Will only read the first "
                 + std::to_string(_num_ranks.value()) + " pieces"
             );
