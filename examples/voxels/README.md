@@ -1,9 +1,9 @@
 <!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
-# Example 1: writing voxel data to image grid formats
+# Writing voxel data to image grid formats
 
-<img alt="example1" src="https://github.com/dglaeser/gridformat/blob/main/examples/example1/img/result.png" width="50%"/>
+<img alt="voxels-example" src="https://github.com/dglaeser/gridformat/blob/main/examples/voxels/img/result.png" width="50%"/>
 
 This example illustrates how to register a custom data structure as
 [`ImageGrid`](../../docs/pages/grid_concepts.md#image-grid) and export the data into the

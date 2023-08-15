@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.18)
 project(gridformat_examples)
 
 enable_testing()
-add_subdirectory(example1)
+add_subdirectory(voxels)
 add_subdirectory(example2)
 
 find_package(CGAL)
