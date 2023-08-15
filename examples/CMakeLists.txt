@@ -6,7 +6,7 @@ project(gridformat_examples)
 
 enable_testing()
 add_subdirectory(voxels)
-add_subdirectory(example2)
+add_subdirectory(dem)
 
 find_package(CGAL)
 if (CGAL_FOUND)

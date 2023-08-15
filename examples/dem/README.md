@@ -1,9 +1,9 @@
 <!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
-# Example 2: writing a digital elevation model into `.vts` file format
+# Writing a digital elevation model into `.vts` file format
 
-<img alt="example2" src="https://github.com/dglaeser/gridformat/blob/main/examples/example2/img/result.png" width="80%"/>
+<img alt="dem-example" src="https://github.com/dglaeser/gridformat/blob/main/examples/dem/img/result.png" width="80%"/>
 
 This example shows the specialization of the traits required for the
 [structured grid](../../docs/pages/grid_concepts.md#structured-grid) concept and illustrates how to write

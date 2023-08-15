@@ -25,8 +25,8 @@ The examples also include how to use some of the predefined traits for various f
 use those frameworks, you may still want to have a quick look at those examples as they may demonstrate features you'd
 be interested in.
 
-- [voxels](./voxels): register a custom data structure of voxels as `ImageGrid`
-- [Example 2](./example2): register a custom data structure as `StructuredGrid`
+- [voxels](./voxels): register a data structure of voxels as `ImageGrid`
+- [dem](./dem): register a data structure representing a digital elevation model (dem) as `StructuredGrid`
 - [Example 3](./example3): using the predefined traits for [CGAL](https://www.cgal.org/).
 - [Example 4](./example4): using the predefined traits for [Dune::GridView](https://dune-project.org/).
 - [Example 5](./example5): using the predefined traits for [dolfinx](https://github.com/FEniCS/dolfinx).
