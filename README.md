@@ -29,15 +29,6 @@ suitable for any grid format describing one of the supported [grid concepts](doc
 see below for information on how to contribute.
 
 
-## Caveats
-
-When reading from grid files, `GridFormat` provides access to the data as specified by the file format. These specifications may not be
-sufficient in all applications. For instance, to fully instantiate a simulator for parallel computations, information on the grid
-entities shared by different processes is usually required. Since these requirements are simulator-specific, any further processing has
-to be done manually by the user and for their data structures. The recommended way to deal with this issue is to add any information
-required for reinstantiation as data fields to the output. This way, it is readily available when reading the file.
-
-
 ## Quick Start
 
 Prerequisites:
@@ -157,6 +148,7 @@ gridformat-convert my_vti_file.vti vtu encoder=ascii # format options can be set
 gridformat-convert my_vti_file.vti vtu -o some_file  # choose an output filename
 ```
 
+
 ## Compatibility with user-defined grids
 
 `GridFormat` does not operate on a specific grid data structure, but instead, it can be made compatible with any user-defined
@@ -179,6 +171,21 @@ or the predefined [traits for several frameworks](https://github.com/dglaeser/gr
 and [mfem](https://mfem.org/) meshes (tested mfem version: 4.5.2).
 Users of these frameworks can include these predefined traits and use `GridFormat` directly
 (see the [examples](https://github.com/dglaeser/gridformat/tree/main/examples)).
+
+
+## Caveats
+
+When reading from grid files, `GridFormat` provides access to the data as specified by the file format. These specifications may not be
+sufficient in all applications. For instance, to fully instantiate a simulator for parallel computations, information on the grid
+entities shared by different processes is usually required. Since these requirements are simulator-specific, any further processing has
+to be done manually by the user and for their data structures. The recommended way to deal with this issue is to add any information
+required for reinstantiation as data fields to the output. This way, it is readily available when reading the file.
+
+
+## Getting help
+
+Find answered questions, ask questions
+or start discussions through [GitHub Discussions](https://github.com/dglaeser/gridformat/discussions).
 
 
 ## Contribution Guidelines
@@ -208,6 +215,7 @@ ctest
 Note that an internet connection is required for the call to `cmake` as it pulls in [ut](https://github.com/boost-ext/ut) on-the-fly.
 Moreover, in the configure step a Python script is invoked that produces some test data using [VTK](https://pypi.org/project/vtk/).
 If your Python environment does not have `VTK`, this step is skipped. Note that some tests in the test suite will be skipped in this case.
+
 
 ## License
 
