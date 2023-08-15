@@ -1,7 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
-# Example 7: reading/writing files in parallel
+# Reading and writing files in parallel
 
 This example illustrates how to read and write data from and to grid files in parallel.
 Essentially, what one has to do is to pass a communicator to the `Reader` and `Writer`
