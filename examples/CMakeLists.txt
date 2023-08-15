@@ -28,9 +28,9 @@ endif ()
 
 find_package(DOLFINX)
 if (DOLFINX_FOUND)
-    add_subdirectory(example5)
+    add_subdirectory(dolfinx)
 else ()
-    message(STATUS "Skipping example 5 because dolfinx was not found")
+    message(STATUS "Skipping dolfinx example because dolfinx was not found")
 endif ()
 
 find_package(mfem CONFIG NAMES MFEM)
