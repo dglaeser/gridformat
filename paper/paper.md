@@ -216,15 +216,13 @@ int main() {
     std::size_t nx = 15, ny = 20;
     double dx = 0.1, dy = 0.2;
 
-    // Here, there could be a call to our simulation code, for example:
-    // std::vector<double> = solve_problem(nx, ny, dx, dy);
-    // But for this simple example, let's just create a vector of ones.
+    // Here, there could be a call to our simulation code, but for this
+    // simple example, let's just create a "solution vector" of ones.
     std::vector<double> values(nx*ny, 1.0);
 
     // To write out this solution, let's construct an instance of `MyGrid`
+    // and construct a writer with it, letting GridFormat choose a format
     MyGrid grid{.cells = {nx, ny}, .dx = {dx, dy}};
-
-    // ... and construct a writer, letting GridFormat choose a format
     const auto file_format = GridFormat::default_for(grid);
     GridFormat::Writer writer{file_format, grid};
 
@@ -245,10 +243,8 @@ int main() {
     // GridFormat adds the extension to the provided filename
     const auto written_filename = writer.write("example");
 
-    // To read the data back in, we can create a reader class, open our
-    // file and access/extract the fields contained in it. Note that we
-    // can also get the grid points, cell connectivity and more. See the
-    // documentation for details.
+    // The reader class allows you to read the data in the file back in.
+    // See the documentation for details.
     GridFormat::Reader reader;
     reader.open(written_filename);
     reader.cell_field("cfield")->export_to(values);
