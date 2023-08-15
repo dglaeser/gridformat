@@ -24,6 +24,19 @@ and traits classes, `GridFormat` fully operates on the user-given data structure
 Ideally, simulation frameworks use `GridFormat` under-the-hood to avoid duplicate implementation efforts, and implement support for new
 formats into `GridFormat` such that they are directly available to all other frameworks that utilize it.
 
+Currently, `GridFormat` is focused on [VTK file formats](https://examples.vtk.org/site/VTKFileFormats/). However, the API is
+suitable for any grid format describing one of the supported [grid concepts](docs/pages/grid_concepts.md). Contributions are welcomed,
+see below for information on how to contribute.
+
+
+## Caveats
+
+When reading from grid files, `GridFormat` provides access to the data as specified by the file format. These specifications may not be
+sufficient in all applications. For instance, to fully instantiate a simulator for parallel computations, information on the grid
+entities shared by different processes is usually required. Since these requirements are simulator-specific, any further processing has
+to be done manually by the user and for their data structures. The recommended way to deal with this issue is to add any information
+required for reinstantiation as data fields to the output. This way, it is readily available when reading the file.
+
 
 ## Quick Start
 
