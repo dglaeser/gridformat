@@ -181,6 +181,11 @@ Users of these frameworks can include these predefined traits and use `GridForma
 (see the [examples](https://github.com/dglaeser/gridformat/tree/main/examples)).
 
 
+## Getting help
+
+Find answered questions, ask questions
+or start discussions through [GitHub Discussions](https://github.com/dglaeser/gridformat/discussions).
+
 ## Contribution Guidelines
 
 Contributions are highly welcome! For bug reports, please file an [issue](https://github.com/dglaeser/gridformat/issues).
