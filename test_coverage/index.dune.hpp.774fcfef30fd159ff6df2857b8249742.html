@@ -26,7 +26,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2023-08-14 22:35:23</td>
+      <td>2023-08-15 11:53:12</td>
     </tr>
   </table>
 </div>
@@ -4425,7 +4425,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm"> * \brief Exposes a `Dune::GridView` as a mesh composed of lagrange cells with the given order.</span></td>
+      <td class="src "><span class="cm"> * \brief Exposes a `Dune::GridView` as a grid composed of lagrange cells with the given order.</span></td>
     </tr>
 
     <tr class="source-line">
@@ -4465,7 +4465,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">class</span><span class="w"> </span><span class="nc">LagrangeMesh</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="k">class</span><span class="w"> </span><span class="nc">LagrangePolynomialGrid</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -4577,7 +4577,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">36</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">LagrangeMesh</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">GridView</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid_view</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">LagrangePolynomialGrid</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">GridView</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid_view</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -5870,7 +5870,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">Points</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">Points</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -5878,7 +5878,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">108</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -5926,7 +5926,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">Cells</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">Cells</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -5934,7 +5934,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">168</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -5982,7 +5982,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">NumberOfPoints</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">NumberOfPoints</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -5990,7 +5990,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">618</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6038,7 +6038,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">NumberOfCells</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">NumberOfCells</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6046,7 +6046,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">930</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6094,7 +6094,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">NumberOfCellPoints</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">NumberOfCellPoints</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6102,7 +6102,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">                          </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">                          </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6110,7 +6110,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">6672</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6118,7 +6118,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6166,7 +6166,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">CellPoints</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">CellPoints</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6174,7 +6174,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">                  </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">                  </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6182,7 +6182,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">3336</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6190,7 +6190,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6238,7 +6238,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">CellType</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">CellType</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6246,7 +6246,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">                </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">                </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6254,7 +6254,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">3336</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6262,7 +6262,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6321,7 +6321,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">PointCoordinates</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">PointCoordinates</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6329,7 +6329,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">                        </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Point</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">                        </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Point</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6337,7 +6337,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">11562</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6345,7 +6345,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Point</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Point</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6393,7 +6393,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">PointId</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src "><span class="k">struct</span><span class="w"> </span><span class="nc">PointId</span><span class="o">&lt;</span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6401,7 +6401,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">               </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Point</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">               </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Point</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6409,7 +6409,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">57552</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6417,7 +6417,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Point</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Dune</span><span class="o">::</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;::</span><span class="n">Point</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -6633,7 +6633,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm"> * \brief Implements the field interface for a Dune::Function defined on a GridFormat::Dune::LagrangeMesh.</span></td>
+      <td class="src "><span class="cm"> * \brief Implements the field interface for a Dune::Function defined on a GridFormat::Dune::LagrangePolynomialGrid.</span></td>
     </tr>
 
     <tr class="source-line">
@@ -6681,7 +6681,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src "><span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -7432,7 +7432,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">_mesh</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GridView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">_mesh</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -7480,7 +7480,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">IsLagrangeMesh</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">false_type</span><span class="w"> </span><span class="p">{};</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">IsLagrangeGrid</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">false_type</span><span class="w"> </span><span class="p">{};</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -7488,7 +7488,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">GV</span><span class="o">&gt;</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">IsLagrangeMesh</span><span class="o">&lt;</span><span class="n">LagrangeMesh</span><span class="o">&lt;</span><span class="n">GV</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">true_type</span><span class="w"> </span><span class="p">{};</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">GV</span><span class="o">&gt;</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">IsLagrangeGrid</span><span class="o">&lt;</span><span class="n">LagrangePolynomialGrid</span><span class="o">&lt;</span><span class="n">GV</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">true_type</span><span class="w"> </span><span class="p">{};</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -7544,7 +7544,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">            </span><span class="n">IsLagrangeMesh</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">W</span><span class="o">::</span><span class="n">Grid</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src "><span class="w">            </span><span class="n">IsLagrangeGrid</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">W</span><span class="o">::</span><span class="n">Grid</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -7552,7 +7552,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">            </span><span class="s">&quot;Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangeMesh&quot;</span><span class="w"></span></td>
+      <td class="src "><span class="w">            </span><span class="s">&quot;Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangePolynomialGrid&quot;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -7661,7 +7661,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">            </span><span class="n">IsLagrangeMesh</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">W</span><span class="o">::</span><span class="n">Grid</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">,</span><span class="w"></span></td>
+      <td class="src "><span class="w">            </span><span class="n">IsLagrangeGrid</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">W</span><span class="o">::</span><span class="n">Grid</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">,</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -7669,7 +7669,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">            </span><span class="s">&quot;Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangeMesh&quot;</span><span class="w"></span></td>
+      <td class="src "><span class="w">            </span><span class="s">&quot;Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangePolynomialGrid&quot;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -7764,7 +7764,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm"> * \note This requires the Writer to have been constructed with a LagrangeMesh.</span></td>
+      <td class="src "><span class="cm"> * \note This requires the Writer to have been constructed with a LagrangePolynomialGrid.</span></td>
     </tr>
 
     <tr class="source-line">
@@ -7844,7 +7844,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm"> * \note This requires the Writer to have been constructed with a LagrangeMesh.</span></td>
+      <td class="src "><span class="cm"> * \note This requires the Writer to have been constructed with a LagrangePolynomialGrid.</span></td>
     </tr>
 
     <tr class="source-line">
@@ -7924,7 +7924,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm"> * \note This requires the Writer to have been constructed with a LagrangeMesh.</span></td>
+      <td class="src "><span class="cm"> * \note This requires the Writer to have been constructed with a LagrangePolynomialGrid.</span></td>
     </tr>
 
     <tr class="source-line">
@@ -8004,7 +8004,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm"> * \note This requires the Writer to have been constructed with a LagrangeMesh.</span></td>
+      <td class="src "><span class="cm"> * \note This requires the Writer to have been constructed with a LagrangePolynomialGrid.</span></td>
     </tr>
 
     <tr class="source-line">
@@ -8132,7 +8132,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">class</span><span class="w"> </span><span class="nc">LagrangeMesh</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="k">class</span><span class="w"> </span><span class="nc">LagrangePolynomialGrid</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -8164,7 +8164,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="n">LagrangeMesh</span><span class="p">(</span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="n">LagrangePolynomialGrid</span><span class="p">(</span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">

@@ -144,14 +144,14 @@ Files</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1DolfinX_1_1LagrangeMesh.html">GridFormat::DolfinX::LagrangeMesh</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper around a nodal dolfinx::FunctionSpace, exposing it as a mesh composed of lagrange elements with the order of the given function space.  <a href="classGridFormat_1_1DolfinX_1_1LagrangeMesh.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1DolfinX_1_1LagrangePolynomialGrid.html">GridFormat::DolfinX::LagrangePolynomialGrid</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper around a nodal dolfinx::FunctionSpace, exposing it as a mesh composed of lagrange elements with the order of the given function space.  <a href="classGridFormat_1_1DolfinX_1_1LagrangePolynomialGrid.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Dune_1_1LagrangeMesh.html">GridFormat::Dune::LagrangeMesh&lt; GV &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exposes a <code>Dune::GridView</code> as a mesh composed of lagrange cells with the given order. Can be used to conveniently write <code>Dune::Functions</code> into grid files.  <a href="classGridFormat_1_1Dune_1_1LagrangeMesh.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html">GridFormat::Dune::LagrangePolynomialGrid&lt; GV &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exposes a <code>Dune::GridView</code> as a grid composed of lagrange cells with the given order. Can be used to conveniently write <code>Dune::Functions</code> into grid files.  <a href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Dune_1_1FunctionField.html">GridFormat::Dune::FunctionField&lt; Function, GridView, T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implements the field interface for a Dune::Function defined on a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangeMesh.html" title="Exposes a Dune::GridView as a mesh composed of lagrange cells with the given order....">GridFormat::Dune::LagrangeMesh</a>.  <a href="classGridFormat_1_1Dune_1_1FunctionField.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implements the field interface for a Dune::Function defined on a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html" title="Exposes a Dune::GridView as a grid composed of lagrange cells with the given order....">GridFormat::Dune::LagrangePolynomialGrid</a>.  <a href="classGridFormat_1_1Dune_1_1FunctionField.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
@@ -270,7 +270,7 @@ template&lt;typename <a class="el" href="classGridFormat_1_1Writer.html">Writer<
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section note"><dt>Note</dt><dd>This requires the <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> to have been constructed with a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangeMesh.html" title="Exposes a Dune::GridView as a mesh composed of lagrange cells with the given order....">LagrangeMesh</a>. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This requires the <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> to have been constructed with a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html" title="Exposes a Dune::GridView as a grid composed of lagrange cells with the given order....">LagrangePolynomialGrid</a>. </dd></dl>
 
 </div>
 </div>
@@ -313,7 +313,7 @@ template&lt;typename <a class="el" href="classGridFormat_1_1Writer.html">Writer<
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section note"><dt>Note</dt><dd>This requires the <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> to have been constructed with a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangeMesh.html" title="Exposes a Dune::GridView as a mesh composed of lagrange cells with the given order....">LagrangeMesh</a>. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This requires the <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> to have been constructed with a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html" title="Exposes a Dune::GridView as a grid composed of lagrange cells with the given order....">LagrangePolynomialGrid</a>. </dd></dl>
 
 </div>
 </div>
@@ -452,7 +452,7 @@ template&lt;typename Function , typename <a class="el" href="classGridFormat_1_1
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section note"><dt>Note</dt><dd>This requires the <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> to have been constructed with a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangeMesh.html" title="Exposes a Dune::GridView as a mesh composed of lagrange cells with the given order....">LagrangeMesh</a>. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This requires the <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> to have been constructed with a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html" title="Exposes a Dune::GridView as a grid composed of lagrange cells with the given order....">LagrangePolynomialGrid</a>. </dd></dl>
 
 </div>
 </div>
@@ -495,7 +495,7 @@ template&lt;typename Function , typename <a class="el" href="classGridFormat_1_1
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section note"><dt>Note</dt><dd>This requires the <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> to have been constructed with a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangeMesh.html" title="Exposes a Dune::GridView as a mesh composed of lagrange cells with the given order....">LagrangeMesh</a>. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This requires the <a class="el" href="classGridFormat_1_1Writer.html" title="Interface to the writers for all supported file formats. Depending on the chosen format,...">Writer</a> to have been constructed with a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html" title="Exposes a Dune::GridView as a grid composed of lagrange cells with the given order....">LagrangePolynomialGrid</a>. </dd></dl>
 
 </div>
 </div>

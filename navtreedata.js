@@ -52,7 +52,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"index.html#compatibility-with-userdefined-grids"
+"index.html#commandline-interface"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

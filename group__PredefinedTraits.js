@@ -5,10 +5,10 @@ var group__PredefinedTraits =
     [ "dolfinx.hpp", "dolfinx_8hpp.html", null ],
     [ "dune.hpp", "dune_8hpp.html", null ],
     [ "mfem.hpp", "mfem_8hpp.html", null ],
-    [ "GridFormat::DolfinX::LagrangeMesh", "classGridFormat_1_1DolfinX_1_1LagrangeMesh.html", null ],
-    [ "GridFormat::Dune::LagrangeMesh< GV >", "classGridFormat_1_1Dune_1_1LagrangeMesh.html", [
-      [ "Cell", "structGridFormat_1_1Dune_1_1LagrangeMesh_1_1Cell.html", null ],
-      [ "Point", "structGridFormat_1_1Dune_1_1LagrangeMesh_1_1Point.html", null ]
+    [ "GridFormat::DolfinX::LagrangePolynomialGrid", "classGridFormat_1_1DolfinX_1_1LagrangePolynomialGrid.html", null ],
+    [ "GridFormat::Dune::LagrangePolynomialGrid< GV >", "classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html", [
+      [ "Cell", "structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html", null ],
+      [ "Point", "structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Point.html", null ]
     ] ],
     [ "GridFormat::Dune::FunctionField< Function, GridView, T >", "classGridFormat_1_1Dune_1_1FunctionField.html", null ],
     [ "GridFormat::DolfinX::set_cell_function", "group__PredefinedTraits.html#gaaf3787e39fe037a6fbef00b809006ec6", null ],

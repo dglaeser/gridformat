@@ -7,6 +7,8 @@ var index =
     [ "Command-line interface", "index.html#commandline-interface", null ],
     [ "Compatibility with user-defined grids", "index.html#compatibility-with-userdefined-grids", null ],
     [ "Predefined traits", "index.html#predefined-traits", null ],
+    [ "Caveats", "index.html#caveats", null ],
+    [ "Getting help", "index.html#getting-help", null ],
     [ "Contribution Guidelines", "index.html#contribution-guidelines", [
       [ "Development and test suite", "index.html#development-and-test-suite", null ]
     ] ],

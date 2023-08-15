@@ -12,9 +12,9 @@ var NAVTREEINDEX0 =
 "classGridFormat_1_1Compression_1_1LZ4.html":[4,2,12],
 "classGridFormat_1_1Compression_1_1LZMA.html":[4,2,14],
 "classGridFormat_1_1Compression_1_1ZLIB.html":[4,2,16],
-"classGridFormat_1_1DolfinX_1_1LagrangeMesh.html":[4,5,5],
+"classGridFormat_1_1DolfinX_1_1LagrangePolynomialGrid.html":[4,5,5],
 "classGridFormat_1_1Dune_1_1FunctionField.html":[4,5,7],
-"classGridFormat_1_1Dune_1_1LagrangeMesh.html":[4,5,6],
+"classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html":[4,5,6],
 "classGridFormat_1_1EncodedField.html":[4,1,14],
 "classGridFormat_1_1Field.html":[4,6,4],
 "classGridFormat_1_1Field.html#a161225921d96c38b76238ed6a3923222":[4,6,4,7],
@@ -148,8 +148,8 @@ var NAVTREEINDEX0 =
 "classGridFormat_1_1Writer.html#a8063585db73e2c047ac567a0b83ec22c":[4,0,20,6],
 "classGridFormat_1_1Writer.html#a8ff537d09be2f0c5782873a026048c24":[4,0,20,23],
 "classGridFormat_1_1Writer.html#a911476d9e8252b4dc0bfa1a36589a2a8":[4,0,20,18],
-"classGridFormat_1_1Writer.html#ace6ff6a97c61c66858fccb3b018bb5e1":[4,0,20,4],
 "classGridFormat_1_1Writer.html#ace6ff6a97c61c66858fccb3b018bb5e1":[4,0,20,5],
+"classGridFormat_1_1Writer.html#ace6ff6a97c61c66858fccb3b018bb5e1":[4,0,20,4],
 "classGridFormat_1_1Writer.html#aceba61d4867ddb47d0286827fae8cfc1":[4,0,20,15],
 "classGridFormat_1_1Writer.html#ad676b0b617166ef873c610805911997f":[4,0,20,13],
 "classGridFormat_1_1Writer.html#ae0ad42b5ba01d3437e543394058c052d":[4,0,20,21],
@@ -249,5 +249,5 @@ var NAVTREEINDEX0 =
 "image__grid_8hpp.html":[4,4,0],
 "index.html":[0],
 "index.html":[],
-"index.html#commandline-interface":[0,2]
+"index.html#caveats":[0,5]
 };
