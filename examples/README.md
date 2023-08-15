@@ -27,7 +27,7 @@ be interested in.
 
 - [voxels](./voxels): register a data structure of voxels as `ImageGrid`
 - [dem](./dem): register a data structure representing a digital elevation model (dem) as `StructuredGrid`
-- [Example 3](./example3): using the predefined traits for [CGAL](https://www.cgal.org/).
+- [cgal](./cgal): using the predefined traits for [CGAL](https://www.cgal.org/).
 - [Example 4](./example4): using the predefined traits for [Dune::GridView](https://dune-project.org/).
 - [Example 5](./example5): using the predefined traits for [dolfinx](https://github.com/FEniCS/dolfinx).
 - [Example 6](./example6): using the predefined traits for [MFEM](https://mfem.org/).

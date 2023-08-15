@@ -10,9 +10,9 @@ add_subdirectory(dem)
 
 find_package(CGAL)
 if (CGAL_FOUND)
-    add_subdirectory(example3)
+    add_subdirectory(cgal)
 else ()
-    message(STATUS "Skipping example 3 because CGAL was not found")
+    message(STATUS "Skipping cgal example because CGAL was not found")
 endif ()
 
 find_package(dune-functions)

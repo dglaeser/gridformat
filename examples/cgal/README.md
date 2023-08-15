@@ -1,7 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
-# Example 3: using the predefined [CGAL](https://www.cgal.org/) traits
+# Using the predefined [CGAL](https://www.cgal.org/) traits
 
 `GridFormat` comes with support for `CGAL` triangulations out-of-the-box. An important aspect of the predefined
 `CGAL` traits is that they use `Triangulation::Vertex_handle` and `Triangulation::Face_handle` (2D) or `Triangulation::Cell_handle` (3D) as
