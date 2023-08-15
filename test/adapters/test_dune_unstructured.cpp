@@ -94,17 +94,17 @@ void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
     base_filename += suffix.empty() ? "" : "_" + suffix;
 
     for (auto order : std::vector<unsigned int>{1, 2, 3}) {
-        GridFormat::Dune::LagrangeMesh mesh{grid_view, order};
-        GridFormat::VTUWriter writer{mesh, {.encoder = GridFormat::Encoding::ascii}};
+        GridFormat::Dune::LagrangePolynomialGrid lagrange_grid{grid_view, order};
+        GridFormat::VTUWriter writer{lagrange_grid, {.encoder = GridFormat::Encoding::ascii}};
         GridFormat::Test::add_meta_data(writer);
         writer.set_point_field("pfield", [&] (const auto& p) {
-            return GridFormat::Test::test_function<double>(mesh.position(p));
+            return GridFormat::Test::test_function<double>(lagrange_grid.position(p));
         });
         writer.set_cell_field("cfield", [&] (const auto c) {
-            return GridFormat::Test::test_function<double>(mesh.geometry(c).center());
+            return GridFormat::Test::test_function<double>(lagrange_grid.geometry(c).center());
         });
         writer.set_cell_field("cfield_from_element", [&] (const auto c) {
-            return GridFormat::Test::test_function<double>(mesh.element(c).geometry().center());
+            return GridFormat::Test::test_function<double>(lagrange_grid.element(c).geometry().center());
         });
 
 #if GRIDFORMAT_HAVE_DUNE_FUNCTIONS
@@ -144,18 +144,18 @@ void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
         using GridFormat::Testing::expect;
         using GridFormat::Testing::eq;
 
-        "lagrange_mesh_num_cells"_test = [&] () {
-            expect(eq(mesh.number_of_cells(), static_cast<std::size_t>(grid_view.size(0))));
+        "lagrange_grid_num_cells"_test = [&] () {
+            expect(eq(lagrange_grid.number_of_cells(), static_cast<std::size_t>(grid_view.size(0))));
         };
 
-        "lagrange_mesh_clear"_test = [&] () {
-            mesh.clear();
-            expect(eq(mesh.number_of_cells(), std::size_t{0}));
+        "lagrange_grid_clear"_test = [&] () {
+            lagrange_grid.clear();
+            expect(eq(lagrange_grid.number_of_cells(), std::size_t{0}));
         };
 
-        "lagrange_mesh_update"_test = [&] () {
-            mesh.update(grid_view);
-            expect(eq(mesh.number_of_cells(), static_cast<std::size_t>(grid_view.size(0))));
+        "lagrange_grid_update"_test = [&] () {
+            lagrange_grid.update(grid_view);
+            expect(eq(lagrange_grid.number_of_cells(), static_cast<std::size_t>(grid_view.size(0))));
         };
     }
 }

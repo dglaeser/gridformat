@@ -75,14 +75,14 @@ int main(int argc, char** argv) {
 
 #if GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
     for (unsigned int order : {1, 2, 3}) {
-        GridFormat::Dune::LagrangeMesh mesh{grid_view, order};
-        GridFormat::PVTUWriter lagrange_writer{mesh, mpi_helper.getCommunicator()};
+        GridFormat::Dune::LagrangePolynomialGrid lagrange_grid{grid_view, order};
+        GridFormat::PVTUWriter lagrange_writer{lagrange_grid, mpi_helper.getCommunicator()};
         GridFormat::Test::add_meta_data(lagrange_writer);
         lagrange_writer.set_point_field("pfunc", [&] (const auto& point) {
-            return GridFormat::Test::test_function<double>(mesh.position(point));
+            return GridFormat::Test::test_function<double>(lagrange_grid.position(point));
         });
         lagrange_writer.set_cell_field("cfunc", [&] (const auto& cell) {
-            return GridFormat::Test::test_function<double>(mesh.geometry(cell).center());
+            return GridFormat::Test::test_function<double>(lagrange_grid.geometry(cell).center());
         });
 
 #if GRIDFORMAT_HAVE_DUNE_FUNCTIONS
