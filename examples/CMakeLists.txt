@@ -21,9 +21,9 @@ if (dune-functions_FOUND)
     # see CMakeLists.txt of example4 for more details
     find_package(Threads)
     find_package(TBB)
-    add_subdirectory(example4)
+    add_subdirectory(dune)
 else ()
-    message(STATUS "Skipping example 4 because Dune was not found")
+    message(STATUS "Skipping dune example because Dune was not found")
 endif ()
 
 find_package(DOLFINX)

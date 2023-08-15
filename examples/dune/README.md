@@ -1,7 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
-# Example 4: using the predefined traits for [`Dune::GridView`](https://www.dune-project.org/)
+# Using the predefined traits for [`Dune::GridView`](https://www.dune-project.org/)
 
 `Dune` users can use `GridFormat` out-of-the box. Simply include the header with the predefined traits,
 and use all provided writers for your `Dune::GridView`. For a general `Dune::GridView`, all traits
