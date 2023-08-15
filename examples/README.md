@@ -30,5 +30,5 @@ be interested in.
 - [cgal](./cgal): using the predefined traits for [CGAL](https://www.cgal.org/).
 - [dune](./dune): using the predefined traits for [Dune::GridView](https://dune-project.org/).
 - [dolfinx](./dolfinx): using the predefined traits for [dolfinx](https://github.com/FEniCS/dolfinx).
-- [Example 6](./example6): using the predefined traits for [MFEM](https://mfem.org/).
+- [mfem](./mfem): using the predefined traits for [MFEM](https://mfem.org/).
 - [Example 7](./example7): reading/writing grid files in parallel computations using [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface).

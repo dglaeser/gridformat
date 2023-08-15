@@ -35,9 +35,9 @@ endif ()
 
 find_package(mfem CONFIG NAMES MFEM)
 if (mfem_FOUND)
-    add_subdirectory(example6)
+    add_subdirectory(mfem)
 else ()
-    message(STATUS "Skipping example 6 because mfem was not found")
+    message(STATUS "Skipping mfem example because mfem was not found")
 endif ()
 
 find_package(MPI)
