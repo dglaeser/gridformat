@@ -25,6 +25,7 @@ The examples also include how to use some of the predefined traits for various f
 use those frameworks, you may still want to have a quick look at those examples as they may demonstrate features you'd
 be interested in.
 
+- [analytical](./analytical): write out discretized analytical expressions.
 - [voxels](./voxels): register a data structure of voxels as `ImageGrid`
 - [dem](./dem): register a data structure representing a digital elevation model (dem) as `StructuredGrid`
 - [parallel](./parallel): reading/writing grid files in parallel computations using [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface).
