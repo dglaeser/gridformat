@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.18)
-project(gridformat_example_5)
+project(gridformat_dolfinx_example)
 
 include(../find_gridformat.cmake)
 find_package(DOLFINX 0.6.0 REQUIRED)
 
-add_executable(example5 example5.cpp)
-add_test(NAME example5 COMMAND ./example5)
-target_link_libraries(example5 PRIVATE gridformat::gridformat dolfinx)
+add_executable(dolfinx_traits dolfinx_traits.cpp)
+add_test(NAME dolfinx_traits COMMAND ./dolfinx_traits)
+target_link_libraries(dolfinx_traits PRIVATE gridformat::gridformat dolfinx)

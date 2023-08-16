@@ -76,7 +76,7 @@ class Raster {
     friend std::ranges::range auto cells(const Raster& raster) {
         const auto nx = raster._number_of_samples[0];
         const auto ny = raster._number_of_samples[1];
-        // Note that as in example 1, we could also use `GridFormat::MDIndexRange` here
+        // Note that as in the minimal example, we could also use `GridFormat::MDIndexRange` here
         return std::views::iota(std::size_t{0}, nx*ny) | std::views::transform([&, nx] (const std::size_t i) {
             return Cell{.x = i%nx, .y = i/nx};
         });
@@ -85,7 +85,7 @@ class Raster {
     friend std::ranges::range auto points(const Raster& raster) {
         const auto nx = raster._number_of_samples[0] + 1;
         const auto ny = raster._number_of_samples[1] + 1;
-        // Note that as in example 1, we could also use `GridFormat::MDIndexRange` here
+        // Note that as in the minimal example, we could also use `GridFormat::MDIndexRange` here
         return std::views::iota(std::size_t{0}, nx*ny) | std::views::transform([&, nx] (const std::size_t i) {
             return Point{.x = i%nx, .y = i/nx};
         });

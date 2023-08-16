@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.18)
-project(gridformat_example_7)
+project(gridformat_parallel_example)
 
 include(../find_gridformat.cmake)
 
@@ -12,6 +12,6 @@ if (NOT HAVE_MPI)
     message(FATAL_ERROR "MPI (and gridformat configured with it) is required for this example")
 endif ()
 
-add_executable(example7 example7.cpp)
-add_test(NAME example7 COMMAND mpirun -n 2 ./example7)
-target_link_libraries(example7 PRIVATE gridformat::gridformat)
+add_executable(parallel parallel.cpp)
+add_test(NAME parallel COMMAND mpirun -n 2 ./parallel)
+target_link_libraries(parallel PRIVATE gridformat::gridformat)

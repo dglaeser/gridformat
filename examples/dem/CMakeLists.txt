@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.18)
-project(gridformat_example_2)
+project(gridformat_dem_example)
 
 include(../find_gridformat.cmake)
 
-add_executable(example2 example2.cpp)
-add_test(NAME example2 COMMAND ./example2)
-target_link_libraries(example2 PRIVATE gridformat::gridformat)
+add_executable(dem dem.cpp)
+add_test(NAME dem COMMAND ./dem)
+target_link_libraries(dem PRIVATE gridformat::gridformat)

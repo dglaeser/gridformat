@@ -1,7 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
-# Example 6: using the predefined traits for [mfem::Mesh](https://github.com/mfem/mfem)
+# Using the predefined traits for [mfem::Mesh](https://github.com/mfem/mfem)
 
 Users of `mfem` can use `GridFormat` to write out their meshes and functions.
 `mfem` has some native support for VTK formats, however, with `GridFormat` you can additionally use different encoders

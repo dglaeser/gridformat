@@ -1,7 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
-# Example 5: using the predefined traits for [dolfinx meshes and functions](https://github.com/FEniCS/dolfinx)
+# Using the predefined traits for [dolfinx meshes and functions](https://github.com/FEniCS/dolfinx)
 
 Users of `dolfinx` can use `GridFormat` to write out their meshes and functions. `dolfinx` has support for a
 variety of file formats, however, with `GridFormat` you can additionally use different encoders (besides ascii)
