@@ -27,7 +27,7 @@ be interested in.
 
 - [analytical](./analytical): write out discretized analytical expressions.
 - [minimal](./minimal): a minimal example illustrating how to specialize the traits for a custom data structure.
-- [voxels](./voxels): register a data structure of voxels as `ImageGrid`
+- [voxels](./voxels): register a custom data structure of voxels as `ImageGrid` without defining grid points.
 - [dem](./dem): register a data structure representing a digital elevation model (dem) as `StructuredGrid`
 - [parallel](./parallel): reading/writing grid files in parallel computations using [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface).
 - [cgal_traits](./cgal_traits): using the predefined traits for [CGAL](https://www.cgal.org/).

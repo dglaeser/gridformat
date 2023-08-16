@@ -6,6 +6,7 @@
 #include <ranges>
 #include <numbers>
 #include <iostream>
+#include <stdexcept>
 #include <cmath>
 
 #include <gridformat/gridformat.hpp>
@@ -28,23 +29,19 @@ class VoxelData {
     , _data(_dimensions[0]*_dimensions[1]*_dimensions[2], 0.0)
     {}
 
-    friend auto voxels(const VoxelData& vd) {
-        // `GridFormat` comes with the `MDIndexRange` that one can use to iterate
-        // over all multi-dimensional indices within given dimensions (MDLayout):
-        using GridFormat::MDIndex;
-        using GridFormat::MDLayout;
-        return GridFormat::MDIndexRange{MDLayout{vd._dimensions}} | std::views::transform([] (const MDIndex& i) {
-            return Voxel{i.get(0), i.get(1), i.get(2)};
-        });
+    const std::array<std::size_t, 3> dimensions() const {
+        return _dimensions;
     }
 
-    std::size_t size(int direction) const { return _dimensions.at(direction); }
-    std::size_t size() const { return _data.size(); }
+    void set_value_at(const Voxel& v, const int value) {
+        _data.at(_index(v)) = value;
+    }
 
-    void set(const double value, const Voxel& v) { _data.at(_index(v)) = value; }
-    double get(const Voxel& v) const { return _data.at(_index(v)); }
+    int get_value_at(const Voxel& v) const {
+        return _data.at(_index(v));
+    }
 
-    auto center(const Voxel& v) const {
+    auto center_of(const Voxel& v) const {
         return std::array{
             static_cast<double>(v.x) + 0.5,
             static_cast<double>(v.y) + 0.5,
@@ -54,13 +51,15 @@ class VoxelData {
 
  private:
     std::size_t _index(const Voxel& v) const {
+        if (v.x >= _dimensions[0] || v.y >= _dimensions[1] || v.z >= _dimensions[2])
+            throw std::runtime_error("Given voxel is out of bounds");
         return v.z*_dimensions[0]*_dimensions[1]
             + v.y*_dimensions[0]
             + v.x;
     }
 
     std::array<std::size_t, 3> _dimensions;
-    std::vector<double> _data;
+    std::vector<int> _data;
 };
 
 
@@ -71,8 +70,16 @@ namespace GridFormat::Traits {
 template<>
 struct Cells<VoxelData> {
     static std::ranges::range auto get(const VoxelData& voxel_data) {
-        // Let's use voxels as our "grid cells"
-        return voxels(voxel_data);
+        // `GridFormat` comes with the `MDIndexRange` that one can use to iterate
+        // over all multi-dimensional indices within given dimensions (MDLayout).
+        // Let's use such an index range and transform it with `std::ranges` to
+        // yield a range of `VoxelData::Voxel` (which will be deduced as cell type).
+        using GridFormat::MDLayout;
+        using GridFormat::MDIndex;
+        using GridFormat::MDIndexRange;
+        return MDIndexRange{MDLayout{voxel_data.dimensions()}} | std::views::transform([] (const MDIndex& i) {
+            return VoxelData::Voxel{i.get(0), i.get(1), i.get(2)};
+        });
     }
 };
 
@@ -91,7 +98,7 @@ struct Points<VoxelData> {
 template<>
 struct Extents<VoxelData> {
     static auto get(const VoxelData& voxel_data) {
-        return std::array{voxel_data.size(0), voxel_data.size(1), voxel_data.size(2)};
+        return voxel_data.dimensions();
     }
 };
 
@@ -135,22 +142,24 @@ struct Location<VoxelData, int> {
 
 int main() {
     // Let us check against the concept to see if we implemented the traits correctly.
-    // When implementing the grid traits for a data structure, it is helpful to make
-    // such static_asserts pass before actually using the GridFormat API.
     static_assert(GridFormat::Concepts::ImageGrid<VoxelData>);
 
     VoxelData voxel_data{{100, 80, 120}};
 
-    // A function that we use to define some cell data output
-    const auto indicator_function = [&] (const auto& voxel) -> int {
-        const auto coords = voxel_data.center(voxel);
-        const auto frequency_x = 2.0*std::numbers::pi/voxel_data.size(0);
-        const auto frequency_y = 2.0*std::numbers::pi/voxel_data.size(1);
-        const auto frequency_z = 4.0*std::numbers::pi/voxel_data.size(2);
-        return std::sin(frequency_x*coords[0])
-            + std::cos(frequency_y*coords[1])
-            + std::sin(frequency_z*coords[2] + 0.5*std::numbers::pi) > 0.25;
-    };
+    // let us set some indicator function as voxel data
+    for (std::size_t z = 0; z < voxel_data.dimensions()[2]; ++z)
+        for (std::size_t y = 0; y < voxel_data.dimensions()[1]; ++y)
+            for (std::size_t x = 0; x < voxel_data.dimensions()[0]; ++x) {
+                const VoxelData::Voxel voxel{x, y, z};
+                const auto center = voxel_data.center_of(voxel);
+                const auto frequency_x = 2.0*std::numbers::pi/voxel_data.dimensions()[0];
+                const auto frequency_y = 2.0*std::numbers::pi/voxel_data.dimensions()[1];
+                const auto frequency_z = 4.0*std::numbers::pi/voxel_data.dimensions()[2];
+                const bool value = std::sin(frequency_x*center[0])
+                    + std::cos(frequency_y*center[1])
+                    + std::sin(frequency_z*center[2] + 0.5*std::numbers::pi) > 0.25;
+                voxel_data.set_value_at(voxel, value);
+            }
 
     // we will write a bunch of files. This is a convenience function
     // to add a cell field to a writer and write the file.
@@ -160,7 +169,7 @@ int main() {
         // This can be arrays of any sort, including strings.
         writer.set_meta_data("SomeMetadata", "I am metadata");
         writer.set_cell_field("indicator", [&] (const auto& voxel) {
-            return indicator_function(voxel);
+            return voxel_data.get_value_at(voxel);
         });
         const auto written_filename = writer.write(filename);
         std::cout << "Wrote '" << written_filename << "'" << std::endl;

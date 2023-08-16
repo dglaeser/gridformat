@@ -10,16 +10,13 @@ This example illustrates how to register a custom data structure as
 [.vti file format](https://examples.vtk.org/site/VTKFileFormats/#imagedata), which can be read, visualized and post-processed
 with [ParaView](https://www.paraview.org/) (see the image above).
 The example considers a simple data structure to represent data on 3d voxels, for which we specialize the
-[traits required for image grids](../../docs/pages/traits.md#traits-for-image-grids).
+[traits required for image grids](../../docs/pages/traits.md#traits-for-image-grids). This example also illustrates that when
+using image grid file formats and in case you don't write out point data, you don't have to implement any traits related to grid points.
 
-What you can see in this example is:
+What you can see in this example:
 
-- how to specialize the grid traits for your own data structure
-- how to statically check if your traits implementation is correct
-- how to use the `GridFormat` API for writing grid files (i.e. using `GridFormat::Writer`)
-- how to use the `GridFormat` API for reading grid files (i.e. using `GridFormat::Reader`)
-- how to select the file format into which to write the grid
-- how to add point fields, cell fields and metadata to a grid file
+- how to facilities of `std::ranges` to simplify traits specializations
+- how to define empty (throwing) traits specializations for non-used features.
 - how to choose options exposed by a particular file format (in this case the `.vti` file format)
     - select the encoder to be used
-    - deactivate compression
+    - deactivate compression (active by default)
