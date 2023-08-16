@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     const auto num_ranks = GridFormat::Parallel::size(comm);
     const auto rank = GridFormat::Parallel::rank(comm);
     if (num_ranks == 1)
-        throw std::runtime_error("This example should be run in parallel. Retry with 'mpirun -n 2 example7.");
+        throw std::runtime_error("This example should be run in parallel. Retry with 'mpirun -n 2 parallel.");
     if (num_ranks%2 != 0)
         throw std::runtime_error("This example requires to be run with a number of ranks divisible by 2.");
 
