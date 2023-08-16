@@ -26,6 +26,7 @@ use those frameworks, you may still want to have a quick look at those examples 
 be interested in.
 
 - [analytical](./analytical): write out discretized analytical expressions.
+- [minimal](./minimal): a minimal example illustrating how to specialize the traits for a custom data structure.
 - [voxels](./voxels): register a data structure of voxels as `ImageGrid`
 - [dem](./dem): register a data structure representing a digital elevation model (dem) as `StructuredGrid`
 - [parallel](./parallel): reading/writing grid files in parallel computations using [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface).

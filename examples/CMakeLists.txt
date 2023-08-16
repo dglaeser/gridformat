@@ -7,6 +7,7 @@ project(gridformat_examples)
 enable_testing()
 
 add_subdirectory(analytical)
+add_subdirectory(minimal)
 add_subdirectory(voxels)
 add_subdirectory(dem)
 
