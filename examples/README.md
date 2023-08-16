@@ -27,8 +27,8 @@ be interested in.
 
 - [voxels](./voxels): register a data structure of voxels as `ImageGrid`
 - [dem](./dem): register a data structure representing a digital elevation model (dem) as `StructuredGrid`
+- [parallel](./parallel): reading/writing grid files in parallel computations using [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface).
 - [cgal](./cgal): using the predefined traits for [CGAL](https://www.cgal.org/).
 - [dune](./dune): using the predefined traits for [Dune::GridView](https://dune-project.org/).
 - [dolfinx](./dolfinx): using the predefined traits for [dolfinx](https://github.com/FEniCS/dolfinx).
 - [mfem](./mfem): using the predefined traits for [MFEM](https://mfem.org/).
-- [parallel](./parallel): reading/writing grid files in parallel computations using [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface).
