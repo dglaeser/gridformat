@@ -138,4 +138,5 @@ features, we refer to the [API documentation](https://dglaeser.github.io/gridfor
 
 The authors would like to thank the Federal Government and the Heads of Government of the Länder, as well as the Joint Science
 Conference (GWK), for their funding and support within the framework of the NFDI4Ing consortium. Funded by the German Research
-Foundation (DFG) - project number 442146713.
+Foundation (DFG) - project number 442146713. TK acknowledges funding from the European Union’s Horizon 2020
+research and innovation programme under the Marie Skłodowska-Curie grant agreement No 801133.
