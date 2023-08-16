@@ -17,8 +17,8 @@ cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
 and then going into the `build` directory for compilation and execution:
 
 ```bash
-# N should be substituted with 1, 2, ..., depending on the example you want to run
-cd build && make && ./exampleN
+# Substitute ${EXAMPLE} with the name of the example / folder
+cd build && make && ./${EXAMPLE}
 ```
 
 The examples also include how to use some of the predefined traits for various frameworks. Even if you don't plan to
@@ -28,7 +28,7 @@ be interested in.
 - [voxels](./voxels): register a data structure of voxels as `ImageGrid`
 - [dem](./dem): register a data structure representing a digital elevation model (dem) as `StructuredGrid`
 - [parallel](./parallel): reading/writing grid files in parallel computations using [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface).
-- [cgal](./cgal): using the predefined traits for [CGAL](https://www.cgal.org/).
-- [dune](./dune): using the predefined traits for [Dune::GridView](https://dune-project.org/).
-- [dolfinx](./dolfinx): using the predefined traits for [dolfinx](https://github.com/FEniCS/dolfinx).
-- [mfem](./mfem): using the predefined traits for [MFEM](https://mfem.org/).
+- [cgal_traits](./cgal_traits): using the predefined traits for [CGAL](https://www.cgal.org/).
+- [dune_traits](./dune_traits): using the predefined traits for [Dune::GridView](https://dune-project.org/).
+- [dolfinx_traits](./dolfinx_traits): using the predefined traits for [dolfinx](https://github.com/FEniCS/dolfinx).
+- [mfem_traits](./mfem_traits): using the predefined traits for [MFEM](https://mfem.org/).
