@@ -3,7 +3,12 @@
 
 name: build-action-images
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'docker/**'
 
 jobs:
   push-to-registry:
