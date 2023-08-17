@@ -8,6 +8,8 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - 'docker/**'
   schedule:
     - cron: '30 22 * * 0,3'
   workflow_dispatch:

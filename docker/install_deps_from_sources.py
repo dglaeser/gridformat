@@ -73,8 +73,20 @@ def _install_pkg(name, opts: dict) -> None:
                 if opts.get("install_prefix") is not None
                 else ""
             )
+            c_compiler_arg = str(
+                f"-DCMAKE_C_COMPILER={opts['c_compiler']}"
+                if opts.get("c_compiler") is not None
+                else ""
+            )
+            cxx_compiler_arg = str(
+                f"-DCMAKE_CXX_COMPILER={opts['cxx_compiler']}"
+                if opts.get("cxx_compiler") is not None
+                else ""
+            )
             print(f"Installing dune with prefix argument '{prefix_arg}'")
-            opts_file.write(f'CMAKE_FLAGS="-DCMAKE_BUILD_TYPE=Release -DDUNE_ENABLE_PYTHONBINDINGS=0 {prefix_arg}"')
+            opts_file.write(
+                f'CMAKE_FLAGS="-DCMAKE_BUILD_TYPE=Release -DDUNE_ENABLE_PYTHONBINDINGS=0 {prefix_arg} {c_compiler_arg} {cxx_compiler_arg}"'
+            )
         _clone_sources("https://gitlab.dune-project.org/core/dune-common.git", f"releases/{PACKAGES['dune']}")
         _clone_sources("https://gitlab.dune-project.org/core/dune-geometry.git", f"releases/{PACKAGES['dune']}")
         _clone_sources("https://gitlab.dune-project.org/core/dune-grid.git", f"releases/{PACKAGES['dune']}")
