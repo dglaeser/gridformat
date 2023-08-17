@@ -856,7 +856,7 @@ $(document).ready(function(){initNavTree('dune_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span> </div>
 <div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>        <span class="keywordflow">if</span> (_cellwise_constant) {</div>
 <div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>            std::size_t count = 0;</div>
-<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; element : elements(_mesh.grid_view())) {</div>
+<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; element : Traits::Cells&lt;GridView&gt;::get(_mesh.grid_view())) {</div>
 <div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>                local_function.bind(element);</div>
 <div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; elem_geo = element.geometry();</div>
 <div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; local_pos = elem_geo.local(elem_geo.center());</div>
@@ -864,7 +864,7 @@ $(document).ready(function(){initNavTree('dune_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span>                _copy_values(local_function(local_pos), out_data, offset);</div>
 <div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>            }</div>
 <div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; element : elements(_mesh.grid_view())) {</div>
+<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; element : Traits::Cells&lt;GridView&gt;::get(_mesh.grid_view())) {</div>
 <div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span>                local_function.bind(element);</div>
 <div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; point : _mesh.points(element)) {</div>
 <div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span>                    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; local_pos = element.geometry().local(_mesh.position(point));</div>
