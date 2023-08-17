@@ -754,7 +754,7 @@ class FunctionField : public GridFormat::Field {
 
         if (_cellwise_constant) {
             std::size_t count = 0;
-            for (const auto& element : elements(_mesh.grid_view())) {
+            for (const auto& element : Traits::Cells<GridView>::get(_mesh.grid_view())) {
                 local_function.bind(element);
                 const auto& elem_geo = element.geometry();
                 const auto& local_pos = elem_geo.local(elem_geo.center());
@@ -762,7 +762,7 @@ class FunctionField : public GridFormat::Field {
                 _copy_values(local_function(local_pos), out_data, offset);
             }
         } else {
-            for (const auto& element : elements(_mesh.grid_view())) {
+            for (const auto& element : Traits::Cells<GridView>::get(_mesh.grid_view())) {
                 local_function.bind(element);
                 for (const auto& point : _mesh.points(element)) {
                     const auto& local_pos = element.geometry().local(_mesh.position(point));
