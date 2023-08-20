@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+// SPDX-FileCopyrightText: 2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: MIT
 #ifndef GRIDFORMAT_TEST_READER_TESTS_HPP_
 #define GRIDFORMAT_TEST_READER_TESTS_HPP_

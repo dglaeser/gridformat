@@ -3,7 +3,8 @@
 
 """Adds or modifies the license text in all version-controlled source files (of known type)"""
 
-from os import walk
+from subprocess import run
+from os import getcwd
 from os.path import splitext, join, exists
 from typing import Optional
 from datetime import datetime
@@ -23,7 +24,7 @@ def _get_authors(filename: str) -> str:
     with open(filename) as sourcefile:
         for line in sourcefile:
             if "FileCopyrightText: " in line:
-                return _remove_suffixes(line.split("FileCopyrightText: ", maxsplit=1)[1].strip())
+                return _remove_suffixes(line.split("FileCopyrightText: ")[1].split(" ", maxsplit=1)[1].strip())
     raise RuntimeError("Could not extract author information")
 
 
@@ -56,12 +57,10 @@ def _update_license_info(filename: str, license_update: Optional[tuple[str, str]
     )
 
     new_years = year
-    if "-" not in year and year != str(datetime.now().year):
-        new_years = f"{year}-{datetime.now().year}"
-    elif "-" in year and year.split("-")[1] != str(datetime.now().year):
-        new_years = f"{year.split('-')[0]}-{datetime.now().year}"
-
-    text = open(filename).read()
+    if "-" in year:
+        new_years = year.split("-")[0]
+    with open(filename) as in_file:
+        text = in_file.read()
     text = text.replace(_cpy_right_text(year, authors), _cpy_right_text(new_years, authors))
     text = text.replace(_license_id_text(license), _license_id_text(new_license))
     with open(filename, "w") as new_file:
@@ -87,17 +86,14 @@ if __name__ == "__main__":
     if args["cur_license"] and args["new_license"]:
         license_update = (args["cur_license"], args["new_license"])
 
-    for root, folders, files in walk("."):
-        for f in files:
-            if args["extension"] and splitext(f)[1] != args["extension"]:
-                continue
+    all_git_files = run(["git", "ls-files"], check=True, text=True, capture_output=True).stdout.strip("\n").split("\n")
+    for file in filter(lambda f: not args["extension"] or splitext(f)[1] == args["extension"], all_git_files):
+        f = join(getcwd(), file)
+        if "LICENSES" in f or "doxygen" in f or ".git/" in f:
+            continue
 
-            f = join(root, f)
-            if "LICENSES" in f or "doxygen" in f or ".git/" in f:
-                continue
-
-            license_file = _get_separate_license_file(f)
-            if license_file is not None:
-                f = license_file
-            print(f"Processing file '{f}'")
-            _update_license_info(f, license_update)
+        license_file = _get_separate_license_file(f)
+        if license_file is not None:
+            f = license_file
+        print(f"Processing file '{f}'")
+        _update_license_info(f, license_update)
