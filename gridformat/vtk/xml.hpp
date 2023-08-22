@@ -385,10 +385,8 @@ class XMLWriterBase
         // discard vectors with more than 3 elements for active arrays
         const auto get_vector_filter = [] (unsigned int rank) {
             return [r=rank] (const auto& name_field_ptr_pair) {
-                if (r == 1) {
-                    const auto layout = name_field_ptr_pair.second->layout();
-                    return layout.dimension() == 2 ? layout.extent(1) <= 3 : true;
-                }
+                if (r == 1)
+                    return name_field_ptr_pair.second->layout().extent(1) <= 3;
                 return true;
             };
         };
