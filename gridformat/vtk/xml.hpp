@@ -383,22 +383,27 @@ class XMLWriterBase
         };
 
         // discard vectors with more than 3 elements for active arrays
-        const auto vector_filter_3d = [] (const auto& name_field_ptr_pair) {
-            const auto layout = name_field_ptr_pair.second->layout();
-            return layout.dimension() == 2 ? layout.extent(1) <= 3 : true;
+        const auto get_vector_filter = [] (unsigned int rank) {
+            return [r=rank] (const auto& name_field_ptr_pair) {
+                if (r == 1) {
+                    const auto layout = name_field_ptr_pair.second->layout();
+                    return layout.dimension() == 2 ? layout.extent(1) <= 3 : true;
+                }
+                return true;
+            };
         };
 
-        for (std::string_view group : {"Piece.PointData", "PPointData"})
+        for (std::string_view group : {"Piece/PointData", "PPointData"})
             for (unsigned int i = 0; i <= 2; ++i)
                 for (const auto& [n, _] : point_fields_of_rank(i, *this)
-                                            | std::views::filter(vector_filter_3d)
+                                            | std::views::filter(get_vector_filter(i))
                                             | std::views::take(1))
                     set(group, active_array_attribute_for_rank(i), n);
 
-        for (std::string_view group : {"Piece.CellData", "PCellData"})
+        for (std::string_view group : {"Piece/CellData", "PCellData"})
             for (unsigned int i = 0; i <= 2; ++i)
                 for (const auto& [n, _] : cell_fields_of_rank(i, *this)
-                                            | std::views::filter(vector_filter_3d)
+                                            | std::views::filter(get_vector_filter(i))
                                             | std::views::take(1))
                     set(group, active_array_attribute_for_rank(i), n);
     }
