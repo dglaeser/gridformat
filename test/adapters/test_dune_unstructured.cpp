@@ -98,13 +98,13 @@ void test_lagrange(const GridView& grid_view, const std::string& suffix = "") {
         GridFormat::VTUWriter writer{lagrange_grid, {.encoder = GridFormat::Encoding::ascii}};
         GridFormat::Test::add_meta_data(writer);
         writer.set_point_field("pfield", [&] (const auto& p) {
-            return GridFormat::Test::test_function<double>(lagrange_grid.position(p));
+            return GridFormat::Test::test_function<double>(p.coordinates);
         });
-        writer.set_cell_field("cfield", [&] (const auto c) {
-            return GridFormat::Test::test_function<double>(lagrange_grid.geometry(c).center());
+        writer.set_cell_field("cfield", [&] (const auto& element) {
+            return GridFormat::Test::test_function<double>(element.geometry().center());
         });
-        writer.set_cell_field("cfield_from_element", [&] (const auto c) {
-            return GridFormat::Test::test_function<double>(lagrange_grid.element(c).geometry().center());
+        writer.set_cell_field("cfield_from_element", [&] (const auto& element) {
+            return GridFormat::Test::test_function<double>(element.geometry().center());
         });
 
 #if GRIDFORMAT_HAVE_DUNE_FUNCTIONS
