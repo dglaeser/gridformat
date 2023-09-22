@@ -612,6 +612,41 @@ class LagrangePolynomialGrid {
     std::unordered_map<std::size_t, std::size_t> _element_to_running_index;
 };
 
+namespace Traits {
+
+template<typename GridView>
+struct Element {
+    using type = typename GridView::template Codim<0>::Entity;
+    static const auto& get(const GridView& gv, const type& e) {
+        return e;
+    }
+};
+
+template<typename GridView>
+struct Element<LagrangePolynomialGrid<GridView>> {
+    using type = typename LagrangePolynomialGrid<GridView>::Cell;
+    static auto get(const LagrangePolynomialGrid<GridView>& grid, const type& c) {
+        return grid.element(c);
+    }
+};
+
+template<typename GV>
+struct GridView {
+    using type = GV;
+    static const auto& get(const GV& gv) {
+        return gv;
+    }
+};
+
+template<typename GV>
+struct GridView<LagrangePolynomialGrid<GV>> {
+    using type = GV;
+    static const auto& get(const LagrangePolynomialGrid<GV>& grid) {
+        return grid.grid_view();
+    }
+};
+
+}  // namespace Traits
 }  // namespace Dune
 
 
@@ -712,21 +747,25 @@ namespace FunctionDetail {
 
 /*!
  * \ingroup PredefinedTraits
- * \brief Implements the field interface for a Dune::Function defined on a GridFormat::Dune::LagrangePolynomialGrid.
+ * \brief Implements the field interface for a Dune::Function defined on a (wrapped) Dune::GridView.
  */
-template<typename Function, typename GridView, typename T = FunctionDetail::RangeScalar<Function, GridView>>
+template<typename Function,
+         typename Grid,
+         typename T = FunctionDetail::RangeScalar<Function, typename Dune::Traits::GridView<Grid>::type>>
 class FunctionField : public GridFormat::Field {
+    using GridView = typename Dune::Traits::GridView<Grid>::type;
+
  public:
     explicit FunctionField(const Function& function,
-                           const LagrangePolynomialGrid<GridView>& mesh,
+                           const Grid& grid,
                            const Precision<T>& = {},
                            bool cellwise_constant = false)
     : _function{function}
-    , _mesh{mesh}
+    , _grid{grid}
     , _cellwise_constant{cellwise_constant} {
         if constexpr (requires { function.basis(); }) {
             static_assert(std::is_same_v<typename Function::Basis::GridView, GridView>);
-            if (&function.basis().gridView().grid() != &mesh.grid_view().grid())
+            if (&function.basis().gridView().grid() != &Dune::Traits::GridView<Grid>::get(_grid).grid())
                 throw ValueError("Function and mesh do not use the same underlying grid");
         }
     }
@@ -734,8 +773,8 @@ class FunctionField : public GridFormat::Field {
  private:
     MDLayout _layout() const override {
         return get_md_layout<FunctionDetail::RangeType<Function, GridView>>(
-            _cellwise_constant ? _mesh.number_of_cells()
-                               : _mesh.number_of_points()
+            _cellwise_constant ? GridFormat::Traits::NumberOfCells<Grid>::get(_grid)
+                               : GridFormat::Traits::NumberOfPoints<Grid>::get(_grid)
         );
     }
 
@@ -752,9 +791,14 @@ class FunctionField : public GridFormat::Field {
         auto out_data = result.template as_span_of<T>();
         auto local_function = localFunction(_function);
 
+        using GridFormat::Traits::Cells;
+        using GridFormat::Traits::CellPoints;
+        using GridFormat::Traits::PointCoordinates;
+        using GridFormat::Traits::PointId;
         if (_cellwise_constant) {
             std::size_t count = 0;
-            for (const auto& element : Traits::Cells<GridView>::get(_mesh.grid_view())) {
+            for (const auto& cell : Cells<Grid>::get(_grid)) {
+                const auto& element = Traits::Element<Grid>::get(_grid, cell);
                 local_function.bind(element);
                 const auto& elem_geo = element.geometry();
                 const auto& local_pos = elem_geo.local(elem_geo.center());
@@ -762,14 +806,16 @@ class FunctionField : public GridFormat::Field {
                 _copy_values(local_function(local_pos), out_data, offset);
             }
         } else {
-            for (const auto& element : Traits::Cells<GridView>::get(_mesh.grid_view())) {
+            std::ranges::for_each(Cells<Grid>::get(_grid), [&] <typename C> (const C& cell) {
+                const auto& element = Traits::Element<Grid>::get(_grid, cell);
+                const auto& element_geometry = element.geometry();
                 local_function.bind(element);
-                for (const auto& point : _mesh.points(element)) {
-                    const auto& local_pos = element.geometry().local(_mesh.position(point));
-                    std::size_t offset = point.index*num_entries_per_value;
+                std::ranges::for_each(CellPoints<Grid, C>::get(_grid, cell), [&] <typename P> (const P& point) {
+                    const auto& local_pos = element_geometry.local(PointCoordinates<Grid, P>::get(_grid, point));
+                    std::size_t offset = PointId<Grid, P>::get(_grid, point)*num_entries_per_value;
                     _copy_values(local_function(local_pos), out_data, offset);
-                }
-            }
+                });
+            });
         }
 
         return result;
@@ -788,7 +834,7 @@ class FunctionField : public GridFormat::Field {
     }
 
     const Function& _function;
-    const LagrangePolynomialGrid<GridView>& _mesh;
+    const Grid& _grid;
     bool _cellwise_constant;
 };
 
@@ -801,10 +847,6 @@ namespace FunctionDetail {
     template<typename F, typename W, typename T>
     void set_function(F&& f, W& w, const std::string& name, const Precision<T>& prec, bool is_cellwise) {
         static_assert(std::is_lvalue_reference_v<F>, "Functions are stored as references and need to be lvalues");
-        static_assert(
-            IsLagrangeGrid<typename W::Grid>::value,
-            "Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangePolynomialGrid"
-        );
         if (is_cellwise)
             w.set_cell_field(name, FunctionField{f, w.grid(), prec, true});
         else
@@ -813,11 +855,8 @@ namespace FunctionDetail {
 
     template<typename F, typename W>
     void set_function(F&& f, W& w, const std::string& name, bool is_cellwise) {
-        static_assert(
-            IsLagrangeGrid<typename W::Grid>::value,
-            "Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangePolynomialGrid"
-        );
-        using T = RangeScalar<F, typename W::Grid::GridView>;
+        using GV = Dune::Traits::GridView<typename W::Grid>::type;
+        using T = RangeScalar<F, GV>;
         set_function(std::forward<F>(f), w, name, Precision<T>{}, is_cellwise);
     }
 }  // namespace FunctionDetail
