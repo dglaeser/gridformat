@@ -384,6 +384,9 @@ namespace LagrangeDetail {
         static constexpr std::size_t reserved_size = 64;
 
      public:
+        using PointSet = DUNE::EquidistantPointSet<typename GridView::ctype, GridView::dimension>;
+        using Point = typename PointSet::LagrangePoint;
+
         explicit LocalPoints(unsigned int order)
         : _points(order)
         {}
@@ -399,7 +402,7 @@ namespace LagrangeDetail {
             return _points.size();
         }
 
-        const auto& at(std::size_t i) const {
+        const Point& at(std::size_t i) const {
             return _points[_sorted_indices.at(i)];
         }
 
@@ -428,12 +431,19 @@ namespace LagrangeDetail {
             });
         }
 
-        DUNE::EquidistantPointSet<typename GridView::ctype, GridView::dimension> _points;
+        PointSet _points;
         ReservedVector<unsigned int, reserved_size> _sorted_indices;
     };
 
-    class PointIndicesHelper {
+    class PointMapper {
      public:
+        template<typename GridView>
+        explicit PointMapper(const GridView& grid_view) {
+            _codim_to_global_indices.resize(GridView::dimension + 1);
+            for (int codim = 0; codim < GridView::dimension + 1; ++codim)
+                _codim_to_global_indices[codim].resize(grid_view.size(codim));
+        }
+
         struct Key {
             unsigned int codim;
             std::size_t global_index;
@@ -441,27 +451,34 @@ namespace LagrangeDetail {
         };
 
         bool contains(const Key& key) const {
-            if (!_codim_to_global_indices.contains(key.codim))
+            const auto& entity_dofs = _codim_to_global_indices[key.codim][key.global_index];
+            if (entity_dofs.size() <= key.sub_index)
                 return false;
-            if (!_codim_to_global_indices.at(key.codim).contains(key.global_index))
-                return false;
-            return _codim_to_global_indices.at(key.codim).at(key.global_index).contains(key.sub_index);
+            return entity_dofs[key.sub_index] != -1;
         }
 
         void insert(const Key& key, std::size_t index) {
-            _codim_to_global_indices[key.codim][key.global_index][key.sub_index] = index;
+            auto& entity_dofs = _codim_to_global_indices[key.codim][key.global_index];
+            if (entity_dofs.size() < key.sub_index + 1)
+                entity_dofs.resize(key.sub_index + 1, -1);
+            entity_dofs[key.sub_index] = static_cast<std::int64_t>(index);
         }
 
-        std::size_t get(const Key& key) {
-            return _codim_to_global_indices.at(key.codim).at(key.global_index).at(key.sub_index);
+        std::size_t get(const Key& key) const {
+            assert(_codim_to_global_indices[key.codim][key.global_index].size() > key.sub_index);
+            auto index = _codim_to_global_indices[key.codim][key.global_index][key.sub_index];
+            assert(index != -1);
+            return static_cast<std::size_t>(index);
+        }
+
+        void clear() {
+            _codim_to_global_indices.clear();
         }
 
      private:
-        std::unordered_map<
-            int, // codim
-            std::unordered_map<
-                std::size_t, // entity index
-                std::unordered_map<int, std::size_t>  // sub-entity index to global indices
+        std::vector<  // codim
+            std::vector<  // entity index
+                ReservedVector<std::int64_t, 20>  // sub-entity index to global indices
             >
         > _codim_to_global_indices;
     };
@@ -478,25 +495,37 @@ namespace LagrangeDetail {
  */
 template<typename GV>
 class LagrangePolynomialGrid {
-    using ElementSeed = typename GV::Grid::template Codim<0>::EntitySeed;
+    using Element = typename GV::Grid::template Codim<0>::Entity;
+    using ElementGeometry = typename Element::Geometry;
+    using GlobalCoordinate = typename ElementGeometry::GlobalCoordinate;
+    using LocalCoordinate = typename ElementGeometry::LocalCoordinate;
+
     using LocalPoints = LagrangeDetail::LocalPoints<GV>;
     using Mapper = DUNE::MultipleCodimMultipleGeomTypeMapper<GV>;
     static constexpr int dim = GV::dimension;
 
- public:
-    struct Point { std::size_t index; };
-    struct Cell { std::size_t index; };
+    template<typename Coord>
+    struct P {
+        std::size_t index;
+        Coord coordinates;
+    };
 
+    using _GlobalPoint = P<GlobalCoordinate>;
+    using _LocalPoint = P<LocalCoordinate>;
+
+ public:
     using GridView = GV;
-    using Element = typename GridView::template Codim<0>::Entity;
-    using Position = typename Element::Geometry::GlobalCoordinate;
+    using Position = GlobalCoordinate;
+    using Cell = Element;
+    using Point = _GlobalPoint;
+    using LocalPoint = _LocalPoint;
 
     explicit LagrangePolynomialGrid(const GridView& grid_view, unsigned int order = 1)
     : _grid_view{grid_view}
     , _order{order} {
-        update(grid_view);
         if (order < 1)
             throw InvalidState("Order must be >= 1");
+        update(grid_view);
     }
 
     void update(const GridView& grid_view) {
@@ -508,56 +537,60 @@ class LagrangePolynomialGrid {
     }
 
     void clear() {
+        _codim_to_mapper.clear();
+        _local_points.clear();
         _points.clear();
         _cells.clear();
-        _element_seeds.clear();
-        _local_points.clear();
-        _codim_to_mapper.clear();
-        _element_to_running_index.clear();
     }
 
-    std::size_t number_of_cells() const { return _cells.size(); }
-    std::size_t number_of_points() const { return _points.size(); }
-    std::size_t number_of_points(const Cell& cell) const { return _cells.at(cell.index).size(); }
+    std::size_t number_of_cells() const {
+        return _cells.empty() ? 0 : Traits::NumberOfCells<GridView>::get(_grid_view);
+    }
 
-    auto cells() const {
-        return std::views::iota(std::size_t{0}, number_of_cells())
-            | std::views::transform([] (const std::size_t i) {
-                return Cell{i};
+    std::size_t number_of_points() const {
+        return _points.size();
+    }
+
+    std::size_t number_of_points(const Element& element) const {
+        return _local_points.at(element.type()).size();
+    }
+
+    std::ranges::range auto cells() const {
+        return Traits::Cells<GridView>::get(_grid_view);
+    }
+
+    std::ranges::range auto points() const {
+        return std::views::iota(std::size_t{0}, _points.size())
+            | std::views::transform([&] (std::size_t idx) {
+                return Point{idx, _points[idx]};
             });
     }
 
-    auto points() const {
-        return std::views::iota(std::size_t{0}, number_of_points())
-            | std::views::transform([] (const std::size_t i) {
-                return Point{i};
+    std::ranges::range auto points(const Element& e) const {
+        const auto& corners = _cells[_codim_to_mapper[0].index(e)];
+        return std::views::iota(std::size_t{0}, corners.size())
+            | std::views::transform([&] (std::size_t i) {
+                return Point{
+                    .index = corners[i],
+                    .coordinates = _points[corners[i]]
+                };
             });
     }
 
-    auto points(const Cell& cell) const {
-        return _cells.at(cell.index) | std::views::transform([] (const std::size_t i) {
-            return Point{i};
-        });
-    }
-
-    auto points(const Element& e) const {
-        return points(Cell{_element_to_running_index.at(_codim_to_mapper.at(0).index(e))});
+    std::ranges::range auto local_points(const Element& e) const {
+        const auto& corners = _cells[_codim_to_mapper[0].index(e)];
+        const auto& local_points = _local_points.at(e.type());
+        return std::views::iota(std::size_t{0},local_points.size())
+            | std::views::transform([&] (std::size_t i) {
+                return LocalPoint{
+                    .index = corners[i],
+                    .coordinates = local_points.at(i).point()
+                };
+            });
     }
 
     const GridView& grid_view() const {
         return _grid_view;
-    }
-
-    const Position& position(const Point& p) const {
-        return _points.at(p.index);
-    }
-
-    Element element(const Cell& cell) const {
-        return _grid_view.grid().entity(_element_seeds.at(cell.index));
-    }
-
-    auto geometry(const Cell& cell) const {
-        return element(cell).geometry();
     }
 
  private:
@@ -568,35 +601,42 @@ class LagrangePolynomialGrid {
         }
     }
 
-    auto _make_codim_mappers() {
-        _codim_to_mapper.clear();
-        _codim_to_mapper.emplace(0, Mapper{_grid_view, DUNE::mcmgLayout(DUNE::Codim<0>{})});
-        _codim_to_mapper.emplace(1, Mapper{_grid_view, DUNE::mcmgLayout(DUNE::Codim<1>{})});
+    void _make_codim_mappers() {
+        _codim_to_mapper.reserve(dim + 1);
+        _codim_to_mapper.emplace_back(Mapper{_grid_view, DUNE::mcmgLayout(DUNE::Codim<0>{})});
+        if constexpr (int(GridView::dimension) >= 1)
+            _codim_to_mapper.emplace_back(Mapper{_grid_view, DUNE::mcmgLayout(DUNE::Codim<1>{})});
         if constexpr (int(GridView::dimension) >= 2)
-            _codim_to_mapper.emplace(2, Mapper{_grid_view, DUNE::mcmgLayout(DUNE::Codim<2>{})});
+            _codim_to_mapper.emplace_back(Mapper{_grid_view, DUNE::mcmgLayout(DUNE::Codim<2>{})});
         if constexpr (int(GridView::dimension) == 3)
-            _codim_to_mapper.emplace(3, Mapper{_grid_view, DUNE::mcmgLayout(DUNE::Codim<3>{})});
+            _codim_to_mapper.emplace_back(Mapper{_grid_view, DUNE::mcmgLayout(DUNE::Codim<3>{})});
     }
 
     void _update_mesh() {
-        LagrangeDetail::PointIndicesHelper point_indices;
-        _cells.reserve(Traits::NumberOfCells<GridView>::get(_grid_view));
-        _element_seeds.reserve(_cells.size());
+        LagrangeDetail::PointMapper point_mapper{_grid_view};
+        std::size_t dof_index = 0;
+        _cells.resize(_grid_view.size(0));
         for (const auto& element : Traits::Cells<GridView>::get(_grid_view)) {
-            _element_to_running_index[_codim_to_mapper.at(0).index(element)] = _cells.size();
-            _element_seeds.push_back(element.seed());
-            auto& cell_points = _cells.emplace_back();
-            for (const auto& local_point : _local_points.at(element.type()).get()) {
-                const auto codim = local_point.localKey().codim();
-                const auto sub_entity = local_point.localKey().subEntity();
-                const auto sub_index = local_point.localKey().index();
-                const auto global_index = _codim_to_mapper.at(codim).subIndex(element, sub_entity, codim);
-                if (!point_indices.contains({codim, global_index, sub_index})) {
-                    _points.emplace_back(element.geometry().global(local_point.point()));
-                    point_indices.insert({codim, global_index, sub_index}, _points.size() - 1);
-                    cell_points.push_back(_points.size() - 1);
+            const auto& local_points = _local_points.at(element.type()).get();
+            const auto& element_geometry = element.geometry();
+            const auto element_index = _codim_to_mapper[0].index(element);
+            _cells[element_index].reserve(local_points.size());
+            for (const auto& local_point : local_points) {
+                const auto& localKey = local_point.localKey();
+                const typename LagrangeDetail::PointMapper::Key key{
+                    .codim = localKey.codim(),
+                    .global_index = _codim_to_mapper[localKey.codim()].subIndex(
+                        element, localKey.subEntity(), localKey.codim()
+                    ),
+                    .sub_index = localKey.index()
+                };
+                if (!point_mapper.contains(key)) {
+                    point_mapper.insert(key, dof_index);
+                    _cells[element_index].push_back(dof_index);
+                    _points.push_back(element_geometry.global(local_point.point()));
+                    dof_index++;
                 } else {
-                    cell_points.push_back(point_indices.get({codim, global_index, sub_index}));
+                    _cells[element_index].push_back(point_mapper.get(key));
                 }
             }
         }
@@ -604,14 +644,31 @@ class LagrangePolynomialGrid {
 
     GridView _grid_view;
     unsigned int _order;
-    std::vector<Position> _points;
-    std::vector<std::vector<std::size_t>> _cells;
-    std::vector<ElementSeed> _element_seeds;
+    std::vector<Mapper> _codim_to_mapper;
     std::map<DUNE::GeometryType, LocalPoints> _local_points;
-    std::unordered_map<int, Mapper> _codim_to_mapper;
-    std::unordered_map<std::size_t, std::size_t> _element_to_running_index;
+    std::vector<GlobalCoordinate> _points;
+    std::vector<std::vector<std::size_t>> _cells;
 };
 
+namespace Traits {
+
+template<typename GV>
+struct GridView {
+    using type = GV;
+    static const auto& get(const GV& gv) {
+        return gv;
+    }
+};
+
+template<typename GV>
+struct GridView<LagrangePolynomialGrid<GV>> {
+    using type = GV;
+    static const auto& get(const LagrangePolynomialGrid<GV>& grid) {
+        return grid.grid_view();
+    }
+};
+
+}  // namespace Traits
 }  // namespace Dune
 
 
@@ -666,18 +723,18 @@ struct CellPoints<Dune::LagrangePolynomialGrid<GridView>,
 template<typename GridView>
 struct CellType<Dune::LagrangePolynomialGrid<GridView>,
                 typename Dune::LagrangePolynomialGrid<GridView>::Cell> {
-    static auto get(const Dune::LagrangePolynomialGrid<GridView>& mesh,
+    static auto get(const Dune::LagrangePolynomialGrid<GridView>&,
                     const typename Dune::LagrangePolynomialGrid<GridView>::Cell& cell) {
-        return Dune::LagrangeDetail::cell_type(mesh.element(cell).type());
+        return Dune::LagrangeDetail::cell_type(cell.type());
     }
 };
 
 template<typename GridView>
 struct PointCoordinates<Dune::LagrangePolynomialGrid<GridView>,
                         typename Dune::LagrangePolynomialGrid<GridView>::Point> {
-    static const auto& get(const Dune::LagrangePolynomialGrid<GridView>& mesh,
+    static const auto& get(const Dune::LagrangePolynomialGrid<GridView>&,
                            const typename Dune::LagrangePolynomialGrid<GridView>::Point& point) {
-        return mesh.position(point);
+        return point.coordinates;
     }
 };
 
@@ -694,6 +751,16 @@ struct PointId<Dune::LagrangePolynomialGrid<GridView>,
 
 
 namespace Dune {
+namespace Concepts {
+
+template<typename T, typename GridView>
+concept Function = requires(const T& f, const typename GridView::template Codim<0>::Entity& element) {
+    { localFunction(f) };
+    { localFunction(f).bind(element) };
+    { localFunction(f)(element.geometry().center()) };
+};
+
+}  // namespace Concepts
 
 #ifndef DOXYGEN
 namespace FunctionDetail {
@@ -712,21 +779,31 @@ namespace FunctionDetail {
 
 /*!
  * \ingroup PredefinedTraits
- * \brief Implements the field interface for a Dune::Function defined on a GridFormat::Dune::LagrangePolynomialGrid.
+ * \brief Implements the field interface for a Dune::Function defined on a (wrapped) Dune::GridView.
+ * \note Takes ownership of the given function if constructed with an rvalue reference, otherwise it
+ *       stores a reference.
  */
-template<typename Function, typename GridView, typename T = FunctionDetail::RangeScalar<Function, GridView>>
+template<typename _Function, typename Grid, GridFormat::Concepts::Scalar T>
+    requires(Concepts::Function<_Function, typename Dune::Traits::GridView<Grid>::type>)
 class FunctionField : public GridFormat::Field {
+    using Function = std::remove_cvref_t<_Function>;
+    using GridView = typename Dune::Traits::GridView<Grid>::type;
+    using Element = typename GridView::template Codim<0>::Entity;
+    using ElementGeometry = typename Element::Geometry;
+
  public:
-    explicit FunctionField(const Function& function,
-                           const LagrangePolynomialGrid<GridView>& mesh,
+    template<typename F>
+        requires(std::is_same_v<std::remove_cvref_t<F>, Function>)
+    explicit FunctionField(F&& function,
+                           const Grid& grid,
                            const Precision<T>& = {},
                            bool cellwise_constant = false)
-    : _function{function}
-    , _mesh{mesh}
+    : _function{std::forward<F>(function)}
+    , _grid{grid}
     , _cellwise_constant{cellwise_constant} {
         if constexpr (requires { function.basis(); }) {
             static_assert(std::is_same_v<typename Function::Basis::GridView, GridView>);
-            if (&function.basis().gridView().grid() != &mesh.grid_view().grid())
+            if (&function.basis().gridView().grid() != &Dune::Traits::GridView<Grid>::get(_grid).grid())
                 throw ValueError("Function and mesh do not use the same underlying grid");
         }
     }
@@ -734,8 +811,8 @@ class FunctionField : public GridFormat::Field {
  private:
     MDLayout _layout() const override {
         return get_md_layout<FunctionDetail::RangeType<Function, GridView>>(
-            _cellwise_constant ? _mesh.number_of_cells()
-                               : _mesh.number_of_points()
+            _cellwise_constant ? GridFormat::Traits::NumberOfCells<Grid>::get(_grid)
+                               : GridFormat::Traits::NumberOfPoints<Grid>::get(_grid)
         );
     }
 
@@ -752,9 +829,10 @@ class FunctionField : public GridFormat::Field {
         auto out_data = result.template as_span_of<T>();
         auto local_function = localFunction(_function);
 
+        using GridFormat::Traits::Cells;
         if (_cellwise_constant) {
             std::size_t count = 0;
-            for (const auto& element : Traits::Cells<GridView>::get(_mesh.grid_view())) {
+            for (const auto& element : Cells<Grid>::get(_grid)) {
                 local_function.bind(element);
                 const auto& elem_geo = element.geometry();
                 const auto& local_pos = elem_geo.local(elem_geo.center());
@@ -762,17 +840,42 @@ class FunctionField : public GridFormat::Field {
                 _copy_values(local_function(local_pos), out_data, offset);
             }
         } else {
-            for (const auto& element : Traits::Cells<GridView>::get(_mesh.grid_view())) {
+            std::ranges::for_each(Cells<Grid>::get(_grid), [&] <typename C> (const C& element) {
+                const auto& element_geometry = element.geometry();
                 local_function.bind(element);
-                for (const auto& point : _mesh.points(element)) {
-                    const auto& local_pos = element.geometry().local(_mesh.position(point));
-                    std::size_t offset = point.index*num_entries_per_value;
+                _visit_local_coordinates_and_point_ids([&] (const auto& local_pos, const auto idx) {
+                    std::size_t offset = idx*num_entries_per_value;
                     _copy_values(local_function(local_pos), out_data, offset);
-                }
-            }
+                }, element, element_geometry);
+            });
         }
 
         return result;
+    }
+
+    template<typename Action>
+    void _visit_local_coordinates_and_point_ids(const Action& action,
+                                                const Element& element,
+                                                const ElementGeometry& element_geo) const {
+        using GridFormat::Traits::CellPoints;
+        using GridFormat::Traits::PointCoordinates;
+        using GridFormat::Traits::PointId;
+        std::ranges::for_each(CellPoints<Grid, Element>::get(_grid, element), [&] <typename P> (const P& point) {
+            action(
+                element_geo.local(PointCoordinates<Grid, P>::get(_grid, point)),
+                PointId<Grid, P>::get(_grid, point)
+            );
+        });
+    }
+
+    template<typename Action>
+        requires(std::is_same_v<Grid, LagrangePolynomialGrid<GridView>>)
+    void _visit_local_coordinates_and_point_ids(const Action& action,
+                                                const Element& element,
+                                                const ElementGeometry&) const {
+        std::ranges::for_each(_grid.local_points(element), [&] <typename P> (const P& point) {
+            action(point.coordinates, point.index);
+        });
     }
 
     template<std::ranges::range R>
@@ -782,15 +885,26 @@ class FunctionField : public GridFormat::Field {
         });
     }
 
-    template<Concepts::Scalar S>
+    template<GridFormat::Concepts::Scalar S>
     void _copy_values(const S value, std::span<T> out, std::size_t& offset) const {
         out[offset++] = static_cast<T>(value);
     }
 
-    const Function& _function;
-    const LagrangePolynomialGrid<GridView>& _mesh;
+    _Function _function;
+    const Grid& _grid;
     bool _cellwise_constant;
 };
+
+
+template<typename F, typename G, typename T = FunctionDetail::RangeScalar<F, typename Traits::GridView<G>::type>>
+    requires(std::is_lvalue_reference_v<F>)
+FunctionField(F&&, const G&, const Precision<T>& = {}, bool = false) -> FunctionField<
+    std::add_lvalue_reference_t<std::add_const_t<std::remove_reference_t<F>>>, G, T
+>;
+
+template<typename F, typename G, typename T = FunctionDetail::RangeScalar<F, typename Traits::GridView<G>::type>>
+    requires(!std::is_lvalue_reference_v<F>)
+FunctionField(F&&, const G&, const Precision<T>& = {}, bool = false) -> FunctionField<std::remove_cvref_t<F>, G, T>;
 
 
 #ifndef DOXYGEN
@@ -800,24 +914,16 @@ template<typename GV> struct IsLagrangeGrid<LagrangePolynomialGrid<GV>> : public
 namespace FunctionDetail {
     template<typename F, typename W, typename T>
     void set_function(F&& f, W& w, const std::string& name, const Precision<T>& prec, bool is_cellwise) {
-        static_assert(std::is_lvalue_reference_v<F>, "Functions are stored as references and need to be lvalues");
-        static_assert(
-            IsLagrangeGrid<typename W::Grid>::value,
-            "Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangePolynomialGrid"
-        );
         if (is_cellwise)
-            w.set_cell_field(name, FunctionField{f, w.grid(), prec, true});
+            w.set_cell_field(name, FunctionField{std::forward<F>(f), w.grid(), prec, true});
         else
-            w.set_point_field(name, FunctionField{f, w.grid(), prec, false});
+            w.set_point_field(name, FunctionField{std::forward<F>(f), w.grid(), prec, false});
     }
 
     template<typename F, typename W>
     void set_function(F&& f, W& w, const std::string& name, bool is_cellwise) {
-        static_assert(
-            IsLagrangeGrid<typename W::Grid>::value,
-            "Functions can only be set in writers that were constructed with GridFormat::Dune::LagrangePolynomialGrid"
-        );
-        using T = RangeScalar<F, typename W::Grid::GridView>;
+        using GV = Dune::Traits::GridView<typename W::Grid>::type;
+        using T = RangeScalar<F, GV>;
         set_function(std::forward<F>(f), w, name, Precision<T>{}, is_cellwise);
     }
 }  // namespace FunctionDetail
@@ -838,7 +944,7 @@ void set_point_function(Function&& f, Writer& writer, const std::string& name) {
  * \brief Insert the given Dune::Function to the writer as point field with the given precision.
  * \note This requires the Writer to have been constructed with a LagrangePolynomialGrid.
  */
-template<typename Function, typename Writer, Concepts::Scalar T>
+template<typename Function, typename Writer, GridFormat::Concepts::Scalar T>
 void set_point_function(Function&& f, Writer& writer, const std::string& name, const Precision<T>& prec) {
     FunctionDetail::set_function(std::forward<Function>(f), writer, name, prec, false);
 }
@@ -858,7 +964,7 @@ void set_cell_function(Function&& f, Writer& writer, const std::string& name) {
  * \brief Insert the given Dune::Function to the writer as cell field with the given precision.
  * \note This requires the Writer to have been constructed with a LagrangePolynomialGrid.
  */
-template<typename Writer, typename Function, Concepts::Scalar T>
+template<typename Writer, typename Function, GridFormat::Concepts::Scalar T>
 void set_cell_function(Function&& f, Writer& writer, const std::string& name, const Precision<T>& prec) {
     FunctionDetail::set_function(std::forward<Function>(f), writer, name, prec, true);
 }

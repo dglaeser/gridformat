@@ -79,10 +79,10 @@ int main(int argc, char** argv) {
         GridFormat::PVTUWriter lagrange_writer{lagrange_grid, mpi_helper.getCommunicator()};
         GridFormat::Test::add_meta_data(lagrange_writer);
         lagrange_writer.set_point_field("pfunc", [&] (const auto& point) {
-            return GridFormat::Test::test_function<double>(lagrange_grid.position(point));
+            return GridFormat::Test::test_function<double>(point.coordinates);
         });
-        lagrange_writer.set_cell_field("cfunc", [&] (const auto& cell) {
-            return GridFormat::Test::test_function<double>(lagrange_grid.geometry(cell).center());
+        lagrange_writer.set_cell_field("cfunc", [&] (const auto& element) {
+            return GridFormat::Test::test_function<double>(element.geometry().center());
         });
 
 #if GRIDFORMAT_HAVE_DUNE_FUNCTIONS
