@@ -75,6 +75,8 @@ int main () {
 
     // This shows the `GridFormat` API: Construct a writer for the desired format, and add
     // point/cell fields as lambdas. Metadata can be added directly and can be ranges or scalars.
+    // If the lambdas are not suitable or inefficient for your data structures, you can also pass
+    // a (custom) implementation of `GridFormat::Field` (see documentation)
     GridFormat::Writer writer{GridFormat::vtu, grid};
     writer.set_meta_data("some_metadata", "i am metadata");
     writer.set_point_field("point_field", [&] (const auto& point) { return f(grid.position(point)); });
@@ -91,7 +93,6 @@ int main () {
     return 0;
 }
 ```
-
 Many more formats, options and functions are available, see the [API documentation](https://dglaeser.github.io/gridformat/)
 or have a look at the [examples](./examples).
 
