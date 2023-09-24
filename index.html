@@ -158,6 +158,8 @@ Quick Start</h1>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// This shows the `GridFormat` API: Construct a writer for the desired format, and add</span></div>
 <div class="line">    <span class="comment">// point/cell fields as lambdas. Metadata can be added directly and can be ranges or scalars.</span></div>
+<div class="line">    <span class="comment">// If the lambdas are not suitable or inefficient for your data structures, you can also pass</span></div>
+<div class="line">    <span class="comment">// a (custom) implementation of `GridFormat::Field` (see documentation)</span></div>
 <div class="line">    <a class="code hl_class" href="classGridFormat_1_1Writer.html">GridFormat::Writer</a> writer{GridFormat::vtu, grid};</div>
 <div class="line">    writer.<a class="code hl_function" href="classGridFormat_1_1Writer.html#aceba61d4867ddb47d0286827fae8cfc1">set_meta_data</a>(<span class="stringliteral">&quot;some_metadata&quot;</span>, <span class="stringliteral">&quot;i am metadata&quot;</span>);</div>
 <div class="line">    writer.set_point_field(<span class="stringliteral">&quot;point_field&quot;</span>, [&amp;] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; point) { <span class="keywordflow">return</span> f(grid.position(point)); });</div>
@@ -183,7 +185,7 @@ Quick Start</h1>
 <div class="ttc" id="aclassGridFormat_1_1Writer_html"><div class="ttname"><a href="classGridFormat_1_1Writer.html">GridFormat::Writer</a></div><div class="ttdoc">Interface to the writers for all supported file formats. Depending on the chosen format,...</div><div class="ttdef"><b>Definition:</b> writer.hpp:90</div></div>
 <div class="ttc" id="aclassGridFormat_1_1Writer_html_aceba61d4867ddb47d0286827fae8cfc1"><div class="ttname"><a href="classGridFormat_1_1Writer.html#aceba61d4867ddb47d0286827fae8cfc1">GridFormat::Writer::set_meta_data</a></div><div class="ttdeci">void set_meta_data(const std::string &amp;name, Field &amp;&amp;field)</div><div class="ttdoc">Set a meta data field to be added to the output.</div><div class="ttdef"><b>Definition:</b> writer.hpp:194</div></div>
 <div class="ttc" id="agridformat_8hpp_html"><div class="ttname"><a href="gridformat_8hpp.html">gridformat.hpp</a></div><div class="ttdoc">This file is the entrypoint to the high-level API exposing all provided readers/writers through a uni...</div></div>
-</div><!-- fragment --><p>Many more formats, options and functions are available, see the <a href="https://dglaeser.github.io/gridformat/">API documentation</a> or have a look at the <a href="./examples">examples</a>.</p>
+</div><!-- fragment --><p> Many more formats, options and functions are available, see the <a href="https://dglaeser.github.io/gridformat/">API documentation</a> or have a look at the <a href="./examples">examples</a>.</p>
 <h1><a class="anchor" id="installation"></a>
 Installation</h1>
 <p>The recommended way of using <code>GridFormat</code> is to include it via cmake's <code>FetchContent</code> module (see quickstart). However, if you want to install <code>GridFormat</code> locally into a custom location, clone the repository, enter the folder and type</p>
