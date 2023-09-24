@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['cell_0',['Cell',['../classGridFormat_1_1ImageGrid.html#af359405feb911f8523f48ff7c5e528ed',1,'GridFormat::ImageGrid::Cell()'],['../structGridFormat_1_1DolfinX_1_1Cell.html',1,'GridFormat::DolfinX::Cell'],['../structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html',1,'GridFormat::Dune::LagrangePolynomialGrid&lt; GV &gt;::Cell']]],
+  ['cell_0',['Cell',['../classGridFormat_1_1ImageGrid.html#af359405feb911f8523f48ff7c5e528ed',1,'GridFormat::ImageGrid::Cell()'],['../structGridFormat_1_1DolfinX_1_1Cell.html',1,'GridFormat::DolfinX::Cell']]],
   ['cell_5ffield_1',['cell_field',['../classGridFormat_1_1GridReader.html#a938af138287ba87dc3ada72e0babee2b',1,'GridFormat::GridReader']]],
   ['cell_5ffield_5fnames_2',['cell_field_names',['../classGridFormat_1_1GridReader.html#a960530df1229d14b7e5a6f603846d3eb',1,'GridFormat::GridReader']]],
-  ['cell_5ffields_3',['cell_fields',['../classGridFormat_1_1GridReader.html#aee943d10be649dd3816b2c29255d6ea3',1,'GridFormat::GridReader::cell_fields()'],['../classGridFormat_1_1Writer.html#ae0ad42b5ba01d3437e543394058c052d',1,'GridFormat::Writer::cell_fields()']]],
+  ['cell_5ffields_3',['cell_fields',['../classGridFormat_1_1Writer.html#ae0ad42b5ba01d3437e543394058c052d',1,'GridFormat::Writer::cell_fields()'],['../classGridFormat_1_1GridReader.html#aee943d10be649dd3816b2c29255d6ea3',1,'GridFormat::GridReader::cell_fields()']]],
   ['cell_5ffields_5fof_5frank_4',['cell_fields_of_rank',['../classGridFormat_1_1GridWriterBase.html#a1f9cfc3f7ee7e5064a2a42e82412464a',1,'GridFormat::GridWriterBase']]],
   ['cellpoints_3c_20converterdetail_3a_3aconvertergrid_2c_20std_3a_3aint64_5ft_20_3e_5',['CellPoints&lt; ConverterDetail::ConverterGrid, std::int64_t &gt;',['../structGridFormat_1_1Traits_1_1CellPoints_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1int64__t_01_4.html',1,'GridFormat::Traits']]],
   ['cellpoints_3c_20dolfinx_3a_3alagrangepolynomialgrid_2c_20dolfinx_3a_3acell_20_3e_6',['CellPoints&lt; DolfinX::LagrangePolynomialGrid, DolfinX::Cell &gt;',['../structGridFormat_1_1Traits_1_1CellPoints_3_01DolfinX_1_1LagrangePolynomialGrid_00_01DolfinX_1_1Cell_01_4.html',1,'GridFormat::Traits']]],

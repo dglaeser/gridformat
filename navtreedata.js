@@ -52,7 +52,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"index.html#commandline-interface"
+"index.html#caveats"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

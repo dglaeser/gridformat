@@ -114,6 +114,7 @@ $(document).ready(function(){initNavTree('dune_8hpp.html',''); initResizable(); 
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#concepts">Concepts</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">dune.hpp File Reference<div class="ingroups"><a class="el" href="group__PredefinedTraits.html">PredefinedTraits</a></div></div></div>
 </div><!--header-->
@@ -182,9 +183,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html">GridFormat::Dune::LagrangePolynomialGrid&lt; GV &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exposes a <code>Dune::GridView</code> as a grid composed of lagrange cells with the given order. Can be used to conveniently write <code>Dune::Functions</code> into grid files.  <a href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Point.html">GridFormat::Dune::LagrangePolynomialGrid&lt; GV &gt;::Point</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Dune_1_1Traits_1_1GridView.html">GridFormat::Dune::Traits::GridView&lt; GV &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html">GridFormat::Dune::LagrangePolynomialGrid&lt; GV &gt;::Cell</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Dune_1_1Traits_1_1GridView_3_01LagrangePolynomialGrid_3_01GV_01_4_01_4.html">GridFormat::Dune::Traits::GridView&lt; LagrangePolynomialGrid&lt; GV &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1Points_3_01Dune_1_1LagrangePolynomialGrid_3_01GridView_01_4_01_4.html">GridFormat::Traits::Points&lt; Dune::LagrangePolynomialGrid&lt; GridView &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,17 +205,32 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Traits_1_1PointId_3_01Dune_1_1LagrangePolynomialGrid_3_01GridView_01_4_00_01b42e2dd820d99e51ddd5157dd47d1c20.html">GridFormat::Traits::PointId&lt; Dune::LagrangePolynomialGrid&lt; GridView &gt;, typename Dune::LagrangePolynomialGrid&lt; GridView &gt;::Point &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Dune_1_1FunctionField.html">GridFormat::Dune::FunctionField&lt; Function, GridView, T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implements the field interface for a Dune::Function defined on a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html" title="Exposes a Dune::GridView as a grid composed of lagrange cells with the given order....">GridFormat::Dune::LagrangePolynomialGrid</a>.  <a href="classGridFormat_1_1Dune_1_1FunctionField.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Dune_1_1FunctionField.html">GridFormat::Dune::FunctionField&lt; _Function, Grid, T &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implements the field interface for a Dune::Function defined on a (wrapped) Dune::GridView.  <a href="classGridFormat_1_1Dune_1_1FunctionField.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
+Concepts</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptGridFormat_1_1Dune_1_1Concepts_1_1Function.html">GridFormat::Dune::Concepts::Function</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:acc4eb7e628c013ddd909df75f74317c6"><td class="memTemplParams" colspan="2"><a id="acc4eb7e628c013ddd909df75f74317c6" name="acc4eb7e628c013ddd909df75f74317c6"></a>
+template&lt;typename F , typename G , typename T  = FunctionDetail::RangeScalar&lt;F, typename Traits::GridView&lt;G&gt;::type&gt;&gt; <br />
+requires (std::is_lvalue_reference_v&lt;F&gt;)</td></tr>
+<tr class="memitem:acc4eb7e628c013ddd909df75f74317c6"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::Dune::FunctionField</b> (F &amp;&amp;, const G &amp;, const Precision&lt; T &gt; &amp;={}, bool=false) -&gt; FunctionField&lt; std::add_lvalue_reference_t&lt; std::add_const_t&lt; std::remove_reference_t&lt; F &gt; &gt; &gt;, G, T &gt;</td></tr>
+<tr class="separator:acc4eb7e628c013ddd909df75f74317c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b00d74a4306032f9973c77c617aec04"><td class="memTemplParams" colspan="2"><a id="a0b00d74a4306032f9973c77c617aec04" name="a0b00d74a4306032f9973c77c617aec04"></a>
+template&lt;typename F , typename G , typename T  = FunctionDetail::RangeScalar&lt;F, typename Traits::GridView&lt;G&gt;::type&gt;&gt; <br />
+requires (!std::is_lvalue_reference_v&lt;F&gt;)</td></tr>
+<tr class="memitem:a0b00d74a4306032f9973c77c617aec04"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::Dune::FunctionField</b> (F &amp;&amp;, const G &amp;, const Precision&lt; T &gt; &amp;={}, bool=false) -&gt; FunctionField&lt; std::remove_cvref_t&lt; F &gt;, G, T &gt;</td></tr>
+<tr class="separator:a0b00d74a4306032f9973c77c617aec04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6f432bf73981560e4679d6ae6f6d6946"><td class="memTemplParams" colspan="2">template&lt;typename Function , typename Writer &gt; </td></tr>
 <tr class="memitem:ga6f432bf73981560e4679d6ae6f6d6946"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__PredefinedTraits.html#ga6f432bf73981560e4679d6ae6f6d6946">GridFormat::Dune::set_point_function</a> (Function &amp;&amp;f, Writer &amp;writer, const std::string &amp;name)</td></tr>
 <tr class="memdesc:ga6f432bf73981560e4679d6ae6f6d6946"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert the given Dune::Function to the writer as point field.  <br /></td></tr>
 <tr class="separator:ga6f432bf73981560e4679d6ae6f6d6946"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1fe234d6139a0ac82fa0783b11e703c6"><td class="memTemplParams" colspan="2">template&lt;typename Function , typename Writer , Concepts::Scalar T&gt; </td></tr>
+<tr class="memitem:ga1fe234d6139a0ac82fa0783b11e703c6"><td class="memTemplParams" colspan="2">template&lt;typename Function , typename Writer , GridFormat::Concepts::Scalar T&gt; </td></tr>
 <tr class="memitem:ga1fe234d6139a0ac82fa0783b11e703c6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__PredefinedTraits.html#ga1fe234d6139a0ac82fa0783b11e703c6">GridFormat::Dune::set_point_function</a> (Function &amp;&amp;f, Writer &amp;writer, const std::string &amp;name, const Precision&lt; T &gt; &amp;prec)</td></tr>
 <tr class="memdesc:ga1fe234d6139a0ac82fa0783b11e703c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert the given Dune::Function to the writer as point field with the given precision.  <br /></td></tr>
 <tr class="separator:ga1fe234d6139a0ac82fa0783b11e703c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -222,7 +238,7 @@ Functions</h2></td></tr>
 <tr class="memitem:gae37e7d3853a773123cca1874f1d434d9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__PredefinedTraits.html#gae37e7d3853a773123cca1874f1d434d9">GridFormat::Dune::set_cell_function</a> (Function &amp;&amp;f, Writer &amp;writer, const std::string &amp;name)</td></tr>
 <tr class="memdesc:gae37e7d3853a773123cca1874f1d434d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert the given Dune::Function to the writer as cell field.  <br /></td></tr>
 <tr class="separator:gae37e7d3853a773123cca1874f1d434d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6c031ef0cb2449e5fdb4503570915834"><td class="memTemplParams" colspan="2">template&lt;typename Writer , typename Function , Concepts::Scalar T&gt; </td></tr>
+<tr class="memitem:ga6c031ef0cb2449e5fdb4503570915834"><td class="memTemplParams" colspan="2">template&lt;typename Writer , typename Function , GridFormat::Concepts::Scalar T&gt; </td></tr>
 <tr class="memitem:ga6c031ef0cb2449e5fdb4503570915834"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__PredefinedTraits.html#ga6c031ef0cb2449e5fdb4503570915834">GridFormat::Dune::set_cell_function</a> (Function &amp;&amp;f, Writer &amp;writer, const std::string &amp;name, const Precision&lt; T &gt; &amp;prec)</td></tr>
 <tr class="memdesc:ga6c031ef0cb2449e5fdb4503570915834"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert the given Dune::Function to the writer as cell field with the given precision.  <br /></td></tr>
 <tr class="separator:ga6c031ef0cb2449e5fdb4503570915834"><td class="memSeparator" colspan="2">&#160;</td></tr>

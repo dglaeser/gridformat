@@ -17,8 +17,12 @@ var annotated_dup =
         [ "Point", "structGridFormat_1_1DolfinX_1_1Point.html", null ]
       ] ],
       [ "Dune", null, [
+        [ "Traits", null, [
+          [ "GridView", "structGridFormat_1_1Dune_1_1Traits_1_1GridView.html", null ],
+          [ "GridView< LagrangePolynomialGrid< GV > >", "structGridFormat_1_1Dune_1_1Traits_1_1GridView_3_01LagrangePolynomialGrid_3_01GV_01_4_01_4.html", null ]
+        ] ],
         [ "FunctionField", "classGridFormat_1_1Dune_1_1FunctionField.html", null ],
-        [ "LagrangePolynomialGrid", "classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html", "classGridFormat_1_1Dune_1_1LagrangePolynomialGrid" ]
+        [ "LagrangePolynomialGrid", "classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html", null ]
       ] ],
       [ "Encoding", null, [
         [ "Ascii", "structGridFormat_1_1Encoding_1_1Ascii.html", "structGridFormat_1_1Encoding_1_1Ascii" ],

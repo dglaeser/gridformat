@@ -6,11 +6,8 @@ var group__PredefinedTraits =
     [ "dune.hpp", "dune_8hpp.html", null ],
     [ "mfem.hpp", "mfem_8hpp.html", null ],
     [ "GridFormat::DolfinX::LagrangePolynomialGrid", "classGridFormat_1_1DolfinX_1_1LagrangePolynomialGrid.html", null ],
-    [ "GridFormat::Dune::LagrangePolynomialGrid< GV >", "classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html", [
-      [ "Cell", "structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html", null ],
-      [ "Point", "structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Point.html", null ]
-    ] ],
-    [ "GridFormat::Dune::FunctionField< Function, GridView, T >", "classGridFormat_1_1Dune_1_1FunctionField.html", null ],
+    [ "GridFormat::Dune::LagrangePolynomialGrid< GV >", "classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html", null ],
+    [ "GridFormat::Dune::FunctionField< _Function, Grid, T >", "classGridFormat_1_1Dune_1_1FunctionField.html", null ],
     [ "GridFormat::DolfinX::set_cell_function", "group__PredefinedTraits.html#gaaf3787e39fe037a6fbef00b809006ec6", null ],
     [ "GridFormat::Dune::set_cell_function", "group__PredefinedTraits.html#gae37e7d3853a773123cca1874f1d434d9", null ],
     [ "GridFormat::Dune::set_cell_function", "group__PredefinedTraits.html#ga6c031ef0cb2449e5fdb4503570915834", null ],

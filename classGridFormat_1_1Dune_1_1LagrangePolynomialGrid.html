@@ -129,24 +129,23 @@ $(document).ready(function(){initNavTree('classGridFormat_1_1Dune_1_1LagrangePol
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename GV&gt;<br />
 class GridFormat::Dune::LagrangePolynomialGrid&lt; GV &gt;</div><dl class="section note"><dt>Note</dt><dd>This is only available if dune-localfunctions is found on the system. </dd></dl>
 </div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html">Cell</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Point.html">Point</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a330c09fefe9523fd6580f464eccb5b68"><td class="memItemLeft" align="right" valign="top"><a id="a330c09fefe9523fd6580f464eccb5b68" name="a330c09fefe9523fd6580f464eccb5b68"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>GridView</b> = GV</td></tr>
 <tr class="separator:a330c09fefe9523fd6580f464eccb5b68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0c5e796028cb818c5a079a5bf4fe8a3"><td class="memItemLeft" align="right" valign="top"><a id="af0c5e796028cb818c5a079a5bf4fe8a3" name="af0c5e796028cb818c5a079a5bf4fe8a3"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Element</b> = typename GridView::template Codim&lt; 0 &gt;::Entity</td></tr>
-<tr class="separator:af0c5e796028cb818c5a079a5bf4fe8a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8da56c6677047580eeb8bd07cf9218f2"><td class="memItemLeft" align="right" valign="top"><a id="a8da56c6677047580eeb8bd07cf9218f2" name="a8da56c6677047580eeb8bd07cf9218f2"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Position</b> = typename Element::Geometry::GlobalCoordinate</td></tr>
-<tr class="separator:a8da56c6677047580eeb8bd07cf9218f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57a518b1fbb425fdeaccb7177a7b4c5f"><td class="memItemLeft" align="right" valign="top"><a id="a57a518b1fbb425fdeaccb7177a7b4c5f" name="a57a518b1fbb425fdeaccb7177a7b4c5f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Position</b> = GlobalCoordinate</td></tr>
+<tr class="separator:a57a518b1fbb425fdeaccb7177a7b4c5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6615dc29bbd6abedc3e184fdfbc2e0d"><td class="memItemLeft" align="right" valign="top"><a id="af6615dc29bbd6abedc3e184fdfbc2e0d" name="af6615dc29bbd6abedc3e184fdfbc2e0d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Cell</b> = Element</td></tr>
+<tr class="separator:af6615dc29bbd6abedc3e184fdfbc2e0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa10825dade232db0119f43eabe570c7e"><td class="memItemLeft" align="right" valign="top"><a id="aa10825dade232db0119f43eabe570c7e" name="aa10825dade232db0119f43eabe570c7e"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Point</b> = _GlobalPoint</td></tr>
+<tr class="separator:aa10825dade232db0119f43eabe570c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a515f87d53a75642c0cd5e9eb18193aa9"><td class="memItemLeft" align="right" valign="top"><a id="a515f87d53a75642c0cd5e9eb18193aa9" name="a515f87d53a75642c0cd5e9eb18193aa9"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>LocalPoint</b> = _LocalPoint</td></tr>
+<tr class="separator:a515f87d53a75642c0cd5e9eb18193aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -165,33 +164,24 @@ std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>number_of_cell
 <tr class="memitem:ab5054995ffd67c4bc2d6ff32315a524e"><td class="memItemLeft" align="right" valign="top"><a id="ab5054995ffd67c4bc2d6ff32315a524e" name="ab5054995ffd67c4bc2d6ff32315a524e"></a>
 std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>number_of_points</b> () const</td></tr>
 <tr class="separator:ab5054995ffd67c4bc2d6ff32315a524e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad17d5d17bc6cedf5b5895be6c88f1159"><td class="memItemLeft" align="right" valign="top"><a id="ad17d5d17bc6cedf5b5895be6c88f1159" name="ad17d5d17bc6cedf5b5895be6c88f1159"></a>
-std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>number_of_points</b> (const <a class="el" href="structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html">Cell</a> &amp;cell) const</td></tr>
-<tr class="separator:ad17d5d17bc6cedf5b5895be6c88f1159"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a276c0e8100c63cfc5f2b490c54b15449"><td class="memItemLeft" align="right" valign="top"><a id="a276c0e8100c63cfc5f2b490c54b15449" name="a276c0e8100c63cfc5f2b490c54b15449"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>cells</b> () const</td></tr>
-<tr class="separator:a276c0e8100c63cfc5f2b490c54b15449"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec670de73074bafbf59dfa5b5adaa474"><td class="memItemLeft" align="right" valign="top"><a id="aec670de73074bafbf59dfa5b5adaa474" name="aec670de73074bafbf59dfa5b5adaa474"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>points</b> () const</td></tr>
-<tr class="separator:aec670de73074bafbf59dfa5b5adaa474"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a129e8aef0323ac96e9c27475159f38f9"><td class="memItemLeft" align="right" valign="top"><a id="a129e8aef0323ac96e9c27475159f38f9" name="a129e8aef0323ac96e9c27475159f38f9"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>points</b> (const <a class="el" href="structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html">Cell</a> &amp;cell) const</td></tr>
-<tr class="separator:a129e8aef0323ac96e9c27475159f38f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ffbc33a0b3d57e10f184f31f1bd92c5"><td class="memItemLeft" align="right" valign="top"><a id="a9ffbc33a0b3d57e10f184f31f1bd92c5" name="a9ffbc33a0b3d57e10f184f31f1bd92c5"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>points</b> (const Element &amp;e) const</td></tr>
-<tr class="separator:a9ffbc33a0b3d57e10f184f31f1bd92c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5482f2a6dd13a874d0d48c37c4262ee9"><td class="memItemLeft" align="right" valign="top"><a id="a5482f2a6dd13a874d0d48c37c4262ee9" name="a5482f2a6dd13a874d0d48c37c4262ee9"></a>
+std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>number_of_points</b> (const Element &amp;element) const</td></tr>
+<tr class="separator:a5482f2a6dd13a874d0d48c37c4262ee9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b18fd2a406b915bcc25b3969f9388ea"><td class="memItemLeft" align="right" valign="top"><a id="a1b18fd2a406b915bcc25b3969f9388ea" name="a1b18fd2a406b915bcc25b3969f9388ea"></a>
+std::ranges::range auto&#160;</td><td class="memItemRight" valign="bottom"><b>cells</b> () const</td></tr>
+<tr class="separator:a1b18fd2a406b915bcc25b3969f9388ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8fedd126bd28e23fccbe41b7878d2c8"><td class="memItemLeft" align="right" valign="top"><a id="ad8fedd126bd28e23fccbe41b7878d2c8" name="ad8fedd126bd28e23fccbe41b7878d2c8"></a>
+std::ranges::range auto&#160;</td><td class="memItemRight" valign="bottom"><b>points</b> () const</td></tr>
+<tr class="separator:ad8fedd126bd28e23fccbe41b7878d2c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af20ff85af619b6ccc1da9cdc8a3e5ed8"><td class="memItemLeft" align="right" valign="top"><a id="af20ff85af619b6ccc1da9cdc8a3e5ed8" name="af20ff85af619b6ccc1da9cdc8a3e5ed8"></a>
+std::ranges::range auto&#160;</td><td class="memItemRight" valign="bottom"><b>points</b> (const Element &amp;e) const</td></tr>
+<tr class="separator:af20ff85af619b6ccc1da9cdc8a3e5ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a90666da847e982687613e29a09acbe"><td class="memItemLeft" align="right" valign="top"><a id="a4a90666da847e982687613e29a09acbe" name="a4a90666da847e982687613e29a09acbe"></a>
+std::ranges::range auto&#160;</td><td class="memItemRight" valign="bottom"><b>local_points</b> (const Element &amp;e) const</td></tr>
+<tr class="separator:a4a90666da847e982687613e29a09acbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ade01388d9287ab386d62952e233fa9"><td class="memItemLeft" align="right" valign="top"><a id="a5ade01388d9287ab386d62952e233fa9" name="a5ade01388d9287ab386d62952e233fa9"></a>
 const GridView &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>grid_view</b> () const</td></tr>
 <tr class="separator:a5ade01388d9287ab386d62952e233fa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a485b771f173728916d7d4134791290b3"><td class="memItemLeft" align="right" valign="top"><a id="a485b771f173728916d7d4134791290b3" name="a485b771f173728916d7d4134791290b3"></a>
-const Position &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>position</b> (const <a class="el" href="structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Point.html">Point</a> &amp;p) const</td></tr>
-<tr class="separator:a485b771f173728916d7d4134791290b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44755d47e92c0e0c8a97c1b7afd4ef20"><td class="memItemLeft" align="right" valign="top"><a id="a44755d47e92c0e0c8a97c1b7afd4ef20" name="a44755d47e92c0e0c8a97c1b7afd4ef20"></a>
-Element&#160;</td><td class="memItemRight" valign="bottom"><b>element</b> (const <a class="el" href="structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html">Cell</a> &amp;cell) const</td></tr>
-<tr class="separator:a44755d47e92c0e0c8a97c1b7afd4ef20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a488d0785ccdd680ea3582e665338f1c0"><td class="memItemLeft" align="right" valign="top"><a id="a488d0785ccdd680ea3582e665338f1c0" name="a488d0785ccdd680ea3582e665338f1c0"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>geometry</b> (const <a class="el" href="structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html">Cell</a> &amp;cell) const</td></tr>
-<tr class="separator:a488d0785ccdd680ea3582e665338f1c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/__w/gridformat/gridformat/gridformat/traits/<a class="el" href="dune_8hpp_source.html">dune.hpp</a></li>

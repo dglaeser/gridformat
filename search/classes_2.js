@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['cell_0',['Cell',['../structGridFormat_1_1DolfinX_1_1Cell.html',1,'GridFormat::DolfinX::Cell'],['../structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html',1,'GridFormat::Dune::LagrangePolynomialGrid&lt; GV &gt;::Cell']]],
+  ['cell_0',['Cell',['../structGridFormat_1_1DolfinX_1_1Cell.html',1,'GridFormat::DolfinX']]],
   ['cellpoints_3c_20converterdetail_3a_3aconvertergrid_2c_20std_3a_3aint64_5ft_20_3e_1',['CellPoints&lt; ConverterDetail::ConverterGrid, std::int64_t &gt;',['../structGridFormat_1_1Traits_1_1CellPoints_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1int64__t_01_4.html',1,'GridFormat::Traits']]],
   ['cellpoints_3c_20dolfinx_3a_3alagrangepolynomialgrid_2c_20dolfinx_3a_3acell_20_3e_2',['CellPoints&lt; DolfinX::LagrangePolynomialGrid, DolfinX::Cell &gt;',['../structGridFormat_1_1Traits_1_1CellPoints_3_01DolfinX_1_1LagrangePolynomialGrid_00_01DolfinX_1_1Cell_01_4.html',1,'GridFormat::Traits']]],
   ['cellpoints_3c_20dolfinx_3a_3amesh_3a_3amesh_2c_20dolfinx_3a_3acell_20_3e_3',['CellPoints&lt; dolfinx::mesh::Mesh, DolfinX::Cell &gt;',['../structGridFormat_1_1Traits_1_1CellPoints_3_01dolfinx_1_1mesh_1_1Mesh_00_01DolfinX_1_1Cell_01_4.html',1,'GridFormat::Traits']]],

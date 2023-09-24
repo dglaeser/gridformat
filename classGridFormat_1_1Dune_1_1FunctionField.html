@@ -8,7 +8,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>GridFormat: GridFormat::Dune::FunctionField&lt; Function, GridView, T &gt; Class Template Reference</title>
+<title>GridFormat: GridFormat::Dune::FunctionField&lt; _Function, Grid, T &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -115,29 +115,35 @@ $(document).ready(function(){initNavTree('classGridFormat_1_1Dune_1_1FunctionFie
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classGridFormat_1_1Dune_1_1FunctionField-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">GridFormat::Dune::FunctionField&lt; Function, GridView, T &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__PredefinedTraits.html">PredefinedTraits</a></div></div></div>
+  <div class="headertitle"><div class="title">GridFormat::Dune::FunctionField&lt; _Function, Grid, T &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__PredefinedTraits.html">PredefinedTraits</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Implements the field interface for a Dune::Function defined on a <a class="el" href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html" title="Exposes a Dune::GridView as a grid composed of lagrange cells with the given order....">GridFormat::Dune::LagrangePolynomialGrid</a>.  
-</p>
+<p>Implements the field interface for a Dune::Function defined on a (wrapped) Dune::GridView.  
+ <a href="classGridFormat_1_1Dune_1_1FunctionField.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="dune_8hpp_source.html">dune.hpp</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for GridFormat::Dune::FunctionField&lt; Function, GridView, T &gt;:</div>
+Inheritance diagram for GridFormat::Dune::FunctionField&lt; _Function, Grid, T &gt;:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classGridFormat_1_1Dune_1_1FunctionField.png" usemap="#GridFormat::Dune::FunctionField_3C_20Function_2C_20GridView_2C_20T_20_3E_map" alt=""/>
-  <map id="GridFormat::Dune::FunctionField_3C_20Function_2C_20GridView_2C_20T_20_3E_map" name="GridFormat::Dune::FunctionField_3C_20Function_2C_20GridView_2C_20T_20_3E_map">
-<area href="classGridFormat_1_1Field.html" title="Abstract interface for fields of values that is used by writers/readers to store fields." alt="GridFormat::Field" shape="rect" coords="0,0,344,24"/>
+  <img src="classGridFormat_1_1Dune_1_1FunctionField.png" usemap="#GridFormat::Dune::FunctionField_3C_20_5FFunction_2C_20Grid_2C_20T_20_3E_map" alt=""/>
+  <map id="GridFormat::Dune::FunctionField_3C_20_5FFunction_2C_20Grid_2C_20T_20_3E_map" name="GridFormat::Dune::FunctionField_3C_20_5FFunction_2C_20Grid_2C_20T_20_3E_map">
+<area href="classGridFormat_1_1Field.html" title="Abstract interface for fields of values that is used by writers/readers to store fields." alt="GridFormat::Field" shape="rect" coords="0,0,323,24"/>
   </map>
 </div></div>
-<table class="memberdecls">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename _Function, typename Grid, GridFormat::Concepts::Scalar T&gt;<br />
+requires (Concepts::Function&lt;_Function, typename <a class="el" href="structGridFormat_1_1Dune_1_1Traits_1_1GridView.html">Dune::Traits::GridView</a>&lt;Grid&gt;::type&gt;)<br />
+class GridFormat::Dune::FunctionField&lt; _Function, Grid, T &gt;</div><dl class="section note"><dt>Note</dt><dd>Takes ownership of the given function if constructed with an rvalue reference, otherwise it stores a reference. </dd></dl>
+</div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a588dcdf2968fcd559f61fc7b2d5fcd3d"><td class="memItemLeft" align="right" valign="top"><a id="a588dcdf2968fcd559f61fc7b2d5fcd3d" name="a588dcdf2968fcd559f61fc7b2d5fcd3d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>FunctionField</b> (const Function &amp;function, const <a class="el" href="classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html">LagrangePolynomialGrid</a>&lt; GridView &gt; &amp;mesh, const Precision&lt; T &gt; &amp;={}, bool cellwise_constant=false)</td></tr>
-<tr class="separator:a588dcdf2968fcd559f61fc7b2d5fcd3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac91883dfd4effdd68ae6290f341ef21c"><td class="memTemplParams" colspan="2"><a id="ac91883dfd4effdd68ae6290f341ef21c" name="ac91883dfd4effdd68ae6290f341ef21c"></a>
+template&lt;typename F &gt; <br />
+requires (std::is_same_v&lt;std::remove_cvref_t&lt;F&gt;, Function&gt;)</td></tr>
+<tr class="memitem:ac91883dfd4effdd68ae6290f341ef21c"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>FunctionField</b> (F &amp;&amp;function, const Grid &amp;grid, const Precision&lt; T &gt; &amp;={}, bool cellwise_constant=false)</td></tr>
+<tr class="separator:ac91883dfd4effdd68ae6290f341ef21c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGridFormat_1_1Field"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGridFormat_1_1Field')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGridFormat_1_1Field.html">GridFormat::Field</a></td></tr>
 <tr class="memitem:aed55911e5c401caa00f6e5cfc9f3796c inherit pub_methods_classGridFormat_1_1Field"><td class="memItemLeft" align="right" valign="top"><a id="aed55911e5c401caa00f6e5cfc9f3796c" name="aed55911e5c401caa00f6e5cfc9f3796c"></a>
 MDLayout&#160;</td><td class="memItemRight" valign="bottom"><b>layout</b> () const</td></tr>

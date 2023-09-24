@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"index.html#caveats":[0,5],
 "index.html#commandline-interface":[0,2],
 "index.html#compatibility-with-userdefined-grids":[0,3],
 "index.html#contribution-guidelines":[0,7],
@@ -10,8 +11,8 @@ var NAVTREEINDEX1 =
 "index.html#license":[0,8],
 "index.html#predefined-traits":[0,4],
 "index.html#quick-start":[0,0],
-"lz4_8hpp.html":[4,2,3],
 "lz4_8hpp.html":[4,6,1],
+"lz4_8hpp.html":[4,2,3],
 "lzma_8hpp.html":[4,6,2],
 "lzma_8hpp.html":[4,2,4],
 "mfem_8hpp.html":[4,5,4],
@@ -46,8 +47,8 @@ var NAVTREEINDEX1 =
 "structGridFormat_1_1ConversionOptions.html":[6,0,0,15],
 "structGridFormat_1_1DolfinX_1_1Cell.html":[6,0,0,1,0],
 "structGridFormat_1_1DolfinX_1_1Point.html":[6,0,0,1,2],
-"structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html":[4,5,6,0],
-"structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Point.html":[4,5,6,1],
+"structGridFormat_1_1Dune_1_1Traits_1_1GridView.html":[6,0,0,2,0,0],
+"structGridFormat_1_1Dune_1_1Traits_1_1GridView_3_01LagrangePolynomialGrid_3_01GV_01_4_01_4.html":[6,0,0,2,0,1],
 "structGridFormat_1_1Encoding_1_1Ascii.html":[4,1,9],
 "structGridFormat_1_1Encoding_1_1Ascii.html#a34f11d4b786bbc8ff59ee01b0cc85822":[4,1,9,0],
 "structGridFormat_1_1Encoding_1_1Ascii.html#a6052411ab879536cf9a598a2635b7c0b":[4,1,9,1],
@@ -238,6 +239,6 @@ var NAVTREEINDEX1 =
 "writer_8hpp.html":[4,0,1],
 "xml_8hpp.html":[4,3,35],
 "xml__time__series__writer_8hpp.html":[4,3,36],
-"zlib_8hpp.html":[4,6,3],
-"zlib_8hpp.html":[4,2,5]
+"zlib_8hpp.html":[4,2,5],
+"zlib_8hpp.html":[4,6,3]
 };

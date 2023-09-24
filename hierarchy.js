@@ -17,7 +17,6 @@ var hierarchy =
       [ "GridFormat::Traits::WritesConnectivity< APIDetail::SequentialOrParallelReader< S, P > >", "structGridFormat_1_1Traits_1_1WritesConnectivity_3_01APIDetail_1_1SequentialOrParallelReader_3_01S_00_01P_01_4_01_4.html", null ]
     ] ],
     [ "GridFormat::DolfinX::Cell", "structGridFormat_1_1DolfinX_1_1Cell.html", null ],
-    [ "GridFormat::Dune::LagrangePolynomialGrid< GV >::Cell", "structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Cell.html", null ],
     [ "GridFormat::Traits::CellPoints< ConverterDetail::ConverterGrid, std::int64_t >", "structGridFormat_1_1Traits_1_1CellPoints_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1int64__t_01_4.html", null ],
     [ "GridFormat::Traits::CellPoints< DolfinX::LagrangePolynomialGrid, DolfinX::Cell >", "structGridFormat_1_1Traits_1_1CellPoints_3_01DolfinX_1_1LagrangePolynomialGrid_00_01DolfinX_1_1Cell_01_4.html", null ],
     [ "GridFormat::Traits::CellPoints< dolfinx::mesh::Mesh, DolfinX::Cell >", "structGridFormat_1_1Traits_1_1CellPoints_3_01dolfinx_1_1mesh_1_1Mesh_00_01DolfinX_1_1Cell_01_4.html", null ],
@@ -109,7 +108,7 @@ var hierarchy =
       [ "GridFormat::Traits::WritesConnectivity< VTRWriter< Args... > >", "structGridFormat_1_1Traits_1_1WritesConnectivity_3_01VTRWriter_3_01Args_8_8_8_01_4_01_4.html", null ]
     ] ],
     [ "GridFormat::Field", "classGridFormat_1_1Field.html", [
-      [ "GridFormat::Dune::FunctionField< Function, GridView, T >", "classGridFormat_1_1Dune_1_1FunctionField.html", null ]
+      [ "GridFormat::Dune::FunctionField< _Function, Grid, T >", "classGridFormat_1_1Dune_1_1FunctionField.html", null ]
     ] ],
     [ "GridFormat::GridReader::FieldNames", "structGridFormat_1_1GridReader_1_1FieldNames.html", null ],
     [ "GridFormat::FileFormat::FormatWithOptions< Format, Opts >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", [
@@ -181,6 +180,8 @@ var hierarchy =
       [ "GridFormat::VTSReader", "classGridFormat_1_1VTSReader.html", null ],
       [ "GridFormat::VTUReader", "classGridFormat_1_1VTUReader.html", null ]
     ] ],
+    [ "GridFormat::Dune::Traits::GridView< GV >", "structGridFormat_1_1Dune_1_1Traits_1_1GridView.html", null ],
+    [ "GridFormat::Dune::Traits::GridView< LagrangePolynomialGrid< GV > >", "structGridFormat_1_1Dune_1_1Traits_1_1GridView_3_01LagrangePolynomialGrid_3_01GV_01_4_01_4.html", null ],
     [ "GridFormat::GridWriterBase< G >", "classGridFormat_1_1GridWriterBase.html", [
       [ "GridFormat::GridWriter< G >", "classGridFormat_1_1GridWriter.html", [
         [ "GridFormat::VTK::XMLWriterBase< Grid, PVTIWriter< Grid, Communicator > >", "classGridFormat_1_1VTK_1_1XMLWriterBase.html", null ],
@@ -211,7 +212,6 @@ var hierarchy =
     [ "GridFormat::VTKHDF::IOContext", "structGridFormat_1_1VTKHDF_1_1IOContext.html", null ],
     [ "GridFormat::DolfinX::LagrangePolynomialGrid", "classGridFormat_1_1DolfinX_1_1LagrangePolynomialGrid.html", null ],
     [ "GridFormat::Dune::LagrangePolynomialGrid< GV >", "classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html", null ],
-    [ "GridFormat::Dune::LagrangePolynomialGrid< GridView >", "classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html", null ],
     [ "LazyField", null, [
       [ "GridFormat::VTKHDF::DataSetField< C >", "classGridFormat_1_1VTKHDF_1_1DataSetField.html", null ]
     ] ],
@@ -257,7 +257,6 @@ var hierarchy =
     [ "GridFormat::PVTK::PDataArrayHelper< Encoder, DataFormat >", "classGridFormat_1_1PVTK_1_1PDataArrayHelper.html", null ],
     [ "GridFormat::GridReader::PieceLocation", "structGridFormat_1_1GridReader_1_1PieceLocation.html", null ],
     [ "GridFormat::DolfinX::Point", "structGridFormat_1_1DolfinX_1_1Point.html", null ],
-    [ "GridFormat::Dune::LagrangePolynomialGrid< GV >::Point", "structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Point.html", null ],
     [ "GridFormat::Traits::PointCoordinates< ConverterDetail::ConverterGrid, std::size_t >", "structGridFormat_1_1Traits_1_1PointCoordinates_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1size__t_01_4.html", null ],
     [ "GridFormat::Traits::PointCoordinates< DolfinX::LagrangePolynomialGrid, DolfinX::Point >", "structGridFormat_1_1Traits_1_1PointCoordinates_3_01DolfinX_1_1LagrangePolynomialGrid_00_01DolfinX_1_1Point_01_4.html", null ],
     [ "GridFormat::Traits::PointCoordinates< dolfinx::mesh::Mesh, DolfinX::Point >", "structGridFormat_1_1Traits_1_1PointCoordinates_3_01dolfinx_1_1mesh_1_1Mesh_00_01DolfinX_1_1Point_01_4.html", null ],

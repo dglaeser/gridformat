@@ -21,6 +21,11 @@ var concepts =
         [ "CGALGrid3D", "conceptGridFormat_1_1Concepts_1_1CGALGrid3D.html", null ],
         [ "CGALGrid", "conceptGridFormat_1_1Concepts_1_1CGALGrid.html", null ],
         [ "CGALPointWrapper", "conceptGridFormat_1_1Concepts_1_1CGALPointWrapper.html", null ]
+      ] ],
+      [ "Dune", null, [
+        [ "Concepts", null, [
+          [ "Function", "conceptGridFormat_1_1Dune_1_1Concepts_1_1Function.html", null ]
+        ] ]
       ] ]
     ] ]
 ];

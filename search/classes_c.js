@@ -2,7 +2,7 @@ var searchData=
 [
   ['pdataarrayhelper_0',['PDataArrayHelper',['../classGridFormat_1_1PVTK_1_1PDataArrayHelper.html',1,'GridFormat::PVTK']]],
   ['piecelocation_1',['PieceLocation',['../structGridFormat_1_1GridReader_1_1PieceLocation.html',1,'GridFormat::GridReader']]],
-  ['point_2',['Point',['../structGridFormat_1_1DolfinX_1_1Point.html',1,'GridFormat::DolfinX::Point'],['../structGridFormat_1_1Dune_1_1LagrangePolynomialGrid_1_1Point.html',1,'GridFormat::Dune::LagrangePolynomialGrid&lt; GV &gt;::Point']]],
+  ['point_2',['Point',['../structGridFormat_1_1DolfinX_1_1Point.html',1,'GridFormat::DolfinX']]],
   ['pointcoordinates_3c_20converterdetail_3a_3aconvertergrid_2c_20std_3a_3asize_5ft_20_3e_3',['PointCoordinates&lt; ConverterDetail::ConverterGrid, std::size_t &gt;',['../structGridFormat_1_1Traits_1_1PointCoordinates_3_01ConverterDetail_1_1ConverterGrid_00_01std_1_1size__t_01_4.html',1,'GridFormat::Traits']]],
   ['pointcoordinates_3c_20dolfinx_3a_3alagrangepolynomialgrid_2c_20dolfinx_3a_3apoint_20_3e_4',['PointCoordinates&lt; DolfinX::LagrangePolynomialGrid, DolfinX::Point &gt;',['../structGridFormat_1_1Traits_1_1PointCoordinates_3_01DolfinX_1_1LagrangePolynomialGrid_00_01DolfinX_1_1Point_01_4.html',1,'GridFormat::Traits']]],
   ['pointcoordinates_3c_20dolfinx_3a_3amesh_3a_3amesh_2c_20dolfinx_3a_3apoint_20_3e_5',['PointCoordinates&lt; dolfinx::mesh::Mesh, DolfinX::Point &gt;',['../structGridFormat_1_1Traits_1_1PointCoordinates_3_01dolfinx_1_1mesh_1_1Mesh_00_01DolfinX_1_1Point_01_4.html',1,'GridFormat::Traits']]],
