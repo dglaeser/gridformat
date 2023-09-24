@@ -837,37 +837,50 @@ class FunctionField : public GridFormat::Field {
         return result;
     }
 
-    void _fill_point_values(std::span<T> out_data, std::size_t num_entries_per_value) const {
+    void _fill_point_values(std::span<T> out_data, std::size_t num_entries_per_value) const
+        requires(!is_higher_order) {
         using GridFormat::Traits::Cells;
         using GridFormat::Traits::CellPoints;
         using GridFormat::Traits::PointCoordinates;
         using GridFormat::Traits::PointId;
+        using GridFormat::Traits::NumberOfPoints;
+
         auto local_function = localFunction(_function);
         auto point_id_to_running_idx = make_point_id_map(_grid);
+        std::vector<bool> handled(NumberOfPoints<Grid>::get(_grid), false);
+
         std::ranges::for_each(Cells<Grid>::get(_grid), [&] <typename C> (const C& element) {
             const auto& element_geometry = element.geometry();
             local_function.bind(element);
             std::ranges::for_each(CellPoints<Grid, Element>::get(_grid, element), [&] <typename P> (const P& point) {
                 const auto point_id = PointId<Grid, P>::get(_grid, point);
                 const auto running_idx = point_id_to_running_idx.at(point_id);
-                const auto local_pos = element_geometry.local(PointCoordinates<Grid, P>::get(_grid, point));
-                std::size_t offset = running_idx*num_entries_per_value;
-                _copy_values(local_function(local_pos), out_data, offset);
+                if (!handled[running_idx]) {
+                    const auto local_pos = element_geometry.local(PointCoordinates<Grid, P>::get(_grid, point));
+                    std::size_t offset = running_idx*num_entries_per_value;
+                    _copy_values(local_function(local_pos), out_data, offset);
+                }
+                handled[running_idx] = true;
             });
         });
     }
 
-    void _fill_point_values(std::span<T> out_data, std::size_t num_entries_per_value) const requires(is_higher_order) {
+    void _fill_point_values(std::span<T> out_data, std::size_t num_entries_per_value) const
+        requires(is_higher_order) {
         using GridFormat::Traits::Cells;
         using GridFormat::Traits::CellPoints;
         auto local_function = localFunction(_function);
+        std::vector<bool> handled(_grid.number_of_points(), false);
         std::ranges::for_each(Cells<Grid>::get(_grid), [&] <typename C> (const C& element) {
             const auto& element_geometry = element.geometry();
             local_function.bind(element);
-            std::ranges::for_each(CellPoints<Grid, Element>::get(_grid, element), [&] <typename P> (const P& point) {
-                const auto local_pos = element_geometry.local(point.coordinates);
-                std::size_t offset = point.index*num_entries_per_value;
-                _copy_values(local_function(local_pos), out_data, offset);
+            std::ranges::for_each(_grid.points(element), [&] <typename P> (const P& point) {
+                if (!handled[point.index]) {
+                    const auto local_pos = element_geometry.local(point.coordinates);
+                    std::size_t offset = point.index*num_entries_per_value;
+                    _copy_values(local_function(local_pos), out_data, offset);
+                }
+                handled[point.index] = true;
             });
         });
     }
