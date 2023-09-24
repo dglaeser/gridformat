@@ -152,8 +152,9 @@ and `Point`.
 This trait exposes how one can iterate over the points of an individual grid cell. Specializations must provide a static function
 `get(const Grid&, const Cell&)` that returns a [range](https://en.cppreference.com/w/cpp/ranges/range) of points that
 are contained within the given cell. Note that the [value_type](https://en.cppreference.com/w/cpp/ranges/iterator_t) of the
-returned range must match the point type deduced from the `Points` trait. Following the above example, an implementation of this
-trait could look like this:
+returned range must match the point type deduced from the `Points` trait. Moreover, point ordering is expected to follow the
+conventions used by [VTK](https://examples.vtk.org/site/VTKFileFormats/). Following the above example, an implementation of this trait
+could look like this:
 
 ```cpp
 namespace GridFormat::Traits {
