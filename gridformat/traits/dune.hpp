@@ -308,6 +308,7 @@ struct Ordinates<Dune::GridView<Traits>> {
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/field.hpp>
+#include <gridformat/grid.hpp>
 
 
 namespace GridFormat {
@@ -577,18 +578,6 @@ class LagrangePolynomialGrid {
             });
     }
 
-    std::ranges::range auto local_points(const Element& e) const {
-        const auto& corners = _cells[_codim_to_mapper[0].index(e)];
-        const auto& local_points = _local_points.at(e.type());
-        return std::views::iota(std::size_t{0},local_points.size())
-            | std::views::transform([&] (std::size_t i) {
-                return LocalPoint{
-                    .index = corners[i],
-                    .coordinates = local_points.at(i).point()
-                };
-            });
-    }
-
     const GridView& grid_view() const {
         return _grid_view;
     }
@@ -791,6 +780,8 @@ class FunctionField : public GridFormat::Field {
     using Element = typename GridView::template Codim<0>::Entity;
     using ElementGeometry = typename Element::Geometry;
 
+    static constexpr bool is_higher_order = std::is_same_v<Grid, LagrangePolynomialGrid<GridView>>;
+
  public:
     template<typename F>
         requires(std::is_same_v<std::remove_cvref_t<F>, Function>)
@@ -827,11 +818,11 @@ class FunctionField : public GridFormat::Field {
 
         Serialization result(num_entries*sizeof(T));
         auto out_data = result.template as_span_of<T>();
-        auto local_function = localFunction(_function);
 
         using GridFormat::Traits::Cells;
         if (_cellwise_constant) {
             std::size_t count = 0;
+            auto local_function = localFunction(_function);
             for (const auto& element : Cells<Grid>::get(_grid)) {
                 local_function.bind(element);
                 const auto& elem_geo = element.geometry();
@@ -840,41 +831,57 @@ class FunctionField : public GridFormat::Field {
                 _copy_values(local_function(local_pos), out_data, offset);
             }
         } else {
-            std::ranges::for_each(Cells<Grid>::get(_grid), [&] <typename C> (const C& element) {
-                const auto& element_geometry = element.geometry();
-                local_function.bind(element);
-                _visit_local_coordinates_and_point_ids([&] (const auto& local_pos, const auto idx) {
-                    std::size_t offset = idx*num_entries_per_value;
-                    _copy_values(local_function(local_pos), out_data, offset);
-                }, element, element_geometry);
-            });
+            _fill_point_values(out_data, num_entries_per_value);
         }
 
         return result;
     }
 
-    template<typename Action>
-    void _visit_local_coordinates_and_point_ids(const Action& action,
-                                                const Element& element,
-                                                const ElementGeometry& element_geo) const {
+    void _fill_point_values(std::span<T> out_data, std::size_t num_entries_per_value) const
+        requires(!is_higher_order) {
+        using GridFormat::Traits::Cells;
         using GridFormat::Traits::CellPoints;
         using GridFormat::Traits::PointCoordinates;
         using GridFormat::Traits::PointId;
-        std::ranges::for_each(CellPoints<Grid, Element>::get(_grid, element), [&] <typename P> (const P& point) {
-            action(
-                element_geo.local(PointCoordinates<Grid, P>::get(_grid, point)),
-                PointId<Grid, P>::get(_grid, point)
-            );
+        using GridFormat::Traits::NumberOfPoints;
+
+        auto local_function = localFunction(_function);
+        auto point_id_to_running_idx = make_point_id_map(_grid);
+        std::vector<bool> handled(NumberOfPoints<Grid>::get(_grid), false);
+
+        std::ranges::for_each(Cells<Grid>::get(_grid), [&] <typename C> (const C& element) {
+            const auto& element_geometry = element.geometry();
+            local_function.bind(element);
+            std::ranges::for_each(CellPoints<Grid, Element>::get(_grid, element), [&] <typename P> (const P& point) {
+                const auto point_id = PointId<Grid, P>::get(_grid, point);
+                const auto running_idx = point_id_to_running_idx.at(point_id);
+                if (!handled[running_idx]) {
+                    const auto local_pos = element_geometry.local(PointCoordinates<Grid, P>::get(_grid, point));
+                    std::size_t offset = running_idx*num_entries_per_value;
+                    _copy_values(local_function(local_pos), out_data, offset);
+                }
+                handled[running_idx] = true;
+            });
         });
     }
 
-    template<typename Action>
-        requires(std::is_same_v<Grid, LagrangePolynomialGrid<GridView>>)
-    void _visit_local_coordinates_and_point_ids(const Action& action,
-                                                const Element& element,
-                                                const ElementGeometry&) const {
-        std::ranges::for_each(_grid.local_points(element), [&] <typename P> (const P& point) {
-            action(point.coordinates, point.index);
+    void _fill_point_values(std::span<T> out_data, std::size_t num_entries_per_value) const
+        requires(is_higher_order) {
+        using GridFormat::Traits::Cells;
+        using GridFormat::Traits::CellPoints;
+        auto local_function = localFunction(_function);
+        std::vector<bool> handled(_grid.number_of_points(), false);
+        std::ranges::for_each(Cells<Grid>::get(_grid), [&] <typename C> (const C& element) {
+            const auto& element_geometry = element.geometry();
+            local_function.bind(element);
+            std::ranges::for_each(_grid.points(element), [&] <typename P> (const P& point) {
+                if (!handled[point.index]) {
+                    const auto local_pos = element_geometry.local(point.coordinates);
+                    std::size_t offset = point.index*num_entries_per_value;
+                    _copy_values(local_function(local_pos), out_data, offset);
+                }
+                handled[point.index] = true;
+            });
         });
     }
 
