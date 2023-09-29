@@ -63,7 +63,7 @@ class ReservedVector {
     const T& at(std::size_t i) const { return _elements.at(i); }
 
  private:
-    std::array<std::byte, N*sizeof(std::size_t)> _buffer;
+    std::array<std::byte, N*sizeof(T)> _buffer;
     std::pmr::monotonic_buffer_resource _resource;
     std::pmr::vector<T> _elements;
 };
