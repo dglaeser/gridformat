@@ -16,7 +16,7 @@ assert exists(MAIN_README)
 
 def _get_commit_sha() -> str:
     return subprocess.run(
-        "git rev-list --max-count=1 HEAD".split(" "), capture_output=True, text=True
+        "git rev-list --max-count=1 HEAD".split(" "), capture_output=True, text=True, check=True
     ).stdout.strip("\n")
 
 
