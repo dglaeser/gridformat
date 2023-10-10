@@ -37,8 +37,8 @@ void do_something_on_a_grid(const Grid& grid) {
 
 The code now expects that there exist a specialization of the `Cells` trait for the given grid. This allows users to specialize
 that trait for their grid data structure, thereby making it compatible with `GridFormat`. See the code below for an idea about how
-the traits specialization may look. For more details on this, please have a look at the resources referenced in the
-[main readme](https://github.com/dglaeser/gridformat/blob/main).
+the traits specialization may look. For more details on this, please have a look at the resources referenced in
+the <!-- DOXYGEN_MAKE_ABSOLUTE -->[main readme](../../README.md).
 
 ```cpp
 #include <gridformat/grid/traits.hpp>
@@ -68,7 +68,7 @@ struct Cells<MyLibrary::Grid> {
 ```
 
 As discussed in the
-[overview over supported kinds of grids](./grid_concepts.md),
+[overview over supported kinds of grids](grid_concepts.md),
 `GridFormat` understands the notion of unstructured, structured, rectilinear or image grids. The reason for this is that some
 file formats are designed for specific kinds of grids and can store the information on their topology in a space-efficient manner.
 To see which format assumes which kind of grid, see the [API documentation](https://dglaeser.github.io/gridformat/).
@@ -170,8 +170,9 @@ struct CellPoints<SomeUnstructuredGrid, int> {
 - `template<typename Grid, typename Cell> struct CellType;`
 
 This trait exposes the geometry type of an individual grid cell. Specializations must provide a static function
-`get(const Grid&, const Cell&)` that returns an instance of the
-[CellType enum](https://github.com/dglaeser/gridformat/blob/main/gridformat/grid/cell_type.hpp). For the above example,
+`get(const Grid&, const Cell&)` that returns an instance of
+the <!-- DOXYGEN_MAKE_ABSOLUTE -->[CellType enum](../../gridformat/grid/cell_type.hpp).
+For the above example,
 the specialization of this traits could look like this:
 
 ```cpp
@@ -261,8 +262,7 @@ struct Extents<SomeStructuredGrid> {
 - `template<typename Grid, typename Entity> struct Location;`
 
 This trait exposes the index tuple of a given entity within the structured grid. For a visualization and the assumptions on the
-orientation, see the
-[overview over supported kinds of grids](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md).
+orientation, see the [overview over supported kinds of grids](grid_concepts.md).
 This trait must be specialized for both `Cell` and `Point` (i.e. for two types of `Entity`), and they must provide a static function
 `get(const Grid&, const Entity&)` that returns a
 [statically sized range](#optional-traits)
@@ -326,8 +326,8 @@ implemented (see above).
 - `template<typename Grid> struct Origin;`
 
 This trait exposes the position of the lower-left corner of the grid, that
-is, the position of the point at index $(0, 0, 0)$ (for a visualization see
-[here](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/docs/grid_kinds.md)).
+is, the position of the point at index $(0, 0, 0)$ (for a visualization
+see [here](grid_concepts.md)
 Specializations must provide a static function `get(const Grid&)` that returns a
 [statically sized range](#optional-traits),
 whose size is equal to the dimension of the grid. An exemplary specialization of this trait could look like:
@@ -412,12 +412,13 @@ with the outer and inner dimensions being equal to the grid dimension.
 
 - `template<typename T> struct StaticSize;`
 
-`GridFormat` requires that the types returned from some traits model the [`StaticallySizedRange` concept](https://github.com/dglaeser/gridformat/blob/feature/high-level-docs/gridformat/common/concepts.hpp#L25).
+`GridFormat` requires that the types returned from some traits model
+the <!-- DOXYGEN_MAKE_ABSOLUTE -->[`StaticallySizedRange` concept](../../gridformat/common/concepts.hpp#L25).
 Statically sized means that the size of the [range](https://en.cppreference.com/w/cpp/ranges/range) is known at compile time.
 Per default, `GridFormat` accepts `std::array`, `std::span` (with non-dynamic extent), `T[N]` or anything that either has a
 `constexpr static std::size_t size()` function or a member variable named `size` that can be evaluated at compile time.
 If your type does not fulfill any of these requirements, but is in fact range with a size known at compile-time, you can also
-specialize the [`StaticSize` trait](https://github.com/dglaeser/gridformat/blob/main/gridformat/common/type_traits.hpp)
+specialize the <!-- DOXYGEN_MAKE_ABSOLUTE -->[`StaticSize` trait](../../gridformat/common/type_traits.hpp)
 for the type you want to return. Alternatively, you can of course just convert your type into an `std::array` within the
 trait that expects you to return a statically sized range. To give an example, let's consider a `Vector` class whose size
 is known at compile-time, but does not fulfill the requirements for `GridFormat` to automatically identify it as a
