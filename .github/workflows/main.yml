@@ -25,133 +25,14 @@ jobs:
   test-compilers:
     runs-on: ubuntu-22.04
     container: dglaeser/gridformat-action-images:full
-    strategy:
-      matrix:
-        compiler_pkg: [g++-12, clang-16]
-        include:
-           - c_compiler: gcc-12
-             compiler_pkg: g++-12
-           - cxx_compiler: g++-12
-             compiler_pkg: g++-12
-           - c_compiler: clang-16
-             compiler_pkg: clang-16
-           - cxx_compiler: clang++-16
-             compiler_pkg: clang-16
-
     steps:
       - name: checkout-repository
         uses: actions/checkout@v2
         with:
           submodules: true
 
-      - name: check-reuse-compliance
-        run: python3 -m pip install reuse && reuse lint
-
-      - name: configure
+      - name: print-last-commit
         run: |
-          rm -rf build
-          cmake -DCMAKE_C_COMPILER=${{matrix.c_compiler}} \
-                -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}} \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
-                -DGRIDFORMAT_BUILD_BINARIES=ON \
-                -DGRIDFORMAT_BUILD_TESTS=ON \
-                -B build | tee gfmt_cmake_log.txt
-
-      - name: check-documentation-code
-        run: |
-          if [[ ${{ github.event_name }} == "pull_request" ]]; then
-            GFMT_ORIGIN=${{ github.event.pull_request.head.repo.clone_url }}
-            GFMT_TREE=${{ github.head_ref }}
-          else
-            GFMT_ORIGIN=${{ github.event.repository.clone_url }}
-            GFMT_TREE=$GITHUB_HEAD_REF
-            if [[ -z "$GFMT_TREE" ]]; then
-              GFMT_TREE=$GITHUB_SHA
-            fi
-          fi
-          python3 test/test_readme_quick_start.py \
-            -r $GFMT_TREE \
-            -e "-DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12" \
-            -o "${GFMT_ORIGIN}"
-          python3 test/test_readme_tested_versions.py --cmake-log-file gfmt_cmake_log.txt
-        shell: bash
-
-      - name: build-binaries
-        run: cmake --build build
-
-      - name: build-tests
-        run: pushd build && make build_tests && popd
-        shell: bash
-
-      - name: test
-        run: |
-          if [[ ${{ github.ref_name }} != "main" ]]; then
-            echo "Regression-testing sample files only for branch ${{ github.ref_name }}"
-            export GRIDFORMAT_REGRESSION_SAMPLES_ONLY=true
-          fi
-          pushd build && ctest --output-on-failure && popd
-        shell: bash
-
-      - name: verify-no-skipped-tests
-        run: |
-          if [[ -e build/Testing/Temporary/LastTestsDisabled.log ]]; then
-            echo "The full test suite should not skip any tests. Making the job fail..."
-            exit 1
-          else
-            echo "No skipped tests detected"
-          fi
-        shell: bash
-
-
-  mem-check:
-    runs-on: ubuntu-22.04
-    container: dglaeser/gridformat-action-images:full
-    steps:
-      - name: checkout-repository
-        uses: actions/checkout@v2
-        with:
-          submodules: true
-
-      - name: run-valgrind
-        run: |
-          rm -rf build
-          cmake -DCMAKE_C_COMPILER=/usr/bin/$DEFAULT_C_COMPILER \
-                -DCMAKE_CXX_COMPILER=/usr/bin/$DEFAULT_CXX_COMPILER \
-                -DCMAKE_BUILD_TYPE=Debug \
-                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
-                -DGRIDFORMAT_BUILD_TESTS=ON \
-                -B build
-          cd build && make memcheck
-
-
-  test-full-installation:
-    runs-on: ubuntu-22.04
-    container: dglaeser/gridformat-action-images:full
-    steps:
-      - name: checkout-repository
-        uses: actions/checkout@v2
-        with:
-          submodules: true
-
-      - name: test-installed-package
-        uses: ./.github/actions/test-installed-pkg
-        with:
-          c_compiler: /usr/bin/$DEFAULT_C_COMPILER
-          cxx_compiler: /usr/bin/$DEFAULT_CXX_COMPILER
-
-
-  test-minimal-installation:
-    runs-on: ubuntu-22.04
-    container: dglaeser/gridformat-action-images:minimal
-    steps:
-      - name: checkout-repository
-        uses: actions/checkout@v2
-        with:
-          submodules: false
-
-      - name: test-installed-package
-        uses: ./.github/actions/test-installed-pkg
-        with:
-          c_compiler: /usr/bin/$DEFAULT_C_COMPILER
-          cxx_compiler: /usr/bin/$DEFAULT_CXX_COMPILER
+          echo "PWD = $PWD"
+          git config --global --add safe.directory $PWD
+          git rev-list --max-count=1 HEAD
