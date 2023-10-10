@@ -94,7 +94,7 @@ int main () {
 }
 ```
 Many more formats, options and functions are available, see the [API documentation](https://dglaeser.github.io/gridformat/)
-or have a look at the [examples](./examples).
+or have a look at the <!-- DOXYGEN_MAKE_ABSOLUTE -->[examples](examples).
 
 
 ## Installation
@@ -155,9 +155,9 @@ gridformat-convert my_vti_file.vti vtu -o some_file  # choose an output filename
 `GridFormat` does not operate on a specific grid data structure, but instead, it can be made compatible with any user-defined
 grid types by implementing specializations for a few traits classes. For information on how to do this, please have a look at the
 [traits classes overview](docs/pages/traits.md),
-the [examples](./examples),
-the predefined [image grid implementation](https://github.com/dglaeser/gridformat/blob/main/gridformat/grid/image_grid.hpp)
-or the predefined [traits for several frameworks](https://github.com/dglaeser/gridformat/blob/main/gridformat/traits).
+the <!-- DOXYGEN_MAKE_ABSOLUTE -->[examples](examples),
+the predefined <!-- DOXYGEN_MAKE_ABSOLUTE -->[image grid implementation](gridformat/grid/image_grid.hpp)
+or the predefined <!-- DOXYGEN_MAKE_ABSOLUTE -->[traits for several frameworks](gridformat/traits).
 
 
 ## Predefined traits
@@ -171,7 +171,7 @@ or the predefined [traits for several frameworks](https://github.com/dglaeser/gr
 [dolfinx](https://github.com/FEniCS/dolfinx) meshes and function spaces (tested dolfinx version: 0.6.0)
 and [mfem](https://mfem.org/) meshes (tested mfem version: 4.5.2).
 Users of these frameworks can include these predefined traits and use `GridFormat` directly
-(see the [examples](https://github.com/dglaeser/gridformat/tree/main/examples)).
+(see the <!-- DOXYGEN_MAKE_ABSOLUTE -->[examples](examples)).
 
 
 ## Caveats
@@ -220,6 +220,6 @@ If your Python environment does not have `VTK`, this step is skipped. Note that 
 
 ## License
 
-`GridFormat` is licensed under the terms and conditions of the MIT License. It can be [read online](https://opensource.org/license/mit/) or in the
-[LICENSES/MIT.txt](https://github.com/dglaeser/gridformat/blob/main/LICENSES/MIT.txt) file.
-See [LICENSES/MIT.txt](https://github.com/dglaeser/gridformat/blob/main/LICENSES/MIT.txt) for full copying permissions.
+`GridFormat` is licensed under the terms and conditions of the MIT License. It can be [read online](https://opensource.org/license/mit/)
+or in the <!-- DOXYGEN_MAKE_ABSOLUTE -->[LICENSES/MIT.txt](LICENSES/MIT.txt) file.
+See <!-- DOXYGEN_MAKE_ABSOLUTE -->[LICENSES/MIT.txt](LICENSES/MIT.txt) for full copying permissions.
