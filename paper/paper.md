@@ -39,9 +39,9 @@ Visualization plays a fundamental role in analyzing numerical results, and one w
 `ParaView` [@ahrens2005_paraview; @paraview_web], which is based on `VTK`, the _Visualization Toolkit_ [@vtk_book; @vtk_web]. `ParaView` can read results from a wide range of
 file formats, with the [VTK file formats](https://examples.vtk.org/site/VTKFileFormats/) being among the most popular.
 To visualize simulation results with `ParaView`, researchers need to write their data into one of the supported file formats.
-Users of existing simulation frameworks such as `Dune` [@bastian2008; @Dune2021],
+Users of existing simulation frameworks, such as `Dune` [@bastian2008; @Dune2021],
 `Dumux` [@dumux_2011; @Kochetaldumux2021], `Deal.II` [@dealII94], `FEniCS` [@fenicsbook2012; @fenics] or `MFEM` [@mfem; @mfem_web],
-can usually export their results into some standard file formats, however, they are limited
+can usually export their results into some standard file formats. However, they are limited
 to those formats that are supported by the framework. Reusing another framework's I/O functionality is generally challenging, at least
 without runtime and memory overhead due to data conversions, since the implementation is typically tailored to its specific data structures.
 As a consequence, the work of implementing I/O into standard file formats is currently repeated in every framework and remains inaccessible for
@@ -60,7 +60,7 @@ namely `Dune`, `Deal.II`, `FenicsX`, `MFEM`, and `CGAL` [@cgal; @cgal_web].
 
 Three key requirements govern the design of `GridFormat`: seamless integration, minimal runtime and memory overhead, and support for `MPI`. Given that C++ is widely used in grid-based simulation codes for performance reasons, we selected C++ as the programming language such that `GridFormat` can be adopted and used natively. It is lightweight, header-only, free of dependencies (unless opt-in features such as HDF5 output is desired), and supports CMake [@cmake_web] features that allow for automatic integration of `GridFormat` in downstream projects.
 
-A comparable project in Python is `meshio` [@meshio], which supports reading from and writing to a wide range of grid file formats. However, accessing it from within simulators written in C++ would introduce an undesirable performance penalty, as well as memory overhead since `meshio` operates on an internal mesh representation that users have to convert their data into. `Dune` users can employ `dune-vtk` [@dune_vtk], which supports I/O for a number VTK-XML file formats and flavours, however, its implementation is strongly coupled to the `dune-grid` interface and can therefore not be easily reused in other contexts. To the best of our knowledge, a framework-independent solution that fulfills the above-mentioned requirements does not exist.
+A comparable project in Python is `meshio` [@meshio], which supports reading from and writing to a wide range of grid file formats. However, accessing it from within simulators written in C++ would introduce an undesirable performance penalty, as well as memory overhead, since `meshio` operates on an internal mesh representation that users have to convert their data into. `Dune` users can employ `dune-vtk` [@dune_vtk], which supports I/O for a number VTK-XML file formats and flavours, however, its implementation is strongly coupled to the `dune-grid` interface and can therefore not be easily reused in other contexts. To the best of our knowledge, a framework-independent solution that fulfills the above-mentioned requirements does not exist.
 
 # Concept
 
