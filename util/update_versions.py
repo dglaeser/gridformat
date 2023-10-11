@@ -17,8 +17,8 @@ def _is_release_version_tag(tag: str) -> bool:
         return False
     tag = tag[1:]
     try:
-        major, minor, patch = tag.split(".")
-        _, _, _ = int(major), int(minor), int(patch)
+        major, minor, _ = tag.split(".")
+        _, _ = int(major), int(minor)
         return True
     except:
         return False

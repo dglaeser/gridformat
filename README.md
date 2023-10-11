@@ -227,13 +227,24 @@ releases. As an example, to create a release version `1.2.3`, you may type the f
 git switch --create releases/1.2.3
 # ... maybe continue development ...
 python3 util/update_versions.py -v 1.2.3
-git commit -m "bump version to v1.2.3"
+git commit -m "bump version to v1.2.3" .
 git push origin releases/1.2.3
 git push origin v1.2.3  # this tag was created by the script
 ```
 
 Afterwards, a release workflow will be triggered. If this runs through successfully, a release has been created. If not, the new tag
-has to be deleted and the procedure has to be repeated after fixing the errors.
+has to be deleted and the procedure has to be repeated after fixing the errors. After a successful release, the version on `main`
+should be increased (with a suffix `-git`). Following the above example, you may run the following commands:
+
+```bash
+git switch main
+git switch --create feature/bump-version
+python3 util/update_versions.py -v 1.2.4-git --skip-tag
+git commit -m "bump version to v1.2.3" .
+git push origin feature/bump-version
+```
+
+and pose a pull request for the changes to be incorporated in `main`.
 
 
 ## License
