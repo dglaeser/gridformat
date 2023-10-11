@@ -27,6 +27,7 @@ abstract: Header-only C++-Library for grid file I/O
 keywords:
   - numerical simulation
   - grid file I/O
+  - mesh file I/O
 license: MIT
 version: 0.1.0
 date-released: '2023-10-11'
