@@ -39,8 +39,8 @@ int main() {
 
     "cpy_ctor_does_not_copy_resource"_test = [] () {
         GridFormat::ReservedVector<double, 3> v{1.0, 2.0, 3.0};
-        GridFormat::ReservedVector<double, 3> cpy{v};
-        auto cpy2 = v;
+        GridFormat::ReservedVector<double, 5> cpy{v};
+        GridFormat::ReservedVector<double, 10> cpy2 = v;
         v = {0.0, 0.0, 0.0, 0.0};
         expect(eq(cpy.size(), 3_ul));
         expect(eq(cpy2.size(), 3_ul));
@@ -50,8 +50,8 @@ int main() {
 
     "move_ctor_does_not_copy_resource"_test = [] () {
         GridFormat::ReservedVector<double, 3> v = [] () {
-            GridFormat::ReservedVector<double, 3> tmp{1.0, 42.0, 43.0};
-            GridFormat::ReservedVector<double, 3> moved{std::move(tmp)};
+            GridFormat::ReservedVector<double, 4> tmp{1.0, 42.0, 43.0};
+            GridFormat::ReservedVector<double, 5> moved{std::move(tmp)};
             return moved;
         } ();
         expect(eq(v.size(), 3_ul));
