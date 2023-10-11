@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: MIT
+
+name: releases
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  version-sanity-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: check-version-consistency
+      run: |
+        git config --global --add safe.directory $PWD
+        python3 util/check_version_consistency.py
+
+  test:
+    needs: [version-sanity-check]
+    uses: ./.github/workflows/main.yml
+
+  release:
+    needs: [test]
+    runs-on: ubuntu-22.04
+    container: dglaeser/gridformat-action-images:full
+    permissions:
+      contents: write
+    env:
+      DESCRIPTION_FILE: release_description.md
+      HTML_DOC_FOLDER_NAME: gridformat-${{ github.ref_name }}-doc_html
+    steps:
+    - uses: actions/checkout@v3
+    - name: create-description-body
+      run: |
+        python3 util/write_release_description.py -o ${DESCRIPTION_FILE} -v github.ref_name
+    - name: build-doxygen-documentation
+      run: |
+        git config --global --add safe.directory $PWD
+        cd build && make doc_doxygen
+        mkdir ${HTML_DOC_FOLDER_NAME} && cp -r docs/doxygen/html/* ${HTML_DOC_FOLDER_NAME}
+        tar -cf ${HTML_DOC_FOLDER_NAME}.tar ${HTML_DOC_FOLDER_NAME}
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: ${HTML_DOC_FOLDER_NAME}
+        bodyFile: ${DESCRIPTION_FILE}
+        discussionCategory: "Show and tell"
+        name: GridFormat ${{ github.ref_name }}
