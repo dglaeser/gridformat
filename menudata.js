@@ -74,4 +74,5 @@ var menudata={children:[
 {text:"Typedefs",url:"functions_type.html"},
 {text:"Related Functions",url:"functions_rela.html"}]}]},
 {text:"Files",url:"files.html",children:[
-{text:"File List",url:"files.html"}]}]}
+{text:"File List",url:"files.html"}]},
+{text:"Documentation for other versions",url:"^https://github.com/dglaeser/gridformat/releases"}]}

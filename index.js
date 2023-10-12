@@ -10,7 +10,8 @@ var index =
     [ "Caveats", "index.html#caveats", null ],
     [ "Getting help", "index.html#getting-help", null ],
     [ "Contribution Guidelines", "index.html#contribution-guidelines", [
-      [ "Development and test suite", "index.html#development-and-test-suite", null ]
+      [ "Development and test suite", "index.html#development-and-test-suite", null ],
+      [ "Creating a release", "index.html#creating-a-release", null ]
     ] ],
     [ "License", "index.html#license", null ]
 ];

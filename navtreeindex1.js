@@ -4,6 +4,7 @@ var NAVTREEINDEX1 =
 "index.html#commandline-interface":[0,2],
 "index.html#compatibility-with-userdefined-grids":[0,3],
 "index.html#contribution-guidelines":[0,7],
+"index.html#creating-a-release":[0,7,1],
 "index.html#dependencies":[0,1,0],
 "index.html#development-and-test-suite":[0,7,0],
 "index.html#getting-help":[0,6],
@@ -11,8 +12,8 @@ var NAVTREEINDEX1 =
 "index.html#license":[0,8],
 "index.html#predefined-traits":[0,4],
 "index.html#quick-start":[0,0],
-"lz4_8hpp.html":[4,6,1],
 "lz4_8hpp.html":[4,2,3],
+"lz4_8hpp.html":[4,6,1],
 "lzma_8hpp.html":[4,6,2],
 "lzma_8hpp.html":[4,2,4],
 "mfem_8hpp.html":[4,5,4],
@@ -239,6 +240,6 @@ var NAVTREEINDEX1 =
 "writer_8hpp.html":[4,0,1],
 "xml_8hpp.html":[4,3,35],
 "xml__time__series__writer_8hpp.html":[4,3,36],
-"zlib_8hpp.html":[4,2,5],
-"zlib_8hpp.html":[4,6,3]
+"zlib_8hpp.html":[4,6,3],
+"zlib_8hpp.html":[4,2,5]
 };
