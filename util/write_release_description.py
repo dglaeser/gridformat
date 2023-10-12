@@ -24,5 +24,7 @@ if __name__ == "__main__":
         sys.stderr.write("Description file already exists!")
         sys.exit(1)
 
+    version = args["version"]
+    version = version[1:] if version.startswith("v") else version
     with open(args["out_file"], "w") as description:
-        description.write(_get_changelog_content_for(args["version"]))
+        description.write(_get_changelog_content_for(version))
