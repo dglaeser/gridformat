@@ -217,6 +217,35 @@ Note that an internet connection is required for the call to `cmake` as it pulls
 Moreover, in the configure step a Python script is invoked that produces some test data using [VTK](https://pypi.org/project/vtk/).
 If your Python environment does not have `VTK`, this step is skipped. Note that some tests in the test suite will be skipped in this case.
 
+### Creating a release
+
+To create a release, you may use the utility script `util/update_versions.py`, which creates a git tag and adjusts the versions and
+release dates specified in the cmake setup and the `CITATION.cff` file. For each release we maintain a separate branch for bugfixes
+and patch releases. As an example, to create a release version `1.2.3`, you may type the following into the console (assumes a clean
+repository):
+
+```bash
+git switch --create releases/1.2.3
+# ... maybe continue development ...
+python3 util/update_versions.py -v 1.2.3 # modifies versions&dates and creates a commit + tag
+git push origin releases/1.2.3
+git push origin v1.2.3
+```
+
+Afterwards, a release workflow will be triggered. If this runs through successfully, a release has been created. If not, the new tag
+has to be deleted and the procedure has to be repeated after fixing the errors. After a successful release, the version on `main`
+should be increased (with a suffix `-git`). Following the above example, you may run the following commands:
+
+```bash
+git switch main
+git switch --create feature/bump-version
+python3 util/update_versions.py -v 1.2.4-git --skip-tag # only modifies versions, no commit or tag
+git commit -m "bump version to v1.2.3" .
+git push origin feature/bump-version
+```
+
+and pose a pull request for the changes to be incorporated in `main`.
+
 
 ## License
 

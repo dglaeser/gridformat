@@ -5,14 +5,19 @@ name: test-suite
 
 on:
   push:
-    branches: [ main ]
+    branches:
+    - main
+    - 'releases/**'
   pull_request:
-    branches: [ main ]
+    branches:
+    - main
+    - 'releases/**'
     paths-ignore:
       - 'docker/**'
   schedule:
     - cron: '30 22 * * 0,3'
   workflow_dispatch:
+  workflow_call:
 
 env:
   DEFAULT_COMPILER_PKG: g++-12
