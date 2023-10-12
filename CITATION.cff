@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: MIT
+
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: GridFormat
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Dennis
+    family-names: Gläser
+    email: dennis.glaeser@iws.uni-stuttgart.de
+    affiliation: University of Stuttgart
+    orcid: 'https://orcid.org/0000-0001-9646-881X'
+  - given-names: Timo
+    family-names: Koch
+    orcid: 'https://orcid.org/0000-0003-4776-5222'
+    affiliation: University of Oslo
+    email: timokoch@math.uio.no
+repository-code: 'https://github.com/dglaeser/gridformat'
+url: 'https://dglaeser.github.io/gridformat/'
+abstract: Header-only C++-Library for grid file I/O
+keywords:
+  - numerical simulation
+  - grid file I/O
+  - mesh file I/O
+license: MIT
+version: 0.1.0
+date-released: '2023-10-11'
