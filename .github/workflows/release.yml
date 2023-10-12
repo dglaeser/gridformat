@@ -39,12 +39,22 @@ jobs:
     - name: build-doxygen-documentation
       run: |
         git config --global --add safe.directory $PWD
+        rm -rf build
+        cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
+              -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \
+              -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DGRIDFORMAT_BUILD_TESTS=ON \
+              -DGRIDFORMAT_DO_COVERAGE=ON \
+              -DGRIDFORMAT_BUILD_DOCS=ON \
+              -DGCOV_PATH=/usr/bin/gcov-12 \
+              -B build
         cd build && make doc_doxygen
         mkdir ${HTML_DOC_FOLDER_NAME} && cp -r docs/doxygen/html/* ${HTML_DOC_FOLDER_NAME}
         tar -cf ${HTML_DOC_FOLDER_NAME}.tar ${HTML_DOC_FOLDER_NAME}
     - uses: ncipollo/release-action@v1
       with:
-        artifacts: ${HTML_DOC_FOLDER_NAME}
+        artifacts: build/${HTML_DOC_FOLDER_NAME}
         bodyFile: ${DESCRIPTION_FILE}
         discussionCategory: "Show and tell"
         name: GridFormat ${{ github.ref_name }}
