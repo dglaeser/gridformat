@@ -97,6 +97,14 @@ def _get_tag_date(tag: str) -> datetime.date:
     return datetime.datetime.strptime(tag_date, "%a %b %d %H:%M:%S %Y").date()
 
 
+def _is_branch(branch: str) -> bool:
+    try:
+        _run_and_capture(f"git show-ref --verify refs/heads/{branch}")
+        return True
+    except:
+        return False
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -121,7 +129,8 @@ if __name__ == "__main__":
             _run_and_capture(f"git checkout {tag}")
             cff_date = _get_cff_release_date()
             tag_date = _get_tag_date(tag)
-            _run_and_capture(f"git switch {branch}")
+            if _is_branch(branch):
+                _run_and_capture(f"git switch {branch}")
             if cff_date != tag_date:
                 sys.stderr.write("Tag date does not match cff release date")
                 sys.exit(1)
