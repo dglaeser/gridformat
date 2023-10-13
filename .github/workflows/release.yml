@@ -54,7 +54,7 @@ jobs:
         tar -cf ${HTML_DOC_FOLDER_NAME}.tar ${HTML_DOC_FOLDER_NAME}
     - uses: ncipollo/release-action@v1
       with:
-        artifacts: build/${HTML_DOC_FOLDER_NAME}.tar
-        bodyFile: ${DESCRIPTION_FILE}
+        artifacts: build/${{ env.HTML_DOC_FOLDER_NAME }}.tar
+        bodyFile: ${{ env.DESCRIPTION_FILE }}
         discussionCategory: "Show and tell"
         name: GridFormat ${{ github.ref_name }}
