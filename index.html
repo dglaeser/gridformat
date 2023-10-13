@@ -47,7 +47,7 @@ MathJax.Hub.Config({
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">GridFormat<span id="projectnumber">&#160;0.1.0</span>
+   <div id="projectname">GridFormat<span id="projectnumber">&#160;0.1.1</span>
    </div>
    <div id="projectbrief">I/O-Library for grid-like data structures</div>
   </td>
@@ -185,7 +185,7 @@ Quick Start</h1>
 <div class="ttc" id="aclassGridFormat_1_1Writer_html"><div class="ttname"><a href="classGridFormat_1_1Writer.html">GridFormat::Writer</a></div><div class="ttdoc">Interface to the writers for all supported file formats. Depending on the chosen format,...</div><div class="ttdef"><b>Definition:</b> writer.hpp:90</div></div>
 <div class="ttc" id="aclassGridFormat_1_1Writer_html_aceba61d4867ddb47d0286827fae8cfc1"><div class="ttname"><a href="classGridFormat_1_1Writer.html#aceba61d4867ddb47d0286827fae8cfc1">GridFormat::Writer::set_meta_data</a></div><div class="ttdeci">void set_meta_data(const std::string &amp;name, Field &amp;&amp;field)</div><div class="ttdoc">Set a meta data field to be added to the output.</div><div class="ttdef"><b>Definition:</b> writer.hpp:194</div></div>
 <div class="ttc" id="agridformat_8hpp_html"><div class="ttname"><a href="gridformat_8hpp.html">gridformat.hpp</a></div><div class="ttdoc">This file is the entrypoint to the high-level API exposing all provided readers/writers through a uni...</div></div>
-</div><!-- fragment --><p> Many more formats, options and functions are available, see the <a href="https://dglaeser.github.io/gridformat/">API documentation</a> or have a look at the <a href="https://github.com/dglaeser/gridformat/tree/732c0f22b183323ce33fcb7ef10426cd0a2c0e2f/examples">examples</a>.</p>
+</div><!-- fragment --><p> Many more formats, options and functions are available, see the <a href="https://dglaeser.github.io/gridformat/">API documentation</a> or have a look at the <a href="https://github.com/dglaeser/gridformat/tree/275fc49e1080d27c5813c3bd1dd6b39af1529764/examples">examples</a>.</p>
 <h1><a class="anchor" id="installation"></a>
 Installation</h1>
 <p>The recommended way of using <code>GridFormat</code> is to include it via cmake's <code>FetchContent</code> module (see quickstart). However, if you want to install <code>GridFormat</code> locally into a custom location, clone the repository, enter the folder and type</p>
@@ -210,10 +210,10 @@ Command-line interface</h1>
 <div class="line">gridformat-convert my_vti_file.vti vtu -o some_file  # choose an output filename</div>
 </div><!-- fragment --><h1><a class="anchor" id="compatibility-with-userdefined-grids"></a>
 Compatibility with user-defined grids</h1>
-<p><code>GridFormat</code> does not operate on a specific grid data structure, but instead, it can be made compatible with any user-defined grid types by implementing specializations for a few traits classes. For information on how to do this, please have a look at the <a class="el" href="grid-traits.html#md____w_gridformat_gridformat_docs_pages_traits">traits classes overview</a>, the <a href="https://github.com/dglaeser/gridformat/tree/732c0f22b183323ce33fcb7ef10426cd0a2c0e2f/examples">examples</a>, the predefined <a href="https://github.com/dglaeser/gridformat/tree/732c0f22b183323ce33fcb7ef10426cd0a2c0e2f/gridformat/grid/image_grid.hpp">image grid implementation</a> or the predefined <a href="https://github.com/dglaeser/gridformat/tree/732c0f22b183323ce33fcb7ef10426cd0a2c0e2f/gridformat/traits">traits for several frameworks</a>.</p>
+<p><code>GridFormat</code> does not operate on a specific grid data structure, but instead, it can be made compatible with any user-defined grid types by implementing specializations for a few traits classes. For information on how to do this, please have a look at the <a class="el" href="grid-traits.html#md____w_gridformat_gridformat_docs_pages_traits">traits classes overview</a>, the <a href="https://github.com/dglaeser/gridformat/tree/275fc49e1080d27c5813c3bd1dd6b39af1529764/examples">examples</a>, the predefined <a href="https://github.com/dglaeser/gridformat/tree/275fc49e1080d27c5813c3bd1dd6b39af1529764/gridformat/grid/image_grid.hpp">image grid implementation</a> or the predefined <a href="https://github.com/dglaeser/gridformat/tree/275fc49e1080d27c5813c3bd1dd6b39af1529764/gridformat/traits">traits for several frameworks</a>.</p>
 <h1><a class="anchor" id="predefined-traits"></a>
 Predefined traits</h1>
-<p><code>GridFormat</code> comes with predefined traits for <a href="https://www.dune-project.org/doxygen/2.8.0/classDune_1_1GridView.html">dune grid views</a> (tested dune version: 2.9), <a href="https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html">deal.ii triangulations</a> (tested deal.ii version: 9.4.0), <a href="https://www.cgal.org/">cgal</a> triangulations in <a href="https://doc.cgal.org/latest/Triangulation_2/index.html">2d</a> and <a href="https://doc.cgal.org/latest/Triangulation_3/index.html">3d</a> (tested cgal version: 5.5.2), <a href="https://github.com/FEniCS/dolfinx">dolfinx</a> meshes and function spaces (tested dolfinx version: 0.6.0) and <a href="https://mfem.org/">mfem</a> meshes (tested mfem version: 4.5.2). Users of these frameworks can include these predefined traits and use <code>GridFormat</code> directly (see the <a href="https://github.com/dglaeser/gridformat/tree/732c0f22b183323ce33fcb7ef10426cd0a2c0e2f/examples">examples</a>).</p>
+<p><code>GridFormat</code> comes with predefined traits for <a href="https://www.dune-project.org/doxygen/2.8.0/classDune_1_1GridView.html">dune grid views</a> (tested dune version: 2.9), <a href="https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html">deal.ii triangulations</a> (tested deal.ii version: 9.4.0), <a href="https://www.cgal.org/">cgal</a> triangulations in <a href="https://doc.cgal.org/latest/Triangulation_2/index.html">2d</a> and <a href="https://doc.cgal.org/latest/Triangulation_3/index.html">3d</a> (tested cgal version: 5.5.2), <a href="https://github.com/FEniCS/dolfinx">dolfinx</a> meshes and function spaces (tested dolfinx version: 0.6.0) and <a href="https://mfem.org/">mfem</a> meshes (tested mfem version: 4.5.2). Users of these frameworks can include these predefined traits and use <code>GridFormat</code> directly (see the <a href="https://github.com/dglaeser/gridformat/tree/275fc49e1080d27c5813c3bd1dd6b39af1529764/examples">examples</a>).</p>
 <h1><a class="anchor" id="caveats"></a>
 Caveats</h1>
 <p>When reading from grid files, <code>GridFormat</code> provides access to the data as specified by the file format. These specifications may not be sufficient in all applications. For instance, to fully instantiate a simulator for parallel computations, information on the grid entities shared by different processes is usually required. Since these requirements are simulator-specific, any further processing has to be done manually by the user and for their data structures. The recommended way to deal with this issue is to add any information required for reinstantiation as data fields to the output. This way, it is readily available when reading the file.</p>
@@ -245,16 +245,16 @@ Creating a release</h2>
 <div class="line">python3 util/update_versions.py -v 1.2.3 # modifies versions&amp;dates and creates a commit + tag</div>
 <div class="line">git push origin releases/1.2.3</div>
 <div class="line">git push origin v1.2.3</div>
-</div><!-- fragment --><p>Afterwards, a release workflow will be triggered. If this runs through successfully, a release has been created. If not, the new tag has to be deleted and the procedure has to be repeated after fixing the errors. After a successful release, the version on <code>main</code> should be increased (with a suffix <code>-git</code>). Following the above example, you may run the following commands:</p>
+</div><!-- fragment --><p>Afterwards, a release workflow will be triggered. If this runs through successfully, a release has been created. If not, the new tag has to be deleted and the procedure has to be repeated after fixing the errors. After a successful release, the version on <code>main</code> should be increased (without triggering an actual release). Following the above example, you may run the following commands:</p>
 <div class="fragment"><div class="line">git switch main</div>
 <div class="line">git switch --create feature/bump-version</div>
-<div class="line">python3 util/update_versions.py -v 1.2.4-git --skip-tag # only modifies versions, no commit or tag</div>
-<div class="line">git commit -m &quot;bump version to v1.2.3&quot; .</div>
+<div class="line">python3 util/update_versions.py -v 1.2.4 --skip-tag # only modifies versions, no commit or tag</div>
+<div class="line">git commit -m &quot;bump version to v1.2.4&quot; .</div>
 <div class="line">git push origin feature/bump-version</div>
 </div><!-- fragment --><p>and pose a pull request for the changes to be incorporated in <code>main</code>.</p>
 <h1><a class="anchor" id="license"></a>
 License</h1>
-<p><code>GridFormat</code> is licensed under the terms and conditions of the MIT License. It can be <a href="https://opensource.org/license/mit/">read online</a> or in the <a href="https://github.com/dglaeser/gridformat/tree/732c0f22b183323ce33fcb7ef10426cd0a2c0e2f/LICENSES/MIT.txt">LICENSES/MIT.txt</a> file. See <a href="https://github.com/dglaeser/gridformat/tree/732c0f22b183323ce33fcb7ef10426cd0a2c0e2f/LICENSES/MIT.txt">LICENSES/MIT.txt</a> for full copying permissions. </p>
+<p><code>GridFormat</code> is licensed under the terms and conditions of the MIT License. It can be <a href="https://opensource.org/license/mit/">read online</a> or in the <a href="https://github.com/dglaeser/gridformat/tree/275fc49e1080d27c5813c3bd1dd6b39af1529764/LICENSES/MIT.txt">LICENSES/MIT.txt</a> file. See <a href="https://github.com/dglaeser/gridformat/tree/275fc49e1080d27c5813c3bd1dd6b39af1529764/LICENSES/MIT.txt">LICENSES/MIT.txt</a> for full copying permissions. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
