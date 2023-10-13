@@ -234,13 +234,13 @@ git push origin v1.2.3
 
 Afterwards, a release workflow will be triggered. If this runs through successfully, a release has been created. If not, the new tag
 has to be deleted and the procedure has to be repeated after fixing the errors. After a successful release, the version on `main`
-should be increased (with a suffix `-git`). Following the above example, you may run the following commands:
+should be increased (without triggering an actual release). Following the above example, you may run the following commands:
 
 ```bash
 git switch main
 git switch --create feature/bump-version
-python3 util/update_versions.py -v 1.2.4-git --skip-tag # only modifies versions, no commit or tag
-git commit -m "bump version to v1.2.3" .
+python3 util/update_versions.py -v 1.2.4 --skip-tag # only modifies versions, no commit or tag
+git commit -m "bump version to v1.2.4" .
 git push origin feature/bump-version
 ```
 
