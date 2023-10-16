@@ -5,7 +5,7 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: GridFormat
+title: "GridFormat - header-only C++-library for grid file I/O"
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
