@@ -12,7 +12,9 @@ CHANGELOG_VERSION_HEADER_PREFIX = "# `GridFormat` "
 def _get_changelog_content_for(version: str) -> str:
     with open(join(dirname(abspath(__file__)), "../CHANGELOG.md")) as changelog:
         _, content = changelog.read().split(f"{CHANGELOG_VERSION_HEADER_PREFIX}{version}", maxsplit=1)
-        return content.split("{CHANGELOG_VERSION_HEADER_PREFIX}")[0].strip("\n")
+        # strip rest of the header line
+        _, content = content.split("\n", maxsplit=1)
+        return content.split(f"{CHANGELOG_VERSION_HEADER_PREFIX}")[0].strip("\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
