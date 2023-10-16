@@ -50,6 +50,11 @@ jobs:
       - name: check-reuse-compliance
         run: python3 -m pip install reuse && reuse lint
 
+      - name: Check CITATION.cff validity
+        uses: citation-file-format/cffconvert-github-action@2.0.0
+        with:
+          args: "--validate"
+
       - name: configure
         run: |
           rm -rf build

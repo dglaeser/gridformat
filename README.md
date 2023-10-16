@@ -7,6 +7,8 @@
 [![Coverage Report](https://dglaeser.github.io/gridformat/coverage.svg)](https://dglaeser.github.io/gridformat/test_coverage)
 [![API Documentation](https://img.shields.io/badge/doc-API-ff69b4)](https://dglaeser.github.io/gridformat)
 [![REUSE status](https://api.reuse.software/badge/git.fsfe.org/reuse/api)](https://api.reuse.software/info/git.fsfe.org/reuse/api)
+[![JOSS](https://joss.theoj.org/papers/10.21105/joss.05778/status.svg)](https://doi.org/10.21105/joss.05778)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10008061.svg)](https://doi.org/10.5281/zenodo.10008061)
 
 `GridFormat` is a header-only C++ library for reading/writing data from/to standardized grid file formats that are supported by visualization tools such as e.g. [ParaView](https://www.paraview.org/).
 Thus, applications that operate on grid-like data structures such as numerical simulations, GIS or computational geometry applications, can leverage `GridFormat` to import/export their data from/into interoperable file formats.
