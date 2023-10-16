@@ -6,9 +6,6 @@
 
 cff-version: 1.2.0
 title: "GridFormat - header-only C++-library for grid file I/O"
-message: >-
-  If you use this software, please cite it using the
-  metadata from this file.
 type: software
 authors:
   - given-names: Dennis
@@ -21,6 +18,10 @@ authors:
     orcid: 'https://orcid.org/0000-0003-4776-5222'
     affiliation: University of Oslo
     email: timokoch@math.uio.no
+contact:
+  - family-names: Gläser
+    given-names: Dennis
+    orcid: "https://orcid.org/0000-0001-9646-881X"
 repository-code: 'https://github.com/dglaeser/gridformat'
 url: 'https://dglaeser.github.io/gridformat/'
 abstract: Header-only C++-Library for grid file I/O
@@ -35,3 +36,28 @@ identifiers:
   - description: Collection of archived snapshots of all versions
     type: doi
     value: "10.5281/zenodo.10008061"
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Gläser
+    given-names: Dennis
+    orcid: "https://orcid.org/0000-0001-9646-881X"
+  - family-names: Koch
+    given-names: Timo
+    orcid: "https://orcid.org/0000-0003-4776-5222"
+  - family-names: Flemisch
+    given-names: Bernd
+    orcid: "https://orcid.org/0000-0001-8188-620X"
+  date-published: 2023-10-16
+  doi: 10.21105/joss.05778
+  issn: 2475-9066
+  issue: 90
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 5778
+  title: "GridFormat: header-only C++-library for grid file I/O"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.05778"
+  volume: 8
