@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['grid_0',['Grid',['../group__Grid.html',1,'']]]
+  ['file_20formats_0',['File Formats',['../group__FileFormats.html',1,'']]],
+  ['format_20selectors_1',['Format Selectors',['../group__FormatSelectors.html',1,'']]]
 ];

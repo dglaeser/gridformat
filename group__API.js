@@ -1,5 +1,7 @@
 var group__API =
 [
+    [ "File Formats", "group__FileFormats.html", "group__FileFormats" ],
+    [ "Format Selectors", "group__FormatSelectors.html", null ],
     [ "gridformat.hpp", "gridformat_8hpp.html", null ],
     [ "writer.hpp", "writer_8hpp.html", null ],
     [ "reader.hpp", "reader_8hpp.html", null ],
