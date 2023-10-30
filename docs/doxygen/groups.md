@@ -5,10 +5,10 @@
 
 @defgroup API
 @brief The high-level API and recommended way of using `GridFormat`
-@details The high-level API exposes all available file formats and the generic
+@details The high-level API exposes all available @ref FileFormats and the generic
          GridFormat::Writer (and GridFormat::Reader, see below), which takes an
          instance of one of the formats and a grid that is to be written. It is
-         recommended to use the provided file format selectors for construction of
+         recommended to use the provided @ref FormatSelectors for construction of
          a GridFormat::Writer. As an example, to construct a writer for the .vtu file
          format for your `grid`, you may write
          @code{.cpp}
@@ -53,6 +53,18 @@
              // reader.open("my_vtu_file");  // this would not work
          @endcode
 
+    @defgroup FileFormats File Formats
+    @brief Classes representing the available file formats. For predefined selectors, see @ref FormatSelectors.
+    @ingroup API
+    @note Recent versions of VTK/ParaView are required to properly read and render the VTK-HDF file formats. The transient versions
+        should be available in VTK>=9.3.0 and ParaView>=5.12.0 (see <a href="https://www.kitware.com/how-to-write-time-dependent-data-in-vtkhdf-files/">KitWare blog</a>). Moreover, several bug fixes related to reading cell
+        and field data from VTK-HDF files for image grids have recently been incorporated into the main branch of VTK and may not
+        be included in earlier versions.
+
+    @defgroup FormatSelectors Format Selectors
+    @brief Selector classes for all available file formats. For more details on the formats, see the @ref FileFormats classes.
+           For examples on how to use them, see @ref API.
+    @ingroup API
 
 @defgroup Encoding
 @brief Encoders that can be used for I/O.
