@@ -197,6 +197,7 @@ struct VTKXMLFormatBase : public FormatWithOptions<VTKFormat, VTK::XMLOptions> {
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for an unspecified file format. When using this format, GridFormat will
  *        automatically select a format or deduce from a file being read, for instance.
  */
@@ -205,6 +206,7 @@ struct Any {};
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Time series variant of the Any format selector
  */
 struct AnyTimeSeries {};
@@ -212,6 +214,7 @@ struct AnyTimeSeries {};
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for the .vti/.pvti image grid file format to be passed to the Writer.
  * \details For more details on the file format, see
  *          <a href="https://examples.vtk.org/site/VTKFileFormats/#imagedata">here</a>
@@ -223,6 +226,7 @@ struct VTI : VTKXMLFormatBase<VTI> {};
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for the .vtr/.pvtr rectilinear grid file format to be passed to the Writer.
  * \details For more details on the file format, see
  *          <a href="https://examples.vtk.org/site/VTKFileFormats/#rectilineargrid">here</a> or
@@ -234,6 +238,7 @@ struct VTR : VTKXMLFormatBase<VTR> {};
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for the .vts/.pvts structured grid file format to be passed to the Writer.
  * \details For more details on the file format, see
  *          <a href="https://examples.vtk.org/site/VTKFileFormats/#structuredgrid">here</a> or
@@ -245,6 +250,7 @@ struct VTS : VTKXMLFormatBase<VTS> {};
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for the .vtp/.pvtp file format for two-dimensional unstructured grids.
  * \details For more details on the file format, see
  *          <a href="https://examples.vtk.org/site/VTKFileFormats/#polydata">here</a> or
@@ -256,6 +262,7 @@ struct VTP : VTKXMLFormatBase<VTP> {};
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for the .vtu/.pvtu file format for general unstructured grids.
  * \details For more details on the file format, see
  *          <a href="https://examples.vtk.org/site/VTKFileFormats/#unstructuredgrid">here</a> or
@@ -267,6 +274,7 @@ struct VTU : VTKXMLFormatBase<VTU> {};
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for a time series of any VTK-XML format.
  */
 template<typename VTX>
@@ -275,6 +283,7 @@ struct VTKXMLTimeSeries : VTKXMLFormatBase<VTKXMLTimeSeries<VTX>> {};
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for the vtk-hdf file format for image grids.
  *        For more information, see
  *        <a href="https://examples.vtk.org/site/VTKFileFormats/#image-data">here</a>.
@@ -289,6 +298,7 @@ struct VTKHDFImage {};
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Transient variant of the vtk-hdf image data format
  */
 struct VTKHDFImageTransient
@@ -296,6 +306,7 @@ struct VTKHDFImageTransient
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for the vtk-hdf file format for unstructured grids.
  *        For more information, see
  *        <a href="https://examples.vtk.org/site/VTKFileFormats/#unstructured-grid">here</a>.
@@ -307,6 +318,7 @@ struct VTKHDFUnstructured {};
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Transient variant of the vtk-hdf unstructured grid format
  */
 struct VTKHDFUnstructuredTransient
@@ -314,6 +326,7 @@ struct VTKHDFUnstructuredTransient
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for the transient vtk-hdf file format with automatic deduction of the flavour.
  *        If the grid for which a writer is constructed is an image grid, it selects the image-grid flavour, otherwise
  *        it selects the flavour for unstructured grids (which requires the respective traits to be specialized).
@@ -331,6 +344,7 @@ struct VTKHDFTransient : FormatWithOptions<VTKHDFTransient, VTK::HDFTransientOpt
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for the vtk-hdf file format with automatic deduction of the flavour.
  *        If the grid for which a writer is constructed is an image grid, it selects the image-grid flavour, otherwise
  *        it selects the flavour for unstructured grids (which requires the respective traits to be specialized).
@@ -366,6 +380,7 @@ namespace Detail {
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Selector for the .pvd file format for a time series.
  *        For more information, see <a href="https://www.paraview.org/Wiki/ParaView/Data_formats#PVD_File_Format">here</a>.
  * \tparam PieceFormat The underlying file format used for each time step.
@@ -378,6 +393,7 @@ struct PVD {
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Closure for selecting the .pvd file format. Takes a VTK-XML format and returns an instance of PVD.
  */
 struct PVDClosure {
@@ -393,6 +409,7 @@ struct PVDClosure {
 
 /*!
  * \ingroup API
+ * \ingroup FileFormats
  * \brief Closure for time series format selection. Takes a sequential format and returns a time series variant.
  */
 struct TimeSeriesClosure {
@@ -1079,6 +1096,8 @@ namespace Formats {
 
 //! \addtogroup API
 //! \{
+//! \addtogroup FormatSelectors
+//! \{
 //! \name File Format Selectors
 //! \{
 
@@ -1095,6 +1114,7 @@ inline constexpr FileFormat::VTKHDF vtk_hdf;
 inline constexpr FileFormat::VTKHDFTransient vtk_hdf_transient;
 
 //! \} name File Format Selectors
+//! \} group FormatSelectors
 //! \} group API
 
 /*!
