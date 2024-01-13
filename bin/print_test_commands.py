@@ -51,6 +51,12 @@ parser.add_argument(
     action="store_true",
     help="Use this flag if you want to build the memcheck target (yields no test command)"
 )
+parser.add_argument(
+    "-l", "--all-targets-list",
+    required=False,
+    default="",
+    help="Path to a file containing all available targets (e.g. created with ' cmake --build build --target help')"
+)
 args = vars(parser.parse_args())
 
 do_build = args["build"]
@@ -65,7 +71,9 @@ if do_build and do_test:
 tests = [n for n in open(args["tests_file"]).read().strip(" \n").split("\n") if n]
 ctest_args = args["ctest_args"]
 is_memcheck = args["memcheck"]
+
 memcheck_test_cmd = f'echo "Nothing to do; Memcheck tests run with the build command."'
+no_tests_msg = f"echo 'Nothing to {'test' if do_test else 'build'}; empty test selection provided...'"
 
 if tests == ["all"]:
     if is_memcheck:
@@ -73,9 +81,17 @@ if tests == ["all"]:
     else:
         print_command(f"ctest {ctest_args}" if do_test else f"make build_tests")
 elif tests == []:
-    print_command(f"echo 'Nothing to {'test' if do_test else 'build'}; empty test selection provided...'")
+    print_command(no_tests_msg)
 else:
     if is_memcheck:
-        print_command(memcheck_test_cmd if do_test else f"make {' '.join(f'{t}_memcheck' for t in tests)}")
+        if do_test:
+            print_command(memcheck_test_cmd)
+        if not args["all_targets_list"]:
+            sys.stderr.write("For memcheck you need to pass a list of all available targets (see help)")
+            sys.exit(1)
+        all_targets = open(args["all_targets_list"]).read()
+        memcheck_tests = [f'{t}_memcheck' for t in tests]
+        memcheck_tests = list(filter(lambda t: t in all_targets, memcheck_tests))
+        print_command(f"make {' '.join(t for t in memcheck_tests)}" if memcheck_tests else no_tests_msg)
     else:
         print_command(f"ctest {ctest_args} -R {make_regex(tests)}" if do_test else f"make {' '.join(tests)}")
