@@ -45,7 +45,14 @@ parser.add_argument(
     required=True,
     help="Name of the file with the list of tests to be run"
 )
+parser.add_argument(
+    "-m", "--memcheck",
+    required=False,
+    action="store_true",
+    help="Use this flag if you want to build the memcheck target (yields no test command)"
+)
 args = vars(parser.parse_args())
+
 do_build = args["build"]
 do_test = args["test"]
 if not do_build and not do_test:
@@ -57,9 +64,18 @@ if do_build and do_test:
 
 tests = [n for n in open(args["tests_file"]).read().strip(" \n").split("\n") if n]
 ctest_args = args["ctest_args"]
+is_memcheck = args["memcheck"]
+memcheck_test_cmd = f'echo "Nothing to do; Memcheck tests run with the build command."'
+
 if tests == ["all"]:
-    print_command(f"ctest {ctest_args}") if do_test else print_command(f"make build_tests")
+    if is_memcheck:
+        print_command(memcheck_test_cmd if do_test else f"make memcheck")
+    else:
+        print_command(f"ctest {ctest_args}" if do_test else f"make build_tests")
 elif tests == []:
-    print_command(f"echo 'Nothing to test...'") if do_test else print_command(f"echo 'Nothing to build...'")
+    print_command(f"echo 'Nothing to {'test' if do_test else 'build'}; empty test selection provided...'")
 else:
-    print_command(f"ctest {ctest_args} -R {make_regex(tests)}") if do_test else print_command(f"make {' '.join(tests)}")
+    if is_memcheck:
+        print_command(memcheck_test_cmd if do_test else f"make {' '.join(f'{t}_memcheck' for t in tests)}")
+    else:
+        print_command(f"ctest {ctest_args} -R {make_regex(tests)}" if do_test else f"make {' '.join(tests)}")

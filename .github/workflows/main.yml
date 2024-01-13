@@ -121,7 +121,7 @@ jobs:
         with:
           submodules: true
 
-      - name: run-valgrind
+      - name: configure
         run: |
           rm -rf build
           cmake -DCMAKE_C_COMPILER=/usr/bin/$DEFAULT_C_COMPILER \
@@ -130,7 +130,19 @@ jobs:
                 -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -B build
-          cd build && make memcheck
+
+      - name: set-git-variables
+        uses: ./.github/actions/set-git-variables
+
+      - name: set-test-commands
+        uses: ./.github/actions/set-test-commands
+        with:
+          build_directory: build
+          source_tree: ${{ env.GFMT_SOURCE_TREE }}
+          target_tree: main
+
+      - name: run-memcheck
+        run: cd build && $(echo "$GFMT_MEMCHECK_CMD")
 
 
   test-full-installation:
