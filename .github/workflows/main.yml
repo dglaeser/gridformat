@@ -66,18 +66,18 @@ jobs:
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -B build | tee gfmt_cmake_log.txt
 
+      - name: set-git-variables
+        uses: ./.github/actions/set-git-variables
+
+      - name: set-test-commands
+        uses: ./.github/actions/set-test-commands
+        with:
+          build_directory: build
+          source_tree: ${{ env.GFMT_SOURCE_TREE }}
+          target_tree: main
+
       - name: check-documentation-code
         run: |
-          if [[ ${{ github.event_name }} == "pull_request" ]]; then
-            GFMT_ORIGIN=${{ github.event.pull_request.head.repo.clone_url }}
-            GFMT_TREE=${{ github.head_ref }}
-          else
-            GFMT_ORIGIN=${{ github.event.repository.clone_url }}
-            GFMT_TREE=$GITHUB_HEAD_REF
-            if [[ -z "$GFMT_TREE" ]]; then
-              GFMT_TREE=$GITHUB_SHA
-            fi
-          fi
           python3 test/test_readme_quick_start.py \
             -r $GFMT_TREE \
             -e "-DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12" \
@@ -89,7 +89,7 @@ jobs:
         run: cmake --build build
 
       - name: build-tests
-        run: pushd build && make build_tests && popd
+        run: pushd build && $(echo "$GFMT_BUILD_CMD") && popd
         shell: bash
 
       - name: test
@@ -98,7 +98,7 @@ jobs:
             echo "Regression-testing sample files only for branch ${{ github.ref_name }}"
             export GRIDFORMAT_REGRESSION_SAMPLES_ONLY=true
           fi
-          pushd build && ctest --output-on-failure && popd
+          pushd build && $(echo "$GFMT_TEST_CMD") && popd
         shell: bash
 
       - name: verify-no-skipped-tests
@@ -121,7 +121,7 @@ jobs:
         with:
           submodules: true
 
-      - name: run-valgrind
+      - name: configure
         run: |
           rm -rf build
           cmake -DCMAKE_C_COMPILER=/usr/bin/$DEFAULT_C_COMPILER \
@@ -130,7 +130,19 @@ jobs:
                 -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -B build
-          cd build && make memcheck
+
+      - name: set-git-variables
+        uses: ./.github/actions/set-git-variables
+
+      - name: set-test-commands
+        uses: ./.github/actions/set-test-commands
+        with:
+          build_directory: build
+          source_tree: ${{ env.GFMT_SOURCE_TREE }}
+          target_tree: main
+
+      - name: run-memcheck
+        run: cd build && $(echo "$GFMT_MEMCHECK_CMD")
 
 
   test-full-installation:

@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2024 Dennis Gläser <dennis.a.glaeser@gmail.com>
+# SPDX-License-Identifier: MIT
+
+name: set-git-variables
+runs:
+  using: composite
+  steps:
+    - name: set-git-variables
+      run: |
+        if [[ ${{ github.event_name }} == "pull_request" ]]; then
+          echo "GFMT_ORIGIN=${{ github.event.pull_request.head.repo.clone_url }}" >> "$GITHUB_ENV"
+          echo "GFMT_TREE=${{ github.head_ref }}" >> "$GITHUB_ENV"
+          echo "GFMT_SOURCE_TREE=origin/${{ github.head_ref }}" >> "$GITHUB_ENV"
+        else
+          echo "GFMT_ORIGIN=${{ github.event.repository.clone_url }}" >> "$GITHUB_ENV"
+          echo "GFMT_TREE=${{ github.head_ref }}" >> "$GITHUB_ENV"
+          if [[ -z "$GFMT_TREE" ]]; then
+            echo "GFMT_TREE=${{ github.sha }}" >> "$GITHUB_ENV"
+          fi
+          echo "GFMT_SOURCE_TREE=${GFMT_TREE}" >> "$GITHUB_ENV"
+        fi
+      shell: bash
