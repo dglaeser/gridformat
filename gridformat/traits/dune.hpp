@@ -24,6 +24,7 @@
 #pragma GCC diagnostic ignored "-Wnull-dereference"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif  // GRIDFORMAT_IGNORE_DUNE_WARNINGS
+#include <dune/common/fvector.hh>
 #include <dune/geometry/type.hh>
 #include <dune/grid/common/gridview.hh>
 #include <dune/grid/common/gridenums.hh>
@@ -34,9 +35,31 @@
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/type_traits.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
+
+
+namespace GridFormat {
+
+// Dune::FieldVector assignment operator cannot be used in constexpr context,
+// so the default value trait implementation does not work. Specialize default value for 1d - 3d.
+
+template<typename T>
+struct DefaultValue<Dune::FieldVector<T, 1>> {
+    static constexpr Dune::FieldVector<T, 1> value{T{0}};
+};
+template<typename T>
+struct DefaultValue<Dune::FieldVector<T, 2>> {
+    static constexpr Dune::FieldVector<T, 2> value{T{0}, T{0}};
+};
+template<typename T>
+struct DefaultValue<Dune::FieldVector<T, 3>> {
+    static constexpr Dune::FieldVector<T, 3> value{T{0}, T{0}, T{0}};
+};
+
+}  // namespace GridFormat
 
 namespace GridFormat::Traits {
 

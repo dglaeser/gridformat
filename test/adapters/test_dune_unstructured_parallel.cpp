@@ -28,6 +28,17 @@ void run_unit_tests(const Grid& grid) {
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;
 
+    "field_vector_default_value"_test = [&] () {
+        expect(eq(GridFormat::default_value<Dune::FieldVector<double, 1>>[0], 0.0));
+
+        expect(eq(GridFormat::default_value<Dune::FieldVector<double, 2>>[0], 0.0));
+        expect(eq(GridFormat::default_value<Dune::FieldVector<double, 2>>[1], 0.0));
+
+        expect(eq(GridFormat::default_value<Dune::FieldVector<double, 3>>[0], 0.0));
+        expect(eq(GridFormat::default_value<Dune::FieldVector<double, 3>>[1], 0.0));
+        expect(eq(GridFormat::default_value<Dune::FieldVector<double, 3>>[2], 0.0));
+    };
+
     "number_of_cells"_test = [&] () {
         expect(eq(
             static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::cells(grid))),
