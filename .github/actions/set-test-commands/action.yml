@@ -24,6 +24,9 @@ runs:
 
             echo "Detecting tests affected by these changes"
             python3 ../bin/detect_affected_tests.py -i _modfiles.out -o ../_affected_tests.txt
+
+            echo "Generating list of all available targets"
+            cmake --build . --target help &> ../all_targets.txt
           popd
         fi
 
@@ -35,7 +38,7 @@ runs:
         echo "Setting test command to ${TEST_CMD}"
         echo "GFMT_TEST_CMD=$TEST_CMD" >> "$GITHUB_ENV"
 
-        MEMCHECK_CMD=$(python3 bin/print_test_commands.py --build -f _affected_tests.txt --memcheck)
+        MEMCHECK_CMD=$(python3 bin/print_test_commands.py --build -f _affected_tests.txt --memcheck --all-targets-list all_targets.txt)
         echo "Setting memcheck command to ${MEMCHECK_CMD}"
         echo "GFMT_MEMCHECK_CMD=$MEMCHECK_CMD" >> "$GITHUB_ENV"
       shell: bash
