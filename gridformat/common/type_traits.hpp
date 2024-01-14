@@ -390,16 +390,17 @@ struct DefaultValue;
 
 template<typename T> requires(is_scalar<T>)
 struct DefaultValue<T> {
-    static constexpr T value{0};
+    static constexpr T get() { return T{0}; }
 };
 
 template<std::ranges::range T> requires(has_static_size<T>)
 struct DefaultValue<T> {
-    static constexpr T value = Detail::make_range<T>(DefaultValue<std::ranges::range_value_t<T>>::value);
+    static constexpr T get() { return Detail::make_range<T>(DefaultValue<std::ranges::range_value_t<T>>::get()); }
 };
 
+// only available if the default value trait provides a constexpr get function
 template<typename T>
-inline constexpr T default_value = DefaultValue<T>::value;
+inline constexpr T default_value = DefaultValue<T>::get();
 
 //! \} group Common
 

@@ -103,5 +103,13 @@ int main() {
         std::variant<int>
     >);
 
+    static_assert(GridFormat::default_value<double> == 0.0);
+    static_assert(GridFormat::default_value<std::array<double, 1>>[0] == 0.0);
+    static_assert(GridFormat::default_value<std::array<double, 2>>[1] == 0.0);
+
+    static_assert(GridFormat::DefaultValue<double>::get() == 0.0);
+    static_assert(GridFormat::DefaultValue<std::array<double, 1>>::get()[0] == 0.0);
+    static_assert(GridFormat::DefaultValue<std::array<double, 2>>::get()[1] == 0.0);
+
     return 0;
 }
