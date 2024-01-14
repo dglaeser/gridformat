@@ -36,6 +36,9 @@ namespace GridFormat {
  */
 class Field {
  public:
+    //! Can be used as a flag to disable resizing upon export (e.g. to write to the beginning of larger range)
+    static constexpr struct DisableResize {} no_resize{};
+
     virtual ~Field() = default;
 
     //! Return the layout of this field
@@ -70,24 +73,16 @@ class Field {
         });
     }
 
-    //! Export the field values into the provided range (requires the range to be large enough)
+    //! Export the field values into the provided range, resize if necessary, and return it
     template<std::ranges::range R> requires(Concepts::Scalar<MDRangeValueType<R>>)
-    void export_to(R&& output_range) const {
-        const auto serialization = serialized();
-        const auto my_layout = layout();
-        const auto input_range_layout = get_md_layout(output_range);
+    decltype(auto) export_to(R&& output_range) const {
+        return _export_to<true>(std::forward<R>(output_range));
+    }
 
-        if (input_range_layout.number_of_entries() < my_layout.number_of_entries())
-            throw SizeError(
-                std::string{"Cannot fill the given range. Too few entries. "} +
-                "Number of field entries: '" + std::to_string(my_layout.number_of_entries()) + "'; " +
-                "Number of range entries: '" + std::to_string(input_range_layout.number_of_entries()) + "'"
-            );
-
-        std::size_t offset = 0;
-        visit_field_values([&] <typename T> (std::span<const T> data) {
-            _export_to(output_range, data, offset);
-        });
+    //! Export the field values into the provided range without resizing (given range must be large enough)
+    template<std::ranges::range R> requires(Concepts::Scalar<MDRangeValueType<R>>)
+    decltype(auto) export_to(R&& output_range, DisableResize) const {
+        return _export_to<false>(std::forward<R>(output_range));
     }
 
     //! Export the field as a scalar (works only if the field is a scalar field)
@@ -115,19 +110,7 @@ class Field {
         requires(Concepts::StaticallySizedMDRange<std::ranges::range_value_t<R>> or
                  Concepts::Scalar<std::ranges::range_value_t<R>>)
     R export_to() const {
-        const auto num_scalars = layout().number_of_entries();
-        const auto num_sub_scalars = get_md_layout<std::ranges::range_value_t<R>>().number_of_entries();
-        if (num_scalars%num_sub_scalars != 0)
-            throw TypeError(
-                "Cannot export the field into the given range type. "
-                "Number of entries in the field is not divisible by the "
-                "number of entries in the value_type of the provided range."
-            );
-
-        R range;
-        range.resize(num_scalars/num_sub_scalars, DefaultValue<std::ranges::range_value_t<R>>::get());
-        export_to(range);
-        return range;
+        return export_to(R{});
     }
 
  private:
@@ -136,6 +119,43 @@ class Field {
     virtual MDLayout _layout() const = 0;
     virtual DynamicPrecision _precision() const = 0;
     virtual Serialization _serialized() const = 0;
+
+    //! Export the field values into the provided range and return it
+    template<bool enable_resize, std::ranges::range R> requires(Concepts::Scalar<MDRangeValueType<R>>)
+    decltype(auto) _export_to(R&& output_range) const {
+        const auto my_layout = layout();
+
+        if constexpr (Concepts::ResizableMDRange<R> && enable_resize) {
+            const auto num_scalars = my_layout.number_of_entries();
+            const auto num_sub_scalars = get_md_layout<std::ranges::range_value_t<R>>().number_of_entries();
+            if (num_scalars%num_sub_scalars != 0)
+                throw TypeError(
+                    "Cannot export the field into the given range type. "
+                    "Number of entries in the field is not divisible by the "
+                    "number of entries in the value_type of the provided range."
+                );
+
+            output_range.resize(
+                num_scalars/num_sub_scalars,
+                DefaultValue<std::ranges::range_value_t<R>>::get()
+            );
+        } else {
+            const auto output_range_layout = get_md_layout(output_range);
+            if (output_range_layout.number_of_entries() < my_layout.number_of_entries())
+                throw SizeError(
+                    std::string{"Cannot fill the given range. Too few entries. "} +
+                    "Number of field entries: '" + std::to_string(my_layout.number_of_entries()) + "'; " +
+                    "Number of range entries: '" + std::to_string(output_range_layout.number_of_entries()) + "'"
+                );
+        }
+
+        std::size_t offset = 0;
+        visit_field_values([&] <typename T> (std::span<const T> data) {
+            _export_to(output_range, data, offset);
+        });
+
+        return std::forward<R>(output_range);
+    }
 
     template<std::ranges::range R, Concepts::Scalar T>
     void _export_to(R& range,

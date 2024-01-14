@@ -67,17 +67,43 @@ int main() {
         expect(throws<GridFormat::SizeError>([&] () { field->serialized(); }));
     };
 
+    "field_export_return_value"_test = [] () {
+        std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
+        std::vector<int> exported(4);
+        decltype(auto) from_lvalue = field->export_to(exported);
+        decltype(auto) from_rvalue = field->export_to(std::vector<int>{});
+        expect(std::ranges::equal(from_lvalue, std::vector{1, 2, 3, 4}));
+        expect(std::ranges::equal(from_rvalue, std::vector{1, 2, 3, 4}));
+        static_assert(std::is_same_v<decltype(from_lvalue), std::vector<int>&>);
+        static_assert(std::is_same_v<decltype(from_rvalue), std::vector<int>&&>);
+    };
+
+    "field_export_to_vector"_test = [] () {
+        std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
+        using V = std::vector<int>;
+        std::vector<V> exported{};
+        exported.push_back(field->template export_to<V>());
+        exported.push_back(field->export_to(V{}));
+        { V r(4); field->export_to(r); exported.push_back(r); }
+        for (const auto& ex : exported) {
+            expect(eq(ex.size(), std::size_t{4}));
+            expect(std::ranges::equal(ex, std::vector{1, 2, 3, 4}));
+        }
+    };
+
     "field_export_throws_when_size_does_not_match"_test = [] () {
         std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
         auto values = field->template export_to<std::vector<int>>();
         expect(std::ranges::equal(values, std::vector{1, 2, 3, 4}));
 
         values.resize(values.size() - 1);
-        expect(throws<GridFormat::SizeError>([&] () { field->export_to(values); }));
+        expect(throws<GridFormat::SizeError>([&] () {
+            field->export_to(values, GridFormat::Field::no_resize);
+        }));
 
         values.resize(7);
         std::ranges::fill(values, 42);
-        field->export_to(values);
+        field->export_to(values, GridFormat::Field::no_resize);
         expect(std::ranges::equal(values | std::views::take(4), std::vector{1, 2, 3, 4}));
         expect(std::ranges::equal(values | std::views::drop(4), std::vector{42, 42, 42}));
     };

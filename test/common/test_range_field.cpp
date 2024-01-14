@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <ranges>
+#include <tuple>
 
 #include <gridformat/common/range_field.hpp>
 #include <gridformat/common/exceptions.hpp>
@@ -90,15 +91,24 @@ int main() {
             std::vector<int>{{0, 1, 2, 3, 4, 5}}
         };
 
-        const std::vector<double> doublevec = field.template export_to<std::vector<double>>();
-        expect(std::ranges::equal(doublevec, std::vector<double>{0.0, 1.0, 2.0, 3.0, 4.0, 5.0}));
+        using DoubleVec = std::vector<double>;
+        using ArrayVec = std::vector<std::array<double, 3>>;
+        std::vector<std::tuple<DoubleVec, ArrayVec>> exports{
+            std::make_tuple(field.template export_to<DoubleVec>(), field.template export_to<ArrayVec>()),
+            std::make_tuple(field.export_to(DoubleVec{}), field.export_to(ArrayVec{})),
+        };
+        for (const auto& [double_vec, array_vec] : exports) {
+            expect(std::ranges::equal(double_vec, std::vector<double>{0.0, 1.0, 2.0, 3.0, 4.0, 5.0}));
 
-        const std::vector<std::array<double, 3>> arrvec = field.template export_to<std::vector<std::array<double, 3>>>();
-        expect(std::ranges::equal(arrvec[0], std::vector<double>{0.0, 1.0, 2.0}));
-        expect(std::ranges::equal(arrvec[1], std::vector<double>{3.0, 4.0, 5.0}));
+            expect(std::ranges::equal(array_vec[0], std::vector<double>{0.0, 1.0, 2.0}));
+            expect(std::ranges::equal(array_vec[1], std::vector<double>{3.0, 4.0, 5.0}));
+        }
 
         expect(throws<GridFormat::TypeError>([&] () {
             const auto fail = field.template export_to<std::vector<std::array<double, 4>>>();
+        }));
+        expect(throws<GridFormat::TypeError>([&] () {
+            const auto fail = field.export_to(std::vector<std::array<double, 4>>{});
         }));
     };
 
