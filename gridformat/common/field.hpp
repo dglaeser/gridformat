@@ -125,7 +125,7 @@ class Field {
             );
 
         R range;
-        range.resize(num_scalars/num_sub_scalars, default_value<std::ranges::range_value_t<R>>);
+        range.resize(num_scalars/num_sub_scalars, DefaultValue<std::ranges::range_value_t<R>>::get());
         export_to(range);
         return range;
     }
