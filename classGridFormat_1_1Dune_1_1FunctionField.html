@@ -166,12 +166,18 @@ template&lt;typename Visitor &gt; </td></tr>
 <tr class="memitem:a87dc4fe247d1dd5c3a4f7cb717eaba15 inherit pub_methods_classGridFormat_1_1Field"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit_field_values</b> (Visitor &amp;&amp;visitor) const</td></tr>
 <tr class="memdesc:a87dc4fe247d1dd5c3a4f7cb717eaba15 inherit pub_methods_classGridFormat_1_1Field"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visit the scalar values of the field in the form of an std::span. <br /></td></tr>
 <tr class="separator:a87dc4fe247d1dd5c3a4f7cb717eaba15 inherit pub_methods_classGridFormat_1_1Field"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4485b09d77687a03027c66be71a2931e inherit pub_methods_classGridFormat_1_1Field"><td class="memTemplParams" colspan="2"><a id="a4485b09d77687a03027c66be71a2931e" name="a4485b09d77687a03027c66be71a2931e"></a>
+<tr class="memitem:a2b34eccd6c8428dfe4d6ddb1cb43d6a9 inherit pub_methods_classGridFormat_1_1Field"><td class="memTemplParams" colspan="2"><a id="a2b34eccd6c8428dfe4d6ddb1cb43d6a9" name="a2b34eccd6c8428dfe4d6ddb1cb43d6a9"></a>
 template&lt;std::ranges::range R&gt; <br />
 requires (Concepts::Scalar&lt;MDRangeValueType&lt;R&gt;&gt;)</td></tr>
-<tr class="memitem:a4485b09d77687a03027c66be71a2931e inherit pub_methods_classGridFormat_1_1Field"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>export_to</b> (R &amp;&amp;output_range) const</td></tr>
-<tr class="memdesc:a4485b09d77687a03027c66be71a2931e inherit pub_methods_classGridFormat_1_1Field"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export the field values into the provided range (requires the range to be large enough) <br /></td></tr>
-<tr class="separator:a4485b09d77687a03027c66be71a2931e inherit pub_methods_classGridFormat_1_1Field"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b34eccd6c8428dfe4d6ddb1cb43d6a9 inherit pub_methods_classGridFormat_1_1Field"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>export_to</b> (R &amp;&amp;output_range) const</td></tr>
+<tr class="memdesc:a2b34eccd6c8428dfe4d6ddb1cb43d6a9 inherit pub_methods_classGridFormat_1_1Field"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export the field values into the provided range, resize if necessary, and return it. <br /></td></tr>
+<tr class="separator:a2b34eccd6c8428dfe4d6ddb1cb43d6a9 inherit pub_methods_classGridFormat_1_1Field"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bdc25262af605a6ef04b2c929d73e97 inherit pub_methods_classGridFormat_1_1Field"><td class="memTemplParams" colspan="2"><a id="a8bdc25262af605a6ef04b2c929d73e97" name="a8bdc25262af605a6ef04b2c929d73e97"></a>
+template&lt;std::ranges::range R&gt; <br />
+requires (Concepts::Scalar&lt;MDRangeValueType&lt;R&gt;&gt;)</td></tr>
+<tr class="memitem:a8bdc25262af605a6ef04b2c929d73e97 inherit pub_methods_classGridFormat_1_1Field"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>export_to</b> (R &amp;&amp;output_range, DisableResize) const</td></tr>
+<tr class="memdesc:a8bdc25262af605a6ef04b2c929d73e97 inherit pub_methods_classGridFormat_1_1Field"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export the field values into the provided range without resizing (given range must be large enough) <br /></td></tr>
+<tr class="separator:a8bdc25262af605a6ef04b2c929d73e97 inherit pub_methods_classGridFormat_1_1Field"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87054cfb844729f0a06894a3000cf917 inherit pub_methods_classGridFormat_1_1Field"><td class="memTemplParams" colspan="2"><a id="a87054cfb844729f0a06894a3000cf917" name="a87054cfb844729f0a06894a3000cf917"></a>
 template&lt;Concepts::Scalar S&gt; </td></tr>
 <tr class="memitem:a87054cfb844729f0a06894a3000cf917 inherit pub_methods_classGridFormat_1_1Field"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>export_to</b> (S &amp;out) const</td></tr>
@@ -188,6 +194,13 @@ requires (Concepts::StaticallySizedMDRange&lt;std::ranges::range_value_t&lt;R&gt
 <tr class="memitem:a71fa3bbf16dea09776082de526da8cef inherit pub_methods_classGridFormat_1_1Field"><td class="memTemplItemLeft" align="right" valign="top">R&#160;</td><td class="memTemplItemRight" valign="bottom"><b>export_to</b> () const</td></tr>
 <tr class="memdesc:a71fa3bbf16dea09776082de526da8cef inherit pub_methods_classGridFormat_1_1Field"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export the field into a resizable range (e.g. std::vector) <br /></td></tr>
 <tr class="separator:a71fa3bbf16dea09776082de526da8cef inherit pub_methods_classGridFormat_1_1Field"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classGridFormat_1_1Field"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classGridFormat_1_1Field')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="classGridFormat_1_1Field.html">GridFormat::Field</a></td></tr>
+<tr class="memitem:a3cd6afcfb19e597bbf032a1862185c6b inherit pub_static_attribs_classGridFormat_1_1Field"><td class="memItemLeft" align="right" valign="top"><a id="a3cd6afcfb19e597bbf032a1862185c6b" name="a3cd6afcfb19e597bbf032a1862185c6b"></a>
+static constexpr struct GridFormat::Field::DisableResize&#160;</td><td class="memItemRight" valign="bottom"><b>no_resize</b></td></tr>
+<tr class="separator:a3cd6afcfb19e597bbf032a1862185c6b inherit pub_static_attribs_classGridFormat_1_1Field"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/__w/gridformat/gridformat/gridformat/traits/<a class="el" href="dune_8hpp_source.html">dune.hpp</a></li>
