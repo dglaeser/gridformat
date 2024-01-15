@@ -97,20 +97,27 @@ def has_cmake_file(modified_files: set[str]) -> bool:
 
 
 def find_affected_tests(modified_files: set[str], verbosity: int = 0) -> list[str]:
-    result = [
-        test_name
-        for test_name in find_all_test_names()
-        if is_affected(test_name, modified_files, verbosity=verbosity)
-    ]
+    affected = []
+    discarded = []
+    for test_name in find_all_test_names():
+        if is_affected(test_name, modified_files, verbosity=verbosity):
+            affected.append(test_name)
+        else:
+            discarded.append(test_name)
 
     if verbosity > 0:
-        if result:
-            print("Affected tests:")
-            print("\n".join(f" - {t}" for t in result))
+        if affected:
+            print(f"Affected tests ({len(affected)}):")
+            print("\n".join(f" - {t}" for t in affected))
         else:
             print("No affected tests")
+        if discarded:
+            print(f"Discarded tests ({len(discarded)}):")
+            print("\n".join(f" - {t}" for t in discarded))
+        else:
+            print("No discarded tests")
 
-    return result
+    return affected
 
 
 def write_output_file(affected_tests: list[str], out_file: str) -> None:
