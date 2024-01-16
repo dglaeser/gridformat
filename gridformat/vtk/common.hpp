@@ -453,7 +453,7 @@ namespace CommonDetail {
         } else if (grid_dim == 2) {
             std::ranges::for_each(index_range, [&] (const auto& md_index) {
                 const auto p0 = point_mapper.map(md_index);
-                corners = {p0, p0 + 1, p0 + x_offset, p0 + 1 + x_offset};
+                corners = {p0, p0 + 1, p0 + x_offset + 1, p0 + x_offset};
                 visitor(grid_dim_to_cell_type[grid_dim], corners);
             });
         } else {
