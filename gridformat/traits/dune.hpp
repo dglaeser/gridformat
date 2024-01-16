@@ -10,6 +10,8 @@
 
 #include <ranges>
 #include <cassert>
+#include <algorithm>
+#include <tuple>
 // dune seems to not explicitly include this but uses std::int64_t.
 // With gcc-13 this leads to an error, maybe before gcc-13 the header
 // was included by some other standard library header...
@@ -24,9 +26,11 @@
 #pragma GCC diagnostic ignored "-Wnull-dereference"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif  // GRIDFORMAT_IGNORE_DUNE_WARNINGS
+#include <dune/common/fvector.hh>
 #include <dune/geometry/type.hh>
 #include <dune/grid/common/gridview.hh>
 #include <dune/grid/common/gridenums.hh>
+#include <dune/grid/common/gridfactory.hh>
 #include <dune/grid/yaspgrid.hh>
 #ifdef GRIDFORMAT_IGNORE_DUNE_WARNINGS
 #pragma GCC diagnostic pop
@@ -998,4 +1002,92 @@ class LagrangePolynomialGrid {
 #endif  // DOXYGEN
 
 #endif  // GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS
+
+namespace GridFormat::Dune {
+
+inline constexpr ::Dune::GeometryType to_dune_geometry_type(const CellType& ct) {
+    namespace DGT = ::Dune::GeometryTypes;
+    switch (ct) {
+        case CellType::vertex: return DGT::vertex;
+        case CellType::segment: return DGT::line;
+        case CellType::triangle: return DGT::triangle;
+        case CellType::pixel: return DGT::quadrilateral;
+        case CellType::quadrilateral: return DGT::quadrilateral;
+        case CellType::tetrahedron: return DGT::tetrahedron;
+        case CellType::hexahedron: return DGT::hexahedron;
+        case CellType::voxel: return DGT::hexahedron;
+        case CellType::polygon: throw NotImplemented("No conversion from polygon to Dune::GeometryType");
+        case CellType::lagrange_segment: throw NotImplemented("Cannot map higher-order cells to Dune::GeometryType");
+        case CellType::lagrange_triangle: throw NotImplemented("Cannot map higher-order cells to Dune::GeometryType");
+        case CellType::lagrange_quadrilateral: throw NotImplemented("Cannot map higher-order cells to Dune::GeometryType");
+        case CellType::lagrange_tetrahedron: throw NotImplemented("Cannot map higher-order cells to Dune::GeometryType");
+        case CellType::lagrange_hexahedron: throw NotImplemented("Cannot map higher-order cells to Dune::GeometryType");
+        default: throw NotImplemented("Unknown cell type.");
+    }
+}
+
+template<std::integral TargetType, std::integral T>
+auto to_dune(const CellType& ct, const std::vector<T>& corners) {
+    auto gt = to_dune_geometry_type(ct);
+    std::vector<TargetType> reordered(corners.size());
+
+    // voxels/pixels map to hexes/quads, but reordering has to be skipped
+    if (ct != CellType::pixel && ct != CellType::voxel) {
+        std::ranges::copy(
+            std::views::iota(std::size_t{0}, corners.size())
+            | std::views::transform([&] (std::size_t i) {
+                return corners[GridFormat::Traits::DuneDetail::map_corner_index(gt, i)];
+            }),
+            reordered.begin()
+        );
+    } else {
+        std::ranges::copy(corners, reordered.begin());
+    }
+
+    return std::make_tuple(std::move(gt), std::move(reordered));
+}
+
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Adapter around a Dune::GridFactory to be compatible with GridFormat::Concepts::GridFactory.
+ *        Can be used to export a grid from a reader directly into a Dune::GridFactory. For instance:
+ *        \code{.cpp}
+ *            GridFormat::Reader reader; reader.open(filename);
+ *            Dune::GridFactory<DuneGrid> factory;
+ *            {
+ *                GridFormat::Dune::GridFactoryAdapter adapter{factory};
+ *                reader.export_grid(adapter);
+ *            }
+ *            // ... use dune grid factory
+ *        \endcode
+ */
+template<typename Grid>
+class GridFactoryAdapter {
+ public:
+    static constexpr int space_dim = Grid::dimensionworld;
+    using ctype = typename Grid::ctype;
+    using DuneFactory = ::Dune::GridFactory<Grid>;
+
+    GridFactoryAdapter(DuneFactory& factory)
+    : _factory{factory}
+    {}
+
+    template<std::size_t _space_dim>
+    void insert_point(const std::array<ctype, _space_dim>& point) {
+        ::Dune::FieldVector<ctype, space_dim> p;
+        std::copy_n(point.begin(), space_dim, p.begin());
+        _factory.insertVertex(p);
+    }
+
+    void insert_cell(const CellType& ct, const std::vector<std::size_t>& corners) {
+        const auto [dune_gt, dune_corners] = to_dune<unsigned int>(ct, corners);
+        _factory.insertElement(dune_gt, dune_corners);
+    }
+
+ private:
+    DuneFactory& _factory;
+};
+
+}  // namespace GridFormat::Dune
+
 #endif  // GRIDFORMAT_TRAITS_DUNE_HPP_
