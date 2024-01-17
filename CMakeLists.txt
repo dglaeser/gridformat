@@ -9,7 +9,7 @@ else()
   set(GRIDFORMAT_SUBPROJECT ON)
 endif()
 
-project(gridformat VERSION 0.1.3)
+project(gridformat VERSION 0.2.0)
 set(GRIDFORMAT_NAMESPACE "gridformat")
 
 include(GNUInstallDirs)
