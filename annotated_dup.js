@@ -22,6 +22,7 @@ var annotated_dup =
           [ "GridView< LagrangePolynomialGrid< GV > >", "structGridFormat_1_1Dune_1_1Traits_1_1GridView_3_01LagrangePolynomialGrid_3_01GV_01_4_01_4.html", null ]
         ] ],
         [ "FunctionField", "classGridFormat_1_1Dune_1_1FunctionField.html", null ],
+        [ "GridFactoryAdapter", "classGridFormat_1_1Dune_1_1GridFactoryAdapter.html", null ],
         [ "LagrangePolynomialGrid", "classGridFormat_1_1Dune_1_1LagrangePolynomialGrid.html", null ]
       ] ],
       [ "Encoding", null, [

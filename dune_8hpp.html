@@ -124,16 +124,19 @@ $(document).ready(function(){initNavTree('dune_8hpp.html',''); initResizable(); 
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;ranges&gt;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;tuple&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;dune/common/fvector.hh&gt;</code><br />
 <code>#include &lt;dune/geometry/type.hh&gt;</code><br />
 <code>#include &lt;dune/grid/common/gridview.hh&gt;</code><br />
 <code>#include &lt;dune/grid/common/gridenums.hh&gt;</code><br />
+<code>#include &lt;dune/grid/common/gridfactory.hh&gt;</code><br />
 <code>#include &lt;dune/grid/yaspgrid.hh&gt;</code><br />
 <code>#include &lt;gridformat/common/ranges.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/exceptions.hpp&gt;</code><br />
 <code>#include &lt;gridformat/grid/cell_type.hpp&gt;</code><br />
 <code>#include &lt;gridformat/grid/traits.hpp&gt;</code><br />
-<code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;iterator&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
@@ -209,6 +212,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Dune_1_1FunctionField.html">GridFormat::Dune::FunctionField&lt; _Function, Grid, T &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implements the field interface for a Dune::Function defined on a (wrapped) Dune::GridView.  <a href="classGridFormat_1_1Dune_1_1FunctionField.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1Dune_1_1GridFactoryAdapter.html">GridFormat::Dune::GridFactoryAdapter&lt; Grid &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapter around a Dune::GridFactory to be compatible with <a class="el" href="conceptGridFormat_1_1Concepts_1_1GridFactory.html" title="Concept for grid factories, to allow for convenient creation of grids from grid files.">GridFormat::Concepts::GridFactory</a>. Can be used to export a grid from a reader directly into a Dune::GridFactory. For instance:  <a href="classGridFormat_1_1Dune_1_1GridFactoryAdapter.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
 Concepts</h2></td></tr>
@@ -243,6 +249,13 @@ requires (!std::is_lvalue_reference_v&lt;F&gt;)</td></tr>
 <tr class="memitem:ga6c031ef0cb2449e5fdb4503570915834"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__PredefinedTraits.html#ga6c031ef0cb2449e5fdb4503570915834">GridFormat::Dune::set_cell_function</a> (Function &amp;&amp;f, Writer &amp;writer, const std::string &amp;name, const Precision&lt; T &gt; &amp;prec)</td></tr>
 <tr class="memdesc:ga6c031ef0cb2449e5fdb4503570915834"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert the given Dune::Function to the writer as cell field with the given precision.  <br /></td></tr>
 <tr class="separator:ga6c031ef0cb2449e5fdb4503570915834"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ec15151ee071fb41d41a9e5a043a255"><td class="memItemLeft" align="right" valign="top"><a id="a3ec15151ee071fb41d41a9e5a043a255" name="a3ec15151ee071fb41d41a9e5a043a255"></a>
+constexpr ::Dune::GeometryType&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::Dune::to_dune_geometry_type</b> (const CellType &amp;ct)</td></tr>
+<tr class="separator:a3ec15151ee071fb41d41a9e5a043a255"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb73e185f20496112a278251ebd23ec5"><td class="memTemplParams" colspan="2"><a id="acb73e185f20496112a278251ebd23ec5" name="acb73e185f20496112a278251ebd23ec5"></a>
+template&lt;std::integral TargetType, std::integral T&gt; </td></tr>
+<tr class="memitem:acb73e185f20496112a278251ebd23ec5"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::Dune::to_dune</b> (const CellType &amp;ct, const std::vector&lt; T &gt; &amp;corners)</td></tr>
+<tr class="separator:acb73e185f20496112a278251ebd23ec5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

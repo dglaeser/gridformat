@@ -149,6 +149,7 @@ var hierarchy =
     [ "GridFormat::FileFormat::FormatWithOptions< VTR, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", null ],
     [ "GridFormat::FileFormat::FormatWithOptions< VTS, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", null ],
     [ "GridFormat::FileFormat::FormatWithOptions< VTU, VTK::XMLOptions >", "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html", null ],
+    [ "GridFormat::Dune::GridFactoryAdapter< Grid >", "classGridFormat_1_1Dune_1_1GridFactoryAdapter.html", null ],
     [ "GridFormat::GridReader", "classGridFormat_1_1GridReader.html", [
       [ "GridFormat::PVDReader< C >", "classGridFormat_1_1PVDReader.html", null ],
       [ "GridFormat::Reader", "classGridFormat_1_1Reader.html", null ],

@@ -1,8 +1,9 @@
 var NAVTREEINDEX1 =
 {
+"hierarchy.html":[6,2],
 "image__grid_8hpp.html":[4,4,0],
-"index.html":[],
 "index.html":[0],
+"index.html":[],
 "index.html#caveats":[0,5],
 "index.html#commandline-interface":[0,2],
 "index.html#compatibility-with-userdefined-grids":[0,3],
@@ -17,8 +18,8 @@ var NAVTREEINDEX1 =
 "index.html#quick-start":[0,0],
 "lz4_8hpp.html":[4,6,1],
 "lz4_8hpp.html":[4,2,3],
-"lzma_8hpp.html":[4,2,4],
 "lzma_8hpp.html":[4,6,2],
+"lzma_8hpp.html":[4,2,4],
 "mfem_8hpp.html":[4,5,4],
 "modules.html":[4],
 "pages.html":[],
@@ -60,10 +61,10 @@ var NAVTREEINDEX1 =
 "structGridFormat_1_1Encoding_1_1Base64.html#a40cd9b8fb1e7e574666a74c3b36493e7":[4,1,13,1],
 "structGridFormat_1_1Encoding_1_1Base64.html#acf09995d558e20f7b94e23781d447f5a":[4,1,13,0],
 "structGridFormat_1_1Encoding_1_1RawBinary.html":[4,1,17],
-"structGridFormat_1_1FileFormat_1_1Any.html":[4,0,0,0],
 "structGridFormat_1_1FileFormat_1_1Any.html":[4,0,5],
-"structGridFormat_1_1FileFormat_1_1AnyTimeSeries.html":[4,0,6],
+"structGridFormat_1_1FileFormat_1_1Any.html":[4,0,0,0],
 "structGridFormat_1_1FileFormat_1_1AnyTimeSeries.html":[4,0,0,1],
+"structGridFormat_1_1FileFormat_1_1AnyTimeSeries.html":[4,0,6],
 "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html":[6,0,0,4,2],
 "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html#a553ffa225c0f5f79973787a9a8fc50d5":[6,0,0,4,2,1],
 "structGridFormat_1_1FileFormat_1_1FormatWithOptions.html#a992f4d97822f3bd87129d0fb7c4d4fda":[6,0,0,4,2,0],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "structGridFormat_1_1WriterOptions.html#a7e206dfd8f927c7ad1ed379b0430cb89":[4,4,16,0],
 "structGridFormat_1_1WriterOptions.html#a95f072273a80a5eb26b56ac708a710c2":[4,4,16,1],
 "vti__reader_8hpp.html":[4,3,25],
-"vti__writer_8hpp.html":[4,3,26],
-"vtk_2common_8hpp.html":[4,3,2]
+"vti__writer_8hpp.html":[4,3,26]
 };
