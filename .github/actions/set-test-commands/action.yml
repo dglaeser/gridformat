@@ -14,7 +14,8 @@ runs:
   steps:
     - name: set-test-commands
       run: |
-        if [[ ${{ github.ref_name }} == "main" ]]; then
+        if [[ ${{ github.ref_name }} == "main" || \
+            ( ${{ github.ref_type }} == "tag" && ${{ github.ref_name }} =~ v[0-9]\.[0-9]\.[0-9]$ )]]; then
           echo "Using 'all' target on main branch (i.e. all tests are built & run)"
           echo "all" > _affected_tests.txt
         else
