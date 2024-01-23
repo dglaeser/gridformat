@@ -43,12 +43,12 @@ jobs:
 
     steps:
       - name: checkout-repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: check-reuse-compliance
-        run: python3 -m pip install reuse && reuse lint
+        uses: fsfe/reuse-action@v2
 
       - name: Check CITATION.cff validity
         uses: citation-file-format/cffconvert-github-action@2.0.0
