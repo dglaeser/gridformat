@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: 2024 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: MIT
+
+name: performance-checks
+
+on:
+  pull_request:
+    branches:
+    - main
+    - 'releases/**'
+
+env:
+  OMPI_ALLOW_RUN_AS_ROOT: 1
+  OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
+
+jobs:
+  run-benchmarks:
+    runs-on: ubuntu-22.04
+    container: dglaeser/gridformat-action-images:full
+
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: set-git-variables
+        uses: ./.github/actions/set-git-variables
+
+      - name: run-benchmarks-head
+        run: |
+          cd benchmark
+          rm -rf build
+          cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
+                -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
+                -DGRIDFORMAT_FETCH_TREE="$GFMT_TREE" \
+                -DGRIDFORMAT_ORIGIN="$GFMT_ORIGIN" \
+                -B build
+          cd build && python3 ../run_all_benchmarks.py -o ../benchmark_results_head
+
+      - name: run-benchmarks-target
+        run: |
+          cd benchmark
+          rm -rf build
+          cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
+                -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
+                -DGRIDFORMAT_FETCH_TREE="${{ github.base_ref }}" \
+                -DGRIDFORMAT_ORIGIN="${{ github.event.pull_request.base.repo.clone_url }}" \
+                -B build
+          cd build && python3 ../run_all_benchmarks.py -o ../benchmark_results_target
+
+      - name: compare-benchmark-results
+        run: |
+          cd benchmark
+          python3 check_deviations.py -f benchmark_results_head -r benchmark_results_target
