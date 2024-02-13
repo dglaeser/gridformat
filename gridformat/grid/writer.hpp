@@ -303,6 +303,12 @@ template<typename Grid>
 class GridWriter : public GridWriterBase<Grid> {
  public:
     virtual ~GridWriter() = default;
+
+    GridWriter(GridWriter&&) = default;
+    GridWriter(const GridWriter&) = delete;
+    GridWriter& operator=(GridWriter&&) = default;
+    GridWriter& operator=(const GridWriter&) = delete;
+
     explicit GridWriter(const Grid& grid, std::string extension, std::optional<WriterOptions> opts)
     : GridWriterBase<Grid>(grid, std::move(opts))
     , _extension(std::move(extension))
@@ -338,6 +344,12 @@ template<typename Grid>
 class TimeSeriesGridWriter : public GridWriterBase<Grid> {
  public:
     virtual ~TimeSeriesGridWriter() = default;
+
+    TimeSeriesGridWriter(TimeSeriesGridWriter&&) = default;
+    TimeSeriesGridWriter(const TimeSeriesGridWriter&) = delete;
+    TimeSeriesGridWriter& operator=(TimeSeriesGridWriter&&) = default;
+    TimeSeriesGridWriter& operator=(const TimeSeriesGridWriter&) = delete;
+
     explicit TimeSeriesGridWriter(const Grid& grid, std::optional<WriterOptions> opts)
     : GridWriterBase<Grid>(grid, std::move(opts))
     {}

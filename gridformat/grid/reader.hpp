@@ -60,6 +60,12 @@ class GridReader {
     };
 
     GridReader() = default;
+
+    GridReader(GridReader&&) = default;
+    GridReader(const GridReader&) = delete;
+    GridReader& operator=(GridReader&&) = default;
+    GridReader& operator=(const GridReader&) = delete;
+
     explicit GridReader(const std::string& filename) { open(filename); }
     virtual ~GridReader() = default;
 
