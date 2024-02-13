@@ -41,6 +41,12 @@ class Field {
 
     virtual ~Field() = default;
 
+    Field() = default;
+    Field(Field&&) = default;
+    Field(const Field&) = delete;
+    Field& operator=(Field&&) = default;
+    Field& operator=(const Field&) = delete;
+
     //! Return the layout of this field
     MDLayout layout() const {
         return _layout();
