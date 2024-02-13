@@ -49,6 +49,13 @@ namespace GridFormat::VTK {
 template<std::derived_from<GridReader> PieceReader>
 class PXMLReaderBase : public GridReader {
  public:
+    virtual ~PXMLReaderBase() = default;
+
+    PXMLReaderBase(PXMLReaderBase&&) = default;
+    PXMLReaderBase(const PXMLReaderBase&) = delete;
+    PXMLReaderBase& operator=(PXMLReaderBase&&) = default;
+    PXMLReaderBase& operator=(const PXMLReaderBase&) = delete;
+
     PXMLReaderBase(std::string vtk_grid_type)
     : _vtk_grid_type{std::move(vtk_grid_type)}
     {}
