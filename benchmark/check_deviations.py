@@ -40,7 +40,7 @@ def compare(result_file: str, reference_file: str, tolerance: float) -> int:
             benchmark,
             _as_success(rel_diff) if passed else _as_error(rel_diff)
         ))
-    return 0
+    return int(not passed)
 
 
 parser = argparse.ArgumentParser()
