@@ -27,33 +27,15 @@ jobs:
       - name: set-git-variables
         uses: ./.github/actions/set-git-variables
 
-      - name: run-benchmarks-head
+      - name: run-performance-check
         run: |
-          cd benchmark
-          rm -rf build
-          cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
-                -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
-                -DGRIDFORMAT_FETCH_TREE="$GFMT_TREE" \
-                -DGRIDFORMAT_ORIGIN="$GFMT_ORIGIN" \
-                -B build
-          cd build && python3 ../run_all_benchmarks.py -o ../benchmark_results_head
-
-      - name: run-benchmarks-target
-        run: |
-          cd benchmark
-          rm -rf build
-          cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
-                -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
-                -DGRIDFORMAT_FETCH_TREE="${{ github.base_ref }}" \
-                -DGRIDFORMAT_ORIGIN="${{ github.event.pull_request.base.repo.clone_url }}" \
-                -B build
-          cd build && python3 ../run_all_benchmarks.py -o ../benchmark_results_target
-
-      - name: compare-benchmark-results
-        run: |
-          cd benchmark
-          python3 check_deviations.py -f benchmark_results_head -r benchmark_results_target
+          python3 bin/performance_check.py \
+            --c-compiler=/usr/bin/gcc-12 \
+            --cxx-compiler=/usr/bin/g++-12 \
+            --prefix-path=/gfmt-dependencies \
+            --tree="$GFMT_TREE" \
+            --origin="$GFMT_ORIGIN" \
+            --reference-tree="${{ github.base_ref }}" \
+            --reference-origin="${{ github.event.pull_request.base.repo.clone_url }}" \
+            --relative-tolerance=0.02 \
+            --out-folder=performance_check_results
