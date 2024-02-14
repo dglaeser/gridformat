@@ -46,7 +46,7 @@ def compare(result_file: str, reference_file: str, tolerance: float) -> int:
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--folder", required=True, help="folder with benchmark result files")
 parser.add_argument("-r", "--reference-folder", required=True, help="folder with benchmark reference result files")
-parser.add_argument("-t", "--relative-tolerance", required=False, default=0.02, help="tolerance for 'deteriorated' performance")
+parser.add_argument("-t", "--relative-tolerance", required=False, default="0.02", help="tolerance for 'deteriorated' performance")
 args = vars(parser.parse_args())
 
 folder = args["folder"]
@@ -60,7 +60,7 @@ for f in files:
     ret_code += compare(
         os.path.join(folder, f),
         os.path.join(ref_folder, f),
-        args["relative_tolerance"]
+        float(args["relative_tolerance"])
     )
 
 print(f"Exit code: {ret_code}")
