@@ -5,7 +5,8 @@
 
 ## Features
 
-- __Traits__: support for outputting writing `Dune::FieldMatrix` as tensor field data. 
+- __Traits__: support for outputting writing `Dune::FieldMatrix` as tensor field data.
+- __CI__: on PRs, a bunch of performance benchmarks are run with the code of the PR and the target branch, and observed runtime differences are posted as a comment to the pull request.
 
 # `GridFormat` 0.2.0
 
