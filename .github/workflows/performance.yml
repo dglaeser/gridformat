@@ -9,6 +9,9 @@ on:
     - main
     - 'releases/**'
 
+permissions:
+   pull-requests: write
+
 env:
   OMPI_ALLOW_RUN_AS_ROOT: 1
   OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
@@ -38,4 +41,16 @@ jobs:
             --reference-tree="${{ github.base_ref }}" \
             --reference-origin="${{ github.event.pull_request.base.repo.clone_url }}" \
             --relative-tolerance=0.02 \
-            --out-folder=performance_check_results
+            --out-folder=performance_check_results \
+            --summary-file=benchmark_summary.txt \
+            --print-only
+
+      - name: prepare-pr-comment
+        run: |
+          echo "The following performance differences (this branch vs target branch) have been measured:" >> _comment.txt
+          cat benchmark_summary.txt >> _comment.txt
+
+      - name: post-pr-comment
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: _comment.txt
