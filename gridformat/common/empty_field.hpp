@@ -20,7 +20,7 @@ class EmptyField : public Field {
     explicit EmptyField(DynamicPrecision p) : _prec{p} {}
 
  private:
-    MDLayout _layout() const { return MDLayout{}; }
+    MDLayout _layout() const { return MDLayout{{0}}; }
     DynamicPrecision _precision() const { return _prec; }
     Serialization _serialized() const { return Serialization{}; }
     DynamicPrecision _prec;

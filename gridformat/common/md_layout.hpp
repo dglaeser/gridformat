@@ -65,8 +65,8 @@ class MDLayout {
     }
 
     std::size_t number_of_entries() const {
-        if (dimension() == 0)
-            return 0;
+        if (_is_scalar())
+            return 1;
         return std::accumulate(
             _extents.begin(),
             _extents.end(),
@@ -140,7 +140,7 @@ namespace Detail {
 template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
 MDLayout get_md_layout() {
     if constexpr (Concepts::Scalar<T>)
-        return MDLayout{{1}};
+        return MDLayout{std::array<std::size_t, 0>{}};
     else {
         std::array<std::size_t, mdrange_dimension<T>> extents;
         extents[0] = static_size<T>;
@@ -182,7 +182,7 @@ MDLayout get_md_layout(R&& r) {
  */
 template<Concepts::Scalar T>
 MDLayout get_md_layout(const T&) {
-    return MDLayout{{1}};
+    return MDLayout{};
 }
 
 }  // namespace GridFormat
