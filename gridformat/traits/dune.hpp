@@ -26,6 +26,7 @@
 #pragma GCC diagnostic ignored "-Wnull-dereference"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif  // GRIDFORMAT_IGNORE_DUNE_WARNINGS
+#include <dune/common/fmatrix.hh>
 #include <dune/common/fvector.hh>
 #include <dune/geometry/type.hh>
 #include <dune/grid/common/gridview.hh>
@@ -38,11 +39,17 @@
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/type_traits.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
 
 namespace GridFormat::Traits {
+
+template<typename T, int R, int C>
+struct StaticSize<Dune::FieldMatrix<T, R, C>> {
+    static constexpr std::size_t value = R;
+};
 
 #ifndef DOXYGEN
 namespace DuneDetail {
