@@ -1,6 +1,12 @@
 <!--SPDX-FileCopyrightText: 2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>-->
 <!--SPDX-License-Identifier: MIT-->
 
+# `GridFormat` 0.2.1
+
+## Features
+
+- __Traits__: support for outputting writing `Dune::FieldMatrix` as tensor field data. 
+
 # `GridFormat` 0.2.0
 
 ## Features
