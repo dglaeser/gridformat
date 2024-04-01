@@ -22,6 +22,7 @@
 #pragma GCC diagnostic ignored "-Wswitch-enum"
 #pragma GCC diagnostic ignored "-Wcast-qual"
 #include <dune/alugrid/grid.hh>
+#include <dune/common/fmatrix.hh>
 #include <dune/grid/common/gridfactory.hh>
 #include <dune/grid/io/file/gmshreader.hh>
 #endif  // GRIDFORMAT_HAVE_DUNE_ALUGRID
@@ -66,6 +67,11 @@ void test(const GridView& grid_view) {
         });
         poly_writer.set_cell_field("cfunc", [&] (const auto& element) {
             return GridFormat::Test::test_function<double>(element.geometry().center());
+        });
+        poly_writer.set_cell_field("cfunc_tensor", [&] (const auto& e) {
+            Dune::FieldMatrix<double, GridView::dimensionworld, GridView::dimensionworld> tensor;
+            tensor = GridFormat::Test::test_function<double>(e.geometry().center());
+            return tensor;
         });
         std::cout << "Wrote '" << poly_writer.write(base_filename + "_as_poly") << "'" << std::endl;
     }
