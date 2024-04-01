@@ -438,8 +438,8 @@ namespace XMLDetail {
 
     template<typename HeaderType>
     void _decompress_with(const std::string& vtk_compressor,
-                         Serialization& data,
-                         const Compression::CompressedBlocks<HeaderType>& blocks) {
+                         [[maybe_unused]] Serialization& data,
+                         [[maybe_unused]] const Compression::CompressedBlocks<HeaderType>& blocks) {
         if (vtk_compressor == "vtkLZ4DataCompressor") {
 #if GRIDFORMAT_HAVE_LZ4
             LZ4Compressor{}.decompress(data, blocks);
