@@ -812,10 +812,10 @@ class FunctionField : public GridFormat::Field {
 
  private:
     MDLayout _layout() const override {
-        return get_md_layout<FunctionDetail::RangeType<Function, GridView>>(
+        return MDLayout{{
             _cellwise_constant ? GridFormat::Traits::NumberOfCells<Grid>::get(_grid)
                                : GridFormat::Traits::NumberOfPoints<Grid>::get(_grid)
-        );
+        }}.template with_sub_layout_from<FunctionDetail::RangeType<Function, GridView>>();
     }
 
     DynamicPrecision _precision() const override {

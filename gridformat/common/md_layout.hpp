@@ -25,6 +25,45 @@
 
 namespace GridFormat {
 
+#ifndef DOXYGEN
+namespace Detail {
+
+    template<Concepts::StaticallySizedRange R, typename Iterator>
+    constexpr void set_sub_extents(Iterator it) {
+        *it = static_size<R>;
+        ++it;
+        if constexpr (has_sub_range<R>)
+            set_sub_extents<std::ranges::range_value_t<R>>(it);
+    }
+
+    template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
+    auto get_md_extents() {
+        if constexpr (Concepts::Scalar<T>)
+            return std::array<std::size_t, 0>{};
+        else {
+            std::array<std::size_t, mdrange_dimension<T>> extents;
+            extents[0] = static_size<T>;
+            if constexpr (mdrange_dimension<T> > 1)
+                Detail::set_sub_extents<std::ranges::range_value_t<T>>(extents.begin() + 1);
+            return extents;
+        }
+    }
+
+    template<typename T> requires(std::ranges::range<T> and !Concepts::StaticallySizedRange<T>)
+    auto get_md_extents(const T& range) {
+        static_assert(
+            Concepts::StaticallySizedRange<std::ranges::range_value_t<T>>,
+            "Sub-ranges must be statically sized in order to determine md layouts from md ranges"
+        );
+        std::array<std::size_t, mdrange_dimension<T>> extents;
+        extents[0] = Ranges::size(range);
+        Detail::set_sub_extents<std::ranges::range_value_t<T>>(extents.begin() + 1);
+        return extents;
+    }
+
+}  // namespace Detail
+#endif  // DOXYGEN
+
 /*!
  * \ingroup Common
  * \brief Represents the layout (dimension, extents) of a multi-dimensional range
@@ -95,6 +134,22 @@ class MDLayout {
         return std::ranges::equal(_extents, other._extents);
     }
 
+    template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
+    MDLayout& with_sub_layout_from() {
+        auto sub_extents = Detail::get_md_extents<T>();
+        _extents.reserve(_extents.size() + sub_extents.size());
+        std::ranges::move(std::move(sub_extents), std::back_inserter(_extents));
+        return *this;
+    }
+
+    template<std::ranges::range T>
+    MDLayout& with_sub_layout_from(T&& range) {
+        auto sub_extents = Detail::get_md_extents<T>(std::forward<T>(range));
+        _extents.reserve(_extents.size() + sub_extents.size());
+        std::ranges::move(std::move(sub_extents), std::back_inserter(_extents));
+        return *this;
+    }
+
     template<std::ranges::range R>
     void export_to(R&& out) const {
         if (Ranges::size(out) < dimension())
@@ -115,23 +170,13 @@ class MDLayout {
     }
 
  private:
+    bool _is_scalar() const {
+        return _extents.size() == 0;
+    }
+
     ReservedVector<std::size_t, buffered_dimensions> _extents;
 };
 
-
-#ifndef DOXYGEN
-namespace Detail {
-
-    template<Concepts::StaticallySizedRange R, typename Iterator>
-    constexpr void set_sub_extents(Iterator it) {
-        *it = static_size<R>;
-        ++it;
-        if constexpr (has_sub_range<R>)
-            set_sub_extents<std::ranges::range_value_t<R>>(it);
-    }
-
-}  // namespace Detail
-#endif  // DOXYGEN
 
 /*!
  * \ingroup Common
@@ -139,15 +184,7 @@ namespace Detail {
  */
 template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
 MDLayout get_md_layout() {
-    if constexpr (Concepts::Scalar<T>)
-        return MDLayout{std::array<std::size_t, 0>{}};
-    else {
-        std::array<std::size_t, mdrange_dimension<T>> extents;
-        extents[0] = static_size<T>;
-        if constexpr (mdrange_dimension<T> > 1)
-            Detail::set_sub_extents<std::ranges::range_value_t<T>>(extents.begin() + 1);
-        return MDLayout{extents};
-    }
+    return MDLayout{Detail::get_md_extents<T>()};
 }
 
 /*!
@@ -156,6 +193,7 @@ MDLayout get_md_layout() {
  *        given as template argument, whose size is known at compile-time.
  */
 template<typename T> requires(Concepts::StaticallySizedRange<T> or Concepts::Scalar<T>)
+[[deprecated("use MDLayout{{n}}.with_sub_layout_from<T>() instead.")]]
 MDLayout get_md_layout(std::size_t n) {
     if constexpr (Concepts::Scalar<T>)
         return MDLayout{{n}};
@@ -172,8 +210,12 @@ MDLayout get_md_layout(std::size_t n) {
  * \brief Get the multi-dimensional layout for the given range
  */
 template<std::ranges::range R>
+    requires(
+        Concepts::StaticallySizedRange<std::ranges::range_value_t<R>> or
+        Concepts::Scalar<std::ranges::range_value_t<R>>
+    )
 MDLayout get_md_layout(R&& r) {
-    return get_md_layout<std::ranges::range_value_t<R>>(Ranges::size(r));
+    return MDLayout{{Ranges::size(r)}}.template with_sub_layout_from<std::ranges::range_value_t<R>>();
 }
 
 /*!
