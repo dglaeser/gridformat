@@ -50,6 +50,8 @@ if __name__ == "__main__":
     parser.add_argument("-ro", "--reference-origin", required=False, default=default_url, help="The url from where to clone the reference tree")
     parser.add_argument("-tol", "--relative-tolerance", required=False, default=0.02, help="Tolerance for 'deteriorated' performance")
     parser.add_argument("-f", "--out-folder", required=False, help="Folder where to place the results")
+    parser.add_argument("-s", "--summary-file", required=False, default="", help="File into which to put a summary of the results")
+    parser.add_argument("--print-only", required=False, action="store_true", help="if set, the exit code is independent of the results")
     args = vars(parser.parse_args())
 
     out_folder = args["out_folder"] or "performance_check_run_" + datetime.datetime.now().strftime("%Y-%m-%d-%M:%S")
@@ -81,7 +83,8 @@ if __name__ == "__main__":
         sys.executable, "benchmark/check_deviations.py",
                         "-f", res_folder,
                         "-r", ref_folder,
-                        "-t", str(args["relative_tolerance"])
+                        "-t", str(args["relative_tolerance"]),
+                        "-s", args["summary_file"]
         ],
-        check=True
+        check=bool(args["print_only"])
     )

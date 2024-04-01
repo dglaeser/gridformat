@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
+import typing
 import numpy
 import sys
 import os
@@ -27,7 +28,7 @@ def average(results: list[object]) -> float:
     return sum(results)/len(results)
 
 
-def compare(result_file: str, reference_file: str, tolerance: float) -> int:
+def compare(result_file: str, reference_file: str, tolerance: float, summary_file: typing.TextIO | None) -> int:
     results = numpy.genfromtxt(result_file, delimiter=",", dtype=object, names=True)
     reference = numpy.genfromtxt(reference_file, delimiter=",", dtype=object, names=True)
     all_names = set(results.dtype.names[1:]).union(set(reference.dtype.names[1:]))
@@ -35,11 +36,16 @@ def compare(result_file: str, reference_file: str, tolerance: float) -> int:
         avg_result = average(results[benchmark])
         avg_reference = average(reference[benchmark])
         rel_diff = (avg_result - avg_reference)/max(avg_reference, avg_result)
+        rel_diff_percent_str = "{:.2f}".format(rel_diff*100.0)
         passed = rel_diff <= tolerance
-        print("Relative deviation of average for '{}': {}".format(
+        info_line = "Relative deviation of average for '{}': {}%".format(
             benchmark,
-            _as_success(rel_diff) if passed else _as_error(rel_diff)
-        ))
+            _as_success(rel_diff_percent_str) if passed else _as_error(rel_diff_percent_str)
+        )
+        print(info_line)
+        if summary_file:
+            summary_file.write(info_line + "\n")
+
     return int(not passed)
 
 
@@ -47,6 +53,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--folder", required=True, help="folder with benchmark result files")
 parser.add_argument("-r", "--reference-folder", required=True, help="folder with benchmark reference result files")
 parser.add_argument("-t", "--relative-tolerance", required=False, default="0.02", help="tolerance for 'deteriorated' performance")
+parser.add_argument("-s", "--summary-file", required=False, default='', help="file in which to store a summary of the results")
 args = vars(parser.parse_args())
 
 folder = args["folder"]
@@ -60,8 +67,8 @@ for f in files:
     ret_code += compare(
         os.path.join(folder, f),
         os.path.join(ref_folder, f),
-        float(args["relative_tolerance"])
+        float(args["relative_tolerance"]),
+        open(args["summary_file"], "w") if args["summary_file"] else None
     )
 
-print(f"Exit code: {ret_code}")
 sys.exit(ret_code)
