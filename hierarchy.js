@@ -296,6 +296,7 @@ var hierarchy =
     ] ],
     [ "GridFormat::Traits::Spacing< ConverterDetail::ConverterGrid >", "structGridFormat_1_1Traits_1_1Spacing_3_01ConverterDetail_1_1ConverterGrid_01_4.html", null ],
     [ "GridFormat::Traits::Spacing< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Spacing_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
+    [ "GridFormat::Traits::StaticSize< Dune::FieldMatrix< T, R, C > >", "structGridFormat_1_1Traits_1_1StaticSize_3_01Dune_1_1FieldMatrix_3_01T_00_01R_00_01C_01_4_01_4.html", null ],
     [ "GridFormat::PVTK::StructuredGridMapper< dim >", "classGridFormat_1_1PVTK_1_1StructuredGridMapper.html", null ],
     [ "GridFormat::PVTK::StructuredGridMapperHelper< T, dim >", "classGridFormat_1_1PVTK_1_1StructuredGridMapperHelper.html", null ],
     [ "GridFormat::VTK::PXMLStructuredGridReader< PieceReader >::StructuredGridSpecs", "structGridFormat_1_1VTK_1_1PXMLStructuredGridReader_1_1StructuredGridSpecs.html", null ],

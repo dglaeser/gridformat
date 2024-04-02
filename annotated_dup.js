@@ -143,6 +143,7 @@ var annotated_dup =
         [ "Points< T >", "structGridFormat_1_1Traits_1_1Points_3_01T_01_4.html", null ],
         [ "Spacing< ConverterDetail::ConverterGrid >", "structGridFormat_1_1Traits_1_1Spacing_3_01ConverterDetail_1_1ConverterGrid_01_4.html", null ],
         [ "Spacing< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Spacing_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
+        [ "StaticSize< Dune::FieldMatrix< T, R, C > >", "structGridFormat_1_1Traits_1_1StaticSize_3_01Dune_1_1FieldMatrix_3_01T_00_01R_00_01C_01_4_01_4.html", null ],
         [ "WritesConnectivity", "structGridFormat_1_1Traits_1_1WritesConnectivity.html", null ],
         [ "WritesConnectivity< APIDetail::SequentialOrParallelReader< S, P > >", "structGridFormat_1_1Traits_1_1WritesConnectivity_3_01APIDetail_1_1SequentialOrParallelReader_3_01S_00_01P_01_4_01_4.html", null ],
         [ "WritesConnectivity< PVDWriter< VTKWriter > >", "structGridFormat_1_1Traits_1_1WritesConnectivity_3_01PVDWriter_3_01VTKWriter_01_4_01_4.html", null ],

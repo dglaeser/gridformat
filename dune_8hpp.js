@@ -1,5 +1,6 @@
 var dune_8hpp =
 [
+    [ "GridFormat::Traits::StaticSize< Dune::FieldMatrix< T, R, C > >", "structGridFormat_1_1Traits_1_1StaticSize_3_01Dune_1_1FieldMatrix_3_01T_00_01R_00_01C_01_4_01_4.html", null ],
     [ "GridFormat::Traits::Points< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Points_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
     [ "GridFormat::Traits::Cells< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1Cells_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],
     [ "GridFormat::Traits::NumberOfPoints< Dune::GridView< Traits > >", "structGridFormat_1_1Traits_1_1NumberOfPoints_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html", null ],

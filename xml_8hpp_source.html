@@ -522,8 +522,8 @@ $(document).ready(function(){initNavTree('xml_8hpp_source.html',''); initResizab
 <div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span> </div>
 <div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> HeaderType&gt;</div>
 <div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span>    <span class="keywordtype">void</span> _decompress_with(<span class="keyword">const</span> std::string&amp; vtk_compressor,</div>
-<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>                         Serialization&amp; data,</div>
-<div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span>                         <span class="keyword">const</span> Compression::CompressedBlocks&lt;HeaderType&gt;&amp; blocks) {</div>
+<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>                         [[maybe_unused]] Serialization&amp; data,</div>
+<div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span>                         [[maybe_unused]] <span class="keyword">const</span> Compression::CompressedBlocks&lt;HeaderType&gt;&amp; blocks) {</div>
 <div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span>        <span class="keywordflow">if</span> (vtk_compressor == <span class="stringliteral">&quot;vtkLZ4DataCompressor&quot;</span>) {</div>
 <div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span><span class="preprocessor">#if GRIDFORMAT_HAVE_LZ4</span></div>
 <div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span>            LZ4Compressor{}.decompress(data, blocks);</div>
