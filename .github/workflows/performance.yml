@@ -1,0 +1,56 @@
+# SPDX-FileCopyrightText: 2024 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: MIT
+
+name: performance-checks
+
+on:
+  pull_request:
+    branches:
+    - main
+    - 'releases/**'
+
+permissions:
+   pull-requests: write
+
+env:
+  OMPI_ALLOW_RUN_AS_ROOT: 1
+  OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
+
+jobs:
+  run-benchmarks:
+    runs-on: ubuntu-22.04
+    container: dglaeser/gridformat-action-images:full
+
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: set-git-variables
+        uses: ./.github/actions/set-git-variables
+
+      - name: run-performance-check
+        run: |
+          python3 bin/performance_check.py \
+            --c-compiler=/usr/bin/gcc-12 \
+            --cxx-compiler=/usr/bin/g++-12 \
+            --prefix-path=/gfmt-dependencies \
+            --tree="$GFMT_TREE" \
+            --origin="$GFMT_ORIGIN" \
+            --reference-tree="${{ github.base_ref }}" \
+            --reference-origin="${{ github.event.pull_request.base.repo.clone_url }}" \
+            --relative-tolerance=0.02 \
+            --out-folder=performance_check_results \
+            --summary-file=benchmark_summary.txt \
+            --print-only
+
+      - name: prepare-pr-comment
+        run: |
+          echo "The following performance differences (this branch vs target branch) have been measured:" >> _comment.txt
+          cat benchmark_summary.txt >> _comment.txt
+
+      - name: post-pr-comment
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: _comment.txt
