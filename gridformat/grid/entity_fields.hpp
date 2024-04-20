@@ -130,7 +130,7 @@ class PointField : public Field {
     }
 
     MDLayout _layout() const override {
-        return get_md_layout<FieldType>(number_of_points(_grid));
+        return MDLayout{{number_of_points(_grid)}}.template with_sub_layout_from<FieldType>();
     }
 
     DynamicPrecision _precision() const override {
@@ -191,7 +191,7 @@ class CellField : public Field {
     }
 
     MDLayout _layout() const override {
-        return get_md_layout<FieldType>(number_of_cells(_grid));
+        return MDLayout{{number_of_cells(_grid)}}.template with_sub_layout_from<FieldType>();
     }
 
     DynamicPrecision _precision() const override {

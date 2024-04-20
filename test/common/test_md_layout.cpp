@@ -25,7 +25,7 @@ int main() {
     "md_layout_scalar"_test = [] () {
         const auto layout = GridFormat::get_md_layout(double{});
         expect(eq(layout.number_of_entries(), std::size_t{1}));
-        expect(eq(layout.dimension(), std::size_t{1}));
+        expect(eq(layout.dimension(), std::size_t{0}));
     };
 
     "md_layout_vector"_test = [] () {
@@ -45,6 +45,27 @@ int main() {
         expect(eq(layout.extent(1), std::size_t{4}));
         expect(eq(layout.extent(2), std::size_t{2}));
         expect(eq(layout.number_of_entries(), std::size_t{24}));
+    };
+
+    "md_layout_with_sub_layout_from"_test = [] () {
+        std::vector<std::array<std::array<double, 2>, 4>> tensor(3);
+        auto appended = GridFormat::MDLayout{{5}}.with_sub_layout_from(tensor);
+        expect(eq(appended.dimension(), std::size_t{4}));
+        expect(eq(appended.extent(0), std::size_t{5}));
+        expect(eq(appended.extent(1), std::size_t{3}));
+        expect(eq(appended.extent(2), std::size_t{4}));
+        expect(eq(appended.extent(3), std::size_t{2}));
+        expect(eq(appended.number_of_entries(), std::size_t{24*5}));
+    };
+
+    "md_layout_with_sub_layout_from_type"_test = [] () {
+        using T = std::array<std::array<double, 2>, 4>;
+        auto layout = GridFormat::MDLayout{{5}}.with_sub_layout_from<T>();
+        expect(eq(layout.dimension(), std::size_t{3}));
+        expect(eq(layout.extent(0), std::size_t{5}));
+        expect(eq(layout.extent(1), std::size_t{4}));
+        expect(eq(layout.extent(2), std::size_t{2}));
+        expect(eq(layout.number_of_entries(), std::size_t{5*4*2}));
     };
 
     "md_layout_output"_test = [] () {

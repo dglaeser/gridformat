@@ -33,7 +33,7 @@ class RangeField : public Field {
 
  private:
     MDLayout _layout() const {
-        return get_md_layout<std::ranges::range_value_t<R>>(Ranges::size(_range));
+        return MDLayout{{Ranges::size(_range)}}.template with_sub_layout_from<std::ranges::range_value_t<R>>();
     }
 
     DynamicPrecision _precision() const {

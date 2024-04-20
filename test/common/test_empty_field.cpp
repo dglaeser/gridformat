@@ -17,7 +17,7 @@ int main() {
 
     "empty_field_layout"_test = [&] () {
         GridFormat::EmptyField field{GridFormat::float32};
-        expect(eq(field.layout().dimension(), std::size_t{0}));
+        expect(eq(field.layout().dimension(), std::size_t{1}));
     };
 
     "empty_field_precision"_test = [&] () {
