@@ -26,7 +26,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2024-04-18 11:31:58</td>
+      <td>2024-04-20 11:26:26</td>
     </tr>
   </table>
 </div>
@@ -40,8 +40,8 @@
     </tr>
     <tr>
       <th scope="row">Lines:</th>
-      <td>155</td>
-      <td>159</td>
+      <td>157</td>
+      <td>161</td>
       <td class="coverage-high">97.5%</td>
     </tr>
     <tr>
@@ -1465,7 +1465,7 @@
       <td class="lineno"><a id="l162" href="#l162">162</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">851818</td>
+      <td class="linecount coveredLine">875313</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">Grid</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
@@ -1473,7 +1473,7 @@
       <td class="lineno"><a id="l163" href="#l163">163</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">851818</td>
+      <td class="linecount coveredLine">875313</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_grid</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
@@ -3329,32 +3329,32 @@
       <td class="lineno"><a id="l306" href="#l306">306</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">41966</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">GridWriter</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Grid</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">extension</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">WriterOptions</span><span class="o">&gt;</span><span class="w"> </span><span class="n">opts</span><span class="p">)</span><span class="w"></span></td>
+      <td class="linecount "></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l307" href="#l307">307</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">83253</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">GridWriterBase</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">opts</span><span class="p">))</span><span class="w"></span></td>
+      <td class="linecount coveredLine">222</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="n">GridWriter</span><span class="p">(</span><span class="n">GridWriter</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l308" href="#l308">308</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">83253</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">_extension</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">extension</span><span class="p">))</span><span class="w"></span></td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="n">GridWriter</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">GridWriter</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l309" href="#l309">309</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">83253</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span><span class="w"></span></td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="n">GridWriter</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">GridWriter</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3362,54 +3362,47 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">    </span><span class="n">GridWriter</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">GridWriter</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l311" href="#l311">311</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">29239</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">filename</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="linecount "></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l312" href="#l312">312</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">29239</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">filename_with_ext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filename</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">_extension</span><span class="p">;</span><span class="w"></span></td>
+      <td class="linecount coveredLine">83253</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">GridWriter</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Grid</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">extension</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">WriterOptions</span><span class="o">&gt;</span><span class="w"> </span><span class="n">opts</span><span class="p">)</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l313" href="#l313">313</a></td>
       <td class="linebranch">
-        <details class="linebranchDetails">
-        <summary class="linebranchSummary">2/2</summary>
-        <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 13804 times.</div>
-          <div class="takenBranch">&check; Branch 2 taken 1082 times.</div>
-        </div>
-        </details>
       </td>
-      <td class="linecount coveredLine">29239</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="n">_write</span><span class="p">(</span><span class="n">filename_with_ext</span><span class="p">);</span><span class="w"></span></td>
+      <td class="linecount coveredLine">83253</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">GridWriterBase</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">opts</span><span class="p">))</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l314" href="#l314">314</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">27091</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">filename_with_ext</span><span class="p">;</span><span class="w"></span></td>
+      <td class="linecount coveredLine">83253</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">_extension</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">extension</span><span class="p">))</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l315" href="#l315">315</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">2148</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
+      <td class="linecount coveredLine">83253</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3424,48 +3417,55 @@
       <td class="lineno"><a id="l317" href="#l317">317</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="linecount coveredLine">29239</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">filename</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l318" href="#l318">318</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">        </span><span class="n">_write</span><span class="p">(</span><span class="n">s</span><span class="p">);</span><span class="w"></span></td>
+      <td class="linecount coveredLine">29239</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">filename_with_ext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filename</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">_extension</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l319" href="#l319">319</a></td>
       <td class="linebranch">
+        <details class="linebranchDetails">
+        <summary class="linebranchSummary">2/2</summary>
+        <div class="linebranchContents">
+          <div class="takenBranch">&check; Branch 1 taken 13804 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 1082 times.</div>
+        </div>
+        </details>
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
+      <td class="linecount coveredLine">29239</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="n">_write</span><span class="p">(</span><span class="n">filename_with_ext</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l320" href="#l320">320</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="linecount coveredLine">27091</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">filename_with_ext</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l321" href="#l321">321</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">23</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">extension</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="linecount coveredLine">2148</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l322" href="#l322">322</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">23</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_extension</span><span class="p">;</span><span class="w"></span></td>
+      <td class="linecount "></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3473,7 +3473,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3481,7 +3481,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">        </span><span class="n">_write</span><span class="p">(</span><span class="n">s</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3489,7 +3489,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w"> </span><span class="k">private</span><span class="o">:</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3497,11 +3497,35 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">_extension</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l327" href="#l327">327</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount coveredLine">23</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">extension</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l328" href="#l328">328</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount coveredLine">23</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_extension</span><span class="p">;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l329" href="#l329">329</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l330" href="#l330">330</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3509,7 +3533,31 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l328" href="#l328">328</a></td>
+      <td class="lineno"><a id="l331" href="#l331">331</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w"> </span><span class="k">private</span><span class="o">:</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l332" href="#l332">332</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">_extension</span><span class="p">;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l333" href="#l333">333</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l334" href="#l334">334</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">15987</td>
@@ -3517,7 +3565,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l329" href="#l329">329</a></td>
+      <td class="lineno"><a id="l335" href="#l335">335</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
@@ -3532,7 +3580,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l330" href="#l330">330</a></td>
+      <td class="lineno"><a id="l336" href="#l336">336</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/2</summary>
@@ -3547,7 +3595,7 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l331" href="#l331">331</a></td>
+      <td class="lineno"><a id="l337" href="#l337">337</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">15987</td>
@@ -3555,59 +3603,11 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l332" href="#l332">332</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l333" href="#l333">333</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">_write</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l334" href="#l334">334</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="p">};</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l335" href="#l335">335</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l336" href="#l336">336</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="c1">//! Abstract base class for time series file writers.</span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l337" href="#l337">337</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Grid</span><span class="o">&gt;</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
       <td class="lineno"><a id="l338" href="#l338">338</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesGridWriter</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">GridWriterBase</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3615,139 +3615,11 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w"> </span><span class="k">public</span><span class="o">:</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">_write</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l340" href="#l340">340</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">350</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">TimeSeriesGridWriter</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l341" href="#l341">341</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">134</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">TimeSeriesGridWriter</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Grid</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">WriterOptions</span><span class="o">&gt;</span><span class="w"> </span><span class="n">opts</span><span class="p">)</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l342" href="#l342">342</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">193</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">GridWriterBase</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">opts</span><span class="p">))</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l343" href="#l343">343</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">193</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l344" href="#l344">344</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l345" href="#l345">345</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">606</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l346" href="#l346">346</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">606</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_write</span><span class="p">(</span><span class="n">t</span><span class="p">);</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l347" href="#l347">347</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">606</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="n">_step_count</span><span class="o">++</span><span class="p">;</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l348" href="#l348">348</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount coveredLine">606</td>
-      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">filename</span><span class="p">;</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l349" href="#l349">349</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l350" href="#l350">350</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l351" href="#l351">351</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w"> </span><span class="k">protected</span><span class="o">:</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l352" href="#l352">352</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">_step_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l353" href="#l353">353</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l354" href="#l354">354</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w"> </span><span class="k">private</span><span class="o">:</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l355" href="#l355">355</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">_write</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span></td>
-    </tr>
-
-    <tr class="source-line">
-      <td class="lineno"><a id="l356" href="#l356">356</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
@@ -3755,35 +3627,163 @@
     </tr>
 
     <tr class="source-line">
-      <td class="lineno"><a id="l357" href="#l357">357</a></td>
+      <td class="lineno"><a id="l341" href="#l341">341</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
       <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l342" href="#l342">342</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="c1">//! Abstract base class for time series file writers.</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l343" href="#l343">343</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Grid</span><span class="o">&gt;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l344" href="#l344">344</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesGridWriter</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">GridWriterBase</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l345" href="#l345">345</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w"> </span><span class="k">public</span><span class="o">:</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l346" href="#l346">346</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount coveredLine">350</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">TimeSeriesGridWriter</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l347" href="#l347">347</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l348" href="#l348">348</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount coveredLine">41</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="n">TimeSeriesGridWriter</span><span class="p">(</span><span class="n">TimeSeriesGridWriter</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l349" href="#l349">349</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="n">TimeSeriesGridWriter</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">TimeSeriesGridWriter</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l350" href="#l350">350</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="n">TimeSeriesGridWriter</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">TimeSeriesGridWriter</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l351" href="#l351">351</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="n">TimeSeriesGridWriter</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">TimeSeriesGridWriter</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l352" href="#l352">352</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l353" href="#l353">353</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount coveredLine">193</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">TimeSeriesGridWriter</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Grid</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">WriterOptions</span><span class="o">&gt;</span><span class="w"> </span><span class="n">opts</span><span class="p">)</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l354" href="#l354">354</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount coveredLine">193</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">GridWriterBase</span><span class="o">&lt;</span><span class="n">Grid</span><span class="o">&gt;</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">opts</span><span class="p">))</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l355" href="#l355">355</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount coveredLine">193</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l356" href="#l356">356</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l357" href="#l357">357</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount coveredLine">606</td>
+      <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">write</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l358" href="#l358">358</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="cp">#ifndef DOXYGEN</span></td>
+      <td class="linecount coveredLine">606</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_write</span><span class="p">(</span><span class="n">t</span><span class="p">);</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l359" href="#l359">359</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="k">namespace</span><span class="w"> </span><span class="nn">GridDetail</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="linecount coveredLine">606</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="n">_step_count</span><span class="o">++</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l360" href="#l360">360</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="linecount coveredLine">606</td>
+      <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">filename</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3791,7 +3791,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="kt">bool</span><span class="w"> </span><span class="n">is_transient</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="p">}</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3799,7 +3799,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">WriterBase</span><span class="p">;</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3807,7 +3807,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="w"> </span><span class="k">protected</span><span class="o">:</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3815,7 +3815,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">WriterBase</span><span class="o">&lt;</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&gt;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">type_identity</span><span class="o">&lt;</span><span class="n">TimeSeriesGridWriter</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{};</span><span class="w"></span></td>
+      <td class="src "><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">_step_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3823,7 +3823,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3831,7 +3831,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">WriterBase</span><span class="o">&lt;</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&gt;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">type_identity</span><span class="o">&lt;</span><span class="n">GridWriter</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{};</span><span class="w"></span></td>
+      <td class="src "><span class="w"> </span><span class="k">private</span><span class="o">:</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3839,7 +3839,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">_write</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3847,7 +3847,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// namespace GridDetail</span></td>
+      <td class="src "><span class="p">};</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3855,7 +3855,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">#endif  </span><span class="c1">// DOXYGEN</span></td>
+      <td class="src "></td>
     </tr>
 
     <tr class="source-line">
@@ -3863,7 +3863,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="cp">#ifndef DOXYGEN</span></td>
     </tr>
 
     <tr class="source-line">
@@ -3871,7 +3871,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="c1">//! \} group Grid</span></td>
+      <td class="src "><span class="k">namespace</span><span class="w"> </span><span class="nn">GridDetail</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3887,7 +3887,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// namespace GridFormat</span></td>
+      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="kt">bool</span><span class="w"> </span><span class="n">is_transient</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="o">&gt;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3895,7 +3895,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">WriterBase</span><span class="p">;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
@@ -3903,11 +3903,107 @@
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">#endif  </span><span class="c1">// GRIDFORMAT_GRID_WRITER_HPP_</span></td>
+      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="o">&gt;</span><span class="w"></span></td>
     </tr>
 
     <tr class="source-line">
       <td class="lineno"><a id="l376" href="#l376">376</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">WriterBase</span><span class="o">&lt;</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&gt;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">type_identity</span><span class="o">&lt;</span><span class="n">TimeSeriesGridWriter</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{};</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l377" href="#l377">377</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">G</span><span class="o">&gt;</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l378" href="#l378">378</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">WriterBase</span><span class="o">&lt;</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="o">&gt;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">type_identity</span><span class="o">&lt;</span><span class="n">GridWriter</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{};</span><span class="w"></span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l379" href="#l379">379</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l380" href="#l380">380</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// namespace GridDetail</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l381" href="#l381">381</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cp">#endif  </span><span class="c1">// DOXYGEN</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l382" href="#l382">382</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l383" href="#l383">383</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="c1">//! \} group Grid</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l384" href="#l384">384</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l385" href="#l385">385</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// namespace GridFormat</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l386" href="#l386">386</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l387" href="#l387">387</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cp">#endif  </span><span class="c1">// GRIDFORMAT_GRID_WRITER_HPP_</span></td>
+    </tr>
+
+    <tr class="source-line">
+      <td class="lineno"><a id="l388" href="#l388">388</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
