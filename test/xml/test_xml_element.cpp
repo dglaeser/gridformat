@@ -92,7 +92,7 @@ int main() {
         expect(eq(str_stream.str(), std::string{"42"}));
 
         str_stream = std::stringstream{};
-        element.set_content("content");
+        element.set_content(std::string{"content"});
         element.stream_content(str_stream);
         expect(eq(str_stream.str(), std::string{"content"}));
     };

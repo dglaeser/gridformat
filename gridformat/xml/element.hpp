@@ -47,6 +47,11 @@ class XMLElement : public XMLTag {
 
     struct Content {
         virtual ~Content() {}
+
+        Content() = default;
+        Content(const Content&) = delete;
+        Content& operator=(const Content&) = delete;
+
         virtual void stream(std::ostream& os) const = 0;
         virtual std::any get_as_any() const = 0;
     };
@@ -69,7 +74,7 @@ class XMLElement : public XMLTag {
         }
 
      private:
-        C _c;
+        std::remove_cvref_t<C> _c;
     };
 
  public:
@@ -141,6 +146,7 @@ class XMLElement : public XMLTag {
     }
 
     template<Concepts::StreamableWith<std::ostream> C>
+        requires(!std::is_lvalue_reference_v<C>)
     void set_content(C&& content) {
         _content = std::make_unique<ContentImpl<C>>(std::forward<C>(content));
     }

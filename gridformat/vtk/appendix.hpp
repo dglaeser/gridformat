@@ -53,6 +53,13 @@ class AppendixStreamObserver {
 class Appendix {
     struct DataArrayModel {
         virtual ~DataArrayModel() = default;
+
+        DataArrayModel() = default;
+        DataArrayModel(DataArrayModel&&) = default;
+        DataArrayModel(const DataArrayModel&) = delete;
+        DataArrayModel& operator=(DataArrayModel&&) = default;
+        DataArrayModel& operator=(const DataArrayModel&) = delete;
+
         friend std::ostream& operator<<(std::ostream& s, const DataArrayModel& arr) {
             arr.stream(s);
             return s;

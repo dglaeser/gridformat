@@ -191,6 +191,7 @@ class XMLWriterBase
     //! Export underlying grid type
     using Grid = G;
 
+    virtual ~XMLWriterBase() = default;
     explicit XMLWriterBase(const Grid& grid,
                            std::string extension,
                            bool use_structured_grid_ordering,
@@ -199,6 +200,12 @@ class XMLWriterBase
     , _xml_opts{std::move(xml_opts)}
     , _xml_settings{XMLDetail::XMLSettings::from<GridCoordinateType>(_xml_opts)}
     {}
+
+    XMLWriterBase() = default;
+    XMLWriterBase(XMLWriterBase&&) = default;
+    XMLWriterBase(const XMLWriterBase&) = delete;
+    XMLWriterBase& operator=(XMLWriterBase&&) = default;
+    XMLWriterBase& operator=(const XMLWriterBase&) = delete;
 
     Impl with(XMLOptions opts) const {
         auto result = _with(std::move(opts));
