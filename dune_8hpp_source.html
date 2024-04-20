@@ -912,10 +912,10 @@ $(document).ready(function(){initNavTree('dune_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span> </div>
 <div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span> <span class="keyword">private</span>:</div>
 <div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>    MDLayout _layout()<span class="keyword"> const override </span>{</div>
-<div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>        <span class="keywordflow">return</span> get_md_layout&lt;FunctionDetail::RangeType&lt;Function, GridView&gt;&gt;(</div>
+<div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>        <span class="keywordflow">return</span> MDLayout{{</div>
 <div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span>            _cellwise_constant ? GridFormat::Traits::NumberOfCells&lt;Grid&gt;::get(_grid)</div>
 <div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span>                               : GridFormat::Traits::NumberOfPoints&lt;Grid&gt;::get(_grid)</div>
-<div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>        );</div>
+<div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>        }}.template with_sub_layout_from&lt;FunctionDetail::RangeType&lt;Function, GridView&gt;&gt;();</div>
 <div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span>    }</div>
 <div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span> </div>
 <div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>    DynamicPrecision _precision()<span class="keyword"> const override </span>{</div>
