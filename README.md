@@ -96,7 +96,8 @@ int main () {
 }
 ```
 Many more formats, options and functions are available, see the [API documentation](https://dglaeser.github.io/gridformat/)
-or have a look at the <!-- DOXYGEN_MAKE_ABSOLUTE -->[examples](examples).
+or have a look at the <!-- DOXYGEN_MAKE_ABSOLUTE -->[examples](examples). Moreover, if your data is cumbersome to access via
+lambdas (as done in the example above), you may also provide a custom implementation of the <!-- DOXYGEN_MAKE_ABSOLUTE -->[`Field`interface](gridformat/common/field.hpp).
 
 
 ## Installation
