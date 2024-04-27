@@ -120,6 +120,11 @@ class Reader : public GridReader {
     : _reader{_make_unique(ReaderFactory<FileFormat>::make(f, c))}
     {}
 
+    template<typename... ConstructorArgs>
+    static Reader from(const std::string& filename, ConstructorArgs&&... args) {
+        return Reader{std::forward<ConstructorArgs>(args)...}.with_open(filename);
+    }
+
     //! Read the data from the given file and return this reader
     Reader& with_open(const std::string& filename) & {
         this->open(filename);
