@@ -180,7 +180,7 @@ int test_reader(const std::filesystem::path& folder,
         visited = true;
 
         if (extension == ".vtu") { // exemplarily test that reader propagates names
-            auto reader = GridFormat::Reader{GridFormat::vtu}.with_open(filename);
+            auto reader = GridFormat::Reader{GridFormat::vtu}.with_opened(filename);
             GridFormat::Testing::expect(reader.name() == "VTUReader");
         }
     });

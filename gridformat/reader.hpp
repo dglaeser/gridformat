@@ -122,17 +122,17 @@ class Reader : public GridReader {
 
     template<typename... ConstructorArgs>
     static Reader from(const std::string& filename, ConstructorArgs&&... args) {
-        return Reader{std::forward<ConstructorArgs>(args)...}.with_open(filename);
+        return Reader{std::forward<ConstructorArgs>(args)...}.with_opened(filename);
     }
 
     //! Read the data from the given file and return this reader
-    Reader& with_open(const std::string& filename) & {
+    Reader& with_opened(const std::string& filename) & {
         this->open(filename);
         return *this;
     }
 
     //! Read the data from the given file and return this reader (lvalue references overload)
-    Reader&& with_open(const std::string& filename) && {
+    Reader&& with_opened(const std::string& filename) && {
         this->open(filename);
         return std::move(*this);
     }
