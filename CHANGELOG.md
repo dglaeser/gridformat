@@ -7,6 +7,7 @@
 
 - __Traits__: support for writing `Dune::FieldMatrix` as tensor field data.
 - __CI__: on PRs, a bunch of performance benchmarks are run with the code of the PR and the target branch, and observed runtime differences are posted as a comment to the pull request.
+- __Reader__: the `Reader` class now allows for opening a file upon instantiation using `GridFormat::Reader::from(filename)` (taking further optional constructor arguments). Moreover, you can now open a file and receive the modified reader as return value using `reader.with_opened(filename)`.
 
 ## Deprecated interfaces
 
