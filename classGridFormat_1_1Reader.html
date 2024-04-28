@@ -115,6 +115,7 @@ $(document).ready(function(){initNavTree('classGridFormat_1_1Reader.html',''); i
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classGridFormat_1_1Reader-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">GridFormat::Reader Class Reference<div class="ingroups"><a class="el" href="group__API.html">API</a></div></div></div>
 </div><!--header-->
@@ -172,6 +173,14 @@ template&lt;typename FileFormat , Concepts::Communicator Communicator&gt; <br />
 requires (ReaderDetail::ParallelConstructible&lt;FileFormat, Communicator&gt;)</td></tr>
 <tr class="memitem:ab7e27d08c3e96e96e71bec650efe6106"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Reader</b> (const FileFormat &amp;f, const Communicator &amp;c)</td></tr>
 <tr class="separator:ab7e27d08c3e96e96e71bec650efe6106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c58539814a832f2a6a47ab13912238f"><td class="memItemLeft" align="right" valign="top"><a id="a9c58539814a832f2a6a47ab13912238f" name="a9c58539814a832f2a6a47ab13912238f"></a>
+<a class="el" href="classGridFormat_1_1Reader.html">Reader</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>with_opened</b> (const std::string &amp;<a class="el" href="classGridFormat_1_1GridReader.html#a49cbb90dd99a1de160968dd4761dfdad">filename</a>) &amp;</td></tr>
+<tr class="memdesc:a9c58539814a832f2a6a47ab13912238f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the data from the given file and return this reader. <br /></td></tr>
+<tr class="separator:a9c58539814a832f2a6a47ab13912238f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1417ccc76a987c766a474e49c200dc5b"><td class="memItemLeft" align="right" valign="top"><a id="a1417ccc76a987c766a474e49c200dc5b" name="a1417ccc76a987c766a474e49c200dc5b"></a>
+<a class="el" href="classGridFormat_1_1Reader.html">Reader</a> &amp;&amp;&#160;</td><td class="memItemRight" valign="bottom"><b>with_opened</b> (const std::string &amp;<a class="el" href="classGridFormat_1_1GridReader.html#a49cbb90dd99a1de160968dd4761dfdad">filename</a>) &amp;&amp;</td></tr>
+<tr class="memdesc:a1417ccc76a987c766a474e49c200dc5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the data from the given file and return this reader (lvalue references overload) <br /></td></tr>
+<tr class="separator:a1417ccc76a987c766a474e49c200dc5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGridFormat_1_1GridReader"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGridFormat_1_1GridReader')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGridFormat_1_1GridReader.html">GridFormat::GridReader</a></td></tr>
 <tr class="memitem:a47eb34ff053767e7bb6c81a52cd861e1 inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="a47eb34ff053767e7bb6c81a52cd861e1" name="a47eb34ff053767e7bb6c81a52cd861e1"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>GridReader</b> (<a class="el" href="classGridFormat_1_1GridReader.html">GridReader</a> &amp;&amp;)=default</td></tr>
@@ -282,6 +291,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>visit_cells</b> (cons
 <tr class="memitem:acd23c4112921f60344eb12f122ece42c inherit pub_methods_classGridFormat_1_1GridReader"><td class="memItemLeft" align="right" valign="top"><a id="acd23c4112921f60344eb12f122ece42c" name="acd23c4112921f60344eb12f122ece42c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_ignore_warnings</b> (bool value)</td></tr>
 <tr class="separator:acd23c4112921f60344eb12f122ece42c inherit pub_methods_classGridFormat_1_1GridReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a5359cc3beb105028d10f9cd54faecfd0"><td class="memTemplParams" colspan="2"><a id="a5359cc3beb105028d10f9cd54faecfd0" name="a5359cc3beb105028d10f9cd54faecfd0"></a>
+template&lt;typename... ConstructorArgs&gt; </td></tr>
+<tr class="memitem:a5359cc3beb105028d10f9cd54faecfd0"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classGridFormat_1_1Reader.html">Reader</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>from</b> (const std::string &amp;<a class="el" href="classGridFormat_1_1GridReader.html#a49cbb90dd99a1de160968dd4761dfdad">filename</a>, ConstructorArgs &amp;&amp;... args)</td></tr>
+<tr class="memdesc:a5359cc3beb105028d10f9cd54faecfd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a reader instance from the given arguments, while directly opening the given file. <br /></td></tr>
+<tr class="separator:a5359cc3beb105028d10f9cd54faecfd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>

@@ -203,7 +203,7 @@ var annotated_dup =
       [ "PVTUWriter", "classGridFormat_1_1PVTUWriter.html", null ],
       [ "RawBinaryStream", "classGridFormat_1_1RawBinaryStream.html", null ],
       [ "RawDecoder", "structGridFormat_1_1RawDecoder.html", null ],
-      [ "Reader", "classGridFormat_1_1Reader.html", null ],
+      [ "Reader", "classGridFormat_1_1Reader.html", "classGridFormat_1_1Reader" ],
       [ "ReaderFactory", "structGridFormat_1_1ReaderFactory.html", null ],
       [ "ReaderFactory< FileFormat::PVD< PieceFormat > >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVD_3_01PieceFormat_01_4_01_4.html", null ],
       [ "ReaderFactory< FileFormat::PVDClosure >", "structGridFormat_1_1ReaderFactory_3_01FileFormat_1_1PVDClosure_01_4.html", null ],
