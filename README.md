@@ -86,7 +86,7 @@ int main () {
     const auto written_file = writer.write("my_test_file"); // extension is added by the writer
 
     // read the data back in (here we create a generic reader, but you can also select specific ones)
-    GridFormat::Reader reader; reader.open(written_file);
+    auto reader = GridFormat::Reader::from(written_file);
     std::vector<double> cell_field_values(reader.number_of_cells());
     std::vector<double> point_field_values(reader.number_of_points());
     reader.cell_field("cell_field")->export_to(cell_field_values);

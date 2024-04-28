@@ -83,7 +83,6 @@ std::ranges::range auto test_filenames(const std::filesystem::path& folder, cons
 void test_reader(GridFormat::Reader&& reader, const std::string& filename) {
     std::cout << "Testing reader with '" << GridFormat::as_highlight(filename) << "'" << std::endl;
 
-    reader.open(filename);
     const auto points = reader.points()->template export_to<std::vector<std::array<double, 3>>>();
     const auto [_, space_dim] = grid_and_space_dimension(filename);
     const auto get_expected_value = [&] (const std::array<double, 3>& position, double t = 1.0) -> double {
@@ -167,12 +166,21 @@ int test_reader(const std::filesystem::path& folder,
                 ConstructorArgs&&... args) {
     bool visited = false;
     std::ranges::for_each(test_filenames(folder, extension), [&] (const std::string& filename) {
-        test_reader(GridFormat::Reader{std::forward<ConstructorArgs>(args)...}, filename);
+        {
+            GridFormat::Reader reader{std::forward<ConstructorArgs>(args)...};
+            reader.open(filename);
+            test_reader(std::move(reader), filename);
+        }
+        {
+            test_reader(
+                GridFormat::Reader::from(filename, std::forward<ConstructorArgs>(args)...),
+                filename
+            );
+        }
         visited = true;
 
         if (extension == ".vtu") { // exemplarily test that reader propagates names
-            GridFormat::Reader reader{GridFormat::vtu};
-            reader.open(filename);
+            auto reader = GridFormat::Reader{GridFormat::vtu}.with_opened(filename);
             GridFormat::Testing::expect(reader.name() == "VTUReader");
         }
     });

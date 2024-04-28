@@ -120,6 +120,24 @@ class Reader : public GridReader {
     : _reader{_make_unique(ReaderFactory<FileFormat>::make(f, c))}
     {}
 
+    //! Construct a reader instance from the given arguments, while directly opening the given file
+    template<typename... ConstructorArgs>
+    static Reader from(const std::string& filename, ConstructorArgs&&... args) {
+        return Reader{std::forward<ConstructorArgs>(args)...}.with_opened(filename);
+    }
+
+    //! Read the data from the given file and return this reader
+    Reader& with_opened(const std::string& filename) & {
+        this->open(filename);
+        return *this;
+    }
+
+    //! Read the data from the given file and return this reader (lvalue references overload)
+    Reader&& with_opened(const std::string& filename) && {
+        this->open(filename);
+        return std::move(*this);
+    }
+
  private:
     template<typename ReaderImpl>
     auto _make_unique(ReaderImpl&& reader) const {
