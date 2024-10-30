@@ -4,8 +4,9 @@
 """Script to prepare test files for the test suite, to be executed upon configure"""
 
 import sys
+import xml.etree.ElementTree
 from os import makedirs
-from os.path import abspath, join, dirname
+from os.path import abspath, join, dirname, splitext
 
 from test_function import TestFunction
 try:
@@ -178,19 +179,35 @@ def _write_xml_files(writer, base_filename: str, ext: str) -> None:
     writer.SetFileName(f"{base_filename}_raw_appended_little_endian_zlib{ext}")
     writer.Write()
 
+    writer.SetHeaderTypeToUInt64()
     writer.SetCompressorTypeToLZMA()
     writer.EncodeAppendedDataOn()
     writer.SetFileName(f"{base_filename}_base64_appended_little_endian_lzma{ext}")
     writer.Write()
 
+    writer.SetHeaderTypeToUInt32()
     writer.SetCompressorTypeToLZ4()
     writer.SetDataModeToBinary()
     writer.SetFileName(f"{base_filename}_base64_inlined_little_endian_lz4{ext}")
     writer.Write()
+    _make_version_0_1_variant_of(f"{base_filename}_base64_inlined_little_endian_lz4{ext}")
 
     writer.SetDataModeToAscii()
     writer.SetFileName(f"{base_filename}_ascii_inlined{ext}")
     writer.Write()
+
+
+# version 0.1 files do not specify the header_type attribute, but use uint32
+def _make_version_0_1_variant_of(filename: str) -> None:
+    tree = xml.etree.ElementTree.parse(filename)
+    root = tree.getroot()
+    assert(root.attrib["header_type"] == "UInt32")
+    root.attrib["version"] = "0.1"
+    root.attrib.pop("header_type")
+
+    new_filename = "{}_version_0_1{}".format(*splitext(filename))
+    tree.write(new_filename, xml_declaration=True)
+    print(f"Wrote 0.1 file format variant at {new_filename}")
 
 
 if __name__ == "__main__":
