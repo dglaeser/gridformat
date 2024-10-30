@@ -861,7 +861,7 @@ class XMLReaderHelper {
                     prec,
                     [
                         _loc=_stream_location_for(e),
-                        _header_prec=from_precision_attribute(get().get_attribute("header_type")),
+                        _header_prec=_header_precision(),
                         _endian=from_endian_attribute(get().get_attribute("byte_order")),
                         _comp=get().get_attribute_or(std::string{""}, "compressor"),
                         _decoder=std::move(decoder)
@@ -878,6 +878,14 @@ class XMLReaderHelper {
             });
             return result;
         });
+    }
+
+    DynamicPrecision _header_precision() const {
+        if (get().has_attribute("header_type"))
+            return from_precision_attribute(get().get_attribute("header_type"));
+        if (get().get_attribute("version") == "0.1")
+            return uint32;
+        throw IOError("Header type is not specified");
     }
 
     MDLayout _expected_layout(const XMLElement& e, const std::size_t num_tuples) const {
@@ -968,7 +976,7 @@ class XMLReaderHelper {
                                                             const XMLElement& element) const {
         const std::string compressor = get().get_attribute_or(std::string{""}, "compressor");
         const std::endian endian = from_endian_attribute(get().get_attribute("byte_order"));
-        const auto header_prec = from_precision_attribute(get().get_attribute("header_type"));
+        const auto header_prec = _header_precision();
         const auto values_prec = from_precision_attribute(element.get_attribute("type"));
 
         return header_prec.visit([&] <typename HT> (const Precision<HT>&) {
