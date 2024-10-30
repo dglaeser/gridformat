@@ -926,7 +926,7 @@ $(document).ready(function(){initNavTree('xml_8hpp_source.html',''); initResizab
 <div class="line"><a id="l00861" name="l00861"></a><span class="lineno">  861</span>                    prec,</div>
 <div class="line"><a id="l00862" name="l00862"></a><span class="lineno">  862</span>                    [</div>
 <div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>                        _loc=_stream_location_for(e),</div>
-<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>                        _header_prec=from_precision_attribute(get().get_attribute(<span class="stringliteral">&quot;header_type&quot;</span>)),</div>
+<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>                        _header_prec=_header_precision(),</div>
 <div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span>                        _endian=from_endian_attribute(get().get_attribute(<span class="stringliteral">&quot;byte_order&quot;</span>)),</div>
 <div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span>                        _comp=get().get_attribute_or(std::string{<span class="stringliteral">&quot;&quot;</span>}, <span class="stringliteral">&quot;compressor&quot;</span>),</div>
 <div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span>                        _decoder=std::move(decoder)</div>
@@ -945,135 +945,143 @@ $(document).ready(function(){initNavTree('xml_8hpp_source.html',''); initResizab
 <div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span>        });</div>
 <div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>    }</div>
 <div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span> </div>
-<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>    MDLayout _expected_layout(<span class="keyword">const</span> XMLElement&amp; e, <span class="keyword">const</span> std::size_t num_tuples)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span>        <span class="keyword">const</span> <span class="keyword">auto</span> num_comps = e.get_attribute_or(std::size_t{1}, <span class="stringliteral">&quot;NumberOfComponents&quot;</span>);</div>
-<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>        <span class="keywordflow">if</span> (num_comps &gt; 1)</div>
-<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>            <span class="keywordflow">return</span> MDLayout{{num_tuples, num_comps}};</div>
-<div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>        <span class="keywordflow">return</span> MDLayout{{num_tuples}};</div>
-<div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span>    }</div>
-<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span> </div>
-<div class="line"><a id="l00890" name="l00890"></a><span class="lineno">  890</span>    std::size_t _number_of_tuples(<span class="keyword">const</span> XMLElement&amp; element)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span>        <span class="keyword">const</span> <span class="keyword">auto</span> number_of_components = element.get_attribute_or(std::size_t{1}, <span class="stringliteral">&quot;NumberOfComponents&quot;</span>);</div>
-<div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span>        <span class="keyword">const</span> <span class="keyword">auto</span> number_of_values = [&amp;] () {</div>
-<div class="line"><a id="l00893" name="l00893"></a><span class="lineno">  893</span>            <span class="keywordflow">if</span> (element.get_attribute(<span class="stringliteral">&quot;type&quot;</span>) != <span class="stringliteral">&quot;String&quot;</span>) {</div>
-<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>                <span class="keywordflow">if</span> (element.has_attribute(<span class="stringliteral">&quot;NumberOfTuples&quot;</span>))</div>
-<div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>                    <span class="keywordflow">return</span> from_string&lt;std::size_t&gt;(element.get_attribute(<span class="stringliteral">&quot;NumberOfTuples&quot;</span>));</div>
-<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (element.has_attribute(<span class="stringliteral">&quot;NumberOfTuples&quot;</span>)) {</div>
-<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>                <span class="keyword">const</span> <span class="keyword">auto</span> num_values = from_string&lt;std::size_t&gt;(element.get_attribute(<span class="stringliteral">&quot;NumberOfTuples&quot;</span>));</div>
-<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>                <span class="keywordflow">if</span> (num_values &gt; 1)</div>
-<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span>                    <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Cannot read string data arrays with more than one tuple&quot;</span>);</div>
-<div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span>            }</div>
-<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>            <span class="keywordflow">return</span> _deduce_number_of_values(element);</div>
-<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>        } ();</div>
-<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span> </div>
-<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span>        <span class="keywordflow">if</span> (number_of_values%number_of_components != 0)</div>
-<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>            <span class="keywordflow">throw</span> ValueError(</div>
-<div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>                <span class="stringliteral">&quot;The number of components of data array &#39;&quot;</span> + element.name() + <span class="stringliteral">&quot;&#39; &quot;</span></div>
-<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span>                + <span class="stringliteral">&quot;(&quot;</span> + as_string(number_of_components) + <span class="stringliteral">&quot;) &quot;</span></div>
-<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span>                + <span class="stringliteral">&quot;is incompatible with the number of values it contains &quot;</span></div>
-<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>                + <span class="stringliteral">&quot;(&quot;</span> + as_string(number_of_values) + <span class="stringliteral">&quot;)&quot;</span></div>
-<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span>            );</div>
-<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span>        <span class="keywordflow">return</span> number_of_values/number_of_components;</div>
-<div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span>    }</div>
-<div class="line"><a id="l00913" name="l00913"></a><span class="lineno">  913</span> </div>
-<div class="line"><a id="l00914" name="l00914"></a><span class="lineno">  914</span>    std::size_t _deduce_number_of_values(<span class="keyword">const</span> XMLElement&amp; element)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00915" name="l00915"></a><span class="lineno">  915</span>        std::ifstream file{_filename};</div>
-<div class="line"><a id="l00916" name="l00916"></a><span class="lineno">  916</span>        XMLDetail::_move_to_data(_stream_location_for(element), file);</div>
-<div class="line"><a id="l00917" name="l00917"></a><span class="lineno">  917</span> </div>
-<div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span>        <span class="keywordflow">if</span> (element.get_attribute(<span class="stringliteral">&quot;format&quot;</span>) == <span class="stringliteral">&quot;ascii&quot;</span>) {</div>
-<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span>            <span class="keyword">const</span> <span class="keyword">auto</span> precision = from_precision_attribute(element.get_attribute(<span class="stringliteral">&quot;type&quot;</span>));</div>
-<div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span>            <span class="keywordflow">return</span> precision.visit([&amp;] &lt;<span class="keyword">typename</span> T&gt; (<span class="keyword">const</span> Precision&lt;T&gt;&amp;) {</div>
-<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span>                <span class="keyword">using </span>_T = std::conditional_t&lt;</div>
-<div class="line"><a id="l00922" name="l00922"></a><span class="lineno">  922</span>                    std::integral&lt;T&gt; &amp;&amp; <span class="keyword">sizeof</span>(T) &lt; 4,  <span class="comment">// see XMLDetail::DataArrayReader::read_ascii</span></div>
-<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span>                    <span class="keywordtype">int</span>,</div>
-<div class="line"><a id="l00924" name="l00924"></a><span class="lineno">  924</span>                    T</div>
-<div class="line"><a id="l00925" name="l00925"></a><span class="lineno">  925</span>                &gt;;</div>
-<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span>                <span class="keywordflow">return</span> std::ranges::distance(std::ranges::istream_view&lt;_T&gt;{file});</div>
-<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span>            });</div>
-<div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span>        }</div>
-<div class="line"><a id="l00929" name="l00929"></a><span class="lineno">  929</span> </div>
-<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span>        InputStreamHelper helper{file};</div>
-<div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>        <span class="keyword">const</span> <span class="keyword">auto</span> header = _read_binary_data_array_header(helper, element);</div>
-<div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span>        <span class="keywordflow">if</span> (get().has_attribute(<span class="stringliteral">&quot;compressor&quot;</span>) &amp;&amp; header.size() &lt; 3)</div>
-<div class="line"><a id="l00933" name="l00933"></a><span class="lineno">  933</span>            <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Could not read compression header&quot;</span>);</div>
-<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span>        <span class="keyword">const</span> std::size_t number_of_bytes = [&amp;] () {</div>
-<div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>            <span class="keywordflow">if</span> (get().has_attribute(<span class="stringliteral">&quot;compressor&quot;</span>)) {</div>
-<div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span>                <span class="keyword">const</span> <span class="keyword">auto</span> num_full_blocks = header.at(0);</div>
-<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span>                <span class="keyword">const</span> <span class="keyword">auto</span> full_block_size = header.at(1);</div>
-<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span>                <span class="keyword">const</span> <span class="keyword">auto</span> residual_block_size = header.at(2);</div>
-<div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span>                <span class="keywordflow">return</span> residual_block_size &gt; 0</div>
-<div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span>                    ? full_block_size*(num_full_blocks - 1) + residual_block_size</div>
-<div class="line"><a id="l00941" name="l00941"></a><span class="lineno">  941</span>                    : full_block_size*num_full_blocks;</div>
-<div class="line"><a id="l00942" name="l00942"></a><span class="lineno">  942</span>            }</div>
-<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span>            <span class="keywordflow">return</span> header.at(0);</div>
-<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span>        } ();</div>
-<div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span>        <span class="keyword">const</span> std::size_t value_type_number_of_bytes = from_precision_attribute(</div>
-<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>            element.get_attribute(<span class="stringliteral">&quot;type&quot;</span>)</div>
-<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>        ).size_in_bytes();</div>
-<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span> </div>
-<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span>        <span class="keywordflow">if</span> (number_of_bytes%value_type_number_of_bytes != 0)</div>
-<div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>            <span class="keywordflow">throw</span> ValueError(</div>
-<div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span>                <span class="stringliteral">&quot;The length of the data array &#39;&quot;</span> + element.name() + <span class="stringliteral">&quot;&#39; &quot;</span></div>
-<div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>                + <span class="stringliteral">&quot;is incompatible with the data type &#39;&quot;</span> + element.get_attribute(<span class="stringliteral">&quot;type&quot;</span>) + <span class="stringliteral">&quot;&#39;&quot;</span></div>
-<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>            );</div>
-<div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span> </div>
-<div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>        <span class="keywordflow">return</span> number_of_bytes/value_type_number_of_bytes;</div>
-<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span>    }</div>
-<div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span> </div>
-<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>    DataArrayStreamLocation _stream_location_for(<span class="keyword">const</span> XMLElement&amp; element)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span>        <span class="keywordflow">if</span> (element.get_attribute(<span class="stringliteral">&quot;format&quot;</span>) == <span class="stringliteral">&quot;appended&quot;</span>)</div>
-<div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>            <span class="keywordflow">return</span> DataArrayStreamLocation{</div>
-<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>                .begin = _parser.get_content_bounds(_appendix()).begin_pos,</div>
-<div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span>                .offset = from_string&lt;std::size_t&gt;(element.get_attribute(<span class="stringliteral">&quot;offset&quot;</span>))</div>
-<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>            };</div>
-<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>        <span class="keywordflow">return</span> DataArrayStreamLocation{.begin = _parser.get_content_bounds(element).begin_pos};</div>
-<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span>    }</div>
-<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span> </div>
-<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span>    std::vector&lt;std::size_t&gt; _read_binary_data_array_header(InputStreamHelper&amp; stream,</div>
-<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span>                                                            <span class="keyword">const</span> XMLElement&amp; element)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span>        <span class="keyword">const</span> std::string compressor = get().get_attribute_or(std::string{<span class="stringliteral">&quot;&quot;</span>}, <span class="stringliteral">&quot;compressor&quot;</span>);</div>
-<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span>        <span class="keyword">const</span> std::endian endian = from_endian_attribute(get().get_attribute(<span class="stringliteral">&quot;byte_order&quot;</span>));</div>
-<div class="line"><a id="l00971" name="l00971"></a><span class="lineno">  971</span>        <span class="keyword">const</span> <span class="keyword">auto</span> header_prec = from_precision_attribute(get().get_attribute(<span class="stringliteral">&quot;header_type&quot;</span>));</div>
-<div class="line"><a id="l00972" name="l00972"></a><span class="lineno">  972</span>        <span class="keyword">const</span> <span class="keyword">auto</span> values_prec = from_precision_attribute(element.get_attribute(<span class="stringliteral">&quot;type&quot;</span>));</div>
-<div class="line"><a id="l00973" name="l00973"></a><span class="lineno">  973</span> </div>
-<div class="line"><a id="l00974" name="l00974"></a><span class="lineno">  974</span>        <span class="keywordflow">return</span> header_prec.visit([&amp;] &lt;<span class="keyword">typename</span> HT&gt; (<span class="keyword">const</span> Precision&lt;HT&gt;&amp;) {</div>
-<div class="line"><a id="l00975" name="l00975"></a><span class="lineno">  975</span>            <span class="keywordflow">return</span> values_prec.visit([&amp;] &lt;<span class="keyword">typename</span> VT&gt; (<span class="keyword">const</span> Precision&lt;VT&gt;&amp;) {</div>
-<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>                std::vector&lt;HT&gt; _header;</div>
-<div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>                XMLDetail::DataArrayReader&lt;VT, HT&gt; reader{stream, endian, compressor};</div>
-<div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span>                _apply_decoder_for(element, [&amp;] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; decoder) {</div>
-<div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span>                    reader.read_binary(decoder, _header);</div>
-<div class="line"><a id="l00980" name="l00980"></a><span class="lineno">  980</span>                });</div>
+<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>    DynamicPrecision _header_precision()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span>        <span class="keywordflow">if</span> (get().has_attribute(<span class="stringliteral">&quot;header_type&quot;</span>))</div>
+<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>            <span class="keywordflow">return</span> from_precision_attribute(get().get_attribute(<span class="stringliteral">&quot;header_type&quot;</span>));</div>
+<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>        <span class="keywordflow">if</span> (get().get_attribute(<span class="stringliteral">&quot;version&quot;</span>) == <span class="stringliteral">&quot;0.1&quot;</span>)</div>
+<div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>            <span class="keywordflow">return</span> uint32;</div>
+<div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span>        <span class="keywordflow">throw</span> IOError(<span class="stringliteral">&quot;Header type is not specified&quot;</span>);</div>
+<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span>    }</div>
+<div class="line"><a id="l00890" name="l00890"></a><span class="lineno">  890</span> </div>
+<div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span>    MDLayout _expected_layout(<span class="keyword">const</span> XMLElement&amp; e, <span class="keyword">const</span> std::size_t num_tuples)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span>        <span class="keyword">const</span> <span class="keyword">auto</span> num_comps = e.get_attribute_or(std::size_t{1}, <span class="stringliteral">&quot;NumberOfComponents&quot;</span>);</div>
+<div class="line"><a id="l00893" name="l00893"></a><span class="lineno">  893</span>        <span class="keywordflow">if</span> (num_comps &gt; 1)</div>
+<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>            <span class="keywordflow">return</span> MDLayout{{num_tuples, num_comps}};</div>
+<div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>        <span class="keywordflow">return</span> MDLayout{{num_tuples}};</div>
+<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>    }</div>
+<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span> </div>
+<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>    std::size_t _number_of_tuples(<span class="keyword">const</span> XMLElement&amp; element)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span>        <span class="keyword">const</span> <span class="keyword">auto</span> number_of_components = element.get_attribute_or(std::size_t{1}, <span class="stringliteral">&quot;NumberOfComponents&quot;</span>);</div>
+<div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span>        <span class="keyword">const</span> <span class="keyword">auto</span> number_of_values = [&amp;] () {</div>
+<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>            <span class="keywordflow">if</span> (element.get_attribute(<span class="stringliteral">&quot;type&quot;</span>) != <span class="stringliteral">&quot;String&quot;</span>) {</div>
+<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>                <span class="keywordflow">if</span> (element.has_attribute(<span class="stringliteral">&quot;NumberOfTuples&quot;</span>))</div>
+<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span>                    <span class="keywordflow">return</span> from_string&lt;std::size_t&gt;(element.get_attribute(<span class="stringliteral">&quot;NumberOfTuples&quot;</span>));</div>
+<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (element.has_attribute(<span class="stringliteral">&quot;NumberOfTuples&quot;</span>)) {</div>
+<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>                <span class="keyword">const</span> <span class="keyword">auto</span> num_values = from_string&lt;std::size_t&gt;(element.get_attribute(<span class="stringliteral">&quot;NumberOfTuples&quot;</span>));</div>
+<div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>                <span class="keywordflow">if</span> (num_values &gt; 1)</div>
+<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span>                    <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Cannot read string data arrays with more than one tuple&quot;</span>);</div>
+<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span>            }</div>
+<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>            <span class="keywordflow">return</span> _deduce_number_of_values(element);</div>
+<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span>        } ();</div>
+<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span> </div>
+<div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span>        <span class="keywordflow">if</span> (number_of_values%number_of_components != 0)</div>
+<div class="line"><a id="l00913" name="l00913"></a><span class="lineno">  913</span>            <span class="keywordflow">throw</span> ValueError(</div>
+<div class="line"><a id="l00914" name="l00914"></a><span class="lineno">  914</span>                <span class="stringliteral">&quot;The number of components of data array &#39;&quot;</span> + element.name() + <span class="stringliteral">&quot;&#39; &quot;</span></div>
+<div class="line"><a id="l00915" name="l00915"></a><span class="lineno">  915</span>                + <span class="stringliteral">&quot;(&quot;</span> + as_string(number_of_components) + <span class="stringliteral">&quot;) &quot;</span></div>
+<div class="line"><a id="l00916" name="l00916"></a><span class="lineno">  916</span>                + <span class="stringliteral">&quot;is incompatible with the number of values it contains &quot;</span></div>
+<div class="line"><a id="l00917" name="l00917"></a><span class="lineno">  917</span>                + <span class="stringliteral">&quot;(&quot;</span> + as_string(number_of_values) + <span class="stringliteral">&quot;)&quot;</span></div>
+<div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span>            );</div>
+<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span>        <span class="keywordflow">return</span> number_of_values/number_of_components;</div>
+<div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span>    }</div>
+<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span> </div>
+<div class="line"><a id="l00922" name="l00922"></a><span class="lineno">  922</span>    std::size_t _deduce_number_of_values(<span class="keyword">const</span> XMLElement&amp; element)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span>        std::ifstream file{_filename};</div>
+<div class="line"><a id="l00924" name="l00924"></a><span class="lineno">  924</span>        XMLDetail::_move_to_data(_stream_location_for(element), file);</div>
+<div class="line"><a id="l00925" name="l00925"></a><span class="lineno">  925</span> </div>
+<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span>        <span class="keywordflow">if</span> (element.get_attribute(<span class="stringliteral">&quot;format&quot;</span>) == <span class="stringliteral">&quot;ascii&quot;</span>) {</div>
+<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span>            <span class="keyword">const</span> <span class="keyword">auto</span> precision = from_precision_attribute(element.get_attribute(<span class="stringliteral">&quot;type&quot;</span>));</div>
+<div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span>            <span class="keywordflow">return</span> precision.visit([&amp;] &lt;<span class="keyword">typename</span> T&gt; (<span class="keyword">const</span> Precision&lt;T&gt;&amp;) {</div>
+<div class="line"><a id="l00929" name="l00929"></a><span class="lineno">  929</span>                <span class="keyword">using </span>_T = std::conditional_t&lt;</div>
+<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span>                    std::integral&lt;T&gt; &amp;&amp; <span class="keyword">sizeof</span>(T) &lt; 4,  <span class="comment">// see XMLDetail::DataArrayReader::read_ascii</span></div>
+<div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>                    <span class="keywordtype">int</span>,</div>
+<div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span>                    T</div>
+<div class="line"><a id="l00933" name="l00933"></a><span class="lineno">  933</span>                &gt;;</div>
+<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span>                <span class="keywordflow">return</span> std::ranges::distance(std::ranges::istream_view&lt;_T&gt;{file});</div>
+<div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>            });</div>
+<div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span>        }</div>
+<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span> </div>
+<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span>        InputStreamHelper helper{file};</div>
+<div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span>        <span class="keyword">const</span> <span class="keyword">auto</span> header = _read_binary_data_array_header(helper, element);</div>
+<div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span>        <span class="keywordflow">if</span> (get().has_attribute(<span class="stringliteral">&quot;compressor&quot;</span>) &amp;&amp; header.size() &lt; 3)</div>
+<div class="line"><a id="l00941" name="l00941"></a><span class="lineno">  941</span>            <span class="keywordflow">throw</span> ValueError(<span class="stringliteral">&quot;Could not read compression header&quot;</span>);</div>
+<div class="line"><a id="l00942" name="l00942"></a><span class="lineno">  942</span>        <span class="keyword">const</span> std::size_t number_of_bytes = [&amp;] () {</div>
+<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span>            <span class="keywordflow">if</span> (get().has_attribute(<span class="stringliteral">&quot;compressor&quot;</span>)) {</div>
+<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span>                <span class="keyword">const</span> <span class="keyword">auto</span> num_full_blocks = header.at(0);</div>
+<div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span>                <span class="keyword">const</span> <span class="keyword">auto</span> full_block_size = header.at(1);</div>
+<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>                <span class="keyword">const</span> <span class="keyword">auto</span> residual_block_size = header.at(2);</div>
+<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>                <span class="keywordflow">return</span> residual_block_size &gt; 0</div>
+<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span>                    ? full_block_size*(num_full_blocks - 1) + residual_block_size</div>
+<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span>                    : full_block_size*num_full_blocks;</div>
+<div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>            }</div>
+<div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span>            <span class="keywordflow">return</span> header.at(0);</div>
+<div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>        } ();</div>
+<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>        <span class="keyword">const</span> std::size_t value_type_number_of_bytes = from_precision_attribute(</div>
+<div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span>            element.get_attribute(<span class="stringliteral">&quot;type&quot;</span>)</div>
+<div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>        ).size_in_bytes();</div>
+<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span> </div>
+<div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span>        <span class="keywordflow">if</span> (number_of_bytes%value_type_number_of_bytes != 0)</div>
+<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>            <span class="keywordflow">throw</span> ValueError(</div>
+<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span>                <span class="stringliteral">&quot;The length of the data array &#39;&quot;</span> + element.name() + <span class="stringliteral">&quot;&#39; &quot;</span></div>
+<div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>                + <span class="stringliteral">&quot;is incompatible with the data type &#39;&quot;</span> + element.get_attribute(<span class="stringliteral">&quot;type&quot;</span>) + <span class="stringliteral">&quot;&#39;&quot;</span></div>
+<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>            );</div>
+<div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span> </div>
+<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>        <span class="keywordflow">return</span> number_of_bytes/value_type_number_of_bytes;</div>
+<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>    }</div>
+<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span> </div>
+<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>    DataArrayStreamLocation _stream_location_for(<span class="keyword">const</span> XMLElement&amp; element)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span>        <span class="keywordflow">if</span> (element.get_attribute(<span class="stringliteral">&quot;format&quot;</span>) == <span class="stringliteral">&quot;appended&quot;</span>)</div>
+<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span>            <span class="keywordflow">return</span> DataArrayStreamLocation{</div>
+<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span>                .begin = _parser.get_content_bounds(_appendix()).begin_pos,</div>
+<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span>                .offset = from_string&lt;std::size_t&gt;(element.get_attribute(<span class="stringliteral">&quot;offset&quot;</span>))</div>
+<div class="line"><a id="l00971" name="l00971"></a><span class="lineno">  971</span>            };</div>
+<div class="line"><a id="l00972" name="l00972"></a><span class="lineno">  972</span>        <span class="keywordflow">return</span> DataArrayStreamLocation{.begin = _parser.get_content_bounds(element).begin_pos};</div>
+<div class="line"><a id="l00973" name="l00973"></a><span class="lineno">  973</span>    }</div>
+<div class="line"><a id="l00974" name="l00974"></a><span class="lineno">  974</span> </div>
+<div class="line"><a id="l00975" name="l00975"></a><span class="lineno">  975</span>    std::vector&lt;std::size_t&gt; _read_binary_data_array_header(InputStreamHelper&amp; stream,</div>
+<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>                                                            <span class="keyword">const</span> XMLElement&amp; element)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>        <span class="keyword">const</span> std::string compressor = get().get_attribute_or(std::string{<span class="stringliteral">&quot;&quot;</span>}, <span class="stringliteral">&quot;compressor&quot;</span>);</div>
+<div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span>        <span class="keyword">const</span> std::endian endian = from_endian_attribute(get().get_attribute(<span class="stringliteral">&quot;byte_order&quot;</span>));</div>
+<div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span>        <span class="keyword">const</span> <span class="keyword">auto</span> header_prec = _header_precision();</div>
+<div class="line"><a id="l00980" name="l00980"></a><span class="lineno">  980</span>        <span class="keyword">const</span> <span class="keyword">auto</span> values_prec = from_precision_attribute(element.get_attribute(<span class="stringliteral">&quot;type&quot;</span>));</div>
 <div class="line"><a id="l00981" name="l00981"></a><span class="lineno">  981</span> </div>
-<div class="line"><a id="l00982" name="l00982"></a><span class="lineno">  982</span>                <span class="keywordflow">if</span> (_header.empty())</div>
-<div class="line"><a id="l00983" name="l00983"></a><span class="lineno">  983</span>                    <span class="keywordflow">throw</span> IOError(<span class="stringliteral">&quot;Could not read header for data array &#39;&quot;</span> + element.get_attribute(<span class="stringliteral">&quot;Name&quot;</span>) + <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
-<div class="line"><a id="l00984" name="l00984"></a><span class="lineno">  984</span> </div>
-<div class="line"><a id="l00985" name="l00985"></a><span class="lineno">  985</span>                std::vector&lt;std::size_t&gt; result;</div>
-<div class="line"><a id="l00986" name="l00986"></a><span class="lineno">  986</span>                std::ranges::for_each(_header, [&amp;] &lt;<span class="keyword">typename</span> T&gt; (<span class="keyword">const</span> T&amp; value) {</div>
-<div class="line"><a id="l00987" name="l00987"></a><span class="lineno">  987</span>                    result.push_back(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(value));</div>
+<div class="line"><a id="l00982" name="l00982"></a><span class="lineno">  982</span>        <span class="keywordflow">return</span> header_prec.visit([&amp;] &lt;<span class="keyword">typename</span> HT&gt; (<span class="keyword">const</span> Precision&lt;HT&gt;&amp;) {</div>
+<div class="line"><a id="l00983" name="l00983"></a><span class="lineno">  983</span>            <span class="keywordflow">return</span> values_prec.visit([&amp;] &lt;<span class="keyword">typename</span> VT&gt; (<span class="keyword">const</span> Precision&lt;VT&gt;&amp;) {</div>
+<div class="line"><a id="l00984" name="l00984"></a><span class="lineno">  984</span>                std::vector&lt;HT&gt; _header;</div>
+<div class="line"><a id="l00985" name="l00985"></a><span class="lineno">  985</span>                XMLDetail::DataArrayReader&lt;VT, HT&gt; reader{stream, endian, compressor};</div>
+<div class="line"><a id="l00986" name="l00986"></a><span class="lineno">  986</span>                _apply_decoder_for(element, [&amp;] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; decoder) {</div>
+<div class="line"><a id="l00987" name="l00987"></a><span class="lineno">  987</span>                    reader.read_binary(decoder, _header);</div>
 <div class="line"><a id="l00988" name="l00988"></a><span class="lineno">  988</span>                });</div>
-<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span>                <span class="keywordflow">return</span> result;</div>
-<div class="line"><a id="l00990" name="l00990"></a><span class="lineno">  990</span>            });</div>
-<div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>        });</div>
-<div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span>    }</div>
-<div class="line"><a id="l00993" name="l00993"></a><span class="lineno">  993</span> </div>
-<div class="line"><a id="l00994" name="l00994"></a><span class="lineno">  994</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Action&gt;</div>
-<div class="line"><a id="l00995" name="l00995"></a><span class="lineno">  995</span>    <span class="keywordtype">void</span> _apply_decoder_for(<span class="keyword">const</span> XMLElement&amp; data_array, <span class="keyword">const</span> Action&amp; action)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00996" name="l00996"></a><span class="lineno">  996</span>        <span class="keywordflow">if</span> (data_array.get_attribute(<span class="stringliteral">&quot;format&quot;</span>) == <span class="stringliteral">&quot;binary&quot;</span>)</div>
-<div class="line"><a id="l00997" name="l00997"></a><span class="lineno">  997</span>            <span class="keywordflow">return</span> action(Base64Decoder{});</div>
-<div class="line"><a id="l00998" name="l00998"></a><span class="lineno">  998</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (data_array.get_attribute(<span class="stringliteral">&quot;format&quot;</span>) == <span class="stringliteral">&quot;appended&quot;</span>)</div>
-<div class="line"><a id="l00999" name="l00999"></a><span class="lineno">  999</span>            <span class="keywordflow">return</span> _appendix().get_attribute(<span class="stringliteral">&quot;encoding&quot;</span>) == <span class="stringliteral">&quot;base64&quot;</span></div>
-<div class="line"><a id="l01000" name="l01000"></a><span class="lineno"> 1000</span>                ? action(Base64Decoder{})</div>
-<div class="line"><a id="l01001" name="l01001"></a><span class="lineno"> 1001</span>                : action(RawDecoder{});</div>
-<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span>        <span class="keywordflow">throw</span> InvalidState(<span class="stringliteral">&quot;Unknown data format&quot;</span>);</div>
-<div class="line"><a id="l01003" name="l01003"></a><span class="lineno"> 1003</span>    }</div>
-<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span> </div>
-<div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span>    std::string _filename;</div>
-<div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span>    XMLParser _parser;</div>
-<div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span>};</div>
-<div class="line"><a id="l01008" name="l01008"></a><span class="lineno"> 1008</span> </div>
-<div class="line"><a id="l01009" name="l01009"></a><span class="lineno"> 1009</span>}  <span class="comment">// namespace GridFormat::VTK</span></div>
-<div class="line"><a id="l01010" name="l01010"></a><span class="lineno"> 1010</span> </div>
-<div class="line"><a id="l01011" name="l01011"></a><span class="lineno"> 1011</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_XML_HPP_</span></div>
+<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span> </div>
+<div class="line"><a id="l00990" name="l00990"></a><span class="lineno">  990</span>                <span class="keywordflow">if</span> (_header.empty())</div>
+<div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>                    <span class="keywordflow">throw</span> IOError(<span class="stringliteral">&quot;Could not read header for data array &#39;&quot;</span> + element.get_attribute(<span class="stringliteral">&quot;Name&quot;</span>) + <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
+<div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span> </div>
+<div class="line"><a id="l00993" name="l00993"></a><span class="lineno">  993</span>                std::vector&lt;std::size_t&gt; result;</div>
+<div class="line"><a id="l00994" name="l00994"></a><span class="lineno">  994</span>                std::ranges::for_each(_header, [&amp;] &lt;<span class="keyword">typename</span> T&gt; (<span class="keyword">const</span> T&amp; value) {</div>
+<div class="line"><a id="l00995" name="l00995"></a><span class="lineno">  995</span>                    result.push_back(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(value));</div>
+<div class="line"><a id="l00996" name="l00996"></a><span class="lineno">  996</span>                });</div>
+<div class="line"><a id="l00997" name="l00997"></a><span class="lineno">  997</span>                <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00998" name="l00998"></a><span class="lineno">  998</span>            });</div>
+<div class="line"><a id="l00999" name="l00999"></a><span class="lineno">  999</span>        });</div>
+<div class="line"><a id="l01000" name="l01000"></a><span class="lineno"> 1000</span>    }</div>
+<div class="line"><a id="l01001" name="l01001"></a><span class="lineno"> 1001</span> </div>
+<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Action&gt;</div>
+<div class="line"><a id="l01003" name="l01003"></a><span class="lineno"> 1003</span>    <span class="keywordtype">void</span> _apply_decoder_for(<span class="keyword">const</span> XMLElement&amp; data_array, <span class="keyword">const</span> Action&amp; action)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span>        <span class="keywordflow">if</span> (data_array.get_attribute(<span class="stringliteral">&quot;format&quot;</span>) == <span class="stringliteral">&quot;binary&quot;</span>)</div>
+<div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span>            <span class="keywordflow">return</span> action(Base64Decoder{});</div>
+<div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (data_array.get_attribute(<span class="stringliteral">&quot;format&quot;</span>) == <span class="stringliteral">&quot;appended&quot;</span>)</div>
+<div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span>            <span class="keywordflow">return</span> _appendix().get_attribute(<span class="stringliteral">&quot;encoding&quot;</span>) == <span class="stringliteral">&quot;base64&quot;</span></div>
+<div class="line"><a id="l01008" name="l01008"></a><span class="lineno"> 1008</span>                ? action(Base64Decoder{})</div>
+<div class="line"><a id="l01009" name="l01009"></a><span class="lineno"> 1009</span>                : action(RawDecoder{});</div>
+<div class="line"><a id="l01010" name="l01010"></a><span class="lineno"> 1010</span>        <span class="keywordflow">throw</span> InvalidState(<span class="stringliteral">&quot;Unknown data format&quot;</span>);</div>
+<div class="line"><a id="l01011" name="l01011"></a><span class="lineno"> 1011</span>    }</div>
+<div class="line"><a id="l01012" name="l01012"></a><span class="lineno"> 1012</span> </div>
+<div class="line"><a id="l01013" name="l01013"></a><span class="lineno"> 1013</span>    std::string _filename;</div>
+<div class="line"><a id="l01014" name="l01014"></a><span class="lineno"> 1014</span>    XMLParser _parser;</div>
+<div class="line"><a id="l01015" name="l01015"></a><span class="lineno"> 1015</span>};</div>
+<div class="line"><a id="l01016" name="l01016"></a><span class="lineno"> 1016</span> </div>
+<div class="line"><a id="l01017" name="l01017"></a><span class="lineno"> 1017</span>}  <span class="comment">// namespace GridFormat::VTK</span></div>
+<div class="line"><a id="l01018" name="l01018"></a><span class="lineno"> 1018</span> </div>
+<div class="line"><a id="l01019" name="l01019"></a><span class="lineno"> 1019</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_XML_HPP_</span></div>
 <div class="ttc" id="aappendix_8hpp_html"><div class="ttname"><a href="appendix_8hpp.html">appendix.hpp</a></div><div class="ttdoc">Helper classes for writing VTK appendices of xml formats.</div></div>
 <div class="ttc" id="aascii_8hpp_html"><div class="ttname"><a href="ascii_8hpp.html">ascii.hpp</a></div><div class="ttdoc">Encoder and stream using ascii.</div></div>
 <div class="ttc" id="aattributes_8hpp_html"><div class="ttname"><a href="attributes_8hpp.html">attributes.hpp</a></div><div class="ttdoc">Helper functions to get the VTK-specific names of things.</div></div>
