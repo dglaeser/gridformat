@@ -32,6 +32,9 @@ jobs:
         with:
           submodules: false
 
+      - name: prepare-python-env
+        uses: ./.github/actions/prepare-python-env
+
       - name: set-git-variables
         uses: ./.github/actions/set-git-variables
 

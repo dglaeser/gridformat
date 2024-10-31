@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2024 Dennis Gläser <dennis.a.glaeser@gmail.com>
+# SPDX-License-Identifier: MIT
+
+name: prepare-python-env
+runs:
+  using: composite
+  steps:
+    - name: prepare-python-env
+      run: |
+        python3 -m venv _venv
+        source _venv/bin/activate
+        pip install vtk
+        echo "PATH=$PATH" >> $GITHUB_ENV
+      shell: bash
