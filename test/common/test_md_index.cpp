@@ -57,11 +57,11 @@ int main() {
 
     "md_index_flat"_test = [] () {
         expect(eq(
-            GridFormat::flat_index(MDIndex{{0}}, GridFormat::MDLayout{std::vector{1}}),
+            GridFormat::flat_index(MDIndex{0}, GridFormat::MDLayout{std::vector{1}}),
             std::size_t{0}
         ));
         expect(eq(
-            GridFormat::flat_index(MDIndex{{1}}, GridFormat::MDLayout{std::vector{2}}),
+            GridFormat::flat_index(MDIndex{1}, GridFormat::MDLayout{std::vector{2}}),
             std::size_t{1}
         ));
         expect(eq(
@@ -125,7 +125,7 @@ int main() {
     "md_index_range_1d"_test = [] () {
         static_assert(std::ranges::forward_range<MDIndexRange>);
         expect(std::ranges::equal(
-            MDIndexRange{{4}},
+            MDIndexRange{4},
             std::vector{
                 MDIndex{0},
                 MDIndex{1},
