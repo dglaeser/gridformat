@@ -129,8 +129,8 @@ using VTKHDFImageGridTimeSeriesWriter = APIDetail::UnavailableWriter<VTKHDFAsser
 using VTKHDFUnstructuredTimeSeriesWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
 
 using VTKHDFImageGridReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
-template<typename...> using VTKHDFUnstructuredGridReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
-template<typename...> using VTKHDFReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
+template<typename T = void> using VTKHDFUnstructuredGridReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
+template<typename T = void> using VTKHDFReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
 
 }  // namespace GridFormat
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE
