@@ -99,10 +99,6 @@ jobs:
 
       - name: test
         run: |
-          if [[ ${{ github.ref_name }} != "main" ]]; then
-            echo "Regression-testing sample files only for branch ${{ github.ref_name }}"
-            export GRIDFORMAT_REGRESSION_SAMPLES_ONLY=true
-          fi
           pushd build && $(echo "$GFMT_TEST_CMD") && popd
         shell: bash
 
