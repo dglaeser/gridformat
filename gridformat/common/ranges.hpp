@@ -113,13 +113,10 @@ inline constexpr auto apply_pairwise(const Op& op, R1&& r1, R2&& r2) {
 namespace Detail {
 
     template<auto N, typename R>
-    struct ResultArraySize;
+    struct ResultArraySize : std::integral_constant<std::size_t, N> {};
 
     template<Concepts::StaticallySizedRange R>
     struct ResultArraySize<automatic, R> : std::integral_constant<std::size_t, static_size<R>> {};
-
-    template<std::integral auto n, typename R>
-    struct ResultArraySize<n, R> : std::integral_constant<std::size_t, n> {};
 
 }  // namespace Detail
 #endif  // DOXYGEN
