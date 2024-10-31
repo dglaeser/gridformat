@@ -63,7 +63,7 @@ namespace GridFormat::APIDetail {
         static constexpr bool do_assert() {
             static_assert(
                 always_false<T...>,
-                "\033[1m\033[31mRequested reader/writer is unavailable due to missing dependency\033[0"
+                "Requested reader/writer is unavailable due to missing dependency"
             );
             return false;
         }
