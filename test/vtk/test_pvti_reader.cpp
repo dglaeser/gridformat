@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
             const auto expected_offset = std::array{xoffset, yoffset, 0.}.at(i);
             expect(std::ranges::is_sorted(ordinates));
             expect(eq(ordinates.size(), expected_size));
-            std::ranges::unique(ordinates);
+            [[maybe_unused]] const auto ret = std::ranges::unique(ordinates);
             expect(eq(ordinates.size(), expected_size));
             expect(std::abs(ordinates.at(0) - expected_offset) < 1e-6);
         }
@@ -110,7 +110,7 @@ int main(int argc, char** argv) {
                 const auto expected_offset = 0.0;
                 expect(std::ranges::is_sorted(ordinates));
                 expect(eq(ordinates.size(), expected_size));
-                std::ranges::unique(ordinates);
+                [[maybe_unused]] const auto ret = std::ranges::unique(ordinates);
                 expect(eq(ordinates.size(), expected_size));
                 expect(std::abs(ordinates.at(0) - expected_offset) < 1e-6);
             }
