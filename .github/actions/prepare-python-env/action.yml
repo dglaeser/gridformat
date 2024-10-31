@@ -7,8 +7,6 @@ runs:
   steps:
     - name: prepare-python-env
       run: |
-        python3 -m venv _venv
-        source _venv/bin/activate
-        pip install vtk
+        source /gfmt-venv/bin/activate
         echo "PATH=$PATH" >> $GITHUB_ENV
       shell: bash

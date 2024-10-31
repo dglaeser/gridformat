@@ -24,6 +24,7 @@ RUN apt-get update \
         software-properties-common \
         git \
         apt-utils \
+    && python3 -m venv /gfmt-venv && . /gfmt-venv/bin/activate && pip install vtk \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -62,7 +63,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY install_deps_from_sources.py .
-RUN pip install fenics-ffcx==0.6.0 pybind11 \
+RUN . /gfmt-venv/bin/activate \
+    && pip install fenics-ffcx==0.6.0 pybind11 \
     && python3 install_deps_from_sources.py --all \
                                             --install-prefix=/gfmt-dependencies \
                                             --c-compiler=/usr/bin/gcc-12 \
