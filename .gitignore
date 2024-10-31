@@ -9,6 +9,13 @@
 !*.sh
 !*.py
 
+# Python clutter
+*.pyc
+__pycache__
+.ipynb_checkpoints
+*.bin
+*.npy
+
 # build system clutter
 build/
 install/
