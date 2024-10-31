@@ -8,6 +8,11 @@ on:
     branches:
     - main
     - 'releases/**'
+    paths:
+      - '**/CMakeLists.txt'
+      - '**/*.cmake'
+      - '**/*.hpp'
+      - '**/*.cpp'
 
 permissions:
    pull-requests: write

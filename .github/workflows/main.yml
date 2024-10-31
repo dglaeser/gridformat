@@ -10,8 +10,11 @@ on:
     branches:
     - main
     - 'releases/**'
-    paths-ignore:
-      - 'docker/**'
+    paths:
+      - '**/CMakeLists.txt'
+      - '**/*.cmake'
+      - '**/*.hpp'
+      - '**/*.cpp'
   schedule:
     - cron: '30 22 * * 0,3'
   workflow_dispatch:
