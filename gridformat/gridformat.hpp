@@ -517,7 +517,7 @@ namespace APIDetail {
 
         FieldPtr _points() const override { return _access().points(); }
         void _visit_cells(const typename GridReader::CellVisitor& v) const override { _access().visit_cells(v); }
-        std::vector<double> _ordinates(unsigned int i) const { return _access().ordinates(i); }
+        std::vector<double> _ordinates(unsigned int i) const override { return _access().ordinates(i); }
 
         typename GridReader::PieceLocation _location() const override { return _access().location(); }
         typename GridReader::Vector _spacing() const override { return _access().spacing(); }
