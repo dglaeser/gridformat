@@ -56,6 +56,8 @@ RUN apt-get update \
         libboost-timer-dev \
         libboost-filesystem-dev \
         petsc-dev \
+        # fenics wheel builds with ninja
+        ninja-build \
     # deal.ii
     && add-apt-repository --yes ppa:ginggs/deal.ii-9.4.0-backports \
     && apt-get install --yes libdeal.ii-dev \
