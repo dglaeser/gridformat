@@ -79,7 +79,7 @@ if (NOT GRIDFORMAT_SUBPROJECT)
     )
 endif ()
 
-option(GRIDFORMAT_BUILD_TESTS "whether or not examples should be built" OFF)
+option(GRIDFORMAT_BUILD_TESTS "whether or not the tests should be built" OFF)
 if (GRIDFORMAT_BUILD_TESTS)
     message(STATUS "Including test suite")
     enable_testing()
