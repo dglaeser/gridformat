@@ -77,8 +77,8 @@ int main(int argc, char** argv) {
         expect(eq(ordinates_z.size(), std::size_t{0}));
         expect(std::ranges::is_sorted(ordinates_x));
         expect(std::ranges::is_sorted(ordinates_y));
-        [[maybe_unused]] const auto ret = std::ranges::unique(ordinates_x);
-        [[maybe_unused]] const auto ret = std::ranges::unique(ordinates_y);
+        [[maybe_unused]] const auto ret_x = std::ranges::unique(ordinates_x);
+        [[maybe_unused]] const auto ret_y = std::ranges::unique(ordinates_y);
         expect(eq(ordinates_x.size(), nx + 1));
         expect(eq(ordinates_y.size(), ny + 1));
     };
@@ -139,8 +139,8 @@ int main(int argc, char** argv) {
             expect(eq(ordinates_z.size(), std::size_t{0}));
             expect(std::ranges::is_sorted(ordinates_x));
             expect(std::ranges::is_sorted(ordinates_y));
-            [[maybe_unused]] const auto ret = std::ranges::unique(ordinates_x);
-            [[maybe_unused]] const auto ret = std::ranges::unique(ordinates_y);
+            [[maybe_unused]] const auto ret_x = std::ranges::unique(ordinates_x);
+            [[maybe_unused]] const auto ret_y = std::ranges::unique(ordinates_y);
             expect(eq(ordinates_x.size(), num_expected_points_x));
             expect(eq(ordinates_y.size(), num_expected_points_y));
         };
