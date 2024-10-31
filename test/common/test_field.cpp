@@ -70,12 +70,12 @@ int main() {
     "field_export_return_value"_test = [] () {
         std::unique_ptr<GridFormat::Field> field = std::make_unique<MyField>();
         std::vector<int> exported(4);
-        decltype(auto) from_lvalue = field->export_to(exported);
-        decltype(auto) from_rvalue = field->export_to(std::vector<int>{});
+        static_assert(std::is_same_v<decltype(field->export_to(exported)), std::vector<int>&>);
+        static_assert(std::is_same_v<decltype(field->export_to(std::vector<int>{})), std::vector<int>&&>);
+        const auto& from_lvalue = field->export_to(exported);
+        auto from_rvalue = field->export_to(std::vector<int>{});
         expect(std::ranges::equal(from_lvalue, std::vector{1, 2, 3, 4}));
         expect(std::ranges::equal(from_rvalue, std::vector{1, 2, 3, 4}));
-        static_assert(std::is_same_v<decltype(from_lvalue), std::vector<int>&>);
-        static_assert(std::is_same_v<decltype(from_rvalue), std::vector<int>&&>);
     };
 
     "field_export_to_vector"_test = [] () {
