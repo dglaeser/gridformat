@@ -14,7 +14,7 @@ RUN apt-get update \
     && apt-get install --no-install-recommends --yes \
         build-essential \
         cmake \
-        g++-12 g++14 \
+        g++-12 g++-14 \
         clang-16 clang-18 \
         python3 \
         python3-pip \
@@ -24,6 +24,8 @@ RUN apt-get update \
         software-properties-common \
         git \
         apt-utils \
+        # for pages job
+        rsync \
     && python3 -m venv /gfmt-venv && . /gfmt-venv/bin/activate && pip install vtk \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
