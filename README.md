@@ -255,3 +255,10 @@ and pose a pull request for the changes to be incorporated in `main`.
 `GridFormat` is licensed under the terms and conditions of the MIT License. It can be [read online](https://opensource.org/license/mit/)
 or in the <!-- DOXYGEN_MAKE_ABSOLUTE -->[LICENSES/MIT.txt](LICENSES/MIT.txt) file.
 See <!-- DOXYGEN_MAKE_ABSOLUTE -->[LICENSES/MIT.txt](LICENSES/MIT.txt) for full copying permissions.
+
+
+## Acknowledgements
+
+Part of this work has been funded and supported within
+the framework of the NFDI4Ing consortium, funded by the German Research Foundation
+(DFG) - project number 442146713.
