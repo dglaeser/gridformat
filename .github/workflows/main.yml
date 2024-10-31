@@ -21,7 +21,6 @@ on:
   workflow_call:
 
 env:
-  DEFAULT_COMPILER_PKG: g++-12
   DEFAULT_C_COMPILER: gcc-12
   DEFAULT_CXX_COMPILER: g++-12
   OMPI_ALLOW_RUN_AS_ROOT: 1
