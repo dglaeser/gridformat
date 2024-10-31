@@ -122,6 +122,9 @@ jobs:
         with:
           submodules: true
 
+      - name: prepare-python-env
+        uses: ./.github/actions/prepare-python-env
+
       - name: configure
         run: |
           rm -rf build
