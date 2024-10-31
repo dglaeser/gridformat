@@ -19,6 +19,9 @@ runs:
           echo "Using 'all' target on main branch (i.e. all tests are built & run)"
           echo "all" > _affected_tests.txt
         else
+          echo "Regression-testing sample files only for branch ${{ github.ref_name }}"
+          echo "GRIDFORMAT_REGRESSION_SAMPLES_ONLY=true" >> "$GITHUB_ENV"
+
           pushd ${{inputs.build_directory}}
             echo "Detecting files that change from '${{inputs.source_tree}}' to '${{inputs.target_tree}}'"
             python3 ../bin/detect_modified_files.py -s "${{inputs.source_tree}}" -t "${{inputs.target_tree}}" &> _modfiles.out

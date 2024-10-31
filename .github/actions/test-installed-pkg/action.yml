@@ -14,6 +14,9 @@ runs:
       run: rm -rf build
       shell: bash
 
+    - name: prepare-python-env
+      uses: ./.github/actions/prepare-python-env
+
     - name: install-gridformat
       run: |
         cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \

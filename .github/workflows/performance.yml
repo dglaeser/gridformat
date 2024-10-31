@@ -8,6 +8,11 @@ on:
     branches:
     - main
     - 'releases/**'
+    paths:
+      - '**/CMakeLists.txt'
+      - '**/*.cmake'
+      - '**/*.hpp'
+      - '**/*.cpp'
 
 permissions:
    pull-requests: write
@@ -26,6 +31,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: false
+
+      - name: prepare-python-env
+        uses: ./.github/actions/prepare-python-env
 
       - name: set-git-variables
         uses: ./.github/actions/set-git-variables

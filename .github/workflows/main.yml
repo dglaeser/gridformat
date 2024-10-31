@@ -10,17 +10,19 @@ on:
     branches:
     - main
     - 'releases/**'
-    paths-ignore:
-      - 'docker/**'
+    paths:
+      - '**/CMakeLists.txt'
+      - '**/*.cmake'
+      - '**/*.hpp'
+      - '**/*.cpp'
   schedule:
-    - cron: '30 22 * * 0,3'
+    - cron: '30 22 * * 0'
   workflow_dispatch:
   workflow_call:
 
 env:
-  DEFAULT_COMPILER_PKG: g++-12
-  DEFAULT_C_COMPILER: gcc-12
-  DEFAULT_CXX_COMPILER: g++-12
+  DEFAULT_C_COMPILER: gcc-14
+  DEFAULT_CXX_COMPILER: g++-14
   OMPI_ALLOW_RUN_AS_ROOT: 1
   OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
 
@@ -30,16 +32,16 @@ jobs:
     container: dglaeser/gridformat-action-images:full
     strategy:
       matrix:
-        compiler_pkg: [g++-12, clang-16]
+        compiler_pkg: [g++-14, clang-18]
         include:
-           - c_compiler: gcc-12
-             compiler_pkg: g++-12
-           - cxx_compiler: g++-12
-             compiler_pkg: g++-12
-           - c_compiler: clang-16
-             compiler_pkg: clang-16
-           - cxx_compiler: clang++-16
-             compiler_pkg: clang-16
+           - c_compiler: gcc-14
+             compiler_pkg: g++-14
+           - cxx_compiler: g++-14
+             compiler_pkg: g++-14
+           - c_compiler: clang-18
+             compiler_pkg: clang-18
+           - cxx_compiler: clang++-18
+             compiler_pkg: clang-18
 
     steps:
       - name: checkout-repository
@@ -54,6 +56,9 @@ jobs:
         uses: citation-file-format/cffconvert-github-action@2.0.0
         with:
           args: "--validate"
+
+      - name: prepare-python-env
+        uses: ./.github/actions/prepare-python-env
 
       - name: configure
         run: |
@@ -94,10 +99,6 @@ jobs:
 
       - name: test
         run: |
-          if [[ ${{ github.ref_name }} != "main" ]]; then
-            echo "Regression-testing sample files only for branch ${{ github.ref_name }}"
-            export GRIDFORMAT_REGRESSION_SAMPLES_ONLY=true
-          fi
           pushd build && $(echo "$GFMT_TEST_CMD") && popd
         shell: bash
 
