@@ -63,7 +63,7 @@ namespace GridFormat::APIDetail {
         static constexpr bool do_assert() {
             static_assert(
                 always_false<T...>,
-                "\033[1m\033[31mRequested reader/writer is unavailable due to missing dependency\033[0"
+                "Requested reader/writer is unavailable due to missing dependency"
             );
             return false;
         }
@@ -129,8 +129,8 @@ using VTKHDFImageGridTimeSeriesWriter = APIDetail::UnavailableWriter<VTKHDFAsser
 using VTKHDFUnstructuredTimeSeriesWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
 
 using VTKHDFImageGridReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
-template<typename...> using VTKHDFUnstructuredGridReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
-template<typename...> using VTKHDFReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
+template<typename T = void> using VTKHDFUnstructuredGridReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
+template<typename T = void> using VTKHDFReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
 
 }  // namespace GridFormat
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE
@@ -517,7 +517,7 @@ namespace APIDetail {
 
         FieldPtr _points() const override { return _access().points(); }
         void _visit_cells(const typename GridReader::CellVisitor& v) const override { _access().visit_cells(v); }
-        std::vector<double> _ordinates(unsigned int i) const { return _access().ordinates(i); }
+        std::vector<double> _ordinates(unsigned int i) const override { return _access().ordinates(i); }
 
         typename GridReader::PieceLocation _location() const override { return _access().location(); }
         typename GridReader::Vector _spacing() const override { return _access().spacing(); }
