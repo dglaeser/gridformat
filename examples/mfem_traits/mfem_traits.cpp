@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Timo Koch <timokoch@uio.no>
 // SPDX-License-Identifier: MIT
 
+#include <cstdint>  // to avoid missing type error in mfem with gcc 14
 #include "mfem.hpp"
 
 #include <gridformat/gridformat.hpp>
