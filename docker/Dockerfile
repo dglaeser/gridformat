@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 # Dockerfile for the GridFormat GitHub actions
-FROM ubuntu:24.04 AS base
+FROM ubuntu:22.04 AS base
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get upgrade -y -o Dpkg::Options::="--force-confold" \
@@ -14,19 +14,20 @@ RUN apt-get update \
     && apt-get install --no-install-recommends --yes \
         build-essential \
         cmake \
-        g++-12 g++-14 \
-        clang-16 clang-18 \
+        g++-12 \
         python3 \
         python3-pip \
         python3-dev \
         python3-venv \
         wget \
-        software-properties-common \
         git \
         apt-utils \
         # for pages job
         rsync \
+        # for deal.ii
+        software-properties-common \
     && python3 -m venv /gfmt-venv && . /gfmt-venv/bin/activate && pip install vtk \
+    && wget https://apt.llvm.org/llvm.sh && /bin/bash llvm.sh 16 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
