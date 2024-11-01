@@ -167,7 +167,7 @@ or the predefined <!-- DOXYGEN_MAKE_ABSOLUTE -->[traits for several frameworks](
 
 `GridFormat` comes with predefined traits for
 [dune grid views](https://www.dune-project.org/doxygen/2.8.0/classDune_1_1GridView.html) (tested dune version: 2.9),
-[deal.ii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.4.0),
+[deal.ii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.6.0),
 [cgal](https://www.cgal.org/) triangulations in
 [2d](https://doc.cgal.org/latest/Triangulation_2/index.html) and
 [3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 5.5.2),
