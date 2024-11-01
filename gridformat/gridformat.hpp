@@ -115,7 +115,7 @@ struct VTKHDFAsserter {
     static constexpr bool do_assert() {
         static_assert(
             APIDetail::always_false<T...>,
-            "\033[1m\033[31mVTKHDF reader/writers require HighFive.\033[0"
+            "VTKHDF reader/writers require HighFive"
         );
         return false;
     }
