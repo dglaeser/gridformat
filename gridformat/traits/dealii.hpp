@@ -55,14 +55,24 @@ template<typename T> inline constexpr bool is_parallel_triangulation = IsParalle
 // However, deal.ii iterators return refs or const refs depending on the constness of the iterator.
 // For the traits, we only need read-access to cells/points, so we wrap the iterator and expose only
 // the const interface in order to be compatible with std::ranges.
+// TODO: revisit the above comment, this may no longer be true after reusing typename Iterator::reference
+//       we should revisit our iterator wrappers and hopefully no longer need to wrap dealii iterators
 template<typename Iterator>
 class ForwardIteratorWrapper
 : public ForwardIteratorFacade<ForwardIteratorWrapper<Iterator>,
                                typename Iterator::value_type,
-                               const typename Iterator::value_type&,
+                               std::conditional_t<
+                                   std::is_lvalue_reference_v<typename Iterator::reference>,
+                                   std::add_const_t<std::remove_reference_t<typename Iterator::reference>>&,
+                                   std::add_const_t<typename Iterator::reference>
+                               >,
                                typename Iterator::pointer,
                                typename Iterator::difference_type> {
-    using Reference = const typename Iterator::value_type&;
+    using Reference = std::conditional_t<
+        std::is_lvalue_reference_v<typename Iterator::reference>,
+        std::add_const_t<std::remove_reference_t<typename Iterator::reference>>&,
+        std::add_const_t<typename Iterator::reference>
+    >;
 
  public:
     ForwardIteratorWrapper() = default;
