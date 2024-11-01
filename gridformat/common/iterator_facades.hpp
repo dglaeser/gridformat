@@ -173,9 +173,9 @@ class IteratorFacade
         return it + n;
     }
 
-    template<Concepts::Interoperable<Impl> I, typename V, typename R, typename D>
+    template<Concepts::Interoperable<Impl> I, typename T, typename V, typename R, typename D>
     friend auto operator-(const IteratorFacade& lhs,
-                          const IteratorFacade<I, V, R, D>& rhs) requires(is_random_access) {
+                          const IteratorFacade<I, T, V, R, D>& rhs) requires(is_random_access) {
         if constexpr (std::is_convertible_v<I, Impl>)
             return IteratorAccess::distance<Difference>(
                 Detail::cast_to_impl_ptr<const Impl>(&rhs),
@@ -188,9 +188,9 @@ class IteratorFacade
             );
     }
 
-    template<Concepts::Interoperable<Impl> I, typename V, typename R, typename D>
+    template<Concepts::Interoperable<Impl> I, typename T, typename V, typename R, typename D>
     friend std::strong_ordering operator<=>(const IteratorFacade& lhs,
-                                            const IteratorFacade<I, V, R, D>& rhs) requires(is_random_access) {
+                                            const IteratorFacade<I, T, V, R, D>& rhs) requires(is_random_access) {
         const auto d = lhs - rhs;
         return d <=> decltype(d){0};
     }
