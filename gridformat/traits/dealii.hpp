@@ -55,14 +55,18 @@ template<typename T> inline constexpr bool is_parallel_triangulation = IsParalle
 // However, deal.ii iterators return refs or const refs depending on the constness of the iterator.
 // For the traits, we only need read-access to cells/points, so we wrap the iterator and expose only
 // the const interface in order to be compatible with std::ranges.
+// Note: deal.ii iterators return copies when dereferenced, see e.g. here: https://www.dealii.org/current/doxygen/deal.II/classTriaRawIterator.html#a6e56c256239a9806bd372cfad7fba744
+//       However, Iterator::reference defines a reference, and therefore, we deduce the dereferenced type.
+// TODO: revisit the above comment, this may no longer be true after reusing typename Iterator::reference
+//       we should revisit our iterator wrappers and hopefully no longer need to wrap dealii iterators
 template<typename Iterator>
 class ForwardIteratorWrapper
 : public ForwardIteratorFacade<ForwardIteratorWrapper<Iterator>,
                                typename Iterator::value_type,
-                               const typename Iterator::value_type&,
+                               decltype(*(std::declval<std::add_const_t<Iterator>>())),
                                typename Iterator::pointer,
                                typename Iterator::difference_type> {
-    using Reference = const typename Iterator::value_type&;
+    using Reference = decltype(*(std::declval<std::add_const_t<Iterator>>()));
 
  public:
     ForwardIteratorWrapper() = default;
