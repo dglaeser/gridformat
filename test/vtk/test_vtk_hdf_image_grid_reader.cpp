@@ -5,10 +5,14 @@
 #include <ranges>
 #include <cmath>
 
+// On the github runner we run into a warning here (which wasn't possible to reproduce locally)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnull-dereference"
 #include <gridformat/vtk/hdf_unstructured_grid_writer.hpp>
 #include <gridformat/vtk/hdf_image_grid_writer.hpp>
 #include <gridformat/vtk/hdf_image_grid_reader.hpp>
 #include <gridformat/vtk/hdf_reader.hpp>
+#pragma GCC diagnostic pop
 
 #include "../grid/structured_grid.hpp"
 #include "../reader_tests.hpp"
