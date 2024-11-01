@@ -54,11 +54,14 @@ install(
 )
 
 include(CMakePackageConfigHelpers)
+
+# make find_package(gridformat) work when installed
+set(GRIDFORMAT_INCLUDE_DIRS ${CMAKE_INSTALL_INCLUDEDIR})
 configure_package_config_file(
     "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}-config.cmake.in"
     "${PROJECT_BINARY_DIR}/cmake/pkg/${PROJECT_NAME}Config.cmake"
     PATH_VARS
-        CMAKE_INSTALL_INCLUDEDIR
+        GRIDFORMAT_INCLUDE_DIRS
         GRIDFORMAT_NAMESPACE
         GRIDFORMAT_INSTALL_CMAKE_DATA_DIR
     INSTALL_DESTINATION
@@ -69,6 +72,24 @@ install(
         "${PROJECT_BINARY_DIR}/cmake/pkg/${PROJECT_NAME}Config.cmake"
     DESTINATION
         ${GRIDFORMAT_INSTALL_CMAKE_DATA_DIR}
+)
+
+# make find_package(gridformat) work when used from build directory
+export(
+    EXPORT ${PROJECT_NAME}_Targets
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME}Targets.cmake"
+    NAMESPACE ${GRIDFORMAT_NAMESPACE}::
+)
+set(GRIDFORMAT_INCLUDE_DIRS ${PROJECT_SOURCE_DIR})
+set(GRIDFORMAT_INSTALL_CMAKE_DATA_DIR "${PROJECT_SOURCE_DIR}/cmake")
+configure_package_config_file(
+    "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}-config.cmake.in"
+    "${PROJECT_BINARY_DIR}/cmake/${PROJECT_NAME}Config.cmake"
+    PATH_VARS
+        GRIDFORMAT_INCLUDE_DIRS
+        GRIDFORMAT_NAMESPACE
+        GRIDFORMAT_INSTALL_CMAKE_DATA_DIR
+    INSTALL_DESTINATION ${PROJECT_BINARY_DIR}/cmake
 )
 
 option(GRIDFORMAT_BUILD_TESTS "whether or not the tests should be built" OFF)
