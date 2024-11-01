@@ -1,13 +1,9 @@
 // SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: MIT
 
-// On the github runner we run into a warning here (which wasn't possible to reproduce locally)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wnull-dereference"
 #include <gridformat/vtk/hdf_unstructured_grid_writer.hpp>
 #include <gridformat/vtk/hdf_unstructured_grid_reader.hpp>
 #include <gridformat/vtk/hdf_reader.hpp>
-#pragma GCC diagnostic pop
 
 #include "../grid/unstructured_grid.hpp"
 #include "../make_test_data.hpp"
