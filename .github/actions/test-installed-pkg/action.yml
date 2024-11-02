@@ -37,8 +37,10 @@ runs:
       uses: ./.github/actions/set-test-commands
       with:
         build_directory: build
+        source_remote: ${{ env.GFMT_SOURCE_REMOTE }}
         source_tree: ${{ env.GFMT_SOURCE_TREE }}
-        target_tree: main
+        target_remote: ${{ env.GFMT_TARGET_REMOTE }}
+        target_tree: ${{ env.GFMT_TARGET_TREE }}
 
     - name: test-readme-cli-snippets
       run: |
@@ -88,7 +90,7 @@ runs:
                 -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
-                -DGRIDFORMAT_FETCH_TREE="$GFMT_TREE" \
+                -DGRIDFORMAT_FETCH_TREE="$GFMT_SOURCE_TREE" \
                 -DGRIDFORMAT_ORIGIN="$GFMT_ORIGIN" \
                 -B build
         pushd build && make && ctest --output-on-failure

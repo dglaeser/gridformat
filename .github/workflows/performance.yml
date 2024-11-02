@@ -44,8 +44,8 @@ jobs:
             --c-compiler=/usr/bin/gcc-12 \
             --cxx-compiler=/usr/bin/g++-12 \
             --prefix-path=/gfmt-dependencies \
-            --tree="$GFMT_TREE" \
-            --origin="$GFMT_ORIGIN" \
+            --tree="$GFMT_SOURCE_TREE" \
+            --origin="$GFMT_SOURCE_ORIGIN" \
             --reference-tree="${{ github.base_ref }}" \
             --reference-origin="${{ github.event.pull_request.base.repo.clone_url }}" \
             --relative-tolerance=0.02 \

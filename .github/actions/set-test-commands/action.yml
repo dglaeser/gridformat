@@ -5,7 +5,11 @@ name: set-test-commands
 inputs:
   source_tree:
     required: True
+  source_remote:
+    required: True
   target_tree:
+    required: True
+  target_remote:
     required: True
   build_directory:
     required: True
@@ -23,8 +27,13 @@ runs:
           echo "GRIDFORMAT_REGRESSION_SAMPLES_ONLY=true" >> "$GITHUB_ENV"
 
           pushd ${{inputs.build_directory}}
-            echo "Detecting files that change from '${{inputs.source_tree}}' to '${{inputs.target_tree}}'"
-            python3 ../bin/detect_modified_files.py -s "${{inputs.source_tree}}" -t "${{inputs.target_tree}}" &> _modfiles.out
+            echo "Detecting files that change from '${{inputs.source_remote}}/${{inputs.source_tree}}' to '${{inputs.target_remote}}/${{inputs.target_tree}}'"
+            python3 ../bin/detect_modified_files.py \
+              -sr "${{inputs.source_remote}}" \
+              -s "${{inputs.source_tree}}" \
+              -tr "${{inputs.target_remote}}" \
+              -t "${{inputs.target_tree}}" \
+              -o _modfiles.out
 
             echo "Detecting tests affected by these changes"
             python3 ../bin/detect_affected_tests.py -i _modfiles.out -o ../_affected_tests.txt
