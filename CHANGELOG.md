@@ -19,6 +19,7 @@
 
 - on PRs, a bunch of performance benchmarks are run with the code of the PR and the target branch, and observed runtime differences are posted as a comment to the pull request.
 - the CI helper scripts, for instance, to select tests affected by changes, have been moved from the `/bin` to the  `/test` directory.
+- the runtime of the test pipeline has been reduced by avoiding duplicate test runs and skipping those tests in pull requests for which no changes are introduced.
 
 # `GridFormat` 0.2.0
 
