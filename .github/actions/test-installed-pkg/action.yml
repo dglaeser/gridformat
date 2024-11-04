@@ -7,6 +7,8 @@ inputs:
     required: true
   cxx_compiler:
     required: true
+  allow_skipped_tests:
+    required: true
 runs:
   using: composite
   steps:
@@ -21,6 +23,7 @@ runs:
       run: |
         cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
               -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
+              -DCMAKE_BUILD_TYPE=Release \
               -DGRIDFORMAT_BUILD_TESTS=ON \
               -DGRIDFORMAT_BUILD_BINARIES=ON \
               -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
@@ -70,6 +73,17 @@ runs:
             echo "Invoking test command"
             $(echo "$GFMT_TEST_CMD")
           popd
+      shell: bash
+
+    - name: verify-no-skipped-tests
+      if: ${{ ! inputs.allow_skipped_tests }}
+      run: |
+        if [[ -e installation-test/build/Testing/Temporary/LastTestsDisabled.log ]]; then
+          echo "The full test suite should not skip any tests. Making the job fail..."
+          exit 1
+        else
+          echo "No skipped tests detected"
+        fi
       shell: bash
 
     - name: test-examples
