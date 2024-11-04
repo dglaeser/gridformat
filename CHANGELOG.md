@@ -12,6 +12,7 @@
 
 ## Deprecated interfaces
 
+- __CI__: the CI helper scripts, for instance, to select tests affected by changes, have been moved from the `/bin` to the  `/test` directory.
 - __Common__:
     - the `get_md_layout<SubRange>(std::size_t)` overload is deprecated as it may interfere with `get_md_layout<Range>(Range)` if `Range` is constructible from an `std::size_t` and the template argument `Range` is explicitly specified. The intented behaviour can now be achieved with `MDLayout{{std::size_t}}.with_sub_layout_from<SubRange>()`.
     - related to the above, an `MDLayout` for a scalar value now has a dimension of zero to distinguish it from a vector of size 1.
