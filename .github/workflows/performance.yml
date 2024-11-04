@@ -54,11 +54,13 @@ jobs:
             --print-only
 
       - name: prepare-pr-comment
+        if: ${{ env.GFMT_SOURCE_REMOTE == env.GFMT_TARGET_REMOTE }}
         run: |
           echo "The following performance differences (this branch vs target branch) have been measured:" >> _comment.txt
           cat benchmark_summary.txt >> _comment.txt
 
       - name: post-pr-comment
+        if: ${{ env.GFMT_SOURCE_REMOTE == env.GFMT_TARGET_REMOTE }}
         uses: thollander/actions-comment-pull-request@v2
         with:
           filePath: _comment.txt
