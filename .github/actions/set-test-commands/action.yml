@@ -22,6 +22,7 @@ runs:
             ( ${{ github.ref_type }} == "tag" && ${{ github.ref_name }} =~ v[0-9]\.[0-9]\.[0-9]$ )]]; then
           echo "Using 'all' target on main branch (i.e. all tests are built & run)"
           echo "all" > _affected_tests.txt
+          echo "GFMT_TEST_EXAMPLES=true" >> "$GITHUB_ENV"
         else
           echo "Regression-testing sample files only for branch ${{ github.ref_name }}"
           echo "GRIDFORMAT_REGRESSION_SAMPLES_ONLY=true" >> "$GITHUB_ENV"
@@ -34,6 +35,11 @@ runs:
               -tr "${{inputs.target_remote}}" \
               -t "${{inputs.target_tree}}" \
               -o _modfiles.out
+
+            if cat _modfiles.out | grep 'examples/'; then
+              echo "Including examples in tests"
+              echo "GFMT_TEST_EXAMPLES=true" >> "$GITHUB_ENV"
+            fi
 
             echo "Detecting tests affected by these changes"
             python3 ../test/detect_affected_tests.py -i _modfiles.out -o ../_affected_tests.txt

@@ -87,6 +87,7 @@ runs:
       shell: bash
 
     - name: test-examples
+      if: ${{ env.GFMT_TEST_EXAMPLES }}
       run: |
         pushd examples
           cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
@@ -98,6 +99,7 @@ runs:
       shell: bash
 
     - name: test-examples-with-fetch-content
+      if: ${{ env.GFMT_TEST_EXAMPLES }}
       run: |
         rm -rf examples/build && pushd examples
           cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
