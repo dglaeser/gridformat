@@ -8,15 +8,17 @@ runs:
     - name: set-git-variables
       run: |
         if [[ ${{ github.event_name }} == "pull_request" ]]; then
-          echo "GFMT_ORIGIN=${{ github.event.pull_request.head.repo.clone_url }}" >> "$GITHUB_ENV"
-          echo "GFMT_TREE=${{ github.head_ref }}" >> "$GITHUB_ENV"
-          echo "GFMT_SOURCE_TREE=origin/${{ github.head_ref }}" >> "$GITHUB_ENV"
+          echo "GFMT_SOURCE_REMOTE=${{ github.event.pull_request.head.repo.clone_url }}" >> "$GITHUB_ENV"
+          echo "GFMT_TARGET_REMOTE=${{ github.event.pull_request.base.repo.clone_url }}" >> "$GITHUB_ENV"
+          echo "GFMT_SOURCE_TREE=${{ github.head_ref }}" >> "$GITHUB_ENV"
+          echo "GFMT_TARGET_TREE=${{ github.base_ref }}" >> "$GITHUB_ENV"
         else
-          echo "GFMT_ORIGIN=${{ github.event.repository.clone_url }}" >> "$GITHUB_ENV"
-          echo "GFMT_TREE=${{ github.head_ref }}" >> "$GITHUB_ENV"
-          if [[ -z "$GFMT_TREE" ]]; then
-            echo "GFMT_TREE=${{ github.sha }}" >> "$GITHUB_ENV"
+          echo "GFMT_SOURCE_REMOTE=${{ github.event.repository.clone_url }}" >> "$GITHUB_ENV"
+          echo "GFMT_TARGET_REMOTE=${{ github.event.repository.clone_url }}" >> "$GITHUB_ENV"
+          echo "GFMT_SOURCE_TREE=${{ github.head_ref }}" >> "$GITHUB_ENV"
+          if [[ -z "${{github.head_ref}}" ]]; then
+            echo "GFMT_SOURCE_TREE=${{ github.sha }}" >> "$GITHUB_ENV"
           fi
-          echo "GFMT_SOURCE_TREE=${GFMT_TREE}" >> "$GITHUB_ENV"
+          echo "GFMT_TARGET_TREE=main" >> "$GITHUB_ENV"
         fi
       shell: bash

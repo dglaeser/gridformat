@@ -15,6 +15,7 @@ on:
       - '**/*.cmake'
       - '**/*.hpp'
       - '**/*.cpp'
+      - '.github/'
   schedule:
     - cron: '30 22 * * 0'
   workflow_dispatch:
@@ -78,15 +79,17 @@ jobs:
         uses: ./.github/actions/set-test-commands
         with:
           build_directory: build
+          source_remote: ${{ env.GFMT_SOURCE_REMOTE }}
           source_tree: ${{ env.GFMT_SOURCE_TREE }}
-          target_tree: main
+          target_remote: ${{ env.GFMT_TARGET_REMOTE }}
+          target_tree: ${{ env.GFMT_TARGET_TREE }}
 
       - name: check-documentation-code
         run: |
           python3 test/test_readme_quick_start.py \
-            -r $GFMT_TREE \
+            -r $GFMT_SOURCE_TREE \
             -e "-DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12" \
-            -o "${GFMT_ORIGIN}"
+            -o "${GFMT_SOURCE_REMOTE}"
           python3 test/test_readme_tested_versions.py --cmake-log-file gfmt_cmake_log.txt
         shell: bash
 
@@ -142,8 +145,10 @@ jobs:
         uses: ./.github/actions/set-test-commands
         with:
           build_directory: build
+          source_remote: ${{ env.GFMT_SOURCE_REMOTE }}
           source_tree: ${{ env.GFMT_SOURCE_TREE }}
-          target_tree: main
+          target_remote: ${{ env.GFMT_TARGET_REMOTE }}
+          target_tree: ${{ env.GFMT_TARGET_TREE }}
 
       - name: run-memcheck
         run: cd build && $(echo "$GFMT_MEMCHECK_CMD")
