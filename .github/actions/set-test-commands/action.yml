@@ -28,7 +28,7 @@ runs:
 
           pushd ${{inputs.build_directory}}
             echo "Detecting files that change from '${{inputs.source_remote}}/${{inputs.source_tree}}' to '${{inputs.target_remote}}/${{inputs.target_tree}}'"
-            python3 ../bin/detect_modified_files.py \
+            python3 ../test/detect_modified_files.py \
               -sr "${{inputs.source_remote}}" \
               -s "${{inputs.source_tree}}" \
               -tr "${{inputs.target_remote}}" \
@@ -36,22 +36,22 @@ runs:
               -o _modfiles.out
 
             echo "Detecting tests affected by these changes"
-            python3 ../bin/detect_affected_tests.py -i _modfiles.out -o ../_affected_tests.txt
+            python3 ../test/detect_affected_tests.py -i _modfiles.out -o ../_affected_tests.txt
 
             echo "Generating list of all available targets"
             cmake --build . --target help &> ../all_targets.txt
           popd
         fi
 
-        BUILD_CMD=$(python3 bin/print_test_commands.py --build -f _affected_tests.txt)
+        BUILD_CMD=$(python3 test/print_test_commands.py --build -f _affected_tests.txt)
         echo "Setting build command to ${BUILD_CMD}"
         echo "GFMT_BUILD_CMD=$BUILD_CMD" >> "$GITHUB_ENV"
 
-        TEST_CMD=$(python3 bin/print_test_commands.py --test -f _affected_tests.txt --ctest-args='--output-on-failure')
+        TEST_CMD=$(python3 test/print_test_commands.py --test -f _affected_tests.txt --ctest-args='--output-on-failure')
         echo "Setting test command to ${TEST_CMD}"
         echo "GFMT_TEST_CMD=$TEST_CMD" >> "$GITHUB_ENV"
 
-        MEMCHECK_CMD=$(python3 bin/print_test_commands.py --build -f _affected_tests.txt --memcheck --all-targets-list all_targets.txt)
+        MEMCHECK_CMD=$(python3 test/print_test_commands.py --build -f _affected_tests.txt --memcheck --all-targets-list all_targets.txt)
         echo "Setting memcheck command to ${MEMCHECK_CMD}"
         echo "GFMT_MEMCHECK_CMD=$MEMCHECK_CMD" >> "$GITHUB_ENV"
       shell: bash
