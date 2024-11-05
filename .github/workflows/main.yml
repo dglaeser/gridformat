@@ -29,7 +29,7 @@ env:
 
 jobs:
   sanity-checks:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container: dglaeser/gridformat-action-images:full
     steps:
       - name: checkout-repository
@@ -74,7 +74,7 @@ jobs:
 
   mem-check:
     needs: sanity-checks
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container: dglaeser/gridformat-action-images:full
     steps:
       - name: checkout-repository
@@ -113,7 +113,7 @@ jobs:
 
   test-full-installation:
     needs: sanity-checks
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container: dglaeser/gridformat-action-images:full
     strategy:
       matrix:
@@ -143,7 +143,7 @@ jobs:
 
   test-minimal-installation:
     needs: sanity-checks
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container: dglaeser/gridformat-action-images:minimal
     steps:
       - name: checkout-repository
