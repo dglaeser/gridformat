@@ -6,16 +6,20 @@
 ## Features
 
 - __Traits__: support for writing `Dune::FieldMatrix` as tensor field data.
-- __CI__: on PRs, a bunch of performance benchmarks are run with the code of the PR and the target branch, and observed runtime differences are posted as a comment to the pull request.
 - __Reader__: the `Reader` class now allows for opening a file upon instantiation using `GridFormat::Reader::from(filename)` (taking further optional constructor arguments). Moreover, you can now open a file and receive the modified reader as return value using `reader.with_opened(filename)`.
 - __VTK__: VTK-XML files of the older file format version 0.1 can now also be read by all vtk readers
 
 ## Deprecated interfaces
 
-- __CI__: the CI helper scripts, for instance, to select tests affected by changes, have been moved from the `/bin` to the  `/test` directory.
 - __Common__:
     - the `get_md_layout<SubRange>(std::size_t)` overload is deprecated as it may interfere with `get_md_layout<Range>(Range)` if `Range` is constructible from an `std::size_t` and the template argument `Range` is explicitly specified. The intented behaviour can now be achieved with `MDLayout{{std::size_t}}.with_sub_layout_from<SubRange>()`.
     - related to the above, an `MDLayout` for a scalar value now has a dimension of zero to distinguish it from a vector of size 1.
+
+## Continuous integration
+
+- on PRs, a bunch of performance benchmarks are run with the code of the PR and the target branch, and observed runtime differences are posted as a comment to the pull request.
+- the CI helper scripts, for instance, to select tests affected by changes, have been moved from the `/bin` to the  `/test` directory.
+- the runtime of the test pipeline has been reduced by avoiding duplicate test runs and skipping those tests in pull requests for which no changes are introduced.
 
 # `GridFormat` 0.2.0
 

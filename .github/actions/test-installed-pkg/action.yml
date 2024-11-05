@@ -7,6 +7,8 @@ inputs:
     required: true
   cxx_compiler:
     required: true
+  allow_skipped_tests:
+    required: true
 runs:
   using: composite
   steps:
@@ -21,6 +23,7 @@ runs:
       run: |
         cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
               -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
+              -DCMAKE_BUILD_TYPE=Release \
               -DGRIDFORMAT_BUILD_TESTS=ON \
               -DGRIDFORMAT_BUILD_BINARIES=ON \
               -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
@@ -72,26 +75,48 @@ runs:
           popd
       shell: bash
 
+    - name: verify-no-skipped-tests
+      run: |
+        if [[ '${{ inputs.allow_skipped_tests }}' != 'true' ]]; then
+          if [[ -e installation-test/build/Testing/Temporary/LastTestsDisabled.log ]]; then
+            echo "The full test suite should not skip any tests. Making the job fail..."
+            exit 1
+          else
+            echo "No skipped tests detected"
+          fi
+        else
+            echo "Skipping verification that no tests have been skipped"
+        fi
+      shell: bash
+
     - name: test-examples
       run: |
-        pushd examples
-          cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
-                -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
-                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
-                -Dgridformat_ROOT=$(pwd)/../install \
-                -B build
-        pushd build && make && ctest --output-on-failure
+        if [[ '${{ env.GFMT_TEST_EXAMPLES }}' == 'true' ]]; then
+          pushd examples
+            cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
+                  -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
+                  -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
+                  -Dgridformat_ROOT=$(pwd)/../install \
+                  -B build
+          pushd build && make && ctest --output-on-failure
+        else
+          echo "Skipping example testing"
+        fi
       shell: bash
 
     - name: test-examples-with-fetch-content
       run: |
-        rm -rf examples/build && pushd examples
-          cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
-                -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
-                -DGRIDFORMAT_FETCH_TREE="$GFMT_SOURCE_TREE" \
-                -DGRIDFORMAT_ORIGIN="$GFMT_SOURCE_REMOTE" \
-                -B build
-        pushd build && make && ctest --output-on-failure
+        if [[ '${{ env.GFMT_TEST_EXAMPLES }}' == 'true' ]]; then
+          rm -rf examples/build && pushd examples
+            cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
+                  -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
+                  -DGRIDFORMAT_FETCH_TREE="$GFMT_SOURCE_TREE" \
+                  -DGRIDFORMAT_ORIGIN="$GFMT_SOURCE_REMOTE" \
+                  -B build
+          pushd build && make && ctest --output-on-failure
+        else
+          echo "Skipping example testing"
+        fi
       shell: bash
