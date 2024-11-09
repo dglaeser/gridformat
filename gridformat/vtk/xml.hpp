@@ -127,6 +127,10 @@ namespace XMLDetail {
 
         template<typename GridCoordinateType>
         static XMLSettings from(const XMLOptions& opts) {
+            static_assert(
+                std::is_same_v<GridCoordinateType, float> || std::is_same_v<GridCoordinateType, double>,
+                "Only float/double coordinate types are supported by VTK"
+            );
             const auto _enc = _make_encoder(opts.encoder);
             const auto _format = _make_data_format(_enc, opts.data_format);
             const auto _comp = _make_compressor(_enc, opts.compressor);
