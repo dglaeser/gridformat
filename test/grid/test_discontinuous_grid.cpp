@@ -13,8 +13,56 @@
 #include "../testing.hpp"
 #include "../make_test_data.hpp"
 
-int main() {
-    GridFormat::ImageGrid<2, double> host_grid{{1.0, 1.0}, {15, 10}};
+struct TestGrid {
+    std::vector<int> points{0, 1, 2};
+    std::vector<int> cells{0, 1};
+};
+
+namespace GridFormat::Traits {
+
+template<> struct Points<TestGrid> {
+    static auto get(const TestGrid& grid) {
+        return grid.points | std::views::all;
+    }
+};
+
+template<> struct Cells<TestGrid> {
+    static auto get(const TestGrid& grid) {
+        return grid.cells | std::views::all;
+    }
+};
+
+template<> struct PointCoordinates<TestGrid, int> {
+    static std::array<double, 1> get(const TestGrid&, const int point) {
+        return {static_cast<double>(point)};
+    }
+};
+
+template<> struct CellPoints<TestGrid, int> {
+    static auto get(const TestGrid& grid, const int cell) {
+        const int begin_idx = cell == 0 ? 0 : 1;
+        return std::views::iota(begin_idx, begin_idx + 2) | std::views::transform([&] (auto i) {
+            return grid.points[i];
+        });
+    }
+};
+
+template<> struct PointId<TestGrid, int> {
+    static int get(const TestGrid&, const int point) {
+        return point;
+    }
+};
+
+template<> struct CellType<TestGrid, int> {
+    static auto get(const TestGrid&, const int) {
+        return GridFormat::CellType::segment;
+    }
+};
+
+}  // namespace GridFormat::Traits
+
+template<typename Grid>
+void test_with(const Grid& host_grid) {
     GridFormat::DiscontinuousGrid grid{host_grid};
     static_assert(GridFormat::Concepts::UnstructuredGrid<decltype(grid)>);
 
@@ -25,7 +73,7 @@ int main() {
     "discontinuous_grid_cell_range"_test = [&] () {
         expect(eq(
             static_cast<std::size_t>(GridFormat::Ranges::size(GridFormat::cells(grid))),
-            host_grid.number_of_cells()
+            GridFormat::number_of_cells(host_grid)
         ));
     };
 
@@ -52,6 +100,13 @@ int main() {
         });
         expect(eq(point_ids.size(), num_expected_points));
     };
+}
+
+
+int main() {
+
+    test_with(TestGrid{});
+    test_with(GridFormat::ImageGrid<2, double>{{1.0, 1.0}, {15, 10}});
 
     return 0;
 }
