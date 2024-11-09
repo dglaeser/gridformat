@@ -22,13 +22,19 @@ namespace GridFormat::Traits {
 
 template<> struct Points<TestGrid> {
     static auto get(const TestGrid& grid) {
-        return grid.points | std::views::all;
+        return std::ranges::subrange{
+            std::counted_iterator{grid.points.begin(), static_cast<int>(grid.points.size())},
+            std::default_sentinel_t{}
+        };
     }
 };
 
 template<> struct Cells<TestGrid> {
     static auto get(const TestGrid& grid) {
-        return grid.cells | std::views::all;
+        return std::ranges::subrange{
+            std::counted_iterator{grid.cells.begin(), static_cast<int>(grid.cells.size())},
+            std::default_sentinel_t{}
+        };
     }
 };
 

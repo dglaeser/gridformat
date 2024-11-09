@@ -261,22 +261,38 @@ namespace DiscontinuousGridDetail {
     CellPointRange(const G&, R&&) -> CellPointRange<G, R>;
 
 
-    template<typename It>
+    template<typename It, typename S>
     class CellIterator
-    : public ForwardIteratorFacade<CellIterator<It>,
+    : public ForwardIteratorFacade<CellIterator<It, S>,
                                    Cell<typename std::iterator_traits<It>::reference>,
                                    Cell<typename std::iterator_traits<It>::reference>> {
      public:
         CellIterator() = default;
-        CellIterator(It iterator) : _it{iterator} {}
+        CellIterator(It iterator, S sentinel, bool is_end)
+        : _it{iterator}
+        , _sentinel{sentinel}
+        , _is_end{is_end}
+        {}
 
-        template<typename _IT>
-        friend bool operator==(const CellIterator& self, const CellIterator<_IT>& other) {
+        template<typename _IT, typename _S>
+        friend bool operator==(const CellIterator& self, const CellIterator<_IT, _S>& other) {
+            if (self._is_end_it() && !other._is_end_it())
+                return self._get_sentinel() == other._get_it();
+            if (!self._is_end_it() && other._is_end_it())
+                return self._get_it() == other._get_sentinel();
             return self._get_it() == other._get_it();
+        }
+
+        bool _is_end_it() const {
+            return _is_end;
         }
 
         const auto& _get_it() const {
             return _it;
+        }
+
+        const auto& _get_sentinel() const {
+            return _sentinel;
         }
 
      private:
@@ -296,11 +312,13 @@ namespace DiscontinuousGridDetail {
         }
 
         It _it;
+        S _sentinel;
+        bool _is_end{true};
         std::size_t _index{0};
     };
 
-    template<typename It>
-    CellIterator(It&&) -> CellIterator<It>;
+    template<typename It, typename S>
+    CellIterator(It&&, S&&) -> CellIterator<std::remove_cvref_t<It>, std::remove_cvref_t<S>>;
 
 
     template<typename Grid>
@@ -312,8 +330,8 @@ namespace DiscontinuousGridDetail {
         : _range{GridFormat::cells(grid)}
         {}
 
-        auto begin() const { return CellIterator{std::ranges::begin(_range)}; }
-        auto end() const { return CellIterator{std::ranges::end(_range)}; }
+        auto begin() const { return CellIterator{std::ranges::begin(_range), std::ranges::end(_range), false}; }
+        auto end() const { return CellIterator{std::ranges::begin(_range), std::ranges::end(_range), true}; }
 
      private:
         LVReferenceOrValue<_Range> _range;
