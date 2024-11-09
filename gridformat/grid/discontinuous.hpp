@@ -390,15 +390,13 @@ struct CellPoints<DiscontinuousGrid<G>, typename DiscontinuousGrid<G>::Cell> {
     static auto get(const DiscontinuousGrid<G>& grid,
                     const typename DiscontinuousGrid<G>::Cell& c) {
         return Ranges::enumerated(CellPoints<G, Cell<G>>::get(grid.host_grid(), c.host_cell()))
-            | std::views::transform([&] <typename T> (T&& pair) {
-                if constexpr (std::is_lvalue_reference_v<std::tuple_element<1, T>>)
-                    return typename DiscontinuousGrid<G>::Point{
-                        std::get<1>(pair), c, std::get<0>(pair)
-                    };
-                else
-                    return typename DiscontinuousGrid<G>::Point{
-                        std::move(std::get<1>(pair)), c, std::get<0>(pair)
-                    };
+            | std::views::transform([&] <typename Index, typename Point> (std::pair<Index, Point>&& pair) {
+                if constexpr (std::is_lvalue_reference_v<Point>) {
+                    return typename DiscontinuousGrid<G>::Point{pair.second, c, pair.first};
+                } else {
+                    auto index = std::get<0>(pair);
+                    return typename DiscontinuousGrid<G>::Point{std::move(pair).second, c, index};
+                }
             });
     }
 };
