@@ -246,19 +246,35 @@ class FlatView : public std::ranges::view_interface<FlatView<Range>> {
     class Iterator<R> : public ForwardIteratorFacade<Iterator<R>, ValueType, ReferenceType> {
      public:
         Iterator() = default;
-        Iterator(std::ranges::iterator_t<R> begin, std::ranges::iterator_t<R> end)
-        : _it{begin}
+        Iterator(std::ranges::iterator_t<R> begin, std::ranges::sentinel_t<R> end, bool is_end)
+        : _is_end{is_end}
+        , _it{begin}
         , _end{end}
         {}
 
      private:
         friend class GridFormat::IteratorAccess;
-        ReferenceType _dereference() const { return *_it; }
-        bool _is_equal(const Iterator& other) const { return _it == other._it; }
-        void _increment() { ++_it; }
 
+        ReferenceType _dereference() const {
+            assert(!_is_end);
+            return *_it;
+        }
+
+        bool _is_equal(const Iterator& other) const {
+            if (!_is_end && !other._is_end) return _it != other._it;
+            if (_is_end && !other._is_end) return _end == other._it;
+            else if (!_is_end && other._is_end) return _it == other._end;
+            return true;
+        }
+
+        void _increment() {
+            assert(!_is_end);
+            ++_it;
+        }
+
+        bool _is_end{true};
         std::ranges::iterator_t<R> _it;
-        std::ranges::iterator_t<R> _end;
+        std::ranges::sentinel_t<R> _end;
     };
 
     template<std::ranges::forward_range R> requires(mdrange_dimension<R> > 1)
@@ -268,10 +284,11 @@ class FlatView : public std::ranges::view_interface<FlatView<Range>> {
 
      public:
         Iterator() = default;
-        Iterator(std::ranges::iterator_t<R> begin, std::ranges::iterator_t<R> end)
-        : _it{begin}
+        Iterator(std::ranges::iterator_t<R> begin, std::ranges::sentinel_t<R> end, bool is_end)
+        : _is_end{is_end}
+        , _it{begin}
         , _end{end} {
-            if (_it != _end)
+            if (!is_end)
                 _make_sub_iterators();
         }
 
@@ -290,16 +307,23 @@ class FlatView : public std::ranges::view_interface<FlatView<Range>> {
         }
 
         bool _is_equal(const Iterator& other) const {
-            if (_it != other._it)
-                return false;
-            else if (!_is_sub_end() && !other._is_sub_end())
-                return *_sub_it == *other._sub_it;
+            if (!_is_end && !other._is_end) {
+                if (_it != other._it)
+                    return false;
+                else if (!_is_sub_end() && !other._is_sub_end())
+                    return *_sub_it == *other._sub_it;
+                return _is_sub_end() == other._is_sub_end();
+            }
+            if (_is_end && !other._is_end)
+                return _end == other._it;
+            else if (!_is_end && other._is_end)
+                return _it == other._end;
             return true;
         }
 
         void _increment() {
-            if (_is_sub_end() || _it == _end)
-                throw InvalidState("Cannot increment past end iterator");
+            if (_is_sub_end() || _it == _end || _is_end)
+                throw InvalidState("Cannot increment past-the-end iterator");
 
             if (++(*_sub_it); *_sub_it == *_sub_end) {
                 if (++_it; _it != _end)
@@ -311,8 +335,8 @@ class FlatView : public std::ranges::view_interface<FlatView<Range>> {
 
      private:
         void _make_sub_iterators() {
-            _sub_it = SubIterator{std::ranges::begin(*_it), std::ranges::end(*_it)};
-            _sub_end = SubIterator{std::ranges::end(*_it), std::ranges::end(*_it)};
+            _sub_it = SubIterator{std::ranges::begin(*_it), std::ranges::end(*_it), false};
+            _sub_end = SubIterator{std::ranges::begin(*_it), std::ranges::end(*_it), true};
         }
 
         void _release_sub_iterators() {
@@ -320,8 +344,9 @@ class FlatView : public std::ranges::view_interface<FlatView<Range>> {
             _sub_end.reset();
         }
 
+        bool _is_end{true};
         std::ranges::iterator_t<R> _it;
-        std::ranges::iterator_t<R> _end;
+        std::ranges::sentinel_t<R> _end;
         std::optional<SubIterator> _sub_it;
         std::optional<SubIterator> _sub_end;
     };
@@ -332,19 +357,19 @@ class FlatView : public std::ranges::view_interface<FlatView<Range>> {
     {}
 
     Iterator<Range> begin() requires(!is_const) {
-        return {std::ranges::begin(_range.get()), std::ranges::end(_range.get())};
+        return {std::ranges::begin(_range.get()), std::ranges::end(_range.get()), false};
     }
 
     Iterator<std::add_const_t<Range>> begin() const {
-        return {std::ranges::begin(_range.get()), std::ranges::end(_range.get())};
+        return {std::ranges::begin(_range.get()), std::ranges::end(_range.get()), false};
     }
 
     Iterator<Range> end() requires(!is_const) {
-        return {std::ranges::end(_range.get()), std::ranges::end(_range.get())};
+        return {std::ranges::begin(_range.get()), std::ranges::end(_range.get()), true};
     }
 
     Iterator<std::add_const_t<Range>> end() const {
-        return {std::ranges::end(_range.get()), std::ranges::end(_range.get())};
+        return {std::ranges::begin(_range.get()), std::ranges::end(_range.get()), true};
     }
 
  private:
