@@ -25,17 +25,28 @@ template<> struct MDVectorFactory<2> {
     }
 };
 
+template<typename T>
+std::ranges::view auto as_view_with_different_sentinel(T&& v) {
+    using D = std::iter_difference_t<typename std::remove_cvref_t<T>::iterator>;
+    return std::ranges::subrange{
+        std::counted_iterator{v.begin(), static_cast<D>(v.size())},
+        std::default_sentinel_t{}
+    };
+}
+
 template<int... extents>
 void test_flat_range_view() {
     int i = 0;
     auto storage = MDVectorFactory<sizeof...(extents)>::make(extents...);
-    std::ranges::for_each(storage | GridFormat::Views::flat, [&] (auto& value) {
+    auto view = as_view_with_different_sentinel(storage);
+    std::ranges::for_each(view | GridFormat::Views::flat, [&] (auto& value) {
         value = i++;
     });
 
     const auto const_storage = storage;
+    const auto const_view = as_view_with_different_sentinel(const_storage);
     GridFormat::Testing::expect(std::ranges::equal(
-        const_storage | GridFormat::Views::flat,
+        const_view | GridFormat::Views::flat,
         std::views::iota(0, i)
     ));
 }
