@@ -13,7 +13,7 @@
 #include <utility>
 #include <concepts>
 #include <iterator>
-#include <tuple>
+#include <type_traits>
 
 #include <gridformat/common/iterator_facades.hpp>
 #include <gridformat/common/type_traits.hpp>
@@ -24,13 +24,16 @@ namespace GridFormat {
 #ifndef DOXYGEN
 namespace EnumeratedRangeDetail {
 
-    template<typename IT, typename Index>
-    using ValueType = std::pair<Index, typename std::iterator_traits<IT>::reference>;
+    template<typename IT, typename Index, bool is_sentinel>
+    struct ValueType : std::type_identity<std::pair<Index, typename std::iterator_traits<IT>::reference>> {};
 
     template<typename IT, typename Index>
-    class Iterator : public ForwardIteratorFacade<Iterator<IT, Index>,
-                                                  ValueType<IT, Index>,
-                                                  ValueType<IT, Index>> {
+    struct ValueType<IT, Index, true> : std::type_identity<None> {};
+
+    template<typename IT, typename Index, bool is_sentinel>
+    class Iterator : public ForwardIteratorFacade<Iterator<IT, Index, is_sentinel>,
+                                                  typename ValueType<IT, Index, is_sentinel>::type,
+                                                  typename ValueType<IT, Index, is_sentinel>::type> {
      public:
         Iterator() = default;
         explicit Iterator(IT it)
@@ -38,13 +41,7 @@ namespace EnumeratedRangeDetail {
         , _counter{0}
         {}
 
-        // required for comparison iterator == sentinel
-        template<typename I>
-        friend bool operator==(const Iterator& self, const Iterator<I, Index>& other) {
-            return self._get_it() == other._get_it();
-        }
-
-        const IT& _get_it() const {
+        const IT& base() const {
             return _it;
         }
 
@@ -52,7 +49,10 @@ namespace EnumeratedRangeDetail {
         friend IteratorAccess;
 
         auto _dereference() const {
-            return ValueType<IT, Index>{_counter, *_it};
+            if constexpr (is_sentinel)
+                return none;
+            else
+                return typename ValueType<IT, Index, is_sentinel>::type{_counter, *_it};
         }
 
         void _increment() {
@@ -60,8 +60,9 @@ namespace EnumeratedRangeDetail {
             ++_counter;
         }
 
-        bool _is_equal(const Iterator& other) const {
-            return *this == other;
+        template<typename _It, typename _Index, bool _is_sentinel>
+        bool _is_equal(const Iterator<_It, _Index, _is_sentinel>& other) const {
+            return _it == other.base();
         }
 
         IT _it;
@@ -80,11 +81,11 @@ class EnumeratedRange {
     using StoredRange = LVReferenceOrValue<R>;
     using ConstRange = std::add_const_t<std::remove_cvref_t<R>>;
 
-    using BaseIterator = std::ranges::iterator_t<StoredRange>;
-    using ConstBaseIterator = std::ranges::iterator_t<ConstRange>;
+    using Iterator = EnumeratedRangeDetail::Iterator<std::ranges::iterator_t<StoredRange>, Index, false>;
+    using ConstIterator = EnumeratedRangeDetail::Iterator<std::ranges::iterator_t<ConstRange>, Index, false>;
 
-    using Iterator = EnumeratedRangeDetail::Iterator<BaseIterator, Index>;
-    using ConstIterator = EnumeratedRangeDetail::Iterator<ConstBaseIterator, Index>;
+    using Sentinel = EnumeratedRangeDetail::Iterator<std::ranges::sentinel_t<StoredRange>, Index, true>;
+    using ConstSentinel = EnumeratedRangeDetail::Iterator<std::ranges::sentinel_t<ConstRange>, Index, true>;
 
     static constexpr bool is_const = std::is_const_v<std::remove_reference_t<R>>;
 
@@ -98,8 +99,8 @@ class EnumeratedRange {
     auto begin() { return Iterator{std::ranges::begin(_range)}; }
     auto begin() const { return ConstIterator{std::ranges::begin(_range)}; }
 
-    auto end() { return Iterator{std::ranges::end(_range)}; }
-    auto end() const { return ConstIterator{std::ranges::end(_range)}; }
+    auto end() { return Sentinel{std::ranges::end(_range)}; }
+    auto end() const { return ConstSentinel{std::ranges::end(_range)}; }
 
  private:
     StoredRange _range;
