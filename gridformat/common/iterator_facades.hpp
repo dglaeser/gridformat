@@ -89,24 +89,18 @@ class IteratorFacade
     using pointer = Pointer;
     using reference = Reference;
 
-    template<Concepts::Interoperable<Impl> I, typename T, typename V, typename R, typename D>
-    friend bool operator==(const IteratorFacade& lhs,
-                           const IteratorFacade<I, T, V, R, D>& rhs) {
-        if constexpr (std::is_convertible_v<I, Impl>)
-            return IteratorAccess::equal(
-                lhs._pimpl(),
-                Detail::cast_to_impl_ptr<const Impl>(&rhs)
-            );
-        else
-            return IteratorAccess::equal(
-                Detail::cast_to_impl_ptr<const I>(&lhs),
-                rhs._pimpl()
-            );
+    //! Test for equality against another iterator implementation
+    template<typename I, typename T, typename V, typename R, typename D>
+    friend bool operator==(const IteratorFacade& lhs, const IteratorFacade<I, T, V, R, D>& rhs) {
+        return IteratorAccess::equal(
+            lhs._pimpl(),
+            Detail::cast_to_impl_ptr<const I>(&rhs)
+        );
     }
 
-    template<Concepts::Interoperable<Impl> I, typename T, typename V, typename R, typename D>
-    friend bool operator!=(const IteratorFacade& lhs,
-                           const IteratorFacade<I, T, V, R, D>& rhs) {
+    //! Test for inequality against another iterator implementation
+    template<typename I, typename T, typename V, typename R, typename D>
+    friend bool operator!=(const IteratorFacade& lhs, const IteratorFacade<I, T, V, R, D>& rhs) {
         return !(lhs == rhs);
     }
 
