@@ -262,38 +262,24 @@ namespace DiscontinuousGridDetail {
     CellPointRange(const G&, R&&) -> CellPointRange<G, R>;
 
 
-    template<typename It, typename S>
+    template<typename IT, typename Sentinel>
     class CellIterator
-    : public ForwardIteratorFacade<CellIterator<It, S>,
-                                   Cell<typename std::iterator_traits<It>::reference>,
-                                   Cell<typename std::iterator_traits<It>::reference>> {
+    : public ForwardIteratorFacade<CellIterator<IT, Sentinel>,
+                                   Cell<typename std::iterator_traits<IT>::reference>,
+                                   Cell<typename std::iterator_traits<IT>::reference>> {
      public:
         CellIterator() = default;
-        CellIterator(It iterator, S sentinel, bool is_end)
+        CellIterator(IT iterator, Sentinel sentinel)
         : _it{iterator}
         , _sentinel{sentinel}
-        , _is_end{is_end}
         {}
 
-        template<typename _IT, typename _S>
-        friend bool operator==(const CellIterator& self, const CellIterator<_IT, _S>& other) {
-            if (self._is_end_it() && !other._is_end_it())
-                return self._get_sentinel() == other._get_it();
-            if (!self._is_end_it() && other._is_end_it())
-                return self._get_it() == other._get_sentinel();
-            return self._get_it() == other._get_it();
+        friend bool operator==(const CellIterator& self, const std::default_sentinel_t&) {
+            return self._it == self._sentinel;
         }
 
-        bool _is_end_it() const {
-            return _is_end;
-        }
-
-        const auto& _get_it() const {
-            return _it;
-        }
-
-        const auto& _get_sentinel() const {
-            return _sentinel;
+        friend bool operator==(const std::default_sentinel_t&, const CellIterator& self) {
+            return self._it == self._sentinel;
         }
 
      private:
@@ -309,12 +295,11 @@ namespace DiscontinuousGridDetail {
         }
 
         bool _is_equal(const CellIterator& other) const {
-            return *this == other;
+            return _it == other._it;
         }
 
-        It _it;
-        S _sentinel;
-        bool _is_end{true};
+        IT _it;
+        Sentinel _sentinel;
         std::size_t _index{0};
     };
 
@@ -331,8 +316,8 @@ namespace DiscontinuousGridDetail {
         : _range{GridFormat::cells(grid)}
         {}
 
-        auto begin() const { return CellIterator{std::ranges::begin(_range), std::ranges::end(_range), false}; }
-        auto end() const { return CellIterator{std::ranges::begin(_range), std::ranges::end(_range), true}; }
+        auto begin() const { return CellIterator{std::ranges::begin(_range), std::ranges::end(_range)}; }
+        auto end() const { return std::default_sentinel_t{}; }
 
      private:
         LVReferenceOrValue<_Range> _range;
