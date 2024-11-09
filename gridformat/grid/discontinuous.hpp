@@ -72,23 +72,23 @@ namespace DiscontinuousGridDetail {
         static constexpr bool value = !std::is_lvalue_reference_v<LVReferenceOrValue<C>>;
     };
 
-    template<typename _P, typename _C>
+    template<typename P, typename C>
     class Point {
-        using PStorage = LVReferenceOrValue<_P>;
-        using CStorage = LVReferenceOrValue<_C>;
-        static_assert(IsDiscontinuousCell<std::remove_cvref_t<_C>>::value);
+        using PStorage = LVReferenceOrValue<P>;
+        using CStorage = LVReferenceOrValue<C>;
+        static_assert(IsDiscontinuousCell<std::remove_cvref_t<C>>::value);
 
      public:
-        using Cell = std::remove_cvref_t<_C>;
+        using Cell = std::remove_cvref_t<C>;
         using HostCell = typename Cell::HostCell;
-        using HostPoint = std::remove_cvref_t<_P>;
+        using HostPoint = std::remove_cvref_t<P>;
 
-        template<typename P, typename C>
-            requires(std::convertible_to<PStorage, P> and
-                     std::convertible_to<CStorage, C>)
-        Point(P point, C cell, std::size_t i)
-        : _host_point{std::forward<P>(point)}
-        , _cell{std::forward<C>(cell)}
+        template<typename _P, typename _C>
+            requires(std::convertible_to<PStorage, _P> and
+                     std::convertible_to<CStorage, _C>)
+        Point(_P&& point, _C&& cell, std::size_t i)
+        : _host_point{std::forward<_P>(point)}
+        , _cell{std::forward<_C>(cell)}
         , _index_in_host{i}
         {}
 
@@ -155,27 +155,20 @@ namespace DiscontinuousGridDetail {
         CellPointIterator(const HostGrid& grid, CellIt it, CellSentinel sentinel)
         : _grid{&grid}
         , _cell_it{it}
-        , _cell_end_it{sentinel} {
-            if (!is_cell_end())
+        , _cell_sentinel{sentinel} {
+            if (!_is_cell_end())
                 _set_point_range();
         }
 
-        // we have to implement the equality operator here to support ranges
-        // where iterator_t and sentinel_t are not the same. This is why we
-        // also have to give public access to the underlying iterators... :/
-        template<typename IT, typename S>
-        friend bool operator==(const CellPointIterator& self, const CellPointIterator<HostGrid, IT, S>& other) {
-            if (self._grid_ptr() != other._grid_ptr()) return false;
-            if (self.is_cell_end() != other.is_cell_end()) return false;
-            if (self.is_cell_end()) return true;
-            if (self._cell_iterator() != other._cell_iterator()) return false;
-            return self._point_iterator().value() == other._point_iterator().value();
+        friend bool operator==(const CellPointIterator& self,
+                               const std::default_sentinel_t&) noexcept {
+            return self._cell_it == self._cell_sentinel;
         }
 
-        auto _grid_ptr() const { return _grid; }
-        const auto& _cell_iterator() const { return _cell_it; }
-        const auto& _point_iterator() const { return _point_it; }
-        bool is_cell_end() const { return _cell_it == _cell_end_it; }
+        friend bool operator==(const std::default_sentinel_t& s,
+                               const CellPointIterator& self) noexcept {
+            return self == s;
+        }
 
      private:
         void _set_point_range() {
@@ -189,16 +182,18 @@ namespace DiscontinuousGridDetail {
 
         friend IteratorAccess;
         bool _is_equal(CellPointIterator& other) const {
-            return *this == other;
+            if (_grid != other._grid) return false;
+            if (_cell_it != other._cell_it) return false;
+            return _point_it.value() == other._point_it.value();
         }
 
         void _increment() {
-            if (is_cell_end())
+            if (_is_cell_end())
                 return;
 
             _local_point_index++;
             if (++_point_it.value(); _point_it.value() == _point_end_it.value()) {
-                if (++_cell_it; _cell_it != _cell_end_it) {
+                if (++_cell_it; _cell_it != _cell_sentinel) {
                     _set_point_range();
                 } else {
                     _points.reset();
@@ -220,9 +215,13 @@ namespace DiscontinuousGridDetail {
                 return *_cell_it;
         }
 
+        bool _is_cell_end() const {
+            return _cell_it == _cell_sentinel;
+        }
+
         const HostGrid* _grid{nullptr};
         CellIt _cell_it;
-        CellSentinel _cell_end_it;
+        CellSentinel _cell_sentinel;
         std::optional<StoredCell> _cell;
 
         std::optional<PointRangeStorage> _points;
@@ -244,13 +243,8 @@ namespace DiscontinuousGridDetail {
         , _range{std::forward<_Cells>(range)}
         {}
 
-        auto begin() const {
-            return CellPointIterator{*_grid, std::ranges::begin(_range), std::ranges::end(_range)};
-        }
-
-        auto end() const {
-            return CellPointIterator{*_grid, std::ranges::end(_range), std::ranges::end(_range)};
-        }
+        auto begin() const { return CellPointIterator{*_grid, std::ranges::begin(_range), std::ranges::end(_range)}; }
+        auto end() const { return std::default_sentinel_t{}; }
 
      private:
         const Grid* _grid{nullptr};
