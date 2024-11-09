@@ -24,35 +24,36 @@ namespace GridFormat {
 #ifndef DOXYGEN
 namespace EnumeratedRangeDetail {
 
-    template<typename IT, typename Index, bool is_sentinel>
-    struct ValueType : std::type_identity<std::pair<Index, typename std::iterator_traits<IT>::reference>> {};
-
     template<typename IT, typename Index>
-    struct ValueType<IT, Index, true> : std::type_identity<None> {};
+    using ValueType = std::pair<Index, typename std::iterator_traits<IT>::reference>;
 
-    template<typename IT, typename Index, bool is_sentinel>
-    class Iterator : public ForwardIteratorFacade<Iterator<IT, Index, is_sentinel>,
-                                                  typename ValueType<IT, Index, is_sentinel>::type,
-                                                  typename ValueType<IT, Index, is_sentinel>::type> {
+    template<typename IT, typename Sentinel, typename Index>
+    class Iterator : public ForwardIteratorFacade<Iterator<IT, Sentinel, Index>,
+                                                  ValueType<IT, Index>,
+                                                  ValueType<IT, Index>> {
      public:
         Iterator() = default;
-        explicit Iterator(IT it)
+        explicit Iterator(IT it, Sentinel sentinel, Index offset)
         : _it{it}
-        , _counter{0}
+        , _sentinel{sentinel}
+        , _counter{offset}
         {}
 
-        const IT& base() const {
-            return _it;
+        friend bool operator==(const Iterator& self,
+                               const std::default_sentinel_t&) noexcept {
+            return self._it == self._sentinel;
+        }
+
+        friend bool operator==(const std::default_sentinel_t& s,
+                               const Iterator& self) noexcept {
+            return self == s;
         }
 
      private:
         friend IteratorAccess;
 
-        auto _dereference() const {
-            if constexpr (is_sentinel)
-                return none;
-            else
-                return typename ValueType<IT, Index, is_sentinel>::type{_counter, *_it};
+        ValueType<IT, Index> _dereference() const {
+            return {_counter, *_it};
         }
 
         void _increment() {
@@ -60,14 +61,17 @@ namespace EnumeratedRangeDetail {
             ++_counter;
         }
 
-        template<typename _It, typename _Index, bool _is_sentinel>
-        bool _is_equal(const Iterator<_It, _Index, _is_sentinel>& other) const {
-            return _it == other.base();
+        bool _is_equal(const Iterator& other) const {
+            return _it == other._it;
         }
 
         IT _it;
-        Index _counter;
+        Sentinel _sentinel;
+        Index _counter{0};
     };
+
+    template<typename IT, typename S, typename I>
+    Iterator(IT&&, S&&, I&&) -> Iterator<std::remove_cvref_t<IT>, std::remove_cvref_t<S>, std::remove_cvref_t<I>>;
 
 }  // namespace EnumeratedRangeDetail
 #endif  // DOXYGEN
@@ -79,13 +83,6 @@ namespace EnumeratedRangeDetail {
 template<std::ranges::forward_range R, typename Index = std::size_t>
 class EnumeratedRange {
     using StoredRange = LVReferenceOrValue<R>;
-    using ConstRange = std::add_const_t<std::remove_cvref_t<R>>;
-
-    using Iterator = EnumeratedRangeDetail::Iterator<std::ranges::iterator_t<StoredRange>, Index, false>;
-    using ConstIterator = EnumeratedRangeDetail::Iterator<std::ranges::iterator_t<ConstRange>, Index, false>;
-
-    using Sentinel = EnumeratedRangeDetail::Iterator<std::ranges::sentinel_t<StoredRange>, Index, true>;
-    using ConstSentinel = EnumeratedRangeDetail::Iterator<std::ranges::sentinel_t<ConstRange>, Index, true>;
 
     static constexpr bool is_const = std::is_const_v<std::remove_reference_t<R>>;
 
@@ -96,11 +93,23 @@ class EnumeratedRange {
     : _range{std::forward<_R>(range)}
     {}
 
-    auto begin() { return Iterator{std::ranges::begin(_range)}; }
-    auto begin() const { return ConstIterator{std::ranges::begin(_range)}; }
+    auto begin() {
+        return EnumeratedRangeDetail::Iterator{
+            std::ranges::begin(_range),
+            std::ranges::end(_range),
+            Index{0}
+        };
+    }
+    auto begin() const {
+        return EnumeratedRangeDetail::Iterator{
+            std::ranges::cbegin(_range),
+            std::ranges::cend(_range),
+            Index{0}
+        };
+    }
 
-    auto end() { return Sentinel{std::ranges::end(_range)}; }
-    auto end() const { return ConstSentinel{std::ranges::end(_range)}; }
+    auto end() { return std::default_sentinel_t{}; }
+    auto end() const { return std::default_sentinel_t{}; }
 
  private:
     StoredRange _range;
