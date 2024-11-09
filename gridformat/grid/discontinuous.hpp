@@ -84,8 +84,8 @@ namespace DiscontinuousGridDetail {
         using HostPoint = std::remove_cvref_t<P>;
 
         template<typename _P, typename _C>
-            requires(std::convertible_to<PStorage, _P> and
-                     std::convertible_to<CStorage, _C>)
+            requires(std::convertible_to<_P, PStorage> and
+                     std::convertible_to<_C, CStorage>)
         Point(_P&& point, _C&& cell, std::size_t i)
         : _host_point{std::forward<_P>(point)}
         , _cell{std::forward<_C>(cell)}
@@ -119,10 +119,17 @@ namespace DiscontinuousGridDetail {
     template<typename HostGrid>
     using HostCellPointRangeStorage = typename PointRangeStorage<HostCellPointRange<HostGrid>>::type;
 
+    template<typename T>
+    using AsConstReference = std::conditional_t<
+        std::is_lvalue_reference_v<T>,
+        std::add_lvalue_reference_t<std::add_const_t<std::remove_reference_t<T>>>,
+        T
+    >;
+
     template<typename HostGrid>
-    using HostCellPointReference = std::iterator_traits<
-        std::ranges::iterator_t<HostCellPointRangeStorage<HostGrid>>
-    >::reference;
+    using HostCellPointReference = AsConstReference<
+        typename std::iterator_traits<std::ranges::iterator_t<HostCellPointRangeStorage<HostGrid>>>::reference
+    >;
 
     template<typename HostGrid>
     using CellType = Cell<std::ranges::range_reference_t<HostCellRange<HostGrid>>>;
