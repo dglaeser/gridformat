@@ -31,14 +31,14 @@ jobs:
       - name: configure
         run: |
           rm -rf build
-          cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
-                -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \
+          cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-14 \
+                -DCMAKE_CXX_COMPILER=/usr/bin/g++-14 \
                 -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DGRIDFORMAT_BUILD_TESTS=ON \
                 -DGRIDFORMAT_DO_COVERAGE=ON \
                 -DGRIDFORMAT_BUILD_DOCS=ON \
-                -DGCOV_PATH=/usr/bin/gcov-12 \
+                -DGCOV_PATH=/usr/bin/gcov-14 \
                 -B build
 
       - name: build-doxygen-documentation
