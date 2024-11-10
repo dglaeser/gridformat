@@ -434,9 +434,9 @@ $(document).ready(function(){initNavTree('hdf__unstructured__grid__writer_8hpp_s
 <div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>            size.at(0) = main_size;</div>
 <div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span> </div>
 <div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>            file.write(field, path, HDF5::Slice{</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>                .offset = offset,</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>                .count = count,</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>                .total_size = size</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>                .offset = std::move(offset),</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>                .count = std::move(count),</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>                .total_size = std::move(size)</div>
 <div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>            });</div>
 <div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        } <span class="keywordflow">else</span> {</div>
 <div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>            file.write(field, path);</div>
@@ -480,8 +480,8 @@ $(document).ready(function(){initNavTree('hdf__unstructured__grid__writer_8hpp_s
 <div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        access_offset.at(0) = this-&gt;_step_count - 1;</div>
 <div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span> </div>
 <div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>        <span class="keywordflow">return</span> file.template read_dataset_to&lt;std::size_t&gt;(path, HDF5::Slice{</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>            .offset = access_offset,</div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>            .count = step_dimensions</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>            .offset = std::move(access_offset),</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>            .count = std::move(step_dimensions)</div>
 <div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        });</div>
 <div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    }</div>
 <div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span> </div>

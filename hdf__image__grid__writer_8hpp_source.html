@@ -478,7 +478,7 @@ $(document).ready(function(){initNavTree('hdf__image__grid__writer_8hpp_source.h
 <div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        std::vector&lt;std::size_t&gt; offset(layout.dimension(), 0);</div>
 <div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>        layout.export_to(dims);</div>
 <div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        <span class="keywordflow">return</span> {</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>            .offset = offset,</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>            .offset = std::move(offset),</div>
 <div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>            .count = dims,</div>
 <div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>            .total_size = dims</div>
 <div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>        };</div>

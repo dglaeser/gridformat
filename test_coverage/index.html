@@ -1,19 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html class="theme-green">
 
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>GCC Code Coverage Report</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="index.css"/>
   </head>
 
   <body>
-    <h1>GCC Code Coverage Report</h1>
+    <header>
+      <h1>GCC Code Coverage Report</h1>
 
-    <hr/>
+      <hr/>
 
-    <div class="summary">
+      <div class="summary">
 <div>
   <table class="legend">
     <tr>
@@ -22,14 +23,14 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2024-11-10 08:27:20</td>
+      <td>2024-11-10 16:24:00</td>
     </tr>
     <tr>
-      <th scope="row">Legend:</th>
+      <th scope="row">Coverage:</th>
       <td class="legend">
-        <span class="coverage-low">low: &gt;= 0%</span>
-        <span class="coverage-medium">medium: &gt;= 75.0%</span>
-        <span class="coverage-high">high: &gt;= 90.0%</span>
+        <span class="coverage-low">low: &ge; 0%</span>
+        <span class="coverage-medium">medium: &ge; 75.0%</span>
+        <span class="coverage-high">high: &ge; 90.0%</span>
       </td>
     </tr>
   </table>
@@ -45,30 +46,44 @@
     </tr>
     <tr>
       <th scope="row">Lines:</th>
-      <td>7335</td>
-      <td>7773</td>
-      <td class="coverage-high">94.4%</td>
+      <td>7422</td>
+      <td>7905</td>
+      <td class="coverage-high">93.9%</td>
+    </tr>
+    <tr>
+      <th scope="row">Functions:</th>
+      <td>16916</td>
+      <td>26257</td>
+      <td class="coverage-low">64.4%</td>
     </tr>
     <tr>
       <th scope="row">Branches:</th>
-      <td>20259</td>
-      <td>151940</td>
+      <td>20183</td>
+      <td>151283</td>
       <td class="coverage-low">13.3%</td>
     </tr>
   </table>
 </div>
-    </div>
+      </div>
 
-    <hr/>
+      <hr/>
+    </header>
 
+    <nav>
+<a href="index.functions.html">List of functions</a>
+    </nav>
+
+    <main>
 <table class="file-list">
   <col/>
   <colgroup span="3"/>
+  <colgroup span="2"/>
   <colgroup span="2"/>
 
   <tr>
     <th scope="col">File</th>
     <th scope="colgroup" colspan=3>Lines</th>
+    <th scope="colgroup" colspan=2>Functions</th>
     <th scope="colgroup" colspan=2>Branches</th>
   </tr>
 
@@ -82,6 +97,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">14 / 14</td>
+    <td class="CoverValue function-coverage coverage-low">55.6%</td>
+    <td class="CoverValue function-coverage coverage-low">20 / 36</td>
     <td class="CoverValue branch-coverage coverage-low">55.6%</td>
     <td class="CoverValue branch-coverage coverage-low">10 / 18</td>
   </tr>
@@ -96,6 +113,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">8 / 8</td>
+    <td class="CoverValue function-coverage coverage-medium">75.7%</td>
+    <td class="CoverValue function-coverage coverage-medium">541 / 715</td>
     <td class="CoverValue branch-coverage coverage-unknown">-%</td>
     <td class="CoverValue branch-coverage coverage-unknown">0 / 0</td>
   </tr>
@@ -110,6 +129,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">4 / 4</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">4 / 4</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">1 / 2</td>
   </tr>
@@ -124,6 +145,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">23 / 23</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">99 / 99</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">5 / 10</td>
   </tr>
@@ -138,6 +161,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">10 / 10</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">2 / 2</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">13 / 26</td>
   </tr>
@@ -151,7 +176,9 @@
       <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">63 / 63</td>
+    <td class="CoverValue line-coverage coverage-high">67 / 67</td>
+    <td class="CoverValue function-coverage coverage-low">34.4%</td>
+    <td class="CoverValue function-coverage coverage-low">104 / 302</td>
     <td class="CoverValue branch-coverage coverage-low">24.5%</td>
     <td class="CoverValue branch-coverage coverage-low">289 / 1178</td>
   </tr>
@@ -162,10 +189,12 @@
       <a href="index.field_storage.hpp.4145cbf1f0f9acc0ef2cc190aba11613.html">common/field_storage.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
+      <meter class="coverage-high" min="0" max="100" value="95.5" title="95.5%">95.5</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">21 / 21</td>
+    <td class="CoverValue line-coverage coverage-high">95.5%</td>
+    <td class="CoverValue line-coverage coverage-high">21 / 22</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">10 / 10</td>
     <td class="CoverValue branch-coverage coverage-low">64.3%</td>
     <td class="CoverValue branch-coverage coverage-low">9 / 14</td>
   </tr>
@@ -176,10 +205,12 @@
       <a href="index.field_transformations.hpp.5df7448c4d96eea52dc9a0f84922ac62.html">common/field_transformations.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="97.6" title="97.6%">97.6</meter>
+      <meter class="coverage-high" min="0" max="100" value="96.9" title="96.9%">96.9</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">97.6%</td>
-    <td class="CoverValue line-coverage coverage-high">280 / 287</td>
+    <td class="CoverValue line-coverage coverage-high">96.9%</td>
+    <td class="CoverValue line-coverage coverage-high">281 / 290</td>
+    <td class="CoverValue function-coverage coverage-medium">82.4%</td>
+    <td class="CoverValue function-coverage coverage-medium">84 / 102</td>
     <td class="CoverValue branch-coverage coverage-low">53.5%</td>
     <td class="CoverValue branch-coverage coverage-low">229 / 428</td>
   </tr>
@@ -194,6 +225,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">39 / 39</td>
+    <td class="CoverValue function-coverage coverage-high">96.7%</td>
+    <td class="CoverValue function-coverage coverage-high">554 / 573</td>
     <td class="CoverValue branch-coverage coverage-low">65.5%</td>
     <td class="CoverValue branch-coverage coverage-low">19 / 29</td>
   </tr>
@@ -204,12 +237,14 @@
       <a href="index.flat_index_mapper.hpp.7bcd4f65054d2c3adcb5969569474d41.html">common/flat_index_mapper.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
+      <meter class="coverage-high" min="0" max="100" value="97.3" title="97.3%">97.3</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">32 / 32</td>
-    <td class="CoverValue branch-coverage coverage-low">52.8%</td>
-    <td class="CoverValue branch-coverage coverage-low">19 / 36</td>
+    <td class="CoverValue line-coverage coverage-high">97.3%</td>
+    <td class="CoverValue line-coverage coverage-high">36 / 37</td>
+    <td class="CoverValue function-coverage coverage-high">95.2%</td>
+    <td class="CoverValue function-coverage coverage-high">60 / 63</td>
+    <td class="CoverValue branch-coverage coverage-low">50.0%</td>
+    <td class="CoverValue branch-coverage coverage-low">16 / 32</td>
   </tr>
 
 
@@ -218,12 +253,14 @@
       <a href="index.hdf5.hpp.c2e51c175c489f1b77f0df78805078c9.html">common/hdf5.hpp</a>
     </th>
     <td>
-      <meter class="coverage-medium" min="0" max="100" value="89.4" title="89.4%">89.4</meter>
+      <meter class="coverage-medium" min="0" max="100" value="89.0" title="89.0%">89.0</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-medium">89.4%</td>
-    <td class="CoverValue line-coverage coverage-medium">245 / 274</td>
-    <td class="CoverValue branch-coverage coverage-low">17.1%</td>
-    <td class="CoverValue branch-coverage coverage-low">540 / 3162</td>
+    <td class="CoverValue line-coverage coverage-medium">89.0%</td>
+    <td class="CoverValue line-coverage coverage-medium">251 / 282</td>
+    <td class="CoverValue function-coverage coverage-low">64.9%</td>
+    <td class="CoverValue function-coverage coverage-low">213 / 328</td>
+    <td class="CoverValue branch-coverage coverage-low">17.0%</td>
+    <td class="CoverValue branch-coverage coverage-low">538 / 3156</td>
   </tr>
 
 
@@ -236,6 +273,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">15 / 15</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">10 / 10</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">5 / 10</td>
   </tr>
@@ -246,12 +285,14 @@
       <a href="index.istream_helper.hpp.ed399f49265ecba64d22fbbfbfd922ce.html">common/istream_helper.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="94.6" title="94.6%">94.6</meter>
+      <meter class="coverage-high" min="0" max="100" value="92.6" title="92.6%">92.6</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">94.6%</td>
-    <td class="CoverValue line-coverage coverage-high">87 / 92</td>
+    <td class="CoverValue line-coverage coverage-high">92.6%</td>
+    <td class="CoverValue line-coverage coverage-high">87 / 94</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">14 / 14</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
-    <td class="CoverValue branch-coverage coverage-low">26 / 52</td>
+    <td class="CoverValue branch-coverage coverage-low">35 / 70</td>
   </tr>
 
 
@@ -264,6 +305,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">57 / 57</td>
+    <td class="CoverValue function-coverage coverage-medium">80.2%</td>
+    <td class="CoverValue function-coverage coverage-medium">291 / 363</td>
     <td class="CoverValue branch-coverage coverage-low">70.0%</td>
     <td class="CoverValue branch-coverage coverage-low">7 / 10</td>
   </tr>
@@ -277,7 +320,9 @@
       <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">11 / 11</td>
+    <td class="CoverValue line-coverage coverage-high">12 / 12</td>
+    <td class="CoverValue function-coverage coverage-low">67.9%</td>
+    <td class="CoverValue function-coverage coverage-low">38 / 56</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">2 / 4</td>
   </tr>
@@ -288,10 +333,12 @@
       <a href="index.logging.hpp.a1aa62558aa6059e3d5b457c33951469.html">common/logging.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="96.8" title="96.8%">96.8</meter>
+      <meter class="coverage-high" min="0" max="100" value="93.8" title="93.8%">93.8</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">96.8%</td>
-    <td class="CoverValue line-coverage coverage-high">30 / 31</td>
+    <td class="CoverValue line-coverage coverage-high">93.8%</td>
+    <td class="CoverValue line-coverage coverage-high">30 / 32</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">10 / 10</td>
     <td class="CoverValue branch-coverage coverage-low">53.2%</td>
     <td class="CoverValue branch-coverage coverage-low">33 / 62</td>
   </tr>
@@ -306,6 +353,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">3 / 3</td>
+    <td class="CoverValue function-coverage coverage-medium">80.6%</td>
+    <td class="CoverValue function-coverage coverage-medium">133 / 165</td>
     <td class="CoverValue branch-coverage coverage-unknown">-%</td>
     <td class="CoverValue branch-coverage coverage-unknown">0 / 0</td>
   </tr>
@@ -320,6 +369,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">7 / 7</td>
+    <td class="CoverValue function-coverage coverage-low">50.0%</td>
+    <td class="CoverValue function-coverage coverage-low">2 / 4</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">1 / 2</td>
   </tr>
@@ -334,6 +385,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">16 / 16</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">15 / 15</td>
     <td class="CoverValue branch-coverage coverage-medium">83.3%</td>
     <td class="CoverValue branch-coverage coverage-medium">5 / 6</td>
   </tr>
@@ -344,10 +397,12 @@
       <a href="index.md_index.hpp.57562497896dc2c497fe919d9ba7eda4.html">common/md_index.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="99.0" title="99.0%">99.0</meter>
+      <meter class="coverage-high" min="0" max="100" value="98.0" title="98.0%">98.0</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">99.0%</td>
-    <td class="CoverValue line-coverage coverage-high">100 / 101</td>
+    <td class="CoverValue line-coverage coverage-high">98.0%</td>
+    <td class="CoverValue line-coverage coverage-high">100 / 102</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">38 / 38</td>
     <td class="CoverValue branch-coverage coverage-low">55.2%</td>
     <td class="CoverValue branch-coverage coverage-low">48 / 87</td>
   </tr>
@@ -361,7 +416,9 @@
       <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">83 / 83</td>
+    <td class="CoverValue line-coverage coverage-high">82 / 82</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">95 / 95</td>
     <td class="CoverValue branch-coverage coverage-low">55.4%</td>
     <td class="CoverValue branch-coverage coverage-low">46 / 83</td>
   </tr>
@@ -376,6 +433,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">7 / 7</td>
+    <td class="CoverValue function-coverage coverage-low">58.7%</td>
+    <td class="CoverValue function-coverage coverage-low">27 / 46</td>
     <td class="CoverValue branch-coverage coverage-unknown">-%</td>
     <td class="CoverValue branch-coverage coverage-unknown">0 / 0</td>
   </tr>
@@ -390,6 +449,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">34 / 34</td>
+    <td class="CoverValue function-coverage coverage-low">70.6%</td>
+    <td class="CoverValue function-coverage coverage-low">36 / 51</td>
     <td class="CoverValue branch-coverage coverage-unknown">-%</td>
     <td class="CoverValue branch-coverage coverage-unknown">0 / 0</td>
   </tr>
@@ -400,10 +461,12 @@
       <a href="index.path.hpp.54351001f5f7d18207c7f60b6498510b.html">common/path.hpp</a>
     </th>
     <td>
-      <meter class="coverage-medium" min="0" max="100" value="87.5" title="87.5%">87.5</meter>
+      <meter class="coverage-high" min="0" max="100" value="93.8" title="93.8%">93.8</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-medium">87.5%</td>
-    <td class="CoverValue line-coverage coverage-medium">14 / 16</td>
+    <td class="CoverValue line-coverage coverage-high">93.8%</td>
+    <td class="CoverValue line-coverage coverage-high">15 / 16</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">4 / 4</td>
     <td class="CoverValue branch-coverage coverage-low">39.3%</td>
     <td class="CoverValue branch-coverage coverage-low">11 / 28</td>
   </tr>
@@ -414,10 +477,12 @@
       <a href="index.precision.hpp.3484145012e8f6060076500b3208f367.html">common/precision.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
+      <meter class="coverage-high" min="0" max="100" value="96.9" title="96.9%">96.9</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">30 / 30</td>
+    <td class="CoverValue line-coverage coverage-high">96.9%</td>
+    <td class="CoverValue line-coverage coverage-high">31 / 32</td>
+    <td class="CoverValue function-coverage coverage-low">66.5%</td>
+    <td class="CoverValue function-coverage coverage-low">139 / 209</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">5 / 10</td>
   </tr>
@@ -428,10 +493,12 @@
       <a href="index.range_field.hpp.dedfd3e4c6435579542d1efc8d91e8f2.html">common/range_field.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
+      <meter class="coverage-high" min="0" max="100" value="95.5" title="95.5%">95.5</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">21 / 21</td>
+    <td class="CoverValue line-coverage coverage-high">95.5%</td>
+    <td class="CoverValue line-coverage coverage-high">21 / 22</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">55 / 55</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">9 / 18</td>
   </tr>
@@ -442,12 +509,14 @@
       <a href="index.ranges.hpp.0f55b3c068d1ee27a5243412c1ff965e.html">common/ranges.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="98.1" title="98.1%">98.1</meter>
+      <meter class="coverage-high" min="0" max="100" value="96.3" title="96.3%">96.3</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">98.1%</td>
-    <td class="CoverValue line-coverage coverage-high">105 / 107</td>
-    <td class="CoverValue branch-coverage coverage-low">44.8%</td>
-    <td class="CoverValue branch-coverage coverage-low">30 / 67</td>
+    <td class="CoverValue line-coverage coverage-high">96.3%</td>
+    <td class="CoverValue line-coverage coverage-high">103 / 107</td>
+    <td class="CoverValue function-coverage coverage-high">96.8%</td>
+    <td class="CoverValue function-coverage coverage-high">430 / 444</td>
+    <td class="CoverValue branch-coverage coverage-low">42.0%</td>
+    <td class="CoverValue branch-coverage coverage-low">29 / 69</td>
   </tr>
 
 
@@ -460,6 +529,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">32 / 32</td>
+    <td class="CoverValue function-coverage coverage-high">93.3%</td>
+    <td class="CoverValue function-coverage coverage-high">28 / 30</td>
     <td class="CoverValue branch-coverage coverage-low">60.7%</td>
     <td class="CoverValue branch-coverage coverage-low">17 / 28</td>
   </tr>
@@ -474,6 +545,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">32 / 32</td>
+    <td class="CoverValue function-coverage coverage-high">94.4%</td>
+    <td class="CoverValue function-coverage coverage-high">68 / 72</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">7 / 14</td>
   </tr>
@@ -488,6 +561,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">8 / 8</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">15 / 15</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">2 / 4</td>
   </tr>
@@ -498,10 +573,12 @@
       <a href="index.serialization.hpp.2e22010f3d3b340f97e4957d3019c97b.html">common/serialization.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="98.0" title="98.0%">98.0</meter>
+      <meter class="coverage-high" min="0" max="100" value="96.1" title="96.1%">96.1</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">98.0%</td>
-    <td class="CoverValue line-coverage coverage-high">49 / 50</td>
+    <td class="CoverValue line-coverage coverage-high">96.1%</td>
+    <td class="CoverValue line-coverage coverage-high">49 / 51</td>
+    <td class="CoverValue function-coverage coverage-medium">85.1%</td>
+    <td class="CoverValue function-coverage coverage-medium">40 / 47</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">8 / 16</td>
   </tr>
@@ -512,10 +589,12 @@
       <a href="index.string_conversion.hpp.977158376ad207556b7da3619cc31f20.html">common/string_conversion.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="96.2" title="96.2%">96.2</meter>
+      <meter class="coverage-high" min="0" max="100" value="92.6" title="92.6%">92.6</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">96.2%</td>
-    <td class="CoverValue line-coverage coverage-high">25 / 26</td>
+    <td class="CoverValue line-coverage coverage-high">92.6%</td>
+    <td class="CoverValue line-coverage coverage-high">25 / 27</td>
+    <td class="CoverValue function-coverage coverage-high">92.3%</td>
+    <td class="CoverValue function-coverage coverage-high">36 / 39</td>
     <td class="CoverValue branch-coverage coverage-low">38.6%</td>
     <td class="CoverValue branch-coverage coverage-low">34 / 88</td>
   </tr>
@@ -530,6 +609,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">5 / 5</td>
+    <td class="CoverValue function-coverage coverage-low">71.4%</td>
+    <td class="CoverValue function-coverage coverage-low">10 / 14</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">1 / 2</td>
   </tr>
@@ -544,6 +625,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">95.0%</td>
     <td class="CoverValue line-coverage coverage-high">19 / 20</td>
+    <td class="CoverValue function-coverage coverage-high">93.1%</td>
+    <td class="CoverValue function-coverage coverage-high">27 / 29</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">3 / 6</td>
   </tr>
@@ -558,6 +641,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">93.8%</td>
     <td class="CoverValue line-coverage coverage-high">15 / 16</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">5 / 5</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">3 / 6</td>
   </tr>
@@ -568,10 +653,12 @@
       <a href="index.decompress.hpp.eab773a2e3f7567b3f4176a1a7cc80bd.html">compression/decompress.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="94.7" title="94.7%">94.7</meter>
+      <meter class="coverage-high" min="0" max="100" value="90.0" title="90.0%">90.0</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">94.7%</td>
-    <td class="CoverValue line-coverage coverage-high">18 / 19</td>
+    <td class="CoverValue line-coverage coverage-high">90.0%</td>
+    <td class="CoverValue line-coverage coverage-high">18 / 20</td>
+    <td class="CoverValue function-coverage coverage-medium">88.9%</td>
+    <td class="CoverValue function-coverage coverage-medium">8 / 9</td>
     <td class="CoverValue branch-coverage coverage-low">37.7%</td>
     <td class="CoverValue branch-coverage coverage-low">20 / 53</td>
   </tr>
@@ -586,6 +673,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">91.5%</td>
     <td class="CoverValue line-coverage coverage-high">54 / 59</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">9 / 9</td>
     <td class="CoverValue branch-coverage coverage-low">41.5%</td>
     <td class="CoverValue branch-coverage coverage-low">27 / 65</td>
   </tr>
@@ -600,6 +689,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">91.7%</td>
     <td class="CoverValue line-coverage coverage-high">55 / 60</td>
+    <td class="CoverValue function-coverage coverage-low">66.7%</td>
+    <td class="CoverValue function-coverage coverage-low">6 / 9</td>
     <td class="CoverValue branch-coverage coverage-low">39.0%</td>
     <td class="CoverValue branch-coverage coverage-low">23 / 59</td>
   </tr>
@@ -614,6 +705,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">90.0%</td>
     <td class="CoverValue line-coverage coverage-high">54 / 60</td>
+    <td class="CoverValue function-coverage coverage-medium">77.8%</td>
+    <td class="CoverValue function-coverage coverage-medium">7 / 9</td>
     <td class="CoverValue branch-coverage coverage-low">38.6%</td>
     <td class="CoverValue branch-coverage coverage-low">27 / 70</td>
   </tr>
@@ -628,8 +721,10 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">56 / 56</td>
-    <td class="CoverValue branch-coverage coverage-low">59.1%</td>
-    <td class="CoverValue branch-coverage coverage-low">26 / 44</td>
+    <td class="CoverValue function-coverage coverage-medium">83.8%</td>
+    <td class="CoverValue function-coverage coverage-medium">31 / 37</td>
+    <td class="CoverValue branch-coverage coverage-low">60.5%</td>
+    <td class="CoverValue branch-coverage coverage-low">23 / 38</td>
   </tr>
 
 
@@ -642,8 +737,10 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">94.2%</td>
     <td class="CoverValue line-coverage coverage-high">114 / 121</td>
-    <td class="CoverValue branch-coverage coverage-low">57.0%</td>
-    <td class="CoverValue branch-coverage coverage-low">49 / 86</td>
+    <td class="CoverValue function-coverage coverage-medium">84.8%</td>
+    <td class="CoverValue function-coverage coverage-medium">39 / 46</td>
+    <td class="CoverValue branch-coverage coverage-low">57.1%</td>
+    <td class="CoverValue branch-coverage coverage-low">48 / 84</td>
   </tr>
 
 
@@ -656,6 +753,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">9 / 9</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">6 / 6</td>
     <td class="CoverValue branch-coverage coverage-unknown">-%</td>
     <td class="CoverValue branch-coverage coverage-unknown">0 / 0</td>
   </tr>
@@ -666,10 +765,12 @@
       <a href="index.raw.hpp.c7e2532d6c46f83d697241e7bdf9af37.html">encoding/raw.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="93.3" title="93.3%">93.3</meter>
+      <meter class="coverage-medium" min="0" max="100" value="87.5" title="87.5%">87.5</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">93.3%</td>
-    <td class="CoverValue line-coverage coverage-high">14 / 15</td>
+    <td class="CoverValue line-coverage coverage-medium">87.5%</td>
+    <td class="CoverValue line-coverage coverage-medium">14 / 16</td>
+    <td class="CoverValue function-coverage coverage-low">68.2%</td>
+    <td class="CoverValue function-coverage coverage-low">15 / 22</td>
     <td class="CoverValue branch-coverage coverage-low">40.0%</td>
     <td class="CoverValue branch-coverage coverage-low">4 / 10</td>
   </tr>
@@ -680,12 +781,14 @@
       <a href="index.converter.hpp.3b571b6b78dbe18764ca433fd91991ab.html">grid/converter.hpp</a>
     </th>
     <td>
-      <meter class="coverage-medium" min="0" max="100" value="80.5" title="80.5%">80.5</meter>
+      <meter class="coverage-medium" min="0" max="100" value="80.7" title="80.7%">80.7</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-medium">80.5%</td>
-    <td class="CoverValue line-coverage coverage-medium">91 / 113</td>
-    <td class="CoverValue branch-coverage coverage-low">28.9%</td>
-    <td class="CoverValue branch-coverage coverage-low">59 / 204</td>
+    <td class="CoverValue line-coverage coverage-medium">80.7%</td>
+    <td class="CoverValue line-coverage coverage-medium">92 / 114</td>
+    <td class="CoverValue function-coverage coverage-medium">77.0%</td>
+    <td class="CoverValue function-coverage coverage-medium">67 / 87</td>
+    <td class="CoverValue branch-coverage coverage-low">28.6%</td>
+    <td class="CoverValue branch-coverage coverage-low">59 / 206</td>
   </tr>
 
 
@@ -698,6 +801,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">99.0%</td>
     <td class="CoverValue line-coverage coverage-high">97 / 98</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">624 / 624</td>
     <td class="CoverValue branch-coverage coverage-low">53.8%</td>
     <td class="CoverValue branch-coverage coverage-low">43 / 80</td>
   </tr>
@@ -712,6 +817,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">98.7%</td>
     <td class="CoverValue line-coverage coverage-high">75 / 76</td>
+    <td class="CoverValue function-coverage coverage-medium">77.9%</td>
+    <td class="CoverValue function-coverage coverage-medium">2902 / 3725</td>
     <td class="CoverValue branch-coverage coverage-low">60.2%</td>
     <td class="CoverValue branch-coverage coverage-low">640 / 1064</td>
   </tr>
@@ -722,10 +829,12 @@
       <a href="index.grid.hpp.fd6a80180a87fef1d7ca80a11bb3ffd0.html">grid/grid.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
+      <meter class="coverage-high" min="0" max="100" value="98.1" title="98.1%">98.1</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">52 / 52</td>
+    <td class="CoverValue line-coverage coverage-high">98.1%</td>
+    <td class="CoverValue line-coverage coverage-high">52 / 53</td>
+    <td class="CoverValue function-coverage coverage-high">99.2%</td>
+    <td class="CoverValue function-coverage coverage-high">709 / 715</td>
     <td class="CoverValue branch-coverage coverage-low">67.4%</td>
     <td class="CoverValue branch-coverage coverage-low">31 / 46</td>
   </tr>
@@ -740,6 +849,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">99.0%</td>
     <td class="CoverValue line-coverage coverage-high">99 / 100</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">67 / 67</td>
     <td class="CoverValue branch-coverage coverage-low">52.1%</td>
     <td class="CoverValue branch-coverage coverage-low">49 / 94</td>
   </tr>
@@ -750,12 +861,14 @@
       <a href="index.reader.hpp.38a7736702cb8f2e053453c60184237f.html">grid/reader.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="97.8" title="97.8%">97.8</meter>
+      <meter class="coverage-high" min="0" max="100" value="96.4" title="96.4%">96.4</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">97.8%</td>
-    <td class="CoverValue line-coverage coverage-high">132 / 135</td>
-    <td class="CoverValue branch-coverage coverage-low">22.2%</td>
-    <td class="CoverValue branch-coverage coverage-low">85 / 383</td>
+    <td class="CoverValue line-coverage coverage-high">96.4%</td>
+    <td class="CoverValue line-coverage coverage-high">132 / 137</td>
+    <td class="CoverValue function-coverage coverage-low">66.7%</td>
+    <td class="CoverValue function-coverage coverage-low">58 / 87</td>
+    <td class="CoverValue branch-coverage coverage-low">25.5%</td>
+    <td class="CoverValue branch-coverage coverage-low">81 / 318</td>
   </tr>
 
 
@@ -767,7 +880,9 @@
       <meter class="coverage-high" min="0" max="100" value="97.5" title="97.5%">97.5</meter>
     </td>
     <td class="CoverValue line-coverage coverage-high">97.5%</td>
-    <td class="CoverValue line-coverage coverage-high">157 / 161</td>
+    <td class="CoverValue line-coverage coverage-high">158 / 162</td>
+    <td class="CoverValue function-coverage coverage-high">96.9%</td>
+    <td class="CoverValue function-coverage coverage-high">2641 / 2725</td>
     <td class="CoverValue branch-coverage coverage-low">43.8%</td>
     <td class="CoverValue branch-coverage coverage-low">267 / 609</td>
   </tr>
@@ -778,10 +893,12 @@
       <a href="index.gridformat.hpp.57cc33154d41e58ad192f425234c840b.html">gridformat.hpp</a>
     </th>
     <td>
-      <meter class="coverage-medium" min="0" max="100" value="84.5" title="84.5%">84.5</meter>
+      <meter class="coverage-medium" min="0" max="100" value="83.0" title="83.0%">83.0</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-medium">84.5%</td>
-    <td class="CoverValue line-coverage coverage-medium">191 / 226</td>
+    <td class="CoverValue line-coverage coverage-medium">83.0%</td>
+    <td class="CoverValue line-coverage coverage-medium">191 / 230</td>
+    <td class="CoverValue function-coverage coverage-low">73.0%</td>
+    <td class="CoverValue function-coverage coverage-low">206 / 282</td>
     <td class="CoverValue branch-coverage coverage-low">39.2%</td>
     <td class="CoverValue branch-coverage coverage-low">136 / 347</td>
   </tr>
@@ -796,6 +913,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">18 / 18</td>
+    <td class="CoverValue function-coverage coverage-low">69.0%</td>
+    <td class="CoverValue function-coverage coverage-low">29 / 42</td>
     <td class="CoverValue branch-coverage coverage-unknown">-%</td>
     <td class="CoverValue branch-coverage coverage-unknown">0 / 0</td>
   </tr>
@@ -810,6 +929,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-medium">83.3%</td>
     <td class="CoverValue line-coverage coverage-medium">10 / 12</td>
+    <td class="CoverValue function-coverage coverage-low">50.0%</td>
+    <td class="CoverValue function-coverage coverage-low">5 / 10</td>
     <td class="CoverValue branch-coverage coverage-low">47.1%</td>
     <td class="CoverValue branch-coverage coverage-low">8 / 17</td>
   </tr>
@@ -820,10 +941,12 @@
       <a href="index.traits.hpp.7bc919ea2881ee69be9df97b963a5b81.html">parallel/traits.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="98.7" title="98.7%">98.7</meter>
+      <meter class="coverage-high" min="0" max="100" value="92.9" title="92.9%">92.9</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">98.7%</td>
-    <td class="CoverValue line-coverage coverage-high">78 / 79</td>
+    <td class="CoverValue line-coverage coverage-high">92.9%</td>
+    <td class="CoverValue line-coverage coverage-high">78 / 84</td>
+    <td class="CoverValue function-coverage coverage-low">72.3%</td>
+    <td class="CoverValue function-coverage coverage-low">34 / 47</td>
     <td class="CoverValue branch-coverage coverage-low">51.9%</td>
     <td class="CoverValue branch-coverage coverage-low">27 / 52</td>
   </tr>
@@ -834,10 +957,12 @@
       <a href="index.reader.hpp.fb6ed9c67efd32e95c1f09b727134453.html">reader.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="91.6" title="91.6%">91.6</meter>
+      <meter class="coverage-high" min="0" max="100" value="90.6" title="90.6%">90.6</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">91.6%</td>
-    <td class="CoverValue line-coverage coverage-high">87 / 95</td>
+    <td class="CoverValue line-coverage coverage-high">90.6%</td>
+    <td class="CoverValue line-coverage coverage-high">87 / 96</td>
+    <td class="CoverValue function-coverage coverage-high">91.7%</td>
+    <td class="CoverValue function-coverage coverage-high">66 / 72</td>
     <td class="CoverValue branch-coverage coverage-low">51.9%</td>
     <td class="CoverValue branch-coverage coverage-low">27 / 52</td>
   </tr>
@@ -852,6 +977,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">32 / 32</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">68 / 68</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">25 / 50</td>
   </tr>
@@ -862,10 +989,12 @@
       <a href="index.dealii.hpp.27fb6a83ab86d35062eb7c17b81be260.html">traits/dealii.hpp</a>
     </th>
     <td>
-      <meter class="coverage-medium" min="0" max="100" value="82.4" title="82.4%">82.4</meter>
+      <meter class="coverage-medium" min="0" max="100" value="84.9" title="84.9%">84.9</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-medium">82.4%</td>
-    <td class="CoverValue line-coverage coverage-medium">56 / 68</td>
+    <td class="CoverValue line-coverage coverage-medium">84.9%</td>
+    <td class="CoverValue line-coverage coverage-medium">62 / 73</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">96 / 96</td>
     <td class="CoverValue branch-coverage coverage-low">41.0%</td>
     <td class="CoverValue branch-coverage coverage-low">55 / 134</td>
   </tr>
@@ -880,6 +1009,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">95.9%</td>
     <td class="CoverValue line-coverage coverage-high">186 / 194</td>
+    <td class="CoverValue function-coverage coverage-high">94.7%</td>
+    <td class="CoverValue function-coverage coverage-high">54 / 57</td>
     <td class="CoverValue branch-coverage coverage-low">50.6%</td>
     <td class="CoverValue branch-coverage coverage-low">131 / 259</td>
   </tr>
@@ -890,12 +1021,14 @@
       <a href="index.dune.hpp.774fcfef30fd159ff6df2857b8249742.html">traits/dune.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="93.6" title="93.6%">93.6</meter>
+      <meter class="coverage-high" min="0" max="100" value="93.7" title="93.7%">93.7</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">93.6%</td>
-    <td class="CoverValue line-coverage coverage-high">351 / 375</td>
+    <td class="CoverValue line-coverage coverage-high">93.7%</td>
+    <td class="CoverValue line-coverage coverage-high">355 / 379</td>
+    <td class="CoverValue function-coverage coverage-high">99.7%</td>
+    <td class="CoverValue function-coverage coverage-high">397 / 398</td>
     <td class="CoverValue branch-coverage coverage-low">55.1%</td>
-    <td class="CoverValue branch-coverage coverage-low">441 / 800</td>
+    <td class="CoverValue branch-coverage coverage-low">440 / 798</td>
   </tr>
 
 
@@ -908,6 +1041,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-medium">88.2%</td>
     <td class="CoverValue line-coverage coverage-medium">30 / 34</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">10 / 10</td>
     <td class="CoverValue branch-coverage coverage-low">47.1%</td>
     <td class="CoverValue branch-coverage coverage-low">8 / 17</td>
   </tr>
@@ -918,12 +1053,14 @@
       <a href="index.appendix.hpp.04fbac787a29ab292e3b8d53ea7a23ee.html">vtk/appendix.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="97.8" title="97.8%">97.8</meter>
+      <meter class="coverage-high" min="0" max="100" value="96.9" title="96.9%">96.9</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">97.8%</td>
-    <td class="CoverValue line-coverage coverage-high">89 / 91</td>
-    <td class="CoverValue branch-coverage coverage-low">56.5%</td>
-    <td class="CoverValue branch-coverage coverage-low">61 / 108</td>
+    <td class="CoverValue line-coverage coverage-high">96.9%</td>
+    <td class="CoverValue line-coverage coverage-high">93 / 96</td>
+    <td class="CoverValue function-coverage coverage-low">43.3%</td>
+    <td class="CoverValue function-coverage coverage-low">170 / 393</td>
+    <td class="CoverValue branch-coverage coverage-low">56.2%</td>
+    <td class="CoverValue branch-coverage coverage-low">63 / 112</td>
   </tr>
 
 
@@ -932,12 +1069,14 @@
       <a href="index.attributes.hpp.7850b83f6aa653d5a3c623a781f61755.html">vtk/attributes.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="96.2" title="96.2%">96.2</meter>
+      <meter class="coverage-high" min="0" max="100" value="96.3" title="96.3%">96.3</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">96.2%</td>
-    <td class="CoverValue line-coverage coverage-high">51 / 53</td>
-    <td class="CoverValue branch-coverage coverage-low">53.4%</td>
-    <td class="CoverValue branch-coverage coverage-low">62 / 116</td>
+    <td class="CoverValue line-coverage coverage-high">96.3%</td>
+    <td class="CoverValue line-coverage coverage-high">52 / 54</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">16 / 16</td>
+    <td class="CoverValue branch-coverage coverage-low">52.9%</td>
+    <td class="CoverValue branch-coverage coverage-low">72 / 136</td>
   </tr>
 
 
@@ -946,10 +1085,12 @@
       <a href="index.common.hpp.a928c1ba2027137fd18f0cdf1f95a107.html">vtk/common.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="91.2" title="91.2%">91.2</meter>
+      <meter class="coverage-high" min="0" max="100" value="90.0" title="90.0%">90.0</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">91.2%</td>
-    <td class="CoverValue line-coverage coverage-high">198 / 217</td>
+    <td class="CoverValue line-coverage coverage-high">90.0%</td>
+    <td class="CoverValue line-coverage coverage-high">198 / 220</td>
+    <td class="CoverValue function-coverage coverage-low">67.2%</td>
+    <td class="CoverValue function-coverage coverage-low">929 / 1383</td>
     <td class="CoverValue branch-coverage coverage-low">37.6%</td>
     <td class="CoverValue branch-coverage coverage-low">282 / 750</td>
   </tr>
@@ -963,7 +1104,9 @@
       <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">35 / 35</td>
+    <td class="CoverValue line-coverage coverage-high">40 / 40</td>
+    <td class="CoverValue function-coverage coverage-low">41.7%</td>
+    <td class="CoverValue function-coverage coverage-low">40 / 96</td>
     <td class="CoverValue branch-coverage coverage-low">16.2%</td>
     <td class="CoverValue branch-coverage coverage-low">433 / 2666</td>
   </tr>
@@ -974,12 +1117,14 @@
       <a href="index.hdf_common.hpp.e7392b73446a513ca67ac7c579ed25e4.html">vtk/hdf_common.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="91.5" title="91.5%">91.5</meter>
+      <meter class="coverage-high" min="0" max="100" value="91.7" title="91.7%">91.7</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">91.5%</td>
-    <td class="CoverValue line-coverage coverage-high">54 / 59</td>
+    <td class="CoverValue line-coverage coverage-high">91.7%</td>
+    <td class="CoverValue line-coverage coverage-high">55 / 60</td>
+    <td class="CoverValue function-coverage coverage-low">54.8%</td>
+    <td class="CoverValue function-coverage coverage-low">23 / 42</td>
     <td class="CoverValue branch-coverage coverage-low">10.4%</td>
-    <td class="CoverValue branch-coverage coverage-low">77 / 743</td>
+    <td class="CoverValue branch-coverage coverage-low">75 / 722</td>
   </tr>
 
 
@@ -988,12 +1133,14 @@
       <a href="index.hdf_image_grid_reader.hpp.53cd5be63f1229881d87006e08845cdc.html">vtk/hdf_image_grid_reader.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="90.4" title="90.4%">90.4</meter>
+      <meter class="coverage-medium" min="0" max="100" value="89.5" title="89.5%">89.5</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">90.4%</td>
-    <td class="CoverValue line-coverage coverage-high">170 / 188</td>
-    <td class="CoverValue branch-coverage coverage-low">42.1%</td>
-    <td class="CoverValue branch-coverage coverage-low">193 / 458</td>
+    <td class="CoverValue line-coverage coverage-medium">89.5%</td>
+    <td class="CoverValue line-coverage coverage-medium">170 / 190</td>
+    <td class="CoverValue function-coverage coverage-low">54.0%</td>
+    <td class="CoverValue function-coverage coverage-low">34 / 63</td>
+    <td class="CoverValue branch-coverage coverage-low">41.9%</td>
+    <td class="CoverValue branch-coverage coverage-low">190 / 454</td>
   </tr>
 
 
@@ -1002,12 +1149,14 @@
       <a href="index.hdf_image_grid_writer.hpp.c74eef0848108e2e4fb9111bb8e935ae.html">vtk/hdf_image_grid_writer.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="95.8" title="95.8%">95.8</meter>
+      <meter class="coverage-high" min="0" max="100" value="96.4" title="96.4%">96.4</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">95.8%</td>
-    <td class="CoverValue line-coverage coverage-high">183 / 191</td>
+    <td class="CoverValue line-coverage coverage-high">96.4%</td>
+    <td class="CoverValue line-coverage coverage-high">188 / 195</td>
+    <td class="CoverValue function-coverage coverage-medium">85.3%</td>
+    <td class="CoverValue function-coverage coverage-medium">267 / 313</td>
     <td class="CoverValue branch-coverage coverage-low">46.9%</td>
-    <td class="CoverValue branch-coverage coverage-low">307 / 654</td>
+    <td class="CoverValue branch-coverage coverage-low">305 / 650</td>
   </tr>
 
 
@@ -1016,10 +1165,12 @@
       <a href="index.hdf_reader.hpp.37152acaeb1a6e2da1094daf46d1e51c.html">vtk/hdf_reader.hpp</a>
     </th>
     <td>
-      <meter class="coverage-medium" min="0" max="100" value="89.9" title="89.9%">89.9</meter>
+      <meter class="coverage-medium" min="0" max="100" value="86.6" title="86.6%">86.6</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-medium">89.9%</td>
-    <td class="CoverValue line-coverage coverage-medium">71 / 79</td>
+    <td class="CoverValue line-coverage coverage-medium">86.6%</td>
+    <td class="CoverValue line-coverage coverage-medium">71 / 82</td>
+    <td class="CoverValue function-coverage coverage-medium">85.4%</td>
+    <td class="CoverValue function-coverage coverage-medium">41 / 48</td>
     <td class="CoverValue branch-coverage coverage-low">33.3%</td>
     <td class="CoverValue branch-coverage coverage-low">24 / 72</td>
   </tr>
@@ -1030,12 +1181,14 @@
       <a href="index.hdf_unstructured_grid_reader.hpp.35687fa72d427cbba8d849b998d5feac.html">vtk/hdf_unstructured_grid_reader.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="94.8" title="94.8%">94.8</meter>
+      <meter class="coverage-high" min="0" max="100" value="94.5" title="94.5%">94.5</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">94.8%</td>
-    <td class="CoverValue line-coverage coverage-high">256 / 270</td>
-    <td class="CoverValue branch-coverage coverage-low">37.1%</td>
-    <td class="CoverValue branch-coverage coverage-low">368 / 991</td>
+    <td class="CoverValue line-coverage coverage-high">94.5%</td>
+    <td class="CoverValue line-coverage coverage-high">256 / 271</td>
+    <td class="CoverValue function-coverage coverage-low">67.7%</td>
+    <td class="CoverValue function-coverage coverage-low">84 / 124</td>
+    <td class="CoverValue branch-coverage coverage-low">38.9%</td>
+    <td class="CoverValue branch-coverage coverage-low">367 / 944</td>
   </tr>
 
 
@@ -1047,9 +1200,11 @@
       <meter class="coverage-high" min="0" max="100" value="98.0" title="98.0%">98.0</meter>
     </td>
     <td class="CoverValue line-coverage coverage-high">98.0%</td>
-    <td class="CoverValue line-coverage coverage-high">192 / 196</td>
-    <td class="CoverValue branch-coverage coverage-low">51.4%</td>
-    <td class="CoverValue branch-coverage coverage-low">265 / 516</td>
+    <td class="CoverValue line-coverage coverage-high">201 / 205</td>
+    <td class="CoverValue function-coverage coverage-medium">84.5%</td>
+    <td class="CoverValue function-coverage coverage-medium">365 / 432</td>
+    <td class="CoverValue branch-coverage coverage-low">52.0%</td>
+    <td class="CoverValue branch-coverage coverage-low">257 / 494</td>
   </tr>
 
 
@@ -1058,12 +1213,14 @@
       <a href="index.parallel.hpp.7177cf9119dcb4bc74dca8233da93e45.html">vtk/parallel.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="97.4" title="97.4%">97.4</meter>
+      <meter class="coverage-high" min="0" max="100" value="96.1" title="96.1%">96.1</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">97.4%</td>
-    <td class="CoverValue line-coverage coverage-high">149 / 153</td>
-    <td class="CoverValue branch-coverage coverage-low">58.8%</td>
-    <td class="CoverValue branch-coverage coverage-low">133 / 226</td>
+    <td class="CoverValue line-coverage coverage-high">96.1%</td>
+    <td class="CoverValue line-coverage coverage-high">149 / 155</td>
+    <td class="CoverValue function-coverage coverage-low">71.8%</td>
+    <td class="CoverValue function-coverage coverage-low">51 / 71</td>
+    <td class="CoverValue branch-coverage coverage-low">59.0%</td>
+    <td class="CoverValue branch-coverage coverage-low">131 / 222</td>
   </tr>
 
 
@@ -1076,6 +1233,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">96.1%</td>
     <td class="CoverValue line-coverage coverage-high">124 / 129</td>
+    <td class="CoverValue function-coverage coverage-medium">89.4%</td>
+    <td class="CoverValue function-coverage coverage-medium">59 / 66</td>
     <td class="CoverValue branch-coverage coverage-low">53.2%</td>
     <td class="CoverValue branch-coverage coverage-low">84 / 158</td>
   </tr>
@@ -1090,6 +1249,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">44 / 44</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">141 / 141</td>
     <td class="CoverValue branch-coverage coverage-low">51.1%</td>
     <td class="CoverValue branch-coverage coverage-low">45 / 88</td>
   </tr>
@@ -1104,6 +1265,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">96.4%</td>
     <td class="CoverValue line-coverage coverage-high">27 / 28</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">6 / 6</td>
     <td class="CoverValue branch-coverage coverage-low">52.6%</td>
     <td class="CoverValue branch-coverage coverage-low">20 / 38</td>
   </tr>
@@ -1114,12 +1277,14 @@
       <a href="index.pvti_writer.hpp.de7dcfc0e243d14d0c0354b762f7e315.html">vtk/pvti_writer.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="96.9" title="96.9%">96.9</meter>
+      <meter class="coverage-high" min="0" max="100" value="97.0" title="97.0%">97.0</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">96.9%</td>
-    <td class="CoverValue line-coverage coverage-high">63 / 65</td>
-    <td class="CoverValue branch-coverage coverage-low">51.2%</td>
-    <td class="CoverValue branch-coverage coverage-low">145 / 283</td>
+    <td class="CoverValue line-coverage coverage-high">97.0%</td>
+    <td class="CoverValue line-coverage coverage-high">65 / 67</td>
+    <td class="CoverValue function-coverage coverage-low">50.0%</td>
+    <td class="CoverValue function-coverage coverage-low">38 / 76</td>
+    <td class="CoverValue branch-coverage coverage-low">51.4%</td>
+    <td class="CoverValue branch-coverage coverage-low">145 / 282</td>
   </tr>
 
 
@@ -1132,6 +1297,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">11 / 11</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">4 / 4</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">7 / 14</td>
   </tr>
@@ -1142,10 +1309,12 @@
       <a href="index.pvtp_writer.hpp.02153bc6ab4e086a7a5d5cf972ec848a.html">vtk/pvtp_writer.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="95.6" title="95.6%">95.6</meter>
+      <meter class="coverage-high" min="0" max="100" value="96.1" title="96.1%">96.1</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">95.6%</td>
-    <td class="CoverValue line-coverage coverage-high">43 / 45</td>
+    <td class="CoverValue line-coverage coverage-high">96.1%</td>
+    <td class="CoverValue line-coverage coverage-high">49 / 51</td>
+    <td class="CoverValue function-coverage coverage-low">45.1%</td>
+    <td class="CoverValue function-coverage coverage-low">55 / 122</td>
     <td class="CoverValue branch-coverage coverage-low">45.3%</td>
     <td class="CoverValue branch-coverage coverage-low">68 / 150</td>
   </tr>
@@ -1160,6 +1329,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">96.1%</td>
     <td class="CoverValue line-coverage coverage-high">49 / 51</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">12 / 12</td>
     <td class="CoverValue branch-coverage coverage-low">52.7%</td>
     <td class="CoverValue branch-coverage coverage-low">39 / 74</td>
   </tr>
@@ -1173,9 +1344,11 @@
       <meter class="coverage-high" min="0" max="100" value="97.4" title="97.4%">97.4</meter>
     </td>
     <td class="CoverValue line-coverage coverage-high">97.4%</td>
-    <td class="CoverValue line-coverage coverage-high">74 / 76</td>
-    <td class="CoverValue branch-coverage coverage-low">28.6%</td>
-    <td class="CoverValue branch-coverage coverage-low">281 / 984</td>
+    <td class="CoverValue line-coverage coverage-high">76 / 78</td>
+    <td class="CoverValue function-coverage coverage-low">31.8%</td>
+    <td class="CoverValue function-coverage coverage-low">42 / 132</td>
+    <td class="CoverValue branch-coverage coverage-low">29.0%</td>
+    <td class="CoverValue branch-coverage coverage-low">278 / 958</td>
   </tr>
 
 
@@ -1188,6 +1361,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">11 / 11</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">4 / 4</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">7 / 14</td>
   </tr>
@@ -1198,12 +1373,14 @@
       <a href="index.pvts_writer.hpp.5061ce2e3f47cd78b5422d49906ef08e.html">vtk/pvts_writer.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="95.6" title="95.6%">95.6</meter>
+      <meter class="coverage-high" min="0" max="100" value="95.7" title="95.7%">95.7</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">95.6%</td>
-    <td class="CoverValue line-coverage coverage-high">86 / 90</td>
-    <td class="CoverValue branch-coverage coverage-low">28.8%</td>
-    <td class="CoverValue branch-coverage coverage-low">300 / 1041</td>
+    <td class="CoverValue line-coverage coverage-high">95.7%</td>
+    <td class="CoverValue line-coverage coverage-high">88 / 92</td>
+    <td class="CoverValue function-coverage coverage-low">37.5%</td>
+    <td class="CoverValue function-coverage coverage-low">36 / 96</td>
+    <td class="CoverValue branch-coverage coverage-low">30.0%</td>
+    <td class="CoverValue branch-coverage coverage-low">297 / 991</td>
   </tr>
 
 
@@ -1216,6 +1393,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">11 / 11</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">4 / 4</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">7 / 14</td>
   </tr>
@@ -1226,12 +1405,14 @@
       <a href="index.pvtu_writer.hpp.35a67cbbb47d53b4da7f3077baf141fb.html">vtk/pvtu_writer.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="95.9" title="95.9%">95.9</meter>
+      <meter class="coverage-high" min="0" max="100" value="96.1" title="96.1%">96.1</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">95.9%</td>
-    <td class="CoverValue line-coverage coverage-high">47 / 49</td>
-    <td class="CoverValue branch-coverage coverage-low">27.2%</td>
-    <td class="CoverValue branch-coverage coverage-low">111 / 408</td>
+    <td class="CoverValue line-coverage coverage-high">96.1%</td>
+    <td class="CoverValue line-coverage coverage-high">49 / 51</td>
+    <td class="CoverValue function-coverage coverage-low">54.1%</td>
+    <td class="CoverValue function-coverage coverage-low">93 / 172</td>
+    <td class="CoverValue branch-coverage coverage-low">26.5%</td>
+    <td class="CoverValue branch-coverage coverage-low">105 / 396</td>
   </tr>
 
 
@@ -1240,12 +1421,14 @@
       <a href="index.pxml_reader.hpp.29e379a6782cbe58ae6c7c049a48ae2b.html">vtk/pxml_reader.hpp</a>
     </th>
     <td>
-      <meter class="coverage-medium" min="0" max="100" value="87.1" title="87.1%">87.1</meter>
+      <meter class="coverage-medium" min="0" max="100" value="87.0" title="87.0%">87.0</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-medium">87.1%</td>
-    <td class="CoverValue line-coverage coverage-medium">223 / 256</td>
-    <td class="CoverValue branch-coverage coverage-low">22.5%</td>
-    <td class="CoverValue branch-coverage coverage-low">492 / 2185</td>
+    <td class="CoverValue line-coverage coverage-medium">87.0%</td>
+    <td class="CoverValue line-coverage coverage-medium">227 / 261</td>
+    <td class="CoverValue function-coverage coverage-medium">83.8%</td>
+    <td class="CoverValue function-coverage coverage-medium">238 / 284</td>
+    <td class="CoverValue branch-coverage coverage-low">22.7%</td>
+    <td class="CoverValue branch-coverage coverage-low">491 / 2163</td>
   </tr>
 
 
@@ -1254,10 +1437,12 @@
       <a href="index.vti_reader.hpp.eeeb90bf53bb8db41b1eb13347aecf58.html">vtk/vti_reader.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="91.6" title="91.6%">91.6</meter>
+      <meter class="coverage-medium" min="0" max="100" value="89.3" title="89.3%">89.3</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">91.6%</td>
-    <td class="CoverValue line-coverage coverage-high">76 / 83</td>
+    <td class="CoverValue line-coverage coverage-medium">89.3%</td>
+    <td class="CoverValue line-coverage coverage-medium">75 / 84</td>
+    <td class="CoverValue function-coverage coverage-high">95.2%</td>
+    <td class="CoverValue function-coverage coverage-high">20 / 21</td>
     <td class="CoverValue branch-coverage coverage-low">44.2%</td>
     <td class="CoverValue branch-coverage coverage-low">38 / 86</td>
   </tr>
@@ -1272,8 +1457,10 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">49 / 49</td>
-    <td class="CoverValue branch-coverage coverage-low">52.0%</td>
-    <td class="CoverValue branch-coverage coverage-low">93 / 179</td>
+    <td class="CoverValue function-coverage coverage-high">92.9%</td>
+    <td class="CoverValue function-coverage coverage-high">79 / 85</td>
+    <td class="CoverValue branch-coverage coverage-low">52.8%</td>
+    <td class="CoverValue branch-coverage coverage-low">93 / 176</td>
   </tr>
 
 
@@ -1286,6 +1473,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">92.6%</td>
     <td class="CoverValue line-coverage coverage-high">63 / 68</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">13 / 13</td>
     <td class="CoverValue branch-coverage coverage-low">49.0%</td>
     <td class="CoverValue branch-coverage coverage-low">50 / 102</td>
   </tr>
@@ -1300,8 +1489,10 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">98.6%</td>
     <td class="CoverValue line-coverage coverage-high">69 / 70</td>
-    <td class="CoverValue branch-coverage coverage-low">50.7%</td>
-    <td class="CoverValue branch-coverage coverage-low">152 / 300</td>
+    <td class="CoverValue function-coverage coverage-high">93.5%</td>
+    <td class="CoverValue function-coverage coverage-high">203 / 217</td>
+    <td class="CoverValue branch-coverage coverage-low">50.8%</td>
+    <td class="CoverValue branch-coverage coverage-low">152 / 299</td>
   </tr>
 
 
@@ -1310,10 +1501,12 @@
       <a href="index.vtr_reader.hpp.1238e61d327fa1c9f97e9b2f398dbc11.html">vtk/vtr_reader.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="96.8" title="96.8%">96.8</meter>
+      <meter class="coverage-high" min="0" max="100" value="95.7" title="95.7%">95.7</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">96.8%</td>
-    <td class="CoverValue line-coverage coverage-high">90 / 93</td>
+    <td class="CoverValue line-coverage coverage-high">95.7%</td>
+    <td class="CoverValue line-coverage coverage-high">90 / 94</td>
+    <td class="CoverValue function-coverage coverage-low">50.0%</td>
+    <td class="CoverValue function-coverage coverage-low">20 / 40</td>
     <td class="CoverValue branch-coverage coverage-low">47.4%</td>
     <td class="CoverValue branch-coverage coverage-low">73 / 154</td>
   </tr>
@@ -1324,12 +1517,14 @@
       <a href="index.vtr_writer.hpp.a84adfc3b45ef5f3ca387881ff4a2b15.html">vtk/vtr_writer.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
+      <meter class="coverage-high" min="0" max="100" value="98.3" title="98.3%">98.3</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">57 / 57</td>
-    <td class="CoverValue branch-coverage coverage-low">55.4%</td>
-    <td class="CoverValue branch-coverage coverage-low">82 / 148</td>
+    <td class="CoverValue line-coverage coverage-high">98.3%</td>
+    <td class="CoverValue line-coverage coverage-high">57 / 58</td>
+    <td class="CoverValue function-coverage coverage-high">92.3%</td>
+    <td class="CoverValue function-coverage coverage-high">60 / 65</td>
+    <td class="CoverValue branch-coverage coverage-low">55.6%</td>
+    <td class="CoverValue branch-coverage coverage-low">80 / 144</td>
   </tr>
 
 
@@ -1342,6 +1537,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">40 / 40</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">13 / 13</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">15 / 30</td>
   </tr>
@@ -1356,6 +1553,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">49 / 49</td>
+    <td class="CoverValue function-coverage coverage-high">92.5%</td>
+    <td class="CoverValue function-coverage coverage-high">37 / 40</td>
     <td class="CoverValue branch-coverage coverage-low">53.0%</td>
     <td class="CoverValue branch-coverage coverage-low">53 / 100</td>
   </tr>
@@ -1370,6 +1569,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">96.1%</td>
     <td class="CoverValue line-coverage coverage-high">49 / 51</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">12 / 12</td>
     <td class="CoverValue branch-coverage coverage-low">51.2%</td>
     <td class="CoverValue branch-coverage coverage-low">42 / 82</td>
   </tr>
@@ -1384,8 +1585,10 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">34 / 34</td>
-    <td class="CoverValue branch-coverage coverage-low">41.9%</td>
-    <td class="CoverValue branch-coverage coverage-low">229 / 546</td>
+    <td class="CoverValue function-coverage coverage-low">71.2%</td>
+    <td class="CoverValue function-coverage coverage-low">156 / 219</td>
+    <td class="CoverValue branch-coverage coverage-low">42.1%</td>
+    <td class="CoverValue branch-coverage coverage-low">229 / 544</td>
   </tr>
 
 
@@ -1394,12 +1597,14 @@
       <a href="index.xml.hpp.eb3f4a69e70f6a136ff3076978be5ef9.html">vtk/xml.hpp</a>
     </th>
     <td>
-      <meter class="coverage-medium" min="0" max="100" value="88.0" title="88.0%">88.0</meter>
+      <meter class="coverage-medium" min="0" max="100" value="88.2" title="88.2%">88.2</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-medium">88.0%</td>
-    <td class="CoverValue line-coverage coverage-medium">449 / 510</td>
+    <td class="CoverValue line-coverage coverage-medium">88.2%</td>
+    <td class="CoverValue line-coverage coverage-medium">458 / 519</td>
+    <td class="CoverValue function-coverage coverage-low">24.1%</td>
+    <td class="CoverValue function-coverage coverage-low">1862 / 7723</td>
     <td class="CoverValue branch-coverage coverage-low">9.2%</td>
-    <td class="CoverValue branch-coverage coverage-low">11694 / 126778</td>
+    <td class="CoverValue branch-coverage coverage-low">11646 / 126386</td>
   </tr>
 
 
@@ -1412,6 +1617,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">100.0%</td>
     <td class="CoverValue line-coverage coverage-high">18 / 18</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">20 / 20</td>
     <td class="CoverValue branch-coverage coverage-low">50.0%</td>
     <td class="CoverValue branch-coverage coverage-low">11 / 22</td>
   </tr>
@@ -1422,12 +1629,14 @@
       <a href="index.writer.hpp.fc607f95b9f55b1cf74bea63dd948e50.html">writer.hpp</a>
     </th>
     <td>
-      <meter class="coverage-high" min="0" max="100" value="95.0" title="95.0%">95.0</meter>
+      <meter class="coverage-high" min="0" max="100" value="95.6" title="95.6%">95.6</meter>
     </td>
-    <td class="CoverValue line-coverage coverage-high">95.0%</td>
-    <td class="CoverValue line-coverage coverage-high">76 / 80</td>
-    <td class="CoverValue branch-coverage coverage-low">40.5%</td>
-    <td class="CoverValue branch-coverage coverage-low">49 / 121</td>
+    <td class="CoverValue line-coverage coverage-high">95.6%</td>
+    <td class="CoverValue line-coverage coverage-high">86 / 90</td>
+    <td class="CoverValue function-coverage coverage-high">90.5%</td>
+    <td class="CoverValue function-coverage coverage-high">152 / 168</td>
+    <td class="CoverValue branch-coverage coverage-low">40.7%</td>
+    <td class="CoverValue branch-coverage coverage-low">48 / 118</td>
   </tr>
 
 
@@ -1439,7 +1648,9 @@
       <meter class="coverage-high" min="0" max="100" value="96.9" title="96.9%">96.9</meter>
     </td>
     <td class="CoverValue line-coverage coverage-high">96.9%</td>
-    <td class="CoverValue line-coverage coverage-high">125 / 129</td>
+    <td class="CoverValue line-coverage coverage-high">124 / 128</td>
+    <td class="CoverValue function-coverage coverage-low">34.3%</td>
+    <td class="CoverValue function-coverage coverage-low">48 / 140</td>
     <td class="CoverValue branch-coverage coverage-low">52.6%</td>
     <td class="CoverValue branch-coverage coverage-low">60 / 114</td>
   </tr>
@@ -1454,6 +1665,8 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">92.9%</td>
     <td class="CoverValue line-coverage coverage-high">130 / 140</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">14 / 14</td>
     <td class="CoverValue branch-coverage coverage-low">50.2%</td>
     <td class="CoverValue branch-coverage coverage-low">144 / 287</td>
   </tr>
@@ -1468,16 +1681,18 @@
     </td>
     <td class="CoverValue line-coverage coverage-high">95.2%</td>
     <td class="CoverValue line-coverage coverage-high">40 / 42</td>
+    <td class="CoverValue function-coverage coverage-high">100.0%</td>
+    <td class="CoverValue function-coverage coverage-high">44 / 44</td>
     <td class="CoverValue branch-coverage coverage-low">46.2%</td>
     <td class="CoverValue branch-coverage coverage-low">18 / 39</td>
   </tr>
 
 </table>
-
-    <hr/>
+      <hr/>
+    </main>
 
     <footer>
-      Generated by: <a href="http://gcovr.com">GCOVR (Version 5.0)</a>
+      Generated by: <a href="http://gcovr.com/en/7.0">GCOVR (Version 7.0)</a>
     </footer>
   </body>
 </html>

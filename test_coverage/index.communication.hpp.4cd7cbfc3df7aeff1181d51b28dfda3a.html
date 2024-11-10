@@ -1,19 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html class="theme-green">
 
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>GCC Code Coverage Report</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="index.css"/>
   </head>
 
   <body>
-    <h1>GCC Code Coverage Report</h1>
+    <header>
+      <h1>GCC Code Coverage Report</h1>
 
-    <hr/>
+      <hr/>
 
-    <div class="summary">
+      <div class="summary">
 <div>
   <table class="legend">
     <tr>
@@ -26,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2024-11-10 08:27:20</td>
+      <td>2024-11-10 16:24:00</td>
     </tr>
   </table>
 </div>
@@ -45,6 +46,12 @@
       <td class="coverage-high">100.0%</td>
     </tr>
     <tr>
+      <th scope="row">Functions:</th>
+      <td>29</td>
+      <td>42</td>
+      <td class="coverage-low">69.0%</td>
+    </tr>
+    <tr>
       <th scope="row">Branches:</th>
       <td>0</td>
       <td>0</td>
@@ -52,10 +59,68 @@
     </tr>
   </table>
 </div>
-    </div>
+      </div>
 
-    <hr/>
+      <hr/>
+    </header>
 
+    <nav>
+<details>
+  <summary>List of functions</summary>
+  <table class="listOfFunctions">
+    <tr>
+      <th>Function (Line)</th>
+      <th>Call count</th>
+      <th>Block coverage</th>
+    </tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;GridFormat::NullCommunicator, int&gt;(GridFormat::NullCommunicator const&amp;, int const&amp;, int) (line 57)</a></td><td>called 1 time, returned 1 time</td><td>100.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;GridFormat::NullCommunicator, std::array&lt;double, 2ul&gt; &gt;(GridFormat::NullCommunicator const&amp;, std::array&lt;double, 2ul&gt; const&amp;, int) (line 57)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;GridFormat::NullCommunicator, std::array&lt;double, 3ul&gt; &gt;(GridFormat::NullCommunicator const&amp;, std::array&lt;double, 3ul&gt; const&amp;, int) (line 57)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;GridFormat::NullCommunicator, std::array&lt;unsigned long, 2ul&gt; &gt;(GridFormat::NullCommunicator const&amp;, std::array&lt;unsigned long, 2ul&gt; const&amp;, int) (line 57)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;GridFormat::NullCommunicator, std::array&lt;unsigned long, 3ul&gt; &gt;(GridFormat::NullCommunicator const&amp;, std::array&lt;unsigned long, 3ul&gt; const&amp;, int) (line 57)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;GridFormat::NullCommunicator, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; &gt;(GridFormat::NullCommunicator const&amp;, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; const&amp;, int) (line 57)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;GridFormat::NullCommunicator, unsigned long&gt;(GridFormat::NullCommunicator const&amp;, unsigned long const&amp;, int) (line 57)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;ompi_communicator_t*, std::array&lt;double, 2ul&gt; &gt;(ompi_communicator_t* const&amp;, std::array&lt;double, 2ul&gt; const&amp;, int) (line 57)</a></td><td>called 532 times, returned 532 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;ompi_communicator_t*, std::array&lt;double, 3ul&gt; &gt;(ompi_communicator_t* const&amp;, std::array&lt;double, 3ul&gt; const&amp;, int) (line 57)</a></td><td>called 1694 times, returned 1694 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;ompi_communicator_t*, std::array&lt;unsigned long, 2ul&gt; &gt;(ompi_communicator_t* const&amp;, std::array&lt;unsigned long, 2ul&gt; const&amp;, int) (line 57)</a></td><td>called 1422 times, returned 1422 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;ompi_communicator_t*, std::array&lt;unsigned long, 3ul&gt; &gt;(ompi_communicator_t* const&amp;, std::array&lt;unsigned long, 3ul&gt; const&amp;, int) (line 57)</a></td><td>called 4958 times, returned 4958 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;ompi_communicator_t*, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; &gt;(ompi_communicator_t* const&amp;, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; const&amp;, int) (line 57)</a></td><td>called 228 times, returned 228 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l57">auto GridFormat::Parallel::broadcast&lt;ompi_communicator_t*, unsigned long&gt;(ompi_communicator_t* const&amp;, unsigned long const&amp;, int) (line 57)</a></td><td>called 688 times, returned 688 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;GridFormat::NullCommunicator, int&gt;(GridFormat::NullCommunicator const&amp;, int const&amp;, int) (line 63)</a></td><td>called 1 time, returned 1 time</td><td>100.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;GridFormat::NullCommunicator, std::array&lt;double, 2ul&gt; &gt;(GridFormat::NullCommunicator const&amp;, std::array&lt;double, 2ul&gt; const&amp;, int) (line 63)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;GridFormat::NullCommunicator, std::array&lt;double, 3ul&gt; &gt;(GridFormat::NullCommunicator const&amp;, std::array&lt;double, 3ul&gt; const&amp;, int) (line 63)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;GridFormat::NullCommunicator, std::array&lt;int, 1ul&gt; &gt;(GridFormat::NullCommunicator const&amp;, std::array&lt;int, 1ul&gt; const&amp;, int) (line 63)</a></td><td>called 1 time, returned 1 time</td><td>100.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;GridFormat::NullCommunicator, std::array&lt;unsigned long, 2ul&gt; &gt;(GridFormat::NullCommunicator const&amp;, std::array&lt;unsigned long, 2ul&gt; const&amp;, int) (line 63)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;GridFormat::NullCommunicator, std::array&lt;unsigned long, 3ul&gt; &gt;(GridFormat::NullCommunicator const&amp;, std::array&lt;unsigned long, 3ul&gt; const&amp;, int) (line 63)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;GridFormat::NullCommunicator, std::ranges::owning_view&lt;std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt; &gt;(GridFormat::NullCommunicator const&amp;, std::ranges::owning_view&lt;std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt; const&amp;, int) (line 63)</a></td><td>called 1 time, returned 1 time</td><td>100.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;GridFormat::NullCommunicator, std::ranges::ref_view&lt;std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt; &gt;(GridFormat::NullCommunicator const&amp;, std::ranges::ref_view&lt;std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt; const&amp;, int) (line 63)</a></td><td>called 1 time, returned 1 time</td><td>100.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;GridFormat::NullCommunicator, std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt;(GridFormat::NullCommunicator const&amp;, std::vector&lt;int, std::allocator&lt;int&gt; &gt; const&amp;, int) (line 63)</a></td><td>called 1 time, returned 1 time</td><td>100.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;GridFormat::NullCommunicator, unsigned long&gt;(GridFormat::NullCommunicator const&amp;, unsigned long const&amp;, int) (line 63)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;ompi_communicator_t*, std::array&lt;double, 2ul&gt; &gt;(ompi_communicator_t* const&amp;, std::array&lt;double, 2ul&gt; const&amp;, int) (line 63)</a></td><td>called 1422 times, returned 1422 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;ompi_communicator_t*, std::array&lt;double, 3ul&gt; &gt;(ompi_communicator_t* const&amp;, std::array&lt;double, 3ul&gt; const&amp;, int) (line 63)</a></td><td>called 4958 times, returned 4958 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;ompi_communicator_t*, std::array&lt;unsigned long, 2ul&gt; &gt;(ompi_communicator_t* const&amp;, std::array&lt;unsigned long, 2ul&gt; const&amp;, int) (line 63)</a></td><td>called 1422 times, returned 1422 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;ompi_communicator_t*, std::array&lt;unsigned long, 3ul&gt; &gt;(ompi_communicator_t* const&amp;, std::array&lt;unsigned long, 3ul&gt; const&amp;, int) (line 63)</a></td><td>called 4958 times, returned 4958 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l63">auto GridFormat::Parallel::gather&lt;ompi_communicator_t*, unsigned long&gt;(ompi_communicator_t* const&amp;, unsigned long const&amp;, int) (line 63)</a></td><td>called 912 times, returned 912 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l39">auto GridFormat::Parallel::max&lt;GridFormat::NullCommunicator, int&gt;(GridFormat::NullCommunicator const&amp;, int const&amp;, int) (line 39)</a></td><td>called 1 time, returned 1 time</td><td>100.0%</td></tr>
+    <tr><td><a href="#l45">auto GridFormat::Parallel::min&lt;GridFormat::NullCommunicator, int&gt;(GridFormat::NullCommunicator const&amp;, int const&amp;, int) (line 45)</a></td><td>called 1 time, returned 1 time</td><td>100.0%</td></tr>
+    <tr><td><a href="#l69">auto GridFormat::Parallel::scatter&lt;GridFormat::NullCommunicator, std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt;(GridFormat::NullCommunicator const&amp;, std::vector&lt;int, std::allocator&lt;int&gt; &gt; const&amp;, int) (line 69)</a></td><td>called 1 time, returned 1 time</td><td>100.0%</td></tr>
+    <tr><td><a href="#l69">auto GridFormat::Parallel::scatter&lt;GridFormat::NullCommunicator, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; &gt;(GridFormat::NullCommunicator const&amp;, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; const&amp;, int) (line 69)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l69">auto GridFormat::Parallel::scatter&lt;ompi_communicator_t*, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; &gt;(ompi_communicator_t* const&amp;, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; const&amp;, int) (line 69)</a></td><td>called 7064 times, returned 7064 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l51">auto GridFormat::Parallel::sum&lt;GridFormat::NullCommunicator, int&gt;(GridFormat::NullCommunicator const&amp;, int const&amp;, int) (line 51)</a></td><td>called 1 time, returned 1 time</td><td>100.0%</td></tr>
+    <tr><td><a href="#l51">auto GridFormat::Parallel::sum&lt;GridFormat::NullCommunicator, unsigned long&gt;(GridFormat::NullCommunicator const&amp;, unsigned long const&amp;, int) (line 51)</a></td><td>not called</td><td>0.0%</td></tr>
+    <tr><td><a href="#l51">auto GridFormat::Parallel::sum&lt;ompi_communicator_t*, unsigned long&gt;(ompi_communicator_t* const&amp;, unsigned long const&amp;, int) (line 51)</a></td><td>called 688 times, returned 688 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l33">int GridFormat::Parallel::barrier&lt;GridFormat::NullCommunicator&gt;(GridFormat::NullCommunicator const&amp;) (line 33)</a></td><td>called 130 times, returned 130 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l33">int GridFormat::Parallel::barrier&lt;ompi_communicator_t*&gt;(ompi_communicator_t* const&amp;) (line 33)</a></td><td>called 12550 times, returned 12550 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l27">int GridFormat::Parallel::rank&lt;GridFormat::NullCommunicator&gt;(GridFormat::NullCommunicator const&amp;) (line 27)</a></td><td>called 200 times, returned 200 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l27">int GridFormat::Parallel::rank&lt;ompi_communicator_t*&gt;(ompi_communicator_t* const&amp;) (line 27)</a></td><td>called 23397 times, returned 23397 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l21">int GridFormat::Parallel::size&lt;GridFormat::NullCommunicator&gt;(GridFormat::NullCommunicator const&amp;) (line 21)</a></td><td>called 3254 times, returned 3254 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l21">int GridFormat::Parallel::size&lt;ompi_communicator_t*&gt;(ompi_communicator_t* const&amp;) (line 21)</a></td><td>called 48112 times, returned 48112 times</td><td>100.0%</td></tr>
+  </table>
+</details>
+
+    </nav>
+
+    <main>
 <div class="file-source">
   <table>
     <tr>
@@ -64,8 +129,6 @@
       <th align="right">Exec</th>
       <th align="left">Source</th>
     </tr>
-
-
     <tr class="source-line">
       <td class="lineno"><a id="l1" href="#l1">1</a></td>
       <td class="linebranch">
@@ -73,7 +136,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">// SPDX-FileCopyrightText: 2022-2023 Dennis Gläser &lt;dennis.glaeser@iws.uni-stuttgart.de&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l2" href="#l2">2</a></td>
       <td class="linebranch">
@@ -81,7 +143,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">// SPDX-License-Identifier: MIT</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l3" href="#l3">3</a></td>
       <td class="linebranch">
@@ -89,7 +150,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="cm">/*!</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l4" href="#l4">4</a></td>
       <td class="linebranch">
@@ -97,7 +157,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="cm"> * \file</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l5" href="#l5">5</a></td>
       <td class="linebranch">
@@ -105,7 +164,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="cm"> * \ingroup Parallel</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l6" href="#l6">6</a></td>
       <td class="linebranch">
@@ -113,15 +171,13 @@
       <td class="linecount "></td>
       <td class="src "><span class="cm"> * \brief Interface for parallel communication.</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l7" href="#l7">7</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cm"> */</span><span class="w"></span></td>
+      <td class="src "><span class="cm"> */</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l8" href="#l8">8</a></td>
       <td class="linebranch">
@@ -129,7 +185,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="cp">#ifndef GRIDFORMAT_PARALLEL_COMMUNICATION_HPP_</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l9" href="#l9">9</a></td>
       <td class="linebranch">
@@ -137,7 +192,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="cp">#define GRIDFORMAT_PARALLEL_COMMUNICATION_HPP_</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l10" href="#l10">10</a></td>
       <td class="linebranch">
@@ -145,23 +199,20 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l11" href="#l11">11</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gridformat/parallel/traits.hpp&gt;</span><span class="cp"></span></td>
+      <td class="src "><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gridformat/parallel/traits.hpp&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l12" href="#l12">12</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gridformat/parallel/concepts.hpp&gt;</span><span class="cp"></span></td>
+      <td class="src "><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;gridformat/parallel/concepts.hpp&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l13" href="#l13">13</a></td>
       <td class="linebranch">
@@ -169,15 +220,13 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l14" href="#l14">14</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">namespace</span><span class="w"> </span><span class="nn">GridFormat</span><span class="o">::</span><span class="nn">Parallel</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src "><span class="k">namespace</span><span class="w"> </span><span class="nn">GridFormat</span><span class="o">::</span><span class="nn">Parallel</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l15" href="#l15">15</a></td>
       <td class="linebranch">
@@ -185,7 +234,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l16" href="#l16">16</a></td>
       <td class="linebranch">
@@ -193,7 +241,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! \addtogroup Parallel</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l17" href="#l17">17</a></td>
       <td class="linebranch">
@@ -201,7 +248,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! \{</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l18" href="#l18">18</a></td>
       <td class="linebranch">
@@ -209,7 +255,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l19" href="#l19">19</a></td>
       <td class="linebranch">
@@ -217,39 +262,34 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! Return the number of processes in a communication</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l20" href="#l20">20</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">C</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">C</span><span class="o">&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l21" href="#l21">21</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">54974</td>
-      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l22" href="#l22">22</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">54974</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Size</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Size</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">);</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l23" href="#l23">23</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="p">}</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l24" href="#l24">24</a></td>
       <td class="linebranch">
@@ -257,7 +297,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l25" href="#l25">25</a></td>
       <td class="linebranch">
@@ -265,39 +304,34 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! Return the rank of a processes in a communication</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l26" href="#l26">26</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">C</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">C</span><span class="o">&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l27" href="#l27">27</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">23597</td>
-      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">rank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">rank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l28" href="#l28">28</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">23597</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Rank</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Rank</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">);</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l29" href="#l29">29</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="p">}</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l30" href="#l30">30</a></td>
       <td class="linebranch">
@@ -305,7 +339,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l31" href="#l31">31</a></td>
       <td class="linebranch">
@@ -313,39 +346,34 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! Return a barrier</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l32" href="#l32">32</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">C</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">Communicator</span><span class="w"> </span><span class="n">C</span><span class="o">&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l33" href="#l33">33</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">12680</td>
-      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">barrier</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">barrier</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l34" href="#l34">34</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">12680</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Barrier</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Barrier</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">);</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l35" href="#l35">35</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="p">}</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l36" href="#l36">36</a></td>
       <td class="linebranch">
@@ -353,7 +381,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l37" href="#l37">37</a></td>
       <td class="linebranch">
@@ -361,39 +388,34 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! Return the maximum of the given values over all processes</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l38" href="#l38">38</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">MaxCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">MaxCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l39" href="#l39">39</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">1</td>
-      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l40" href="#l40">40</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">1</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Max</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Max</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l41" href="#l41">41</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="p">}</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l42" href="#l42">42</a></td>
       <td class="linebranch">
@@ -401,7 +423,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l43" href="#l43">43</a></td>
       <td class="linebranch">
@@ -409,39 +430,34 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! Return the minimum of the given values over all processes</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l44" href="#l44">44</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">MinCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">MinCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l45" href="#l45">45</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">1</td>
-      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">min</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">min</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l46" href="#l46">46</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">1</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Min</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Min</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l47" href="#l47">47</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="p">}</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l48" href="#l48">48</a></td>
       <td class="linebranch">
@@ -449,7 +465,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l49" href="#l49">49</a></td>
       <td class="linebranch">
@@ -457,39 +472,34 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! Return the sum of the given values over all processes</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l50" href="#l50">50</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">SumCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">SumCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l51" href="#l51">51</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">689</td>
-      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">sum</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">sum</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l52" href="#l52">52</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">689</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Sum</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Sum</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l53" href="#l53">53</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="p">}</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l54" href="#l54">54</a></td>
       <td class="linebranch">
@@ -497,7 +507,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l55" href="#l55">55</a></td>
       <td class="linebranch">
@@ -505,39 +514,34 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! Broadcast values from the root to all other processes</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l56" href="#l56">56</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">SumCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">SumCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l57" href="#l57">57</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">19109</td>
-      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">broadcast</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">broadcast</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l58" href="#l58">58</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">19109</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">BroadCast</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">BroadCast</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l59" href="#l59">59</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="p">}</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l60" href="#l60">60</a></td>
       <td class="linebranch">
@@ -545,7 +549,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l61" href="#l61">61</a></td>
       <td class="linebranch">
@@ -553,39 +556,34 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! Gather values from all processes to the root process</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l62" href="#l62">62</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">SumCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">SumCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l63" href="#l63">63</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">26874</td>
-      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">gather</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">gather</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l64" href="#l64">64</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">26874</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Gather</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Gather</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l65" href="#l65">65</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="p">}</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l66" href="#l66">66</a></td>
       <td class="linebranch">
@@ -593,7 +591,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l67" href="#l67">67</a></td>
       <td class="linebranch">
@@ -601,39 +598,34 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! Scatter values from the root to all other processes</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l68" href="#l68">68</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">SumCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span><span class="w"></span></td>
+      <td class="src "><span class="k">template</span><span class="o">&lt;</span><span class="n">Concepts</span><span class="o">::</span><span class="n">SumCommunicator</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l69" href="#l69">69</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">7065</td>
-      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">scatter</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">scatter</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">C</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l70" href="#l70">70</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">7065</td>
-      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Scatter</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span><span class="w"></span></td>
+      <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ParallelTraits</span><span class="o">::</span><span class="n">Scatter</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;::</span><span class="n">get</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">root</span><span class="p">);</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l71" href="#l71">71</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w"></span></td>
+      <td class="src "><span class="p">}</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l72" href="#l72">72</a></td>
       <td class="linebranch">
@@ -641,7 +633,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l73" href="#l73">73</a></td>
       <td class="linebranch">
@@ -649,7 +640,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="c1">//! \} group Parallel</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l74" href="#l74">74</a></td>
       <td class="linebranch">
@@ -657,7 +647,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l75" href="#l75">75</a></td>
       <td class="linebranch">
@@ -665,7 +654,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// namespace GridFormat::Parallel</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l76" href="#l76">76</a></td>
       <td class="linebranch">
@@ -673,7 +661,6 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l77" href="#l77">77</a></td>
       <td class="linebranch">
@@ -681,7 +668,6 @@
       <td class="linecount "></td>
       <td class="src "><span class="cp">#endif  </span><span class="c1">// GRIDFORMAT_PARALLEL_COMMUNICATION_HPP_</span></td>
     </tr>
-
     <tr class="source-line">
       <td class="lineno"><a id="l78" href="#l78">78</a></td>
       <td class="linebranch">
@@ -689,14 +675,13 @@
       <td class="linecount "></td>
       <td class="src "></td>
     </tr>
-
   </table>
 </div>
-
-    <hr/>
+      <hr/>
+    </main>
 
     <footer>
-      Generated by: <a href="http://gcovr.com">GCOVR (Version 5.0)</a>
+      Generated by: <a href="http://gcovr.com/en/7.0">GCOVR (Version 7.0)</a>
     </footer>
   </body>
 </html>
