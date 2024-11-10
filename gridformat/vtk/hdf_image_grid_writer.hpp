@@ -366,7 +366,7 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         std::vector<std::size_t> offset(layout.dimension(), 0);
         layout.export_to(dims);
         return {
-            .offset = offset,
+            .offset = std::move(offset),
             .count = dims,
             .total_size = dims
         };

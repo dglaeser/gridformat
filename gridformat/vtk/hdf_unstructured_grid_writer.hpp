@@ -322,9 +322,9 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
             size.at(0) = main_size;
 
             file.write(field, path, HDF5::Slice{
-                .offset = offset,
-                .count = count,
-                .total_size = size
+                .offset = std::move(offset),
+                .count = std::move(count),
+                .total_size = std::move(size)
             });
         } else {
             file.write(field, path);
@@ -368,8 +368,8 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
         access_offset.at(0) = this->_step_count - 1;
 
         return file.template read_dataset_to<std::size_t>(path, HDF5::Slice{
-            .offset = access_offset,
-            .count = step_dimensions
+            .offset = std::move(access_offset),
+            .count = std::move(step_dimensions)
         });
     }
 
