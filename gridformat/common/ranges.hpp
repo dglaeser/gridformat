@@ -304,10 +304,8 @@ namespace FlatViewDetail {
             return self == s;
         }
 
-    // TODO: gcc does not take this friend declaration!?
-    //       These interfaces should be private :/
-    //  private:
-    //     friend class GridFormat::IteratorAccess;
+     private:
+        friend class GridFormat::IteratorAccess;
 
         bool _is_sub_end() const {
             return !static_cast<bool>(_sub_it);
@@ -334,7 +332,6 @@ namespace FlatViewDetail {
             }
         }
 
-     private:
         void _make_sub_iterators() {
             _sub_it = SubIterator{std::ranges::begin(*_it), std::ranges::end(*_it)};
         }
