@@ -224,11 +224,13 @@ If your Python environment does not have `VTK`, this step is skipped. Note that 
 
 To create a release, you may use the utility script `util/update_versions.py`, which creates a git tag and adjusts the versions and
 release dates specified in the cmake setup and the `CITATION.cff` file. For each minor release, we maintain a separate branch for bugfixes
-and patch releases. As an example, to create a new minor release version `1.2`, you may type the following into the console (assumes a clean
-repository):
+and patch releases. As an example, to create a new minor release version `1.2`, you may type type the following into the console:
 
 ```bash
+git switch main  # a new minor release should always be started from main
+git pull --rebase origin main  # make sure the local state matches the remote state
 git switch --create releases/1.2  # this branch will be kept for incorporation of bug fixes and patch release tags 1.2.X
+# ... from now on, only changes that are important for v1.2 but should NOT go into main should be committed on this branch
 python3 util/update_versions.py -v 1.2.0 # modifies versions&dates and creates a commit + tag
 git push origin releases/1.2
 git push origin v1.2.0
