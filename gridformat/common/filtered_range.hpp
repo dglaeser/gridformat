@@ -27,35 +27,30 @@ namespace FilteredRangeDetail {
         std::ranges::range_reference_t<Range>
     >;
 
-    template<typename _It, typename _Sentinel, typename Predicate>
+    template<typename IT, typename Sentinel, typename Predicate>
     class Iterator
-    : public ForwardIteratorFacade<Iterator<_It, _Sentinel, Predicate>,
-                                   typename std::iterator_traits<_It>::value_type,
-                                   typename std::iterator_traits<_It>::reference> {
+    : public ForwardIteratorFacade<Iterator<IT, Sentinel, Predicate>,
+                                   typename std::iterator_traits<IT>::value_type,
+                                   typename std::iterator_traits<IT>::reference> {
      public:
         Iterator() = default;
-        explicit Iterator(_It it, _Sentinel sentinel, const Predicate& pred)
+        explicit Iterator(IT it, Sentinel sentinel, const Predicate& pred)
         : _it{it}
-        , _end_it{sentinel}
-        , _pred(&pred) {
+        , _sentinel{sentinel}
+        , _pred{&pred} {
             if (_should_increment())
                 _increment();
         }
 
-        // required for comparison iterator == sentinel
-        bool operator==(const Iterator<_Sentinel, _Sentinel, Predicate>& other) const {
-            return _is_end() && _end_it == other._sentinel();
+        friend bool operator==(const Iterator& self,
+                               const std::default_sentinel_t&) noexcept {
+            return self._it == self._sentinel;
         }
 
-        // required for comparison sentinel == iterator
-        template<typename I> requires(!std::same_as<I, _Sentinel>)
-        bool operator==(const Iterator<I, _Sentinel, Predicate>& other) const {
-            return &_pred == &other._predicate() && _it == other._current();
+        friend bool operator==(const std::default_sentinel_t& s,
+                               const Iterator& self) noexcept {
+            return self == s;
         }
-
-        const _It& _current() const { return _it; }
-        const _Sentinel& _sentinel() const { return _end_it; }
-        const Predicate& _predicate() const { return _predicate; }
 
      private:
         friend IteratorAccess;
@@ -66,6 +61,7 @@ namespace FilteredRangeDetail {
         }
 
         void _increment() {
+            assert(!_is_end());
             ++_it;
             while (_should_increment())
                 ++_it;
@@ -76,7 +72,7 @@ namespace FilteredRangeDetail {
         }
 
         bool _is_end() const {
-            return _it == _end_it;
+            return _it == _sentinel;
         }
 
         bool _current_true() const {
@@ -89,8 +85,8 @@ namespace FilteredRangeDetail {
             return false;
         }
 
-        _It _it;
-        _Sentinel _end_it;
+        IT _it;
+        Sentinel _sentinel;
         const Predicate* _pred{nullptr};
     };
 
@@ -126,16 +122,12 @@ class FilteredRange {
         return FilteredRangeDetail::Iterator{
             std::ranges::begin(_range),
             std::ranges::end(_range),
-            _pred
+            _pred,
         };
     }
 
     auto end() const {
-        return FilteredRangeDetail::Iterator{
-            std::ranges::end(_range),
-            std::ranges::end(_range),
-            _pred
-        };
+        return std::default_sentinel_t{};
     }
 
  private:

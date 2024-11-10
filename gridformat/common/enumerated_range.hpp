@@ -13,7 +13,7 @@
 #include <utility>
 #include <concepts>
 #include <iterator>
-#include <tuple>
+#include <type_traits>
 
 #include <gridformat/common/iterator_facades.hpp>
 #include <gridformat/common/type_traits.hpp>
@@ -27,32 +27,33 @@ namespace EnumeratedRangeDetail {
     template<typename IT, typename Index>
     using ValueType = std::pair<Index, typename std::iterator_traits<IT>::reference>;
 
-    template<typename IT, typename Index>
-    class Iterator : public ForwardIteratorFacade<Iterator<IT, Index>,
+    template<typename IT, typename Sentinel, typename Index>
+    class Iterator : public ForwardIteratorFacade<Iterator<IT, Sentinel, Index>,
                                                   ValueType<IT, Index>,
                                                   ValueType<IT, Index>> {
      public:
         Iterator() = default;
-        explicit Iterator(IT it)
+        explicit Iterator(IT it, Sentinel sentinel, Index offset)
         : _it{it}
-        , _counter{0}
+        , _sentinel{sentinel}
+        , _counter{offset}
         {}
 
-        // required for comparison iterator == sentinel
-        template<typename I>
-        friend bool operator==(const Iterator& self, const Iterator<I, Index>& other) {
-            return self._get_it() == other._get_it();
+        friend bool operator==(const Iterator& self,
+                               const std::default_sentinel_t&) noexcept {
+            return self._it == self._sentinel;
         }
 
-        const IT& _get_it() const {
-            return _it;
+        friend bool operator==(const std::default_sentinel_t& s,
+                               const Iterator& self) noexcept {
+            return self == s;
         }
 
      private:
         friend IteratorAccess;
 
-        auto _dereference() const {
-            return ValueType<IT, Index>{_counter, *_it};
+        ValueType<IT, Index> _dereference() const {
+            return {_counter, *_it};
         }
 
         void _increment() {
@@ -61,12 +62,16 @@ namespace EnumeratedRangeDetail {
         }
 
         bool _is_equal(const Iterator& other) const {
-            return *this == other;
+            return _it == other._it;
         }
 
         IT _it;
-        Index _counter;
+        Sentinel _sentinel;
+        Index _counter{0};
     };
+
+    template<typename IT, typename S, typename I>
+    Iterator(IT&&, S&&, I&&) -> Iterator<std::remove_cvref_t<IT>, std::remove_cvref_t<S>, std::remove_cvref_t<I>>;
 
 }  // namespace EnumeratedRangeDetail
 #endif  // DOXYGEN
@@ -78,13 +83,6 @@ namespace EnumeratedRangeDetail {
 template<std::ranges::forward_range R, typename Index = std::size_t>
 class EnumeratedRange {
     using StoredRange = LVReferenceOrValue<R>;
-    using ConstRange = std::add_const_t<std::remove_cvref_t<R>>;
-
-    using BaseIterator = std::ranges::iterator_t<StoredRange>;
-    using ConstBaseIterator = std::ranges::iterator_t<ConstRange>;
-
-    using Iterator = EnumeratedRangeDetail::Iterator<BaseIterator, Index>;
-    using ConstIterator = EnumeratedRangeDetail::Iterator<ConstBaseIterator, Index>;
 
     static constexpr bool is_const = std::is_const_v<std::remove_reference_t<R>>;
 
@@ -95,11 +93,23 @@ class EnumeratedRange {
     : _range{std::forward<_R>(range)}
     {}
 
-    auto begin() { return Iterator{std::ranges::begin(_range)}; }
-    auto begin() const { return ConstIterator{std::ranges::begin(_range)}; }
+    auto begin() {
+        return EnumeratedRangeDetail::Iterator{
+            std::ranges::begin(_range),
+            std::ranges::end(_range),
+            Index{0}
+        };
+    }
+    auto begin() const {
+        return EnumeratedRangeDetail::Iterator{
+            std::ranges::cbegin(_range),
+            std::ranges::cend(_range),
+            Index{0}
+        };
+    }
 
-    auto end() { return Iterator{std::ranges::end(_range)}; }
-    auto end() const { return ConstIterator{std::ranges::end(_range)}; }
+    auto end() { return std::default_sentinel_t{}; }
+    auto end() const { return std::default_sentinel_t{}; }
 
  private:
     StoredRange _range;
