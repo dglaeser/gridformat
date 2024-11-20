@@ -223,8 +223,7 @@ If your Python environment does not have `VTK`, this step is skipped. Note that 
 ### Creating a release
 
 To create a release, you may use the utility script `util/update_versions.py`, which creates a git tag and adjusts the versions and
-release dates specified in the cmake setup and the `CITATION.cff` file. For each minor release, we maintain a separate branch for bugfixes
-and patch releases. As an example, to create a new minor release version `1.2`, you may type type the following into the console:
+release dates specified in the cmake setup and the `CITATION.cff` file. We maintain a branch for each minor release to incorporate bug fixes and patch releases. As an example, to create a new minor release version `1.2`, you may type type the following into the console:
 
 ```bash
 git switch main  # a new minor release should always be started from main
