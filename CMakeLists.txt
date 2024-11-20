@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 3.18)
 
-project(gridformat VERSION 0.2.1)
+project(gridformat VERSION 0.3.0)
 set(GRIDFORMAT_NAMESPACE "gridformat")
 
 include(GNUInstallDirs)
