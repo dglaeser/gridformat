@@ -1,10 +1,12 @@
 <!--SPDX-FileCopyrightText: 2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>-->
 <!--SPDX-License-Identifier: MIT-->
 
-# `GridFormat` 0.2.1
+# `GridFormat` 0.3.0
 
 ## Features
 
+- __Writers__: the custom range adaptors & iterators used by the writers under the hood have been changed to support range sentinels of different type than the range iterator. This makes it easier to specialize the traits for grid implementations that use sentinels of different type than the grid entity iterators.
+- __CI__: the CI now runs on ubuntu:24.04 and tests the code with `gcc-14` and `clang-18`.
 - __Traits__: support for writing `Dune::FieldMatrix` as tensor field data.
 - __Reader__: the `Reader` class now allows for opening a file upon instantiation using `GridFormat::Reader::from(filename)` (taking further optional constructor arguments). Moreover, you can now open a file and receive the modified reader as return value using `reader.with_opened(filename)`.
 - __VTK__: VTK-XML files of the older file format version 0.1 can now also be read by all vtk readers

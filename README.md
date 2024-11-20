@@ -223,16 +223,16 @@ If your Python environment does not have `VTK`, this step is skipped. Note that 
 ### Creating a release
 
 To create a release, you may use the utility script `util/update_versions.py`, which creates a git tag and adjusts the versions and
-release dates specified in the cmake setup and the `CITATION.cff` file. For each release we maintain a separate branch for bugfixes
-and patch releases. As an example, to create a release version `1.2.3`, you may type the following into the console (assumes a clean
-repository):
+release dates specified in the cmake setup and the `CITATION.cff` file. We maintain a branch for each minor release to incorporate bug fixes and patch releases. As an example, to create a new minor release version `1.2`, you may type type the following into the console:
 
 ```bash
-git switch --create releases/1.2.3
-# ... maybe continue development ...
-python3 util/update_versions.py -v 1.2.3 # modifies versions&dates and creates a commit + tag
-git push origin releases/1.2.3
-git push origin v1.2.3
+git switch main  # a new minor release should always be started from main
+git pull --rebase origin main  # make sure the local state matches the remote state
+git switch --create releases/1.2  # this branch will be kept for incorporation of bug fixes and patch release tags 1.2.X
+# ... from now on, only changes that are important for v1.2 but should NOT go into main should be committed on this branch
+python3 util/update_versions.py -v 1.2.0 # modifies versions&dates and creates a commit + tag
+git push origin releases/1.2
+git push origin v1.2.0
 ```
 
 Afterwards, a release workflow will be triggered. If this runs through successfully, a release has been created. If not, the new tag
@@ -242,8 +242,9 @@ should be increased (without triggering an actual release). Following the above 
 ```bash
 git switch main
 git switch --create feature/bump-version
-python3 util/update_versions.py -v 1.2.4 --skip-tag # only modifies versions, no commit or tag
-git commit -m "bump version to v1.2.4" .
+# .. add a new section for release 1.3 in the CHANGELOG and commit it
+python3 util/update_versions.py -v 1.3 --skip-tag # only modifies versions, no commit or tag
+git commit -m "bump version to v1.3" .
 git push origin feature/bump-version
 ```
 
