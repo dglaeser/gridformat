@@ -243,8 +243,8 @@ should be increased (without triggering an actual release). Following the above 
 git switch main
 git switch --create feature/bump-version
 # .. add a new section for release 1.3 in the CHANGELOG and commit it
-python3 util/update_versions.py -v 1.3 --skip-tag # only modifies versions, no commit or tag
-git commit -m "bump version to v1.3" .
+python3 util/update_versions.py -v 1.3.0 --skip-tag # only modifies versions, no commit or tag
+git commit -m "bump version to v1.3.0" .
 git push origin feature/bump-version
 ```
 
