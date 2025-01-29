@@ -45,5 +45,33 @@ int main() {
         expect(eq(values[0], double{42.0}));
     };
 
+    "scalar_field_bool"_test = [] () {
+        static_assert(std::is_scalar_v<bool>);
+        static_assert(GridFormat::is_scalar<bool>);
+        static_assert(std::is_same_v<GridFormat::FieldScalar<bool>, bool>);
+        static_assert(std::is_same_v<GridFormat::FieldScalar<std::vector<bool>>, bool>);
+        static_assert(std::is_same_v<GridFormat::MDRangeScalar<std::vector<bool>>, bool>);
+
+        const GridFormat::ScalarField field{bool{true}};
+        const auto serialization = field.serialized();
+        const auto span = serialization.as_span_of<bool>();
+        expect(eq(serialization.size(), sizeof(bool)));
+        expect(eq(span.size(), std::size_t{1}));
+        expect(eq(span[0], bool{true}));
+
+        std::vector<bool> values = {false};
+        field.export_to(values);
+        expect(eq(values.size(), std::size_t{1}));
+        expect(eq(values[0], bool{true}));
+    };
+
+    "scalar_field_bool_export_to_range_from_char_test"_test = [] () {
+        const GridFormat::ScalarField field{int{1}};
+        std::vector<bool> values = {false};
+        field.export_to(values);
+        expect(eq(values.size(), std::size_t{1}));
+        expect(eq(values[0], bool{true}));
+    };
+
     return 0;
 }
