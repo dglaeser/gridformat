@@ -102,6 +102,9 @@ namespace Detail {
         };
     }
 
+    template<typename T>
+    using HighFiveDataType = std::conditional_t<std::is_same_v<T, bool>, char, T>;
+
 }  // namespace Detail
 #endif  // DOXYGEN
 
@@ -385,7 +388,7 @@ class File {
             return HighFive::File{filename, open_mode};
     }
 
-    template<typename T>
+    template<Concepts::Scalar S, typename T = Detail::HighFiveDataType<S>>
     auto _prepare_dataset(HighFive::Group& group,
                           const std::string& name,
                           const HighFive::DataSpace& space) {
@@ -498,13 +501,13 @@ class File {
         throw NotImplemented("Could not determine data set precision");
     }
 
-    template<typename T, typename Source>
+    template<Concepts::Scalar S, typename Source>
     auto _read_buffer_field(const Source& source) const {
         auto dims = source.getMemSpace().getDimensions();
         MDLayout layout = dims.empty() ? MDLayout{{1}} : MDLayout{std::move(dims)};
-        std::vector<T> out(layout.number_of_entries());
+        std::vector<Detail::HighFiveDataType<S>> out(layout.number_of_entries());
         source.read(out.data());
-        return BufferField(std::move(out), std::move(layout));
+        return BufferField<S>(std::move(out), std::move(layout));
     }
 
     HighFive::Group _get_group(const std::string& group_name) {

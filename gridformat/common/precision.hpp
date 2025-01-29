@@ -50,6 +50,9 @@ inline constexpr UInt16 uint16;
 inline constexpr UInt32 uint32;
 inline constexpr UInt64 uint64;
 
+using Boolean = Precision<bool>;
+inline constexpr Boolean boolean;
+
 /*!
  * \ingroup Common
  * \brief Represents a dynamic precision.
@@ -125,7 +128,8 @@ class DynamicPrecision {
         Precision<std::uint32_t>,
         Precision<std::uint64_t>,
         Precision<std::size_t>,
-        Precision<char>
+        Precision<char>,
+        Precision<bool>
     > _precision;
 };
 
