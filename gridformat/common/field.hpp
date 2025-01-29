@@ -180,6 +180,21 @@ class Field {
                 }
             );
     }
+
+    //! Specialization for std::vector<bool> which is not a proper range
+    template<Concepts::Scalar T>
+    void _export_to(std::vector<bool>& range,
+                    std::span<const T> data,
+                    std::size_t& offset) const {
+        if constexpr (std::is_convertible_v<T, bool>)
+            for (int i = 0; offset < data.size(); ++offset, ++i)
+                range[i] = static_cast<bool>(data[offset]);
+        else
+            throw TypeError(
+                "Cannot export the field into the given range type. "
+                "Data type cannot be converted to bool."
+            );
+    }
 };
 
 //! Pointer type used by writers/readers for fields
