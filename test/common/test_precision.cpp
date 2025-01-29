@@ -39,6 +39,7 @@ int main() {
     "dynamic_precision_uint16"_test = [&] () { _test(GridFormat::uint16); };
     "dynamic_precision_uint32"_test = [&] () { _test(GridFormat::uint32); };
     "dynamic_precision_uint64"_test = [&] () { _test(GridFormat::uint64); };
+    "dynamic_precision_boolean"_test = [&] () { _test(GridFormat::boolean); };
 
     return 0;
 }
