@@ -32,16 +32,16 @@ int main() {
         GridFormat::VTUWriter bool_writer{grid};
         bool_writer.set_cell_field("true_field", [] (auto&&...) { return true; });
         bool_writer.set_cell_field("false_field", [] (auto&&...) { return false; });
-        bool_writer.write("bool_test");
+        bool_writer.write("vtu_bool_test");
 
         GridFormat::VTUReader bool_reader;
-        bool_reader.open("bool_test.vtu");
+        bool_reader.open("vtu_bool_test.vtu");
         const auto true_field = bool_reader.cell_field("true_field")->template export_to<std::vector<bool>>();
         const auto false_field = bool_reader.cell_field("false_field")->template export_to<std::vector<bool>>();
         expect(std::ranges::all_of(true_field, [] (bool value) { return value; }));
         expect(std::ranges::all_of(false_field, [] (bool value) { return not value; }));
 
-        std::filesystem::remove("bool_test.vtu");
+        std::filesystem::remove("vtu_bool_test.vtu");
     };
 
     GridFormat::VTUWriter writer{grid};
