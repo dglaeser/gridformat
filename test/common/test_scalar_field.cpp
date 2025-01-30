@@ -65,7 +65,7 @@ int main() {
         expect(eq(values[0], bool{true}));
     };
 
-    "scalar_field_bool_export_to_range_from_char_test"_test = [] () {
+    "scalar_field_bool_export_to_range_from_int_test"_test = [] () {
         const GridFormat::ScalarField field{int{1}};
         std::vector<bool> values = {false};
         field.export_to(values);
