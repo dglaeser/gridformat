@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2024-11-20 14:41:59</td>
+      <td>2025-01-30 22:12:30</td>
     </tr>
   </table>
 </div>
@@ -74,9 +74,9 @@
       <th>Block coverage</th>
     </tr>
     <tr><td><a href="#l32">GridFormat::Compression::Blocks&lt;unsigned int&gt;::Blocks(unsigned int, unsigned int) (line 32)</a></td><td>called 8040 times, returned 8040 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l32">GridFormat::Compression::Blocks&lt;unsigned long&gt;::Blocks(unsigned long, unsigned long) (line 32)</a></td><td>called 80089 times, returned 80089 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l32">GridFormat::Compression::Blocks&lt;unsigned long&gt;::Blocks(unsigned long, unsigned long) (line 32)</a></td><td>called 80097 times, returned 80097 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l47">GridFormat::Compression::CompressedBlocks&lt;unsigned int&gt;::CompressedBlocks(GridFormat::Compression::Blocks&lt;unsigned int&gt; const&amp;, std::vector&lt;unsigned int, std::allocator&lt;unsigned int&gt; &gt;&amp;&amp;) (line 47)</a></td><td>called 8040 times, returned 8040 times</td><td>43.0%</td></tr>
-    <tr><td><a href="#l47">GridFormat::Compression::CompressedBlocks&lt;unsigned long&gt;::CompressedBlocks(GridFormat::Compression::Blocks&lt;unsigned long&gt; const&amp;, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt;&amp;&amp;) (line 47)</a></td><td>called 80089 times, returned 80089 times</td><td>43.0%</td></tr>
+    <tr><td><a href="#l47">GridFormat::Compression::CompressedBlocks&lt;unsigned long&gt;::CompressedBlocks(GridFormat::Compression::Blocks&lt;unsigned long&gt; const&amp;, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt;&amp;&amp;) (line 47)</a></td><td>called 80097 times, returned 80097 times</td><td>43.0%</td></tr>
     <tr><td><a href="#l57">GridFormat::Compression::CompressedBlocks&lt;unsigned long&gt;::compressed_size() const (line 57)</a></td><td>called 24 times, returned 24 times</td><td>100.0%</td></tr>
   </table>
 </details>
@@ -313,21 +313,21 @@
       <td class="lineno"><a id="l32" href="#l32">32</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">176243</td>
+      <td class="linecount coveredLine">176259</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">Blocks</span><span class="p">(</span><span class="n">HeaderType</span><span class="w"> </span><span class="n">size_in_bytes</span><span class="p">,</span><span class="w"> </span><span class="n">HeaderType</span><span class="w"> </span><span class="n">block_size</span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l33" href="#l33">33</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">176243</td>
+      <td class="linecount coveredLine">176259</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">block_size</span><span class="p">{</span><span class="n">block_size</span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l34" href="#l34">34</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">176243</td>
+      <td class="linecount coveredLine">176259</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">residual_block_size</span><span class="p">{</span><span class="n">size_in_bytes</span><span class="o">%</span><span class="n">block_size</span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
@@ -336,19 +336,19 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 0 taken 87044 times.</div>
+          <div class="takenBranch">&check; Branch 0 taken 87052 times.</div>
           <div class="takenBranch">&check; Branch 1 taken 1085 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">176243</td>
+      <td class="linecount coveredLine">176259</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">number_of_blocks</span><span class="p">{</span><span class="n">residual_block_size</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">size_in_bytes</span><span class="o">/</span><span class="n">block_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">size_in_bytes</span><span class="o">/</span><span class="n">block_size</span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l36" href="#l36">36</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">176243</td>
+      <td class="linecount coveredLine">176259</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span></td>
     </tr>
     <tr class="source-line">
@@ -425,7 +425,7 @@
       <td class="lineno"><a id="l47" href="#l47">47</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">176243</td>
+      <td class="linecount coveredLine">176259</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">CompressedBlocks</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Blocks</span><span class="o">&lt;</span><span class="n">HeaderType</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">blocks</span><span class="p">,</span></td>
     </tr>
     <tr class="source-line">
@@ -439,28 +439,28 @@
       <td class="lineno"><a id="l49" href="#l49">49</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">176243</td>
+      <td class="linecount coveredLine">176259</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">block_size</span><span class="p">{</span><span class="n">blocks</span><span class="p">.</span><span class="n">block_size</span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l50" href="#l50">50</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">176243</td>
+      <td class="linecount coveredLine">176259</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">residual_block_size</span><span class="p">{</span><span class="n">blocks</span><span class="p">.</span><span class="n">residual_block_size</span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l51" href="#l51">51</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">176243</td>
+      <td class="linecount coveredLine">176259</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">number_of_blocks</span><span class="p">{</span><span class="n">blocks</span><span class="p">.</span><span class="n">number_of_blocks</span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l52" href="#l52">52</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">176243</td>
+      <td class="linecount coveredLine">176259</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="n">compressed_block_sizes</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">comp_block_sizes</span><span class="p">)}</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -470,11 +470,11 @@
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
           <div class="notTakenBranch">&cross; Branch 1 not taken.</div>
-          <div class="takenBranch">&check; Branch 2 taken 88129 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 88137 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">176243</td>
+      <td class="linecount partialCoveredLine">176259</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">compressed_block_sizes</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">number_of_blocks</span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
@@ -488,7 +488,7 @@
       <td class="lineno"><a id="l55" href="#l55">55</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">176243</td>
+      <td class="linecount coveredLine">176259</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
@@ -502,14 +502,14 @@
       <td class="lineno"><a id="l57" href="#l57">57</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">80882</td>
+      <td class="linecount coveredLine">80888</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">compressed_size</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l58" href="#l58">58</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">80882</td>
+      <td class="linecount coveredLine">80888</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span></td>
     </tr>
     <tr class="source-line">
@@ -537,7 +537,7 @@
       <td class="lineno"><a id="l62" href="#l62">62</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">80882</td>
+      <td class="linecount coveredLine">80888</td>
       <td class="src coveredLine"><span class="w">        </span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">

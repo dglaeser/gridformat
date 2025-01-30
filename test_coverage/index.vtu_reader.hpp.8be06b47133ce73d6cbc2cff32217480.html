@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2024-11-20 14:41:59</td>
+      <td>2025-01-30 22:12:30</td>
     </tr>
   </table>
 </div>
@@ -73,15 +73,15 @@
       <th>Call count</th>
       <th>Block coverage</th>
     </tr>
-    <tr><td><a href="#l94">GridFormat::VTUReader::_cell_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 94)</a></td><td>called 691 times, returned 691 times</td><td>80.0%</td></tr>
+    <tr><td><a href="#l94">GridFormat::VTUReader::_cell_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 94)</a></td><td>called 693 times, returned 693 times</td><td>80.0%</td></tr>
     <tr><td><a href="#l40">GridFormat::VTUReader::_close() (line 40)</a></td><td>called 53 times, returned 53 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l62">GridFormat::VTUReader::_is_sequence() const (line 62)</a></td><td>called 87 times, returned 87 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l102">GridFormat::VTUReader::_meta_data_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 102)</a></td><td>called 57 times, returned 57 times</td><td>88.0%</td></tr>
     <tr><td><a href="#l46">GridFormat::VTUReader::_name[abi:cxx11]() const (line 46)</a></td><td>called 43 times, returned 43 times</td><td>78.0%</td></tr>
-    <tr><td><a href="#l50">GridFormat::VTUReader::_number_of_cells() const (line 50)</a></td><td>called 8339 times, returned 8339 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l50">GridFormat::VTUReader::_number_of_cells() const (line 50)</a></td><td>called 8341 times, returned 8341 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l58">GridFormat::VTUReader::_number_of_pieces() const (line 58)</a></td><td>called 10 times, returned 10 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l54">GridFormat::VTUReader::_number_of_points() const (line 54)</a></td><td>called 1455 times, returned 1455 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l31">GridFormat::VTUReader::_open(std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; const&amp;, GridFormat::GridReader::FieldNames&amp;) (line 31)</a></td><td>called 309 times, returned 299 times</td><td>64.0%</td></tr>
+    <tr><td><a href="#l31">GridFormat::VTUReader::_open(std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; const&amp;, GridFormat::GridReader::FieldNames&amp;) (line 31)</a></td><td>called 310 times, returned 300 times</td><td>64.0%</td></tr>
     <tr><td><a href="#l98">GridFormat::VTUReader::_point_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 98)</a></td><td>called 706 times, returned 706 times</td><td>80.0%</td></tr>
     <tr><td><a href="#l66">GridFormat::VTUReader::_points() const (line 66)</a></td><td>called 173 times, returned 173 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l70">GridFormat::VTUReader::_visit_cells(std::function&lt;void (GridFormat::CellType, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; const&amp;)&gt; const&amp;) const (line 70)</a></td><td>called 281 times, returned 281 times</td><td>55.0%</td></tr>
@@ -313,7 +313,7 @@
       <td class="lineno"><a id="l31" href="#l31">31</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">309</td>
+      <td class="linecount coveredLine">310</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">_open</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">GridReader</span><span class="o">::</span><span class="n">FieldNames</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fields</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -322,12 +322,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 300 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 301 times.</div>
           <div class="takenBranch">&check; Branch 3 taken 9 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">309</td>
+      <td class="linecount coveredLine">310</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">helper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VTK</span><span class="o">::</span><span class="n">XMLReaderHelper</span><span class="o">::</span><span class="n">make_from</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;UnstructuredGrid&quot;</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -343,16 +343,16 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">3/6</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 300 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 301 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
-          <div class="takenBranch">&check; Branch 6 taken 300 times.</div>
+          <div class="takenBranch">&check; Branch 6 taken 301 times.</div>
           <div class="notTakenBranch">&cross; Branch 7 not taken.</div>
-          <div class="takenBranch">&check; Branch 9 taken 300 times.</div>
+          <div class="takenBranch">&check; Branch 9 taken 301 times.</div>
           <div class="notTakenBranch">&cross; Branch 10 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">300</td>
+      <td class="linecount partialCoveredLine">301</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="n">_num_points</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">from_string</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">helper</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;UnstructuredGrid/Piece&quot;</span><span class="p">).</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&quot;NumberOfPoints&quot;</span><span class="p">));</span></td>
     </tr>
     <tr class="source-line">
@@ -361,16 +361,16 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">3/6</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 300 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 301 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
-          <div class="takenBranch">&check; Branch 6 taken 300 times.</div>
+          <div class="takenBranch">&check; Branch 6 taken 301 times.</div>
           <div class="notTakenBranch">&cross; Branch 7 not taken.</div>
-          <div class="takenBranch">&check; Branch 9 taken 300 times.</div>
+          <div class="takenBranch">&check; Branch 9 taken 301 times.</div>
           <div class="notTakenBranch">&cross; Branch 10 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">300</td>
+      <td class="linecount partialCoveredLine">301</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="n">_num_cells</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">from_string</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">helper</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;UnstructuredGrid/Piece&quot;</span><span class="p">).</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&quot;NumberOfCells&quot;</span><span class="p">));</span></td>
     </tr>
     <tr class="source-line">
@@ -379,28 +379,28 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 300 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 301 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
-          <div class="takenBranch">&check; Branch 5 taken 300 times.</div>
+          <div class="takenBranch">&check; Branch 5 taken 301 times.</div>
           <div class="notTakenBranch">&cross; Branch 6 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">300</td>
+      <td class="linecount partialCoveredLine">301</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="n">VTK</span><span class="o">::</span><span class="n">XMLDetail</span><span class="o">::</span><span class="n">copy_field_names_from</span><span class="p">(</span><span class="n">helper</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;UnstructuredGrid&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">fields</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l37" href="#l37">37</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">300</td>
+      <td class="linecount coveredLine">301</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">_helper</span><span class="p">.</span><span class="n">emplace</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">helper</span><span class="p">));</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l38" href="#l38">38</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">300</td>
+      <td class="linecount coveredLine">301</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
@@ -491,14 +491,14 @@
       <td class="lineno"><a id="l50" href="#l50">50</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8339</td>
+      <td class="linecount coveredLine">8341</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_number_of_cells</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l51" href="#l51">51</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8339</td>
+      <td class="linecount coveredLine">8341</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_num_cells</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -927,7 +927,7 @@
       <td class="lineno"><a id="l94" href="#l94">94</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">691</td>
+      <td class="linecount coveredLine">693</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">FieldPtr</span><span class="w"> </span><span class="n">_cell_field</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -936,14 +936,14 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 2 taken 691 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 693 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
-          <div class="takenBranch">&check; Branch 7 taken 691 times.</div>
+          <div class="takenBranch">&check; Branch 7 taken 693 times.</div>
           <div class="notTakenBranch">&cross; Branch 8 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">691</td>
+      <td class="linecount partialCoveredLine">693</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_helper</span><span class="p">.</span><span class="n">value</span><span class="p">().</span><span class="n">make_data_array_field</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;UnstructuredGrid/Piece/CellData&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">_number_of_cells</span><span class="p">());</span></td>
     </tr>
     <tr class="source-line">
