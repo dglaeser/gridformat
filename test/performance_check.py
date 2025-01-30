@@ -86,5 +86,5 @@ if __name__ == "__main__":
                         "-t", str(args["relative_tolerance"]),
                         "-s", args["summary_file"]
         ],
-        check=bool(args["print_only"])
+        check=(not bool(args["print_only"]))
     )

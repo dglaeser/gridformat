@@ -4,6 +4,7 @@
 #include <string>
 #include <filesystem>
 #include <iterator>
+#include <algorithm>
 #include <ranges>
 
 #include <gridformat/common/logging.hpp>
@@ -22,6 +23,27 @@
 
 int main() {
     const auto grid = GridFormat::Test::make_unstructured_2d();
+
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::eq;
+
+    "vtu_boolean_field"_test = [&] () {
+        GridFormat::VTUWriter bool_writer{grid};
+        bool_writer.set_cell_field("true_field", [] (auto&&...) { return true; });
+        bool_writer.set_cell_field("false_field", [] (auto&&...) { return false; });
+        bool_writer.write("vtu_bool_test");
+
+        GridFormat::VTUReader bool_reader;
+        bool_reader.open("vtu_bool_test.vtu");
+        const auto true_field = bool_reader.cell_field("true_field")->template export_to<std::vector<bool>>();
+        const auto false_field = bool_reader.cell_field("false_field")->template export_to<std::vector<bool>>();
+        expect(std::ranges::all_of(true_field, [] (bool value) { return value; }));
+        expect(std::ranges::all_of(false_field, [] (bool value) { return not value; }));
+
+        std::filesystem::remove("vtu_bool_test.vtu");
+    };
+
     GridFormat::VTUWriter writer{grid};
     GridFormat::VTUReader reader;
     GridFormat::Test::test_reader<2, 2>(
@@ -53,10 +75,6 @@ int main() {
         std::cout << "No test vtu files found in folder " << test_data_path_name << ". Skipping..." << std::endl;
         return 42;
     }
-
-    using GridFormat::Testing::operator""_test;
-    using GridFormat::Testing::expect;
-    using GridFormat::Testing::eq;
 
     "vtu_reader_name"_test = [&] () {
         expect(reader.name() == "VTUReader");

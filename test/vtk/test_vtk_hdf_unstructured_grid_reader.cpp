@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 // SPDX-License-Identifier: MIT
 
+#include <filesystem>
+
 #include <gridformat/vtk/hdf_unstructured_grid_writer.hpp>
 #include <gridformat/vtk/hdf_unstructured_grid_reader.hpp>
 #include <gridformat/vtk/hdf_reader.hpp>
@@ -16,6 +18,22 @@ int main() {
     using GridFormat::Testing::operator""_test;
     using GridFormat::Testing::expect;
     using GridFormat::Testing::eq;
+
+    "vtk_hdf_bool_field_test"_test = [&] () {
+        GridFormat::VTKHDFUnstructuredGridWriter writer{grid};
+        writer.set_cell_field("true_field", [] (auto&&...) { return true; });
+        writer.set_cell_field("false_field", [] (auto&&...) { return false; });
+        writer.write("vtk_hdf_bool_field_test");
+
+        GridFormat::VTKHDFUnstructuredGridReader reader;
+        reader.open("vtk_hdf_bool_field_test.hdf");
+        const auto true_field = reader.cell_field("true_field")->template export_to<std::vector<bool>>();
+        const auto false_field = reader.cell_field("false_field")->template export_to<std::vector<bool>>();
+        expect(std::ranges::all_of(true_field, [] (bool value) { return value; }));
+        expect(std::ranges::all_of(false_field, [] (bool value) { return not value; }));
+
+        std::filesystem::remove("vtk_hdf_bool_field_test.hdf");
+    };
 
     {
         GridFormat::VTKHDFUnstructuredGridWriter writer{grid};

@@ -175,8 +175,8 @@ class Field {
             std::ranges::for_each_n(
                 std::ranges::begin(range),
                 std::min(Ranges::size(range), data.size() - offset),
-                [&] <typename V> (V& value) {
-                    value = static_cast<V>(data[offset++]);
+                [&] (std::ranges::range_reference_t<R> value) {
+                    value = static_cast<std::ranges::range_value_t<R>>(data[offset++]);
                 }
             );
     }

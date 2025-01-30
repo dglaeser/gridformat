@@ -3,6 +3,9 @@
 
 # `GridFormat` 0.4.0
 
+## Features
+
+- __Writers__: writers can now take fields whose value type is `bool`, and fields can now also be exported into ranges with `bool` as range value type.
 
 # `GridFormat` 0.3.0
 
