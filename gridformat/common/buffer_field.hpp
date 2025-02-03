@@ -28,8 +28,8 @@ class BufferField : public Field {
         requires(Concepts::Scalar<std::ranges::range_value_t<R>>)
     explicit BufferField(R&& data, MDLayout&& layout)
     : _serialization(layout.number_of_entries()*sizeof(T))
-    , _md_layout{std::move(layout)},
-    _span{_serialization.template as_span_of<T>()} {
+    , _md_layout{std::move(layout)}
+    , _span{_serialization.template as_span_of<T>()} {
         if (data.size() != _md_layout.number_of_entries())
             throw SizeError("Given buffer size does not match layout");
         std::ranges::move(std::move(data), _serialization.as_span_of<T>().data());
