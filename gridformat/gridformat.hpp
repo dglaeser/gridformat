@@ -88,7 +88,7 @@ namespace GridFormat::APIDetail {
         UnavailableTimeSeriesWriter(Args&&...) { static_assert(Asserter<Args...>::do_assert()); }
      private:
         void _throw() const { throw GridFormat::NotImplemented("Writer unavailable"); }
-        void _write(double) const { _throw(); }
+        std::string _write(double) const override { _throw(); return ""; }
     };
 
     // Derive from Reader to make this a "valid" reader
