@@ -80,6 +80,17 @@ namespace GridFormat::APIDetail {
         void _write(std::ostream&) const { _throw(); }
     };
 
+    // Derive from GridWriter to make this a "valid" writer (and abuse some valid grid impl for that)
+    template<template<typename...> typename Asserter = DefaultAsserter>
+    class UnavailableTimeSeriesWriter : public TimeSeriesGridWriter<ImageGrid<2, double>> {
+     public:
+        template<typename... Args>
+        UnavailableTimeSeriesWriter(Args&&...) { static_assert(Asserter<Args...>::do_assert()); }
+     private:
+        void _throw() const { throw GridFormat::NotImplemented("Writer unavailable"); }
+        void _write(double) const { _throw(); }
+    };
+
     // Derive from Reader to make this a "valid" reader
     template<template<typename...> typename Asserter = DefaultAsserter>
     class UnavailableReader : public GridReader {
@@ -122,11 +133,11 @@ struct VTKHDFAsserter {
 };
 
 using VTKHDFWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
-using VTKHDFTimeSeriesWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
+using VTKHDFTimeSeriesWriter = APIDetail::UnavailableTimeSeriesWriter<VTKHDFAsserter>;
 using VTKHDFImageGridWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
 using VTKHDFUnstructuredGridWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
-using VTKHDFImageGridTimeSeriesWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
-using VTKHDFUnstructuredTimeSeriesWriter = APIDetail::UnavailableWriter<VTKHDFAsserter>;
+using VTKHDFImageGridTimeSeriesWriter = APIDetail::UnavailableTimeSeriesWriter<VTKHDFAsserter>;
+using VTKHDFUnstructuredTimeSeriesWriter = APIDetail::UnavailableTimeSeriesWriter<VTKHDFAsserter>;
 
 using VTKHDFImageGridReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
 template<typename T = void> using VTKHDFUnstructuredGridReader = APIDetail::UnavailableReader<VTKHDFAsserter>;
