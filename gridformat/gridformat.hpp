@@ -80,7 +80,7 @@ namespace GridFormat::APIDetail {
         void _write(std::ostream&) const { _throw(); }
     };
 
-    // Derive from GridWriter to make this a "valid" writer (and abuse some valid grid impl for that)
+    // Derive from TimeSeriesGridWriter to make this a "valid" writer (and abuse some valid grid impl for that)
     template<template<typename...> typename Asserter = DefaultAsserter>
     class UnavailableTimeSeriesWriter : public TimeSeriesGridWriter<ImageGrid<2, double>> {
      public:
