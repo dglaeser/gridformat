@@ -61,10 +61,9 @@ runs:
           echo "enable_testing()" >> CMakeLists.txt
           echo "find_package(gridformat REQUIRED)" >> CMakeLists.txt
           echo "add_subdirectory(test)" >> CMakeLists.txt
-          cmake -Dgridformat_ROOT=$(pwd)/../install \
-                -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
+          cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
-                -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
+                -DCMAKE_PREFIX_PATH="/gfmt-dependencies;$(pwd)/../install" \
                 -DCMAKE_BUILD_TYPE=Release \
                 -B build
           pushd build
@@ -95,8 +94,7 @@ runs:
           pushd examples
             cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
                   -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
-                  -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
-                  -Dgridformat_ROOT=$(pwd)/../install \
+                  -DCMAKE_PREFIX_PATH="/gfmt-dependencies;$(pwd)/../install" \
                   -B build
           pushd build && make && ctest --output-on-failure
         else
