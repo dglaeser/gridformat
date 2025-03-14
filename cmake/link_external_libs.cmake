@@ -35,6 +35,8 @@ find_package(HDF5 QUIET)
 find_package(HighFive QUIET)
 set(HIGHFIVE_TARGET_NAME HighFive)
 if (HighFive_FOUND)
+    # Before version 3, HighFive_ was used as namespace: https://github.com/highfive-devs/highfive/blob/ede97c8d51905c1640038561d12d41da173012ac/CMake/HighFiveTargetExport.cmake#L42
+    # With version 3, HighFive:: is used: https://github.com/highfive-devs/highfive/blob/ddcf6321a0f2528750d846f681b8f2223106abaf/CMakeLists.txt#L145
     message(STATUS "Using preinstalled HighFive package")
     if (HighFive_VERSION_MAJOR GREATER_EQUAL 3)
         set(HIGHFIVE_TARGET_NAME HighFive::HighFive)
