@@ -461,17 +461,12 @@ class File {
     decltype(auto) _visit_data(Visitor&& visitor, const Source& source) const {
         const auto datatype = source.getDataType();
         if (datatype.isFixedLenStr()) {
-            static constexpr std::size_t N = 100;
-            HighFive::FixedLenStringArray<N> pre_out;
+            std::vector<std::string> pre_out;
             source.read(pre_out);
-            if (pre_out.size() > 1)
+            if (pre_out.size() > 1 or pre_out.size() == 0)
                 throw SizeError("Unexpected string array size");
 
-            std::string out;
-            std::ranges::copy(
-                pre_out.getString(0) | std::views::take_while([] (const char c) { return c != '\0'; }),
-                std::back_inserter(out)
-            );
+            std::string out = std::move(std::move(pre_out)[0]);
             MDLayout layout{{out.size()}};
             return visitor(BufferField{std::move(out), std::move(layout)});
         } else {
