@@ -16,6 +16,8 @@ on:
       - '**/*.hpp'
       - '**/*.cpp'
       - '.github/'
+      - 'deps/*'
+      - '.gitmodules'
   schedule:
     - cron: '30 22 * * 0'
   workflow_dispatch:
