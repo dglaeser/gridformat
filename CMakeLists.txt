@@ -75,6 +75,13 @@ install(
 )
 
 # make find_package(gridformat) work when used from build directory
+if (GRIDFORMAT_HIGHFIVE_SOURCE_INCLUDED)
+    export(
+        EXPORT HighFiveTargets
+        FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/HighFiveTargets.cmake"
+        NAMESPACE HighFive::
+    )
+endif ()
 export(
     EXPORT ${PROJECT_NAME}_Targets
     FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME}Targets.cmake"
