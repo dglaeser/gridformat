@@ -501,7 +501,7 @@ class File {
         auto dims = source.getMemSpace().getDimensions();
         MDLayout layout = dims.empty() ? MDLayout{{1}} : MDLayout{std::move(dims)};
         std::vector<Detail::HighFiveDataType<S>> out(layout.number_of_entries());
-        source.read(out.data());
+        source.read_raw(out.data());
         return BufferField<S>(std::move(out), std::move(layout));
     }
 
