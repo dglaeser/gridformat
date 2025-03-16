@@ -47,9 +47,11 @@ runs:
 
     - name: test-readme-cli-snippets
       run: |
-        export PATH=$PATH:$(pwd)/install/bin
-        python3 test/test_readme_cli_snippets.py \
-          -c "-DCMAKE_C_COMPILER=${{inputs.c_compiler}} -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}}"
+        mkdir readme_snippet_test && pushd readme_snippet_test
+          cp ../install/bin/* .
+          export PATH=$PATH:$(pwd)
+          python3 ../test/test_readme_cli_snippets.py \
+            -c "-DCMAKE_C_COMPILER=${{inputs.c_compiler}} -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}}"
       shell: bash
 
     - name: test-installed-pkg

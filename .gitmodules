@@ -3,6 +3,6 @@
 
 [submodule "deps/HighFive"]
 	path = deps/HighFive
-	url = https://github.com/highfive-devs/highfive.git
+	url = https://github.com/dglaeser/highfive.git
     fetchRecurseSubmodules = false
     shallow = true
