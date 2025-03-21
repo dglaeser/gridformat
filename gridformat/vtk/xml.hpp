@@ -535,8 +535,11 @@ namespace XMLDetail {
                 buffer.begin()
             );
             const auto number_of_values_read = std::ranges::distance(buffer.begin(), out);
-            if (number_of_values_read < 0 || static_cast<std::size_t>(number_of_values_read) < expected_num_values)
+            if (number_of_values_read < 0 || static_cast<std::size_t>(number_of_values_read) < expected_num_values) {
+                if (_stream.fail())
+                    throw IOError("A read value could not be converted to type: " + std::string{typeid(TargetType).name()});
                 throw SizeError("Could not read the requested number of values from the stream");
+            }
         }
 
         template<typename Decoder>
