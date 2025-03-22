@@ -11,6 +11,7 @@
 #include <concepts>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/buffer_field.hpp>
@@ -21,60 +22,63 @@ namespace GridFormat {
 /*!
 * \ingroup Adapters
 * \brief Adapter for readers that subdivides polyline cells into collections of segments.
-* \note If you construct this class providing a reference to another reader, the lifetime
-*       of this instance is bound to the lifetime of the provided reader. When a temporary,
-*       is passed to the constructor the adapter takes ownership over the provided reader.
+* \note The adapter takes ownership over the reader provided upon construction.
 */
-template<std::derived_from<GridReader> Reader>
 class PolyLineReaderAdapter : public GridReader {
  public:
-    template<std::convertible_to<Reader> _R>
-    explicit PolyLineReaderAdapter(_R&& reader)
-    : _reader{std::forward<_R>(reader)}
+    template<std::derived_from<GridReader> Reader>
+        requires(not std::is_lvalue_reference_v<Reader>)
+    explicit PolyLineReaderAdapter(Reader&& reader)
+    : _reader{std::make_unique<std::remove_cvref_t<Reader>>(std::move(reader))}
+    {}
+
+    template<std::derived_from<GridReader> Reader>
+    explicit PolyLineReaderAdapter(std::unique_ptr<Reader>&& reader)
+    : _reader{std::move(reader)}
     {}
 
  private:
     void _open(const std::string& filename, typename GridReader::FieldNames& fields) override {
-        _reader.open(filename);
-        std::ranges::copy(point_field_names(_reader), std::back_inserter(fields.point_fields));
-        std::ranges::copy(cell_field_names(_reader), std::back_inserter(fields.cell_fields));
-        std::ranges::copy(meta_data_field_names(_reader), std::back_inserter(fields.meta_data_fields));
+        _reader->open(filename);
+        std::ranges::copy(point_field_names(*_reader), std::back_inserter(fields.point_fields));
+        std::ranges::copy(cell_field_names(*_reader), std::back_inserter(fields.cell_fields));
+        std::ranges::copy(meta_data_field_names(*_reader), std::back_inserter(fields.meta_data_fields));
     }
 
     void _close() override {
-        _reader.close();
+        _reader->close();
     }
 
     std::string _name() const override {
-        return "PolyLineReaderAdapter<" + _reader.name() + ">";
+        return "PolyLineReaderAdapter<" + _reader->name() + ">";
     }
 
     std::size_t _number_of_cells() const override {
         std::size_t result = 0;
-        _reader.visit_cells([&] (CellType ct, const std::vector<std::size_t>& corners) {
+        _reader->visit_cells([&] (CellType ct, const std::vector<std::size_t>& corners) {
             result += ct == CellType::polyline ? corners.size() - 1 : 1;
         });
         return result;
     }
 
     std::size_t _number_of_points() const override {
-        return _reader.number_of_points();
+        return _reader->number_of_points();
     }
 
     std::size_t _number_of_pieces() const override {
-        return _reader.number_of_pieces();
+        return _reader->number_of_pieces();
     }
 
     bool _is_sequence() const override {
-        return _reader.is_sequence();
+        return _reader->is_sequence();
     }
 
     FieldPtr _points() const override {
-        return _reader.points();
+        return _reader->points();
     }
 
     void _visit_cells(const typename GridReader::CellVisitor& visitor) const override {
-        _reader.visit_cells([&] (CellType ct, const std::vector<std::size_t>& corners) {
+        _reader->visit_cells([&] (CellType ct, const std::vector<std::size_t>& corners) {
             if (ct == CellType::polyline) {
                 std::vector<std::size_t> sub_segment_corners(2);
                 for (std::size_t i = 0; i < corners.size() - 1; ++i) {
@@ -89,7 +93,7 @@ class PolyLineReaderAdapter : public GridReader {
     }
 
     FieldPtr _cell_field(std::string_view name) const override {
-        FieldPtr raw_field = _reader.cell_field(name);
+        FieldPtr raw_field = _reader->cell_field(name);
         const auto raw_layout = raw_field->layout();
         const auto raw_data = raw_field->serialized();
         auto adapted_layout = raw_layout.dimension() > 1
@@ -111,7 +115,7 @@ class PolyLineReaderAdapter : public GridReader {
                 );
             };
 
-            _reader.visit_cells([&] (CellType ct, const std::vector<std::size_t>& corners) {
+            _reader->visit_cells([&] (CellType ct, const std::vector<std::size_t>& corners) {
                 if (ct == CellType::polyline) {
                     for (std::size_t i = 0; i < corners.size() - 1; ++i) {
                         copy();
@@ -131,21 +135,15 @@ class PolyLineReaderAdapter : public GridReader {
     }
 
     FieldPtr _point_field(std::string_view name) const override {
-        return _reader.point_field(name);
+        return _reader->point_field(name);
     }
 
     FieldPtr _meta_data_field(std::string_view name) const override {
-        return _reader.meta_data_field(name);
+        return _reader->meta_data_field(name);
     }
 
-    Reader _reader;
+    std::unique_ptr<GridReader> _reader;
 };
-
-template<typename Reader> requires(std::is_lvalue_reference_v<Reader>)
-PolyLineReaderAdapter(Reader&&) -> PolyLineReaderAdapter<Reader>;
-
-template<typename Reader> requires(not std::is_lvalue_reference_v<Reader>)
-PolyLineReaderAdapter(Reader&&) -> PolyLineReaderAdapter<std::remove_cvref_t<Reader>>;
 
 }  // namespace GridFormat
 
