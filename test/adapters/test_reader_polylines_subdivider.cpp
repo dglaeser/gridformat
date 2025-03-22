@@ -6,7 +6,7 @@
 
 #include <gridformat/vtk/vtp_writer.hpp>
 #include <gridformat/vtk/vtp_reader.hpp>
-#include <gridformat/adapters/polyline_reader_adapter.hpp>
+#include <gridformat/adapters/reader_polylines_subdivider.hpp>
 
 #include "../make_test_data.hpp"
 #include "../testing.hpp"
@@ -27,7 +27,7 @@ int main() {
     const auto vtp_filename = write_vtp_file(grid, "test_polyline_adapter_in");
 
     VTPReader reader;
-    PolyLineReaderAdapter adapted_reader{GridFormat::VTPReader{}};
+    auto adapted_reader = ReaderAdapters::PolylinesSubdivider{GridFormat::VTPReader{}};
     reader.open(vtp_filename);
     adapted_reader.open(vtp_filename);
 

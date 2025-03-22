@@ -3,10 +3,10 @@
 /*!
  * \file
  * \ingroup Adapters
- * \copydoc GridFormat::PolyLineReaderAdapter
+ * \copydoc GridFormat::ReaderAdapters::PolylinesSubdivider
  */
-#ifndef GRIDFORMAT_ADAPTER_POLYLINE_READER_ADAPTER_HPP_
-#define GRIDFORMAT_ADAPTER_POLYLINE_READER_ADAPTER_HPP_
+#ifndef GRIDFORMAT_ADAPTERS_READER_SUBDIVIDE_POLYLINES_ADAPTER_HPP_
+#define GRIDFORMAT_ADAPTERS_READER_SUBDIVIDE_POLYLINES_ADAPTER_HPP_
 
 #include <concepts>
 #include <algorithm>
@@ -17,23 +17,23 @@
 #include <gridformat/common/buffer_field.hpp>
 #include <gridformat/grid/reader.hpp>
 
-namespace GridFormat {
+namespace GridFormat::ReaderAdapters {
 
 /*!
-* \ingroup Adapters
-* \brief Adapter for readers that subdivides polyline cells into collections of segments.
-* \note The adapter takes ownership over the reader provided upon construction.
-*/
-class PolyLineReaderAdapter : public GridReader {
+ * \ingroup Adapters
+ * \brief Adapter for readers that subdivides polyline cells into collections of segments.
+ * \note The adapter takes ownership over the reader provided upon construction.
+ */
+class PolylinesSubdivider : public GridReader {
  public:
     template<std::derived_from<GridReader> Reader>
         requires(not std::is_lvalue_reference_v<Reader>)
-    explicit PolyLineReaderAdapter(Reader&& reader)
+    explicit PolylinesSubdivider(Reader&& reader)
     : _reader{std::make_unique<std::remove_cvref_t<Reader>>(std::move(reader))}
     {}
 
     template<std::derived_from<GridReader> Reader>
-    explicit PolyLineReaderAdapter(std::unique_ptr<Reader>&& reader)
+    explicit PolylinesSubdivider(std::unique_ptr<Reader>&& reader)
     : _reader{std::move(reader)}
     {}
 
@@ -145,6 +145,6 @@ class PolyLineReaderAdapter : public GridReader {
     std::unique_ptr<GridReader> _reader;
 };
 
-}  // namespace GridFormat
+}  // namespace GridFormat::ReaderAdapters
 
-#endif  // GRIDFORMAT_ADAPTER_POLYLINE_READER_ADAPTER_HPP_
+#endif  // GRIDFORMAT_ADAPTERS_READER_SUBDIVIDE_POLYLINES_ADAPTER_HPP_
