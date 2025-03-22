@@ -123,6 +123,7 @@ class PolylinesSubdivider : public GridReader {
                     }
                 } else {
                     copy();
+                    adapted_index++;
                 }
                 raw_index++;
             });
