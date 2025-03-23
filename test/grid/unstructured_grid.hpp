@@ -180,6 +180,32 @@ auto make_unstructured_1d(std::optional<int> rank = {}) {
     return UnstructuredGrid<1, space_dim>{std::move(points), std::move(cells)};
 }
 
+template<int space_dim = 1>
+auto make_unstructured_1d_with_polylines(unsigned int number_of_segment_sub_divisions, std::optional<int> rank = {}) {
+    const std::size_t num_cells = 10;
+    const auto dx = 1.0/static_cast<double>(num_cells);
+    const double offset = rank ? static_cast<double>(rank.value()) : 0.0;
+
+    std::vector<Point<space_dim>> points;
+    points.reserve(num_cells*number_of_segment_sub_divisions + 1);
+    for (std::size_t i = 0; i < points.capacity(); ++i)
+        points.emplace_back(Point<space_dim>::make_from_value(offset + dx*static_cast<double>(i), i));
+
+    std::vector<Cell> cells;
+    cells.reserve(num_cells);
+    for (std::size_t i = 0; i < num_cells; ++i) {
+        const auto p0 = i*number_of_segment_sub_divisions;
+        std::vector<std::size_t> corners(number_of_segment_sub_divisions + 1);
+        std::ranges::copy(
+            std::views::iota(p0, p0 + number_of_segment_sub_divisions + 1),
+            corners.begin()
+        );
+        cells.emplace_back(Cell{corners, CellType::segment, i});
+    }
+
+    return UnstructuredGrid<1, space_dim>{std::move(points), std::move(cells), false};
+}
+
 template<int space_dim = 2>
 auto make_unstructured_2d(std::optional<int> rank = {}) {
     static_assert(space_dim == 2 || space_dim == 3);

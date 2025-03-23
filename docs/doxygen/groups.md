@@ -80,3 +80,6 @@
 
 @defgroup PredefinedTraits
 @brief Traits specializations and helper classes for frameworks
+
+@defgroup Adapters
+@brief Adapters around readers/writers for tweaking behaviour

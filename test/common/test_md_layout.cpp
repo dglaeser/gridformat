@@ -47,6 +47,11 @@ int main() {
         expect(eq(layout.number_of_entries(), std::size_t{24}));
     };
 
+    "md_layout_with_sub_layout"_test = [] () {
+        const auto combined = GridFormat::MDLayout{{5}}.with_sub_layout(GridFormat::MDLayout{{2, 3}});
+        expect(combined == GridFormat::MDLayout{{5, 2, 3}});
+    };
+
     "md_layout_with_sub_layout_from"_test = [] () {
         std::vector<std::array<std::array<double, 2>, 4>> tensor(3);
         auto appended = GridFormat::MDLayout{{5}}.with_sub_layout_from(tensor);

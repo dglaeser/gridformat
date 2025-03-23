@@ -150,6 +150,13 @@ class MDLayout {
         return *this;
     }
 
+    MDLayout& with_sub_layout(const MDLayout& layout) {
+        _extents.reserve(_extents.size() + layout.dimension());
+        for (std::size_t i = 0; i < layout.dimension(); ++i)
+            _extents.push_back(layout.extent(i));
+        return *this;
+    }
+
     template<std::ranges::range R>
     void export_to(R&& out) const {
         if (Ranges::size(out) < dimension())
