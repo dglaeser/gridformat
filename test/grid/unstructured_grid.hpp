@@ -195,7 +195,12 @@ auto make_unstructured_1d_with_polylines(unsigned int number_of_segment_sub_divi
     cells.reserve(num_cells);
     for (std::size_t i = 0; i < num_cells; ++i) {
         const auto p0 = i*number_of_segment_sub_divisions;
-        cells.emplace_back(Cell{{p0, p0+1, p0+2}, CellType::segment, i});
+        std::vector<std::size_t> corners(number_of_segment_sub_divisions + 1);
+        std::ranges::copy(
+            std::views::iota(p0, p0 + number_of_segment_sub_divisions + 1),
+            corners.begin()
+        );
+        cells.emplace_back(Cell{corners, CellType::segment, i});
     }
 
     return UnstructuredGrid<1, space_dim>{std::move(points), std::move(cells), false};

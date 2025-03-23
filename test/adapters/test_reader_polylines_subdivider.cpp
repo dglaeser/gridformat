@@ -11,7 +11,7 @@
 #include "../make_test_data.hpp"
 #include "../testing.hpp"
 
-int main() {
+void test(const unsigned int number_of_subdivisions_per_segment) {
     using namespace GridFormat;
     using Testing::operator""_test;
     using Testing::expect;
@@ -22,9 +22,8 @@ int main() {
         return write_test_file<2>(writer, filename);
     };
 
-    const unsigned int number_of_subdivisions_per_segment = 2;
     const auto grid = Test::make_unstructured_1d_with_polylines<2>(number_of_subdivisions_per_segment);
-    const auto vtp_filename = write_vtp_file(grid, "test_polyline_adapter_in");
+    const auto vtp_filename = write_vtp_file(grid, "test_polyline_adapter_subdivisions_" + std::to_string(number_of_subdivisions_per_segment));
 
     VTPReader reader;
     auto adapted_reader = ReaderAdapters::PolylinesSubdivider{GridFormat::VTPReader{}};
@@ -71,7 +70,7 @@ int main() {
             original_field->precision().visit([&] <typename T> (const Precision<T>&) {
                 const auto adapted_field = adapted_reader.cell_field(name);
                 expect(eq(adapted_field->layout().dimension(), original_field->layout().dimension()));
-                expect(eq(adapted_field->layout().extent(0), original_field->layout().extent(0)*2));
+                expect(eq(adapted_field->layout().extent(0), original_field->layout().extent(0)*number_of_subdivisions_per_segment));
                 if (original_field->layout().dimension() > 1)
                     expect(adapted_field->layout().sub_layout(1) == original_field->layout().sub_layout(1));
 
@@ -95,6 +94,10 @@ int main() {
             });
         });
     };
+}
 
+int main() {
+    test(1);
+    test(2);
     return 0;
 }
