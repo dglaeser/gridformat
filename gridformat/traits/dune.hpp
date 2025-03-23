@@ -1023,6 +1023,7 @@ inline constexpr ::Dune::GeometryType to_dune_geometry_type(const CellType& ct) 
         case CellType::tetrahedron: return DGT::tetrahedron;
         case CellType::hexahedron: return DGT::hexahedron;
         case CellType::voxel: return DGT::hexahedron;
+        case CellType::polyline: throw NotImplemented("No conversion from polyline to Dune::GeometryType");
         case CellType::polygon: throw NotImplemented("No conversion from polygon to Dune::GeometryType");
         case CellType::lagrange_segment: throw NotImplemented("Cannot map higher-order cells to Dune::GeometryType");
         case CellType::lagrange_triangle: throw NotImplemented("Cannot map higher-order cells to Dune::GeometryType");

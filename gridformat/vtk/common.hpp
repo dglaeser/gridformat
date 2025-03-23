@@ -78,6 +78,7 @@ inline constexpr std::uint8_t cell_type_number(CellType t) {
     switch (t) {
         case (CellType::vertex): return 1;
         case (CellType::segment): return 3;
+        case (CellType::polyline): return 4;
         case (CellType::triangle): return 5;
         case (CellType::pixel): return 8;
         case (CellType::quadrilateral): return 9;
@@ -99,6 +100,7 @@ inline constexpr CellType cell_type(std::uint8_t vtk_id) {
     switch (vtk_id) {
         case 1: return CellType::vertex;
         case 3: return CellType::segment;
+        case 4: return CellType::polyline;
         case 5: return CellType::triangle;
         case 8: return CellType::pixel;
         case 9: return CellType::quadrilateral;

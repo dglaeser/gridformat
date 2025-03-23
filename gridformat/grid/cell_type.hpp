@@ -23,6 +23,7 @@ enum class CellType {
     triangle,
     pixel,
     quadrilateral,
+    polyline,
     polygon,
 
     tetrahedron,

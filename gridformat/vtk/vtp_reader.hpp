@@ -82,7 +82,7 @@ class VTPReader : public GridReader {
         if (_num_verts > 0)
             _visit_cells("Verts", CellType::vertex, _num_verts, visitor);
         if (_num_lines > 0)
-            _visit_cells("Lines", CellType::segment, _num_lines, visitor);
+            _visit_cells("Lines", CellType::polyline, _num_lines, visitor);
         if (_num_polys > 0)
             _visit_cells("Polys", CellType::polygon, _num_polys, visitor);
     }
@@ -122,10 +122,14 @@ class VTPReader : public GridReader {
                 throw ValueError("Invalid offset array");
             std::copy_n(connectivity.begin() + offset_begin, offset_end - offset_begin, std::back_inserter(corners));
 
+            // look for cell types that allow for a more specific classification
             const CellType ct = cell_type == CellType::polygon ? (
                     corners.size() == 3 ? CellType::triangle
                                         : (corners.size() == 4 ? CellType::quadrilateral : cell_type)
-                ) : cell_type;
+                ) : (cell_type == CellType::polyline ? (
+                    corners.size() == 2 ? CellType::segment
+                                        : cell_type
+                ) : cell_type);
             visitor(ct, corners);
         }
     }
