@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"structGridFormat_1_1WriterOptions.html#a7e206dfd8f927c7ad1ed379b0430cb89":[4,4,16,0],
 "structGridFormat_1_1WriterOptions.html#a95f072273a80a5eb26b56ac708a710c2":[4,4,16,1],
 "vti__reader_8hpp.html":[4,3,25],
 "vti__writer_8hpp.html":[4,3,26],
@@ -16,5 +17,5 @@ var NAVTREEINDEX2 =
 "xml_8hpp.html":[4,3,35],
 "xml__time__series__writer_8hpp.html":[4,3,36],
 "zlib_8hpp.html":[4,2,5],
-"zlib_8hpp.html":[4,6,3]
+"zlib_8hpp.html":[4,7,3]
 };
