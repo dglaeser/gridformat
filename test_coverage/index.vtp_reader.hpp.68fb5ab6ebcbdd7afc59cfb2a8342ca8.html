@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2025-03-14 11:45:50</td>
+      <td>2025-03-23 00:53:18</td>
     </tr>
   </table>
 </div>
@@ -42,8 +42,8 @@
     <tr>
       <th scope="row">Lines:</th>
       <td>63</td>
-      <td>68</td>
-      <td class="coverage-high">92.6%</td>
+      <td>70</td>
+      <td class="coverage-high">90.0%</td>
     </tr>
     <tr>
       <th scope="row">Functions:</th>
@@ -54,8 +54,8 @@
     <tr>
       <th scope="row">Branches:</th>
       <td>50</td>
-      <td>102</td>
-      <td class="coverage-low">49.0%</td>
+      <td>106</td>
+      <td class="coverage-low">47.2%</td>
     </tr>
   </table>
 </div>
@@ -84,7 +84,7 @@
     <tr><td><a href="#l32">GridFormat::VTPReader::_open(std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; const&amp;, GridFormat::GridReader::FieldNames&amp;) (line 32)</a></td><td>called 231 times, returned 231 times</td><td>58.0%</td></tr>
     <tr><td><a href="#l94">GridFormat::VTPReader::_point_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 94)</a></td><td>called 634 times, returned 634 times</td><td>80.0%</td></tr>
     <tr><td><a href="#l77">GridFormat::VTPReader::_points() const (line 77)</a></td><td>called 161 times, returned 161 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l102">GridFormat::VTPReader::_visit_cells(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;, GridFormat::CellType const&amp;, unsigned long, std::function&lt;void (GridFormat::CellType, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; const&amp;)&gt; const&amp;) const (line 102)</a></td><td>called 269 times, returned 269 times</td><td>58.0%</td></tr>
+    <tr><td><a href="#l102">GridFormat::VTPReader::_visit_cells(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;, GridFormat::CellType const&amp;, unsigned long, std::function&lt;void (GridFormat::CellType, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; const&amp;)&gt; const&amp;) const (line 102)</a></td><td>called 269 times, returned 269 times</td><td>54.0%</td></tr>
     <tr><td><a href="#l81">GridFormat::VTPReader::_visit_cells(std::function&lt;void (GridFormat::CellType, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; const&amp;)&gt; const&amp;) const (line 81)</a></td><td>called 269 times, returned 269 times</td><td>42.0%</td></tr>
   </table>
 </details>
@@ -791,7 +791,7 @@
       <td class="linebranch">
       </td>
       <td class="linecount uncoveredLine">&cross;</td>
-      <td class="src uncoveredLine"><span class="w">            </span><span class="n">_visit_cells</span><span class="p">(</span><span class="s">&quot;Lines&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">CellType</span><span class="o">::</span><span class="n">segment</span><span class="p">,</span><span class="w"> </span><span class="n">_num_lines</span><span class="p">,</span><span class="w"> </span><span class="n">visitor</span><span class="p">);</span></td>
+      <td class="src uncoveredLine"><span class="w">            </span><span class="n">_visit_cells</span><span class="p">(</span><span class="s">&quot;Lines&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">CellType</span><span class="o">::</span><span class="n">polyline</span><span class="p">,</span><span class="w"> </span><span class="n">_num_lines</span><span class="p">,</span><span class="w"> </span><span class="n">visitor</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l86" href="#l86">86</a></td>
@@ -1195,6 +1195,13 @@
     <tr class="source-line">
       <td class="lineno"><a id="l125" href="#l125">125</a></td>
       <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">            </span><span class="c1">// look for cell types that allow for a more specific classification</span></td>
+    </tr>
+    <tr class="source-line">
+      <td class="lineno"><a id="l126" href="#l126">126</a></td>
+      <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
@@ -1207,7 +1214,7 @@
       <td class="src partialCoveredLine"><span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="n">CellType</span><span class="w"> </span><span class="n">ct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cell_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CellType</span><span class="o">::</span><span class="n">polygon</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span></td>
     </tr>
     <tr class="source-line">
-      <td class="lineno"><a id="l126" href="#l126">126</a></td>
+      <td class="lineno"><a id="l127" href="#l127">127</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/2</summary>
@@ -1221,7 +1228,7 @@
       <td class="src coveredLine"><span class="w">                    </span><span class="n">corners</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">CellType</span><span class="o">::</span><span class="n">triangle</span></td>
     </tr>
     <tr class="source-line">
-      <td class="lineno"><a id="l127" href="#l127">127</a></td>
+      <td class="lineno"><a id="l128" href="#l128">128</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/2</summary>
@@ -1235,14 +1242,35 @@
       <td class="src coveredLine"><span class="w">                                        </span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="n">corners</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">CellType</span><span class="o">::</span><span class="n">quadrilateral</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">cell_type</span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
-      <td class="lineno"><a id="l128" href="#l128">128</a></td>
+      <td class="lineno"><a id="l129" href="#l129">129</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount uncoveredLine">&cross;</td>
+      <td class="src uncoveredLine"><span class="w">                </span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="n">cell_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CellType</span><span class="o">::</span><span class="n">polyline</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span></td>
+    </tr>
+    <tr class="source-line">
+      <td class="lineno"><a id="l130" href="#l130">130</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount uncoveredLine">&cross;</td>
+      <td class="src uncoveredLine"><span class="w">                    </span><span class="n">corners</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">CellType</span><span class="o">::</span><span class="n">segment</span></td>
+    </tr>
+    <tr class="source-line">
+      <td class="lineno"><a id="l131" href="#l131">131</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">                                        </span><span class="o">:</span><span class="w"> </span><span class="n">cell_type</span></td>
+    </tr>
+    <tr class="source-line">
+      <td class="lineno"><a id="l132" href="#l132">132</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">6132</td>
-      <td class="src coveredLine"><span class="w">                </span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">cell_type</span><span class="p">;</span></td>
+      <td class="src coveredLine"><span class="w">                </span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">cell_type</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
-      <td class="lineno"><a id="l129" href="#l129">129</a></td>
+      <td class="lineno"><a id="l133" href="#l133">133</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
@@ -1256,105 +1284,105 @@
       <td class="src partialCoveredLine"><span class="w">            </span><span class="n">visitor</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span><span class="w"> </span><span class="n">corners</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
-      <td class="lineno"><a id="l130" href="#l130">130</a></td>
+      <td class="lineno"><a id="l134" href="#l134">134</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
       <td class="src "><span class="w">        </span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
-      <td class="lineno"><a id="l131" href="#l131">131</a></td>
+      <td class="lineno"><a id="l135" href="#l135">135</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount coveredLine">269</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
-      <td class="lineno"><a id="l132" href="#l132">132</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "></td>
-    </tr>
-    <tr class="source-line">
-      <td class="lineno"><a id="l133" href="#l133">133</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">VTK</span><span class="o">::</span><span class="n">XMLReaderHelper</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_helper</span><span class="p">;</span></td>
-    </tr>
-    <tr class="source-line">
-      <td class="lineno"><a id="l134" href="#l134">134</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_num_points</span><span class="p">;</span></td>
-    </tr>
-    <tr class="source-line">
-      <td class="lineno"><a id="l135" href="#l135">135</a></td>
-      <td class="linebranch">
-      </td>
-      <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_num_verts</span><span class="p">;</span></td>
-    </tr>
-    <tr class="source-line">
       <td class="lineno"><a id="l136" href="#l136">136</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_num_lines</span><span class="p">;</span></td>
+      <td class="src "></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l137" href="#l137">137</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_num_strips</span><span class="p">;</span></td>
+      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">VTK</span><span class="o">::</span><span class="n">XMLReaderHelper</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_helper</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l138" href="#l138">138</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_num_polys</span><span class="p">;</span></td>
+      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_num_points</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l139" href="#l139">139</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">};</span></td>
+      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_num_verts</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l140" href="#l140">140</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_num_lines</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l141" href="#l141">141</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// namespace GridFormat</span></td>
+      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_num_strips</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l142" href="#l142">142</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "></td>
+      <td class="src "><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_num_polys</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l143" href="#l143">143</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
-      <td class="src "><span class="cp">#endif  </span><span class="c1">// GRIDFORMAT_VTK_VTP_READER_HPP_</span></td>
+      <td class="src "><span class="p">};</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l144" href="#l144">144</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+    <tr class="source-line">
+      <td class="lineno"><a id="l145" href="#l145">145</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="p">}</span><span class="w">  </span><span class="c1">// namespace GridFormat</span></td>
+    </tr>
+    <tr class="source-line">
+      <td class="lineno"><a id="l146" href="#l146">146</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "></td>
+    </tr>
+    <tr class="source-line">
+      <td class="lineno"><a id="l147" href="#l147">147</a></td>
+      <td class="linebranch">
+      </td>
+      <td class="linecount "></td>
+      <td class="src "><span class="cp">#endif  </span><span class="c1">// GRIDFORMAT_VTK_VTP_READER_HPP_</span></td>
+    </tr>
+    <tr class="source-line">
+      <td class="lineno"><a id="l148" href="#l148">148</a></td>
       <td class="linebranch">
       </td>
       <td class="linecount "></td>
