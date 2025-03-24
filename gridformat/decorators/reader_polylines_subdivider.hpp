@@ -5,8 +5,8 @@
  * \ingroup Adapters
  * \copydoc GridFormat::ReaderAdapters::PolylinesSubdivider
  */
-#ifndef GRIDFORMAT_ADAPTERS_READER_SUBDIVIDE_POLYLINES_ADAPTER_HPP_
-#define GRIDFORMAT_ADAPTERS_READER_SUBDIVIDE_POLYLINES_ADAPTER_HPP_
+#ifndef GRIDFORMAT_DECORATORS_READER_SUBDIVIDE_POLYLINES_ADAPTER_HPP_
+#define GRIDFORMAT_DECORATORS_READER_SUBDIVIDE_POLYLINES_ADAPTER_HPP_
 
 #include <concepts>
 #include <algorithm>
@@ -17,7 +17,7 @@
 #include <gridformat/common/buffer_field.hpp>
 #include <gridformat/grid/reader.hpp>
 
-namespace GridFormat::ReaderAdapters {
+namespace GridFormat::ReaderDecorators {
 
 /*!
  * \ingroup Adapters
@@ -146,6 +146,6 @@ class PolylinesSubdivider : public GridReader {
     std::unique_ptr<GridReader> _reader;
 };
 
-}  // namespace GridFormat::ReaderAdapters
+}  // namespace GridFormat::ReaderDecorators
 
-#endif  // GRIDFORMAT_ADAPTERS_READER_SUBDIVIDE_POLYLINES_ADAPTER_HPP_
+#endif  // GRIDFORMAT_DECORATORS_READER_SUBDIVIDE_POLYLINES_ADAPTER_HPP_

@@ -7,7 +7,7 @@
 
 - __Writers__: writers can now take fields whose value type is `bool`, and fields can now also be exported into ranges with `bool` as range value type.
 
-- __Adapters__: added an adapter for readers that exposes polyline cells as subdivided into its individual segments.
+- __Decorators__: added a decorator for readers that exposes polyline cells as subdivided into its individual segments.
 
 # `GridFormat` 0.3.0
 
