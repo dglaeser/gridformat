@@ -11,7 +11,6 @@
 namespace GridFormat {
 
 /*!
- * \file
  * \ingroup Common
  * \brief Helper struct to create an overload set from callables.
  */
