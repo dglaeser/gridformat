@@ -1,12 +1,20 @@
 # SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 # SPDX-License-Identifier: MIT
 
+include(FeatureSummary)
+function (gridformat_register_feature DESCRIPTION VARIABLE DOCSTRING)
+    if (PROJECT_IS_TOP_LEVEL)
+        add_feature_info(${DESCRIPTION} ${VARIABLE} ${DOCSTRING})
+    endif ()
+endfunction ()
+
 find_package(ZLIB)
 if (ZLIB_FOUND)
     target_link_libraries(${PROJECT_NAME} INTERFACE ZLIB::ZLIB)
     target_compile_definitions(${PROJECT_NAME} INTERFACE GRIDFORMAT_HAVE_ZLIB)
     set(GRIDFORMAT_HAVE_ZLIB true)
 endif ()
+gridformat_register_feature("ZLIB compression" GRIDFORMAT_HAVE_ZLIB "writing and reading arrays compressed with ZLIB")
 
 find_package(LZ4)
 if (LZ4_FOUND)
@@ -14,6 +22,7 @@ if (LZ4_FOUND)
     target_compile_definitions(${PROJECT_NAME} INTERFACE GRIDFORMAT_HAVE_LZ4)
     set(GRIDFORMAT_HAVE_LZ4 true)
 endif ()
+gridformat_register_feature("LZ4 compression" GRIDFORMAT_HAVE_LZ4 "writing and reading arrays compressed with LZ4")
 
 find_package(LZMA)
 if (LZMA_FOUND)
@@ -21,6 +30,7 @@ if (LZMA_FOUND)
     target_compile_definitions(${PROJECT_NAME} INTERFACE GRIDFORMAT_HAVE_LZMA)
     set(GRIDFORMAT_HAVE_LZMA true)
 endif ()
+gridformat_register_feature("LZMA compression" GRIDFORMAT_HAVE_LZMA "writing and reading arrays compressed with LZMA")
 
 find_package(MPI COMPONENTS CXX)
 if (MPI_FOUND)
@@ -28,6 +38,7 @@ if (MPI_FOUND)
     target_compile_definitions(${PROJECT_NAME} INTERFACE GRIDFORMAT_HAVE_MPI)
     set(GRIDFORMAT_HAVE_MPI true)
 endif ()
+add_feature_info("Gridformat parallel I/O" GRIDFORMAT_HAVE_MPI "writing and reading with distributed memory parallelism")
 
 option(GRIDFORMAT_BUILD_HIGH_FIVE "Controls whether HighFive should be included in the build" ON)
 set(HDF5_PREFER_PARALLEL true)
@@ -72,22 +83,10 @@ if (HighFive_FOUND OR GRIDFORMAT_HIGHFIVE_SOURCE_INCLUDED)
         set(GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE true)
     endif ()
 endif ()
-
+add_feature_info("Gridformat VTK HDF support" GRIDFORMAT_HAVE_VTK_HDF "writing and reading the VTK HDF file format")
 
 find_package(dune-localfunctions QUIET)
 if (dune-localfunctions_FOUND)
     target_compile_definitions(${PROJECT_NAME} INTERFACE GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS)
     set(GRIDFORMAT_HAVE_DUNE_LOCALFUNCTIONS true)
 endif ()
-
-
-if(PROJECT_IS_TOP_LEVEL)
-    include(FeatureSummary)
-    add_feature_info("Gridformat VTK HDF support" GRIDFORMAT_HAVE_VTK_HDF "writing and reading the VTK HDF file format")
-    set (GRIDFORMAT_HAVE_COMPRESSION_BACKEND false)
-    if (GRIDFORMAT_HAVE_ZLIB OR GRIDFORMAT_HAVE_LZ4 OR GRIDFORMAT_HAVE_LZMA)
-        set(GRIDFORMAT_HAVE_COMPRESSION_BACKEND true)
-    endif ()
-    add_feature_info("Gridformat compression support" GRIDFORMAT_HAVE_COMPRESSION_BACKEND "writing and reading compressed data arrays")
-    add_feature_info("Gridformat parallel I/O" GRIDFORMAT_HAVE_MPI "writing and reading with distributed memory parallelism")
-endif()
