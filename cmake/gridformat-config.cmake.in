@@ -23,7 +23,18 @@ if (@MPI_FOUND@)
     find_dependency(MPI)
 endif ()
 if (@GRIDFORMAT_HAVE_HIGH_FIVE@)
-    find_dependency(HighFive)
+    set(HDF5_PREFER_PARALLEL @HIGHFIVE_PARALLEL_HDF5@)
+    if (GRIDFORMAT_NO_HIGHFIVE_HINTS)
+        find_dependency(HighFive)
+    else ()
+        find_dependency(
+            HighFive
+            HINTS
+                ${CMAKE_CURRENT_LIST_DIR}/../deps/HighFive  # for linking to the build tree
+                @PACKAGE_GRIDFORMAT_INSTALL_CMAKE_DATA_DIR@/../HighFive  # in case HighFive was installed alongside gridformat
+                @HighFive_ROOT@  # in case HighFive Root directory was given
+        )
+    endif ()
 endif ()
 
 include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
