@@ -270,8 +270,8 @@ class XMLWriterBase
                 xml.set_attribute("header_type", attribute_name(DynamicPrecision{header_precision}));
                 if constexpr (!is_none<decltype(compressor)>)
                     xml.set_attribute("compressor", attribute_name(compressor));
+                xml.add_child(vtk_grid_type);
 
-                xml.add_child(vtk_grid_type).add_child("FieldData");
                 WriteContext context{
                     .vtk_grid_type = std::move(vtk_grid_type),
                     .xml_representation = std::move(xml),
@@ -284,14 +284,17 @@ class XMLWriterBase
     }
 
     void _add_meta_data_fields(WriteContext& context) const {
+        const auto& names = this->_meta_data_field_names();
+        if (std::ranges::empty(names))
+            return;
+
         XMLElement& field_data = context.xml_representation
                                     .get_child(context.vtk_grid_type)
-                                    .get_child("FieldData");
+                                    .add_child("FieldData");
         std::visit([&] (const auto& encoder) {
             std::visit([&] (const auto& compressor) {
                 std::visit([&] (const auto& data_format) {
                     std::visit([&] (const auto& header_precision) {
-                        const auto& names = this->_meta_data_field_names();
                         std::ranges::for_each(names, [&] (const std::string& name) {
                             const auto& field = this->_get_meta_data_field(name);
                             const auto layout = field.layout();
