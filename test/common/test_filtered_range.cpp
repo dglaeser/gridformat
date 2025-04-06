@@ -12,6 +12,18 @@ int main() {
     using GridFormat::Testing::operator""_test;
     using GridFormat::Testing::expect;
 
+    "filtered_range_is_viewable_range"_test = [] () {
+        static_assert(std::ranges::viewable_range<
+            GridFormat::FilteredRange<std::vector<int>, decltype([](int){ return true; })>
+        >);
+    };
+
+    "filtered_range_is_forward_range"_test = [] () {
+        static_assert(std::ranges::forward_range<
+            GridFormat::FilteredRange<std::vector<int>, decltype([](int){ return true; })>
+        >);
+    };
+
     "filtered_range_first_true"_test = [] () {
         std::vector<int> v{1, 2, 3, 4, 0, 1, 8, 1};
         const auto filtered = GridFormat::Ranges::filter_by([] (int value) { return value < 3; }, v);
