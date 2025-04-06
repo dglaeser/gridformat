@@ -179,7 +179,7 @@ the specialization of this traits could look like this:
 namespace GridFormat::Traits {
 template<>  // the cell type is `int` in this case, see the Cells trait description
 struct CellType<SomeUnstructuredGrid, int> {
-    static std::ranges::range auto get(const SomeUnstructuredGrid& grid, int cell_index) {
+    static auto get(const SomeUnstructuredGrid& grid, int cell_index) {
         return GridFormat::CellType::tetrahedron; // SomeUnstructuredGrid always only uses tets
     }
 };
