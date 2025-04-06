@@ -118,6 +118,20 @@ class FilteredRange {
     , _pred{std::move(pred)}
     {}
 
+    FilteredRange(FilteredRange&&) noexcept = default;
+    FilteredRange& operator=(FilteredRange&&) noexcept = default;
+
+    FilteredRange(const FilteredRange& other){
+        _range = other._range;
+        _pred = other._pred;
+    }
+
+    FilteredRange& operator=(const FilteredRange& other) {
+        _range = other._range;
+        _pred = other._pred;
+        return *this;
+    }
+
     auto begin() const {
         return FilteredRangeDetail::Iterator{
             std::ranges::begin(_range),
