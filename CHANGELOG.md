@@ -11,6 +11,11 @@
 
 - __Decorators__: added a decorator for readers that exposes polyline cells as subdivided into its individual segments.
 
+## Removed interfaces
+
+- __Common__:
+    - The `FilteredRange` wrapper has been removed since the cell ranges are no longer required to be const-iterable.
+
 # `GridFormat` 0.3.0
 
 ## Features
