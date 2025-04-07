@@ -14,7 +14,7 @@
 ## Removed interfaces
 
 - __Common__:
-    - The `FilteredRange` wrapper has been removed since the cell ranges are not required to be const-iterable anymore.
+    - The `FilteredRange` wrapper has been removed since the cell ranges are no longer required to be const-iterable.
 
 # `GridFormat` 0.3.0
 
