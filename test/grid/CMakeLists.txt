@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
 # SPDX-License-Identifier: MIT
 
+gridformat_add_test(test_filtered_grid test_filtered_grid.cpp)
 gridformat_add_test(test_unstructured_grid test_unstructured_grid.cpp)
 gridformat_add_test(test_grid_writer test_grid_writer.cpp)
 gridformat_add_test(test_grid_reader test_grid_reader.cpp)
