@@ -13,6 +13,7 @@
 #include <utility>
 #include <concepts>
 #include <iterator>
+#include <type_traits>
 
 #include <gridformat/common/iterator_facades.hpp>
 
@@ -111,6 +112,8 @@ template<std::ranges::forward_range R,
          std::invocable<std::ranges::range_reference_t<R>> Predicate>
     requires(std::convertible_to<bool, FilteredRangeDetail::PredicateResult<R, Predicate>>)
 class FilteredRange {
+    static constexpr bool is_const = std::is_const_v<std::remove_reference_t<R>>;
+
  public:
     template<typename _R> requires(std::convertible_to<_R, R>)
     explicit FilteredRange(_R&& range, Predicate&& pred)
@@ -140,7 +143,19 @@ class FilteredRange {
         };
     }
 
+    auto begin() requires(not is_const) {
+        return FilteredRangeDetail::Iterator{
+            std::ranges::begin(_range),
+            std::ranges::end(_range),
+            _pred,
+        };
+    }
+
     auto end() const {
+        return std::default_sentinel_t{};
+    }
+
+    auto end() requires(not is_const) {
         return std::default_sentinel_t{};
     }
 
