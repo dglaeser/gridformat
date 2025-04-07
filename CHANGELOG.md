@@ -5,6 +5,8 @@
 
 ## Features
 
+- __Traits__: cell ranges as defined via the `Cells` trait are no longer required to be const-iterable.
+
 - __Writers__: writers can now take fields whose value type is `bool`, and fields can now also be exported into ranges with `bool` as range value type.
 
 - __Decorators__: added a decorator for readers that exposes polyline cells as subdivided into its individual segments.

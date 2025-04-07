@@ -15,11 +15,12 @@
 #include <functional>
 
 #include <gridformat/common/ranges.hpp>
-#include <gridformat/common/filtered_range.hpp>
 #include <gridformat/common/field_storage.hpp>
 #include <gridformat/common/lvalue_reference.hpp>
 
 #include <gridformat/grid/grid.hpp>
+#include <gridformat/grid/filtered.hpp>
+
 #include <gridformat/vtk/common.hpp>
 #include <gridformat/vtk/xml.hpp>
 
@@ -77,16 +78,22 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
     }
 
     void _write(std::ostream& s) const override {
-        auto verts_range = _get_cell_range(Detail::CellTypesPredicate{this->grid(), zero_d_types});
-        auto lines_range = _get_cell_range(Detail::CellTypesPredicate{this->grid(), one_d_types});
-        auto polys_range = _get_cell_range(Detail::CellTypesPredicate{this->grid(), two_d_types});
-        auto unsupported_range = _get_cell_range(
+        FilteredGrid verts{this->grid(), Detail::CellTypesPredicate{this->grid(), zero_d_types}};
+        FilteredGrid lines{this->grid(), Detail::CellTypesPredicate{this->grid(), one_d_types}};
+        FilteredGrid polys{this->grid(), Detail::CellTypesPredicate{this->grid(), two_d_types}};
+        FilteredGrid unsupported{
+            this->grid(),
             [p=Detail::CellTypesPredicate{
                 this->grid(), Ranges::merged(Ranges::merged(zero_d_types, one_d_types), two_d_types)
             }] (const Cell<Grid>& cell) {
                 return !p(cell);
             }
-        );
+        };
+
+        auto verts_range = cells(verts);
+        auto lines_range = cells(lines);
+        auto polys_range = cells(polys);
+        auto unsupported_range = cells(unsupported);
 
         if (Ranges::size(unsupported_range) > 0)
             this->_log_warning("Grid contains cell types not supported by .vtp; These will be ignored.");
@@ -130,40 +137,35 @@ class VTPWriter : public VTK::XMLWriterBase<Grid, VTPWriter<Grid>> {
         this->_set_data_array(context, "Piece/Points", "Coordinates", *coords_field);
 
         const auto point_id_map = make_point_id_map(this->grid());
-        const auto verts_connectivity_field = _make_connectivity_field(verts_range, point_id_map);
-        const auto verts_offsets_field = _make_offsets_field(verts_range);
+        const auto verts_connectivity_field = _make_connectivity_field(verts, point_id_map);
+        const auto verts_offsets_field = _make_offsets_field(verts);
         this->_set_data_array(context, "Piece/Verts", "connectivity", *verts_connectivity_field);
         this->_set_data_array(context, "Piece/Verts", "offsets", *verts_offsets_field);
 
-        const auto lines_connectivity_field = _make_connectivity_field(lines_range, point_id_map);
-        const auto lines_offsets_field = _make_offsets_field(lines_range);
+        const auto lines_connectivity_field = _make_connectivity_field(lines, point_id_map);
+        const auto lines_offsets_field = _make_offsets_field(lines);
         this->_set_data_array(context, "Piece/Lines", "connectivity", *lines_connectivity_field);
         this->_set_data_array(context, "Piece/Lines", "offsets", *lines_offsets_field);
 
-        const auto polys_connectivity_field = _make_connectivity_field(polys_range, point_id_map);
-        const auto polys_offsets_field = _make_offsets_field(polys_range);
+        const auto polys_connectivity_field = _make_connectivity_field(polys, point_id_map);
+        const auto polys_offsets_field = _make_offsets_field(polys);
         this->_set_data_array(context, "Piece/Polys", "connectivity", *polys_connectivity_field);
         this->_set_data_array(context, "Piece/Polys", "offsets", *polys_offsets_field);
 
         this->_write_xml(std::move(context), s);
     }
 
-    template<typename Predicate>
-    std::ranges::forward_range auto _get_cell_range(Predicate&& pred) const {
-        return Ranges::filter_by(std::forward<Predicate>(pred), cells(this->grid()));
-    }
-
-    template<typename CellsRange, typename PointMap>
-    FieldPtr _make_connectivity_field(CellsRange&& cells, const PointMap& point_id_map) const {
+    template<typename G, typename PointMap>
+    FieldPtr _make_connectivity_field(G&& grid, const PointMap& point_id_map) const {
         return std::visit([&] <typename T> (const Precision<T>&) {
-            return VTK::make_connectivity_field<T>(this->grid(), cells, point_id_map);
+            return VTK::make_connectivity_field<T>(grid, point_id_map);
         }, this->_xml_settings.header_precision);
     }
 
-    template<typename CellsRange>
-    FieldPtr _make_offsets_field(CellsRange&& cells) const {
+    template<typename G>
+    FieldPtr _make_offsets_field(G&& grid) const {
         return std::visit([&] <typename T> (const Precision<T>&) {
-            return VTK::make_offsets_field<T>(this->grid(), cells);
+            return VTK::make_offsets_field<T>(grid);
         }, this->_xml_settings.header_precision);
     }
 };
