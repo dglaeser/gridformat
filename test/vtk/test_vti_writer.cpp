@@ -18,6 +18,23 @@ void _test(Grid&& grid, std::string suffix = "") {
 }
 
 int main() {
+    for (std::size_t nx : {2, 3}) {
+        const auto base_suffix = std::to_string(nx);
+            _test(
+                GridFormat::Test::StructuredGrid<1>{{{1.0}}, {{nx}}},
+                base_suffix
+            );
+
+            _test(
+                GridFormat::Test::StructuredGrid<1>{{{1.0}}, {{nx}}, {{1.0}}},
+                base_suffix + "_shifted"
+            );
+
+            GridFormat::Test::StructuredGrid<1> inverted{{{1.0}}, {{nx}}, {{1.0}}};
+            inverted.invert();
+            _test(std::move(inverted), base_suffix + "_inverted");
+    }
+
     for (std::size_t nx : {2})
         for (std::size_t ny : {2, 3}) {
             const auto base_suffix = std::to_string(nx) + "_" + std::to_string(ny);

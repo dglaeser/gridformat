@@ -35,7 +35,7 @@ namespace Detail {
 
 template<int dim>
 class StructuredGrid {
-    static_assert(dim == 2 || dim == 3);
+    static_assert(dim > 0 and dim <= 3);
 
     enum EntityTag { cell, point };
 
@@ -65,7 +65,12 @@ class StructuredGrid {
         // memory-inefficient, but let's precompute all cells & points
         _cells.reserve(number_of_cells());
         _points.reserve(number_of_points());
-        if constexpr (dim == 2) {
+        if constexpr (dim == 1) {
+            for (std::size_t i = 0; i < number_of_cells(0); ++i)
+                _cells.emplace_back(Cell{.position = {i}});
+            for (std::size_t i = 0; i < number_of_points(0); ++i)
+                _points.emplace_back(Point{.position = {i}});
+        } else if constexpr (dim == 2) {
             for (std::size_t j = 0; j < number_of_cells(1); ++j)
                 for (std::size_t i = 0; i < number_of_cells(0); ++i)
                     _cells.emplace_back(Cell{.position = {i, j}});
@@ -106,8 +111,10 @@ class StructuredGrid {
             const auto incremented = [] (auto pos, int dir) { pos[dir]++; return pos; };
             std::vector point_ids{cell_pos};
             point_ids.push_back(incremented(cell_pos, 0));
-            point_ids.push_back(incremented(incremented(cell_pos, 0), 1));
-            point_ids.push_back(incremented(cell_pos, 1));
+            if constexpr (dim == 2) {
+                point_ids.push_back(incremented(incremented(cell_pos, 0), 1));
+                point_ids.push_back(incremented(cell_pos, 1));
+            }
             if constexpr (dim == 3) {
                 point_ids.push_back(incremented(cell_pos, 2));
                 point_ids.push_back(incremented(incremented(cell_pos, 0), 2));
@@ -115,7 +122,7 @@ class StructuredGrid {
                 point_ids.push_back(incremented(incremented(cell_pos, 1), 2));
             }
 
-            _cell_corner_indices[cell.id].resize(dim == 2 ? 4 : 8);
+            _cell_corner_indices[cell.id].resize(std::pow(2, dim));
             for (std::size_t point_index = 0; point_index < number_of_points(); ++point_index) {
                 const auto& p = _points[point_index];
                 const auto is_equal = [&] (const auto& pos) { return std::ranges::equal(pos, p.position); };
