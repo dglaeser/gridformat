@@ -18,7 +18,6 @@
 #include <mfem/mesh/mesh.hpp>
 
 #include <gridformat/common/exceptions.hpp>
-#include <gridformat/common/filtered_range.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
