@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup Adapters
- * \copydoc GridFormat::ReaderAdapters::PolylinesSubdivider
+ * \copydoc GridFormat::ReaderDecorators::PolylinesSubdivider
  */
 #ifndef GRIDFORMAT_DECORATORS_READER_SUBDIVIDE_POLYLINES_ADAPTER_HPP_
 #define GRIDFORMAT_DECORATORS_READER_SUBDIVIDE_POLYLINES_ADAPTER_HPP_
