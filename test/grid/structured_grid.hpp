@@ -122,7 +122,7 @@ class StructuredGrid {
                 point_ids.push_back(incremented(incremented(cell_pos, 1), 2));
             }
 
-            _cell_corner_indices[cell.id].resize(std::pow(2, dim));
+            _cell_corner_indices[cell.id].resize(1 << dim);
             for (std::size_t point_index = 0; point_index < number_of_points(); ++point_index) {
                 const auto& p = _points[point_index];
                 const auto is_equal = [&] (const auto& pos) { return std::ranges::equal(pos, p.position); };
