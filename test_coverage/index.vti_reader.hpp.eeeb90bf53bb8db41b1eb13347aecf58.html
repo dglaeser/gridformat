@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2025-04-06 21:50:20</td>
+      <td>2025-04-07 11:20:33</td>
     </tr>
   </table>
 </div>
@@ -80,7 +80,7 @@
     <tr><td><a href="#l97">GridFormat::VTIReader::_location() const (line 97)</a></td><td>called 314 times, returned 314 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l154">GridFormat::VTIReader::_meta_data_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 154)</a></td><td>called 54 times, returned 54 times</td><td>88.0%</td></tr>
     <tr><td><a href="#l64">GridFormat::VTIReader::_name[abi:cxx11]() const (line 64)</a></td><td>called 1 time, returned 1 time</td><td>78.0%</td></tr>
-    <tr><td><a href="#l68">GridFormat::VTIReader::_number_of_cells() const (line 68)</a></td><td>called 1543 times, returned 1543 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l68">GridFormat::VTIReader::_number_of_cells() const (line 68)</a></td><td>called 1659 times, returned 1659 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l76">GridFormat::VTIReader::_number_of_pieces() const (line 76)</a></td><td>called 7 times, returned 7 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l72">GridFormat::VTIReader::_number_of_points() const (line 72)</a></td><td>called 1544 times, returned 1544 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l44">GridFormat::VTIReader::_open(std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; const&amp;, GridFormat::GridReader::FieldNames&amp;) (line 44)</a></td><td>called 300 times, returned 300 times</td><td>58.0%</td></tr>
@@ -92,7 +92,7 @@
     <tr><td><a href="#l124">GridFormat::VTIReader::_points() const (line 124)</a></td><td>called 217 times, returned 217 times</td><td>54.0%</td></tr>
     <tr><td><a href="#l131">GridFormat::VTIReader::_points() const::{lambda(int const&amp;)#1}::operator()(int const&amp;) const (line 131)</a></td><td>called 217 times, returned 217 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l84">GridFormat::VTIReader::_spacing() const (line 84)</a></td><td>called 13 times, returned 13 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l166">GridFormat::VTIReader::_specs() const (line 166)</a></td><td>called 4250 times, returned 4250 times</td><td>50.0%</td></tr>
+    <tr><td><a href="#l166">GridFormat::VTIReader::_specs() const (line 166)</a></td><td>called 4366 times, returned 4366 times</td><td>50.0%</td></tr>
     <tr><td><a href="#l142">GridFormat::VTIReader::_visit_cells(std::function&lt;void (GridFormat::CellType, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; const&amp;)&gt; const&amp;) const (line 142)</a></td><td>called 321 times, returned 321 times</td><td>100.0%</td></tr>
   </table>
 </details>
@@ -655,14 +655,14 @@
       <td class="lineno"><a id="l68" href="#l68">68</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1543</td>
+      <td class="linecount coveredLine">1659</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">_number_of_cells</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l69" href="#l69">69</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1543</td>
+      <td class="linecount coveredLine">1659</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">VTK</span><span class="o">::</span><span class="n">CommonDetail</span><span class="o">::</span><span class="n">number_of_entities</span><span class="p">(</span><span class="n">_specs</span><span class="p">().</span><span class="n">extents</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -1451,7 +1451,7 @@
       <td class="lineno"><a id="l166" href="#l166">166</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4250</td>
+      <td class="linecount coveredLine">4366</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">ImageSpecs</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_specs</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -1461,11 +1461,11 @@
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
           <div class="notTakenBranch">&cross; Branch 1 not taken.</div>
-          <div class="takenBranch">&check; Branch 2 taken 4250 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 4366 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">4250</td>
+      <td class="linecount partialCoveredLine">4366</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">_image_specs</span><span class="p">.</span><span class="n">has_value</span><span class="p">())</span></td>
     </tr>
     <tr class="source-line">
@@ -1479,7 +1479,7 @@
       <td class="lineno"><a id="l169" href="#l169">169</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4250</td>
+      <td class="linecount coveredLine">4366</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_image_specs</span><span class="p">.</span><span class="n">value</span><span class="p">();</span></td>
     </tr>
     <tr class="source-line">
