@@ -20,7 +20,7 @@
 #include <deal.II/distributed/fully_distributed_tria.h>
 
 #include <gridformat/common/exceptions.hpp>
-#include <gridformat/common/filtered_range.hpp>
+#include <gridformat/common/iterator_facades.hpp>
 
 #include <gridformat/grid/cell_type.hpp>
 #include <gridformat/grid/traits.hpp>
@@ -167,12 +167,12 @@ template<typename T> requires(DealII::is_triangulation<T>)
 struct Cells<T> {
     static std::ranges::range auto get(const T& grid) {
         if constexpr (DealII::is_parallel_triangulation<T>)
-            return Ranges::filter_by(
-                [] (const auto& cell) { return cell.is_locally_owned(); },
+            return std::views::filter(
                 std::ranges::subrange(
                     DealII::ForwardIteratorWrapper{grid.begin_active()},
                     DealII::ForwardIteratorWrapper{grid.end()}
-                )
+                ),
+                [] (const auto& cell) { return cell.is_locally_owned(); }
             );
         else
             return std::ranges::subrange(
