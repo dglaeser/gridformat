@@ -147,24 +147,16 @@ auto make_coordinates_field(const Grid& grid, bool structured_grid_ordering) {
     });
 }
 
-template<typename HeaderType = std::size_t,
-         Concepts::UnstructuredGrid Grid,
-         std::ranges::forward_range Cells,
-         typename PointMap>
+template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid, typename PointMap>
     requires(std::is_lvalue_reference_v<PointMap>)
-auto make_connectivity_field(const Grid& grid,
-                             Cells&& cells,
-                             PointMap&& map) {
+auto make_connectivity_field(const Grid& grid, PointMap&& map) {
     class ConnectivityField : public Field {
      public:
-        explicit ConnectivityField(const Grid& g,
-                                   Cells&& cells,
-                                   PointMap&& map)
+        explicit ConnectivityField(const Grid& g, PointMap&& map)
         : _grid(g)
-        , _cells{std::forward<Cells>(cells)}
         , _point_map{std::forward<PointMap>(map)} {
             _num_values = 0;
-            std::ranges::for_each(_cells, [&] (const auto& cell) {
+            std::ranges::for_each(cells(g), [&] (const auto& cell) {
                 _num_values += number_of_points(_grid, cell);
             });
         }
@@ -177,7 +169,7 @@ auto make_connectivity_field(const Grid& grid,
             HeaderType* data = serialization.as_span_of<HeaderType>().data();
 
             std::size_t i = 0;
-            std::ranges::for_each(_cells, [&] (const auto& cell) {
+            std::ranges::for_each(cells(_grid), [&] (const auto& cell) {
                 std::ranges::for_each(points(_grid, cell), [&] (const auto& point) {
                     data[i] = _point_map.at(id(_grid, point));
                     i++;
@@ -187,31 +179,20 @@ auto make_connectivity_field(const Grid& grid,
         }
 
         const Grid& _grid;
-        LVReferenceOrValue<Cells> _cells;
         LVReferenceOrValue<PointMap> _point_map;
         HeaderType _num_values;
-    } _field{grid, std::forward<Cells>(cells), std::forward<PointMap>(map)};
+    } _field{grid, std::forward<PointMap>(map)};
 
     return make_vtk_field(std::move(_field));
 }
 
-template<typename HeaderType = std::size_t,
-         Concepts::UnstructuredGrid Grid,
-         typename PointMap>
-auto make_connectivity_field(const Grid& grid, PointMap&& map) {
-    return make_connectivity_field<HeaderType>(grid, cells(grid), std::forward<PointMap>(map));
-}
-
-template<typename HeaderType = std::size_t,
-         Concepts::UnstructuredGrid Grid,
-         std::ranges::range Cells>
-auto make_offsets_field(const Grid& grid, Cells&& cells) {
+template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
+auto make_offsets_field(const Grid& grid) {
     class OffsetField : public Field {
      public:
-        explicit OffsetField(const Grid& g, Cells&& cells)
+        explicit OffsetField(const Grid& g)
         : _grid(g)
-        , _cells{std::forward<Cells>(cells)}
-        , _num_cells{static_cast<HeaderType>(Ranges::size(_cells))}
+        , _num_cells{static_cast<HeaderType>(Ranges::size(cells(g)))}
         {}
 
      private:
@@ -223,7 +204,7 @@ auto make_offsets_field(const Grid& grid, Cells&& cells) {
 
             std::size_t i = 0;
             HeaderType offset = 0;
-            std::ranges::for_each(_cells, [&] (const auto& cell) {
+            std::ranges::for_each(cells(_grid), [&] (const auto& cell) {
                 offset += number_of_points(_grid, cell);
                 data[i] = offset;
                 i++;
@@ -232,16 +213,10 @@ auto make_offsets_field(const Grid& grid, Cells&& cells) {
         }
 
         const Grid& _grid;
-        LVReferenceOrValue<Cells> _cells;
         HeaderType _num_cells;
-    } _field{grid, std::forward<Cells>(cells)};
+    } _field{grid};
 
     return make_vtk_field(std::move(_field));
-}
-
-template<typename HeaderType = std::size_t, Concepts::UnstructuredGrid Grid>
-auto make_offsets_field(const Grid& grid) {
-    return make_offsets_field<HeaderType>(grid, cells(grid));
 }
 
 template<Concepts::UnstructuredGrid Grid>
