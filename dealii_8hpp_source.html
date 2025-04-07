@@ -131,7 +131,7 @@ $(document).ready(function(){initNavTree('dealii_8hpp_source.html',''); initResi
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;deal.II/distributed/fully_distributed_tria.h&gt;</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;gridformat/common/exceptions.hpp&gt;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;gridformat/common/filtered_range.hpp&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;gridformat/common/iterator_facades.hpp&gt;</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;gridformat/grid/cell_type.hpp&gt;</span></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;gridformat/grid/traits.hpp&gt;</span></div>
@@ -278,12 +278,12 @@ $(document).ready(function(){initNavTree('dealii_8hpp_source.html',''); initResi
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="structGridFormat_1_1Traits_1_1Cells_3_01T_01_4.html">  167</a></span><span class="keyword">struct</span> Cells&lt;T&gt; {</div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keyword">static</span> std::ranges::range <span class="keyword">auto</span> get(<span class="keyword">const</span> T&amp; grid) {</div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (DealII::is_parallel_triangulation&lt;T&gt;)</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            <span class="keywordflow">return</span> Ranges::filter_by(</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                [] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; cell) { <span class="keywordflow">return</span> cell.is_locally_owned(); },</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                std::ranges::subrange(</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                    DealII::ForwardIteratorWrapper{grid.begin_active()},</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                    DealII::ForwardIteratorWrapper{grid.end()}</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                )</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            <span class="keywordflow">return</span> std::views::filter(</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                std::ranges::subrange(</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                    DealII::ForwardIteratorWrapper{grid.begin_active()},</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                    DealII::ForwardIteratorWrapper{grid.end()}</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                ),</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                [] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; cell) { <span class="keywordflow">return</span> cell.is_locally_owned(); }</div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            );</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            <span class="keywordflow">return</span> std::ranges::subrange(</div>
