@@ -30,8 +30,8 @@ keywords:
   - grid file I/O
   - mesh file I/O
 license: MIT
-version: 0.4.0
-date-released: '2024-11-20'
+version: 0.5.0
+date-released: '2025-04-08'
 identifiers:
   - description: Collection of archived snapshots of all versions
     type: doi
