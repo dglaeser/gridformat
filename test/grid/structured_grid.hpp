@@ -111,7 +111,7 @@ class StructuredGrid {
             const auto incremented = [] (auto pos, int dir) { pos[dir]++; return pos; };
             std::vector point_ids{cell_pos};
             point_ids.push_back(incremented(cell_pos, 0));
-            if constexpr (dim == 2) {
+            if constexpr (dim > 1) {
                 point_ids.push_back(incremented(incremented(cell_pos, 0), 1));
                 point_ids.push_back(incremented(cell_pos, 1));
             }
