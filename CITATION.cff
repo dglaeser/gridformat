@@ -31,7 +31,7 @@ keywords:
   - mesh file I/O
 license: MIT
 version: 0.4.0
-date-released: '2024-11-20'
+date-released: '2025-04-08'
 identifiers:
   - description: Collection of archived snapshots of all versions
     type: doi
