@@ -94,8 +94,8 @@ class ImageGrid {
     ImageGrid(std::array<CoordinateType, dim> origin,
               std::array<CoordinateType, dim> size,
               std::array<std::size_t, dim> cells)
-    : _lower_right{std::move(origin)}
-    , _upper_right{Ranges::apply_pairwise<CoordinateType>(std::plus{}, _lower_right, size)}
+    : _lower_left{std::move(origin)}
+    , _upper_right{Ranges::apply_pairwise<CoordinateType>(std::plus{}, _lower_left, size)}
     , _spacing{_compute_spacing(cells)}
     , _cell_index_tuples{MDLayout{cells}}
     , _point_index_tuples{MDLayout{Ranges::incremented(cells, 1)}}
@@ -109,7 +109,7 @@ class ImageGrid {
     std::size_t number_of_points() const { return _point_index_tuples.size(); }
     std::size_t number_of_cells(unsigned int direction) const { return _cell_index_tuples.size(direction); }
     std::size_t number_of_points(unsigned int direction) const { return _point_index_tuples.size(direction); }
-    const auto& origin() const { return _lower_right; }
+    const auto& origin() const { return _lower_left; }
     const auto& spacing() const { return _spacing; }
 
     //! Return an array containing the number of cells in all directions
@@ -187,14 +187,14 @@ class ImageGrid {
 
  private:
     CoordinateType _ordinate_at(std::size_t i, int direction) const {
-        return _lower_right[direction] + _spacing[direction]*static_cast<CoordinateType>(i);
+        return _lower_left[direction] + _spacing[direction]*static_cast<CoordinateType>(i);
     }
 
     template<Concepts::StaticallySizedMDRange<1> Cells>
     auto _compute_spacing(Cells&& cells) const {
         return Ranges::apply_pairwise(
             std::divides{},
-            Ranges::apply_pairwise(std::minus{}, _upper_right, _lower_right),
+            Ranges::apply_pairwise(std::minus{}, _upper_right, _lower_left),
             cells
         );
     }
@@ -209,7 +209,7 @@ class ImageGrid {
         return result;
     }
 
-    std::array<CoordinateType, dim> _lower_right;
+    std::array<CoordinateType, dim> _lower_left;
     std::array<CoordinateType, dim> _upper_right;
     std::array<CoordinateType, dim> _spacing;
     MDIndexRange _cell_index_tuples;

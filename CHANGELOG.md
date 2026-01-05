@@ -1,6 +1,8 @@
 <!--SPDX-FileCopyrightText: 2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>-->
 <!--SPDX-License-Identifier: MIT-->
 
+# `GridFormat` 0.5.0
+
 # `GridFormat` 0.4.0
 
 ## Features
