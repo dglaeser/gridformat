@@ -11,7 +11,7 @@ import os
 PACKAGES = {
     "cgal": "5.2.2",
     "dolfinx": "0.6.0",
-    "dune": "2.9",
+    "dune": "2.10",
     "mfem": "4.5.2",
     "doxygen": "Release_1_9_6"
 }
