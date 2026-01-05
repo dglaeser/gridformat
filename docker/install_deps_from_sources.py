@@ -94,6 +94,7 @@ def _install_pkg(name, opts: dict) -> None:
         _clone_sources("https://gitlab.dune-project.org/core/dune-istl.git", f"releases/{PACKAGES['dune']}")
         _clone_sources("https://gitlab.dune-project.org/extensions/dune-alugrid.git", f"releases/{PACKAGES['dune']}")
         _clone_sources("https://gitlab.dune-project.org/staging/dune-typetree.git", f"releases/{PACKAGES['dune']}")
+        _clone_sources("https://gitlab.dune-project.org/staging/dune-uggrid.git", f"releases/{PACKAGES['dune']}")
         _clone_sources("https://gitlab.dune-project.org/staging/dune-functions.git", f"releases/{PACKAGES['dune']}")
         subprocess.run(["dune-common/bin/dunecontrol", "--opts=dune.opts", "configure"], check=True)
         subprocess.run(["dune-common/bin/dunecontrol", "--opts=dune.opts", "make", "-j4"], check=True)
