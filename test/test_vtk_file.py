@@ -63,7 +63,7 @@ def _get_grid_and_space_dimension(filename: str) -> Tuple[int, int]:
     return int(dim), int(space_dim)
 
 
-def _check_vtk_file(vtk_reader,
+def _check_vtk_file(vtk_grid,
                     points,
                     space_dim,
                     reference_function: Callable[[list], float],
@@ -72,9 +72,8 @@ def _check_vtk_file(vtk_reader,
     rel_tol = 1e-5
     abs_tol = 1e-3
 
-    output = vtk_reader.GetOutput()
     if not skip_metadata:
-        field_data = output.GetFieldData()
+        field_data = vtk_grid.GetFieldData()
         expected_field_data = ["literal", "string", "numbers"]
         for i in range(field_data.GetNumberOfArrays()):
             name = field_data.GetAbstractArray(i).GetName()
@@ -92,12 +91,12 @@ def _check_vtk_file(vtk_reader,
             reference_function.set_time(time_value)
 
     # precompute cell centers
-    num_cells = output.GetNumberOfCells()
+    num_cells = vtk_grid.GetNumberOfCells()
     points = array(points)
     cell_centers = ndarray(shape=(num_cells, 3))
     for cell_id in range(num_cells):
         ids = vtk.vtkIdList()
-        output.GetCellPoints(cell_id, ids)
+        vtk_grid.GetCellPoints(cell_id, ids)
         corner_indices = [ids.GetId(_i) for _i in range(ids.GetNumberOfIds())]
         cell_centers[cell_id] = np_sum(points[corner_indices], axis=0)
         cell_centers[cell_id] /= float(ids.GetNumberOfIds())
@@ -115,7 +114,7 @@ def _check_vtk_file(vtk_reader,
                 else:
                     assert isclose(0.0, value[comp], rel_tol=rel_tol, abs_tol=abs_tol)
 
-    point_data = output.GetPointData()
+    point_data = vtk_grid.GetPointData()
     for i in range(point_data.GetNumberOfArrays()):
         name = point_data.GetArrayName(i)
         arr = point_data.GetArray(i)
@@ -125,7 +124,7 @@ def _check_vtk_file(vtk_reader,
             point_id = 0
             for cell_id in range(num_cells):
                 ids = vtk.vtkIdList()
-                output.GetCellPoints(cell_id, ids)
+                vtk_grid.GetCellPoints(cell_id, ids)
                 for _ in range(ids.GetNumberOfIds()):
                     assert isclose(arr.GetTuple(point_id)[0], float(cell_id))
                     point_id += 1
@@ -133,7 +132,7 @@ def _check_vtk_file(vtk_reader,
             for i in range(arr.GetNumberOfTuples()):
                 _compare_data_array(arr, lambda i: points[i])
 
-    cell_data = output.GetCellData()
+    cell_data = vtk_grid.GetCellData()
     for i in range(cell_data.GetNumberOfArrays()):
         name = cell_data.GetArrayName(i)
         arr = cell_data.GetArray(i)
@@ -154,8 +153,30 @@ def _read_pvd_pieces(filename: str) -> List[_TimeStep]:
 
 
 def _test_vtk(filename: str, skip_metadata: bool, reference_function: Callable[[list], float]):
+    def _grid(reader):
+        return reader.GetOutput()
+
+    def _merged_partitioned_grid(reader):
+        output = reader.GetOutput()
+        merged = vtk.vtkAppendFilter()
+        iter = output.NewIterator()
+        iter.InitTraversal()
+        while not iter.IsDoneWithTraversal():
+            dataset = iter.GetCurrentDataObject()
+            if dataset:
+                merged.AddInputData(dataset)
+            iter.GoToNextItem()
+        merged.Update()
+        merged_grid = merged.GetOutput()
+        merged_grid.GetFieldData().PassData(reader.GetOutput().GetFieldData())
+        return merged_grid
+
     def _get_points_from_grid(reader):
         points = reader.GetOutput().GetPoints()
+        return array([points.GetPoint(i) for i in range(points.GetNumberOfPoints())])
+
+    def _get_points_from_partioned_grid(reader):
+        points = _merged_partitioned_grid(reader).GetPoints()
         return array([points.GetPoint(i) for i in range(points.GetNumberOfPoints())])
 
     def _get_rectilinear_points(reader):
@@ -164,6 +185,7 @@ def _test_vtk(filename: str, skip_metadata: bool, reference_function: Callable[[
 
     e = VTKErrorObserver()
     ext = splitext(filename)[1]
+    get_grid = _grid
     if ext == ".vtu":
         reader = vtk.vtkXMLUnstructuredGridReader()
         point_collector = _get_points_from_grid
@@ -199,7 +221,8 @@ def _test_vtk(filename: str, skip_metadata: bool, reference_function: Callable[[
         point_collector = _get_rectilinear_points
     elif ext == ".hdf" and "unstructured" in filename:
         reader = vtk.vtkHDFReader()
-        point_collector = _get_points_from_grid
+        point_collector = _get_points_from_partioned_grid
+        get_grid = _merged_partitioned_grid
     else:
         raise NotImplementedError(f"Could not determine suitable reader {filename}")
     reader.AddObserver("ErrorEvent", e)
@@ -210,7 +233,7 @@ def _test_vtk(filename: str, skip_metadata: bool, reference_function: Callable[[
 
     _, space_dim = _get_grid_and_space_dimension(filename)
     is_discontinuous = "discontinuous" in filename
-    _check_vtk_file(reader, point_collector(reader), space_dim, reference_function, skip_metadata, is_discontinuous)
+    _check_vtk_file(get_grid(reader), point_collector(reader), space_dim, reference_function, skip_metadata, is_discontinuous)
 
 
 def test(filename: str, skip_metadata: bool = False) -> int | None:

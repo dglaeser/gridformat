@@ -167,18 +167,26 @@ class Field {
     void _export_to(R& range,
                     std::span<const T> data,
                     std::size_t& offset) const {
-        if constexpr (mdrange_dimension<R> > 1)
+        if constexpr (mdrange_dimension<R> > 1) {
             std::ranges::for_each(range, [&] (std::ranges::range auto& sub_range) {
                 _export_to(sub_range, data, offset);
             });
-        else
-            std::ranges::for_each_n(
-                std::ranges::begin(range),
-                std::min(Ranges::size(range), data.size() - offset),
-                [&] (std::ranges::range_reference_t<R> value) {
-                    value = static_cast<std::ranges::range_value_t<R>>(data[offset++]);
-                }
+        } else {
+            // Note: std::vector<bool> breaks the use of `std::ranges::copy` or similar,
+            //       and seems to only work with recent compilers and/or c++23. Therefore, we
+            //       use `std::copy` here, which actually may break for some range iterators?
+            auto converted_data = data | std::views::drop(offset)
+                                       | std::views::take(std::min(Ranges::size(range), data.size() - offset))
+                                       | std::views::transform([] (const T& value) {
+                                            return static_cast<std::ranges::range_value_t<R>>(value);
+                                        });
+            std::copy(
+                std::ranges::begin(converted_data),
+                std::ranges::end(converted_data),
+                std::ranges::begin(range)
             );
+            offset += Ranges::size(converted_data);
+        }
     }
 };
 
