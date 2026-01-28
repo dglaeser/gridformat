@@ -172,9 +172,8 @@ class Field {
                 _export_to(sub_range, data, offset);
             });
         } else {
-            // Note: std::vector<bool> breaks the use of `std::ranges::copy` or similar,
-            //       and seems to only work with recent compilers and/or c++23. Therefore, we
-            //       use `std::copy` here, which actually may break for some range iterators?
+            // Note: if the span is over a std::vector<bool>, the use of `std::ranges::copy` or similar broke here.
+            //       It seems to work with more recent compilers and/or c++23, though. We use `std::copy` as a workaround.
             auto converted_data = data | std::views::drop(offset)
                                        | std::views::take(std::min(Ranges::size(range), data.size() - offset))
                                        | std::views::transform([] (const T& value) {
