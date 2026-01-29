@@ -260,34 +260,41 @@ $(document).ready(function(){initNavTree('field_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordtype">void</span> _export_to(R&amp; range,</div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                    std::span&lt;const T&gt; data,</div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                    std::size_t&amp; offset)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (mdrange_dimension&lt;R&gt; &gt; 1)</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (mdrange_dimension&lt;R&gt; &gt; 1) {</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>            std::ranges::for_each(range, [&amp;] (std::ranges::range <span class="keyword">auto</span>&amp; sub_range) {</div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                _export_to(sub_range, data, offset);</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            });</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            std::ranges::for_each_n(</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                std::ranges::begin(range),</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>                std::min(Ranges::size(range), data.size() - offset),</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>                [&amp;] (std::ranges::range_reference_t&lt;R&gt; value) {</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>                    value = static_cast&lt;std::ranges::range_value_t&lt;R&gt;&gt;(data[offset++]);</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                }</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            );</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    }</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>};</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">  186</a></span><span class="keyword">using </span><a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> = std::shared_ptr&lt;const Field&gt;;</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> F&gt; <span class="keyword">requires</span>(</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    std::derived_from&lt;std::remove_cvref_t&lt;F&gt;, <a class="code hl_class" href="classGridFormat_1_1Field.html">Field</a>&gt; and</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    !std::is_lvalue_reference_v&lt;F&gt;)</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="group__Common.html#ga1534902c178a406df403a52223f04e63">  192</a></span><a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> <a class="code hl_function" href="group__Common.html#ga1534902c178a406df403a52223f04e63">make_field_ptr</a>(F&amp;&amp; f) {</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordflow">return</span> std::make_shared&lt;std::add_const_t&lt;F&gt;&gt;(std::forward&lt;F&gt;(f));</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>}</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>}  <span class="comment">// namespace GridFormat</span></div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_COMMON_FIELD_HPP_</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            <span class="comment">// Note: if the span is over a std::vector&lt;bool&gt;, the use of `std::ranges::copy` or similar broke here.</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            <span class="comment">//       It seems to work with more recent compilers and/or c++23, though. We use `std::copy` as a workaround.</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            <span class="keyword">auto</span> converted_data = data | std::views::drop(offset)</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>                                       | std::views::take(std::min(Ranges::size(range), data.size() - offset))</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>                                       | std::views::transform([] (<span class="keyword">const</span> T&amp; value) {</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                                            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::ranges::range_value_t&lt;R&gt;<span class="keyword">&gt;</span>(value);</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                                        });</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            std::copy(</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                std::ranges::begin(converted_data),</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                std::ranges::end(converted_data),</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                std::ranges::begin(range)</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            );</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>            offset += Ranges::size(converted_data);</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        }</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    }</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>};</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno"><a class="line" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">  193</a></span><span class="keyword">using </span><a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> = std::shared_ptr&lt;const Field&gt;;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> F&gt; <span class="keyword">requires</span>(</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    std::derived_from&lt;std::remove_cvref_t&lt;F&gt;, <a class="code hl_class" href="classGridFormat_1_1Field.html">Field</a>&gt; and</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    !std::is_lvalue_reference_v&lt;F&gt;)</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno"><a class="line" href="group__Common.html#ga1534902c178a406df403a52223f04e63">  199</a></span><a class="code hl_typedef" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a> <a class="code hl_function" href="group__Common.html#ga1534902c178a406df403a52223f04e63">make_field_ptr</a>(F&amp;&amp; f) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordflow">return</span> std::make_shared&lt;std::add_const_t&lt;F&gt;&gt;(std::forward&lt;F&gt;(f));</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>}</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>}  <span class="comment">// namespace GridFormat</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_COMMON_FIELD_HPP_</span></div>
 <div class="ttc" id="aclassGridFormat_1_1Field_html"><div class="ttname"><a href="classGridFormat_1_1Field.html">GridFormat::Field</a></div><div class="ttdoc">Abstract interface for fields of values that is used by writers/readers to store fields.</div><div class="ttdef"><b>Definition:</b> field.hpp:37</div></div>
 <div class="ttc" id="aclassGridFormat_1_1Field_html_a161225921d96c38b76238ed6a3923222"><div class="ttname"><a href="classGridFormat_1_1Field.html#a161225921d96c38b76238ed6a3923222">GridFormat::Field::size_in_bytes</a></div><div class="ttdeci">std::size_t size_in_bytes() const</div><div class="ttdoc">Return the size of all field values in serialized form.</div><div class="ttdef"><b>Definition:</b> field.hpp:61</div></div>
 <div class="ttc" id="aclassGridFormat_1_1Field_html_a2b34eccd6c8428dfe4d6ddb1cb43d6a9"><div class="ttname"><a href="classGridFormat_1_1Field.html#a2b34eccd6c8428dfe4d6ddb1cb43d6a9">GridFormat::Field::export_to</a></div><div class="ttdeci">decltype(auto) export_to(R &amp;&amp;output_range) const</div><div class="ttdoc">Export the field values into the provided range, resize if necessary, and return it.</div><div class="ttdef"><b>Definition:</b> field.hpp:84</div></div>
@@ -299,8 +306,8 @@ $(document).ready(function(){initNavTree('field_8hpp_source.html',''); initResiz
 <div class="ttc" id="aclassGridFormat_1_1Field_html_a8bdc25262af605a6ef04b2c929d73e97"><div class="ttname"><a href="classGridFormat_1_1Field.html#a8bdc25262af605a6ef04b2c929d73e97">GridFormat::Field::export_to</a></div><div class="ttdeci">decltype(auto) export_to(R &amp;&amp;output_range, DisableResize) const</div><div class="ttdoc">Export the field values into the provided range without resizing (given range must be large enough)</div><div class="ttdef"><b>Definition:</b> field.hpp:90</div></div>
 <div class="ttc" id="aclassGridFormat_1_1Field_html_abab5bc70a8636b2b35cfc5488007c776"><div class="ttname"><a href="classGridFormat_1_1Field.html#abab5bc70a8636b2b35cfc5488007c776">GridFormat::Field::precision</a></div><div class="ttdeci">DynamicPrecision precision() const</div><div class="ttdoc">Return the precision of the scalar field values.</div><div class="ttdef"><b>Definition:</b> field.hpp:56</div></div>
 <div class="ttc" id="aclassGridFormat_1_1Field_html_aed55911e5c401caa00f6e5cfc9f3796c"><div class="ttname"><a href="classGridFormat_1_1Field.html#aed55911e5c401caa00f6e5cfc9f3796c">GridFormat::Field::layout</a></div><div class="ttdeci">MDLayout layout() const</div><div class="ttdoc">Return the layout of this field.</div><div class="ttdef"><b>Definition:</b> field.hpp:51</div></div>
-<div class="ttc" id="agroup__Common_html_ga06474c8fd20c465d2ea250e7749f68b9"><div class="ttname"><a href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">GridFormat::FieldPtr</a></div><div class="ttdeci">std::shared_ptr&lt; const Field &gt; FieldPtr</div><div class="ttdoc">Pointer type used by writers/readers for fields.</div><div class="ttdef"><b>Definition:</b> field.hpp:186</div></div>
-<div class="ttc" id="agroup__Common_html_ga1534902c178a406df403a52223f04e63"><div class="ttname"><a href="group__Common.html#ga1534902c178a406df403a52223f04e63">GridFormat::make_field_ptr</a></div><div class="ttdeci">FieldPtr make_field_ptr(F &amp;&amp;f)</div><div class="ttdoc">Factory function for field pointers.</div><div class="ttdef"><b>Definition:</b> field.hpp:192</div></div>
+<div class="ttc" id="agroup__Common_html_ga06474c8fd20c465d2ea250e7749f68b9"><div class="ttname"><a href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">GridFormat::FieldPtr</a></div><div class="ttdeci">std::shared_ptr&lt; const Field &gt; FieldPtr</div><div class="ttdoc">Pointer type used by writers/readers for fields.</div><div class="ttdef"><b>Definition:</b> field.hpp:193</div></div>
+<div class="ttc" id="agroup__Common_html_ga1534902c178a406df403a52223f04e63"><div class="ttname"><a href="group__Common.html#ga1534902c178a406df403a52223f04e63">GridFormat::make_field_ptr</a></div><div class="ttdeci">FieldPtr make_field_ptr(F &amp;&amp;f)</div><div class="ttdoc">Factory function for field pointers.</div><div class="ttdef"><b>Definition:</b> field.hpp:199</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- SPDX-FileCopyrightText: 2022-2023 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de> -->
