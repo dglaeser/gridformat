@@ -3,6 +3,15 @@
 
 # `GridFormat` 0.5.0
 
+## Fixes
+
+- Some compiler versions raised errors because of the way `Field` instances exported data to `vector<bool>` using `std::ranges`.
+Newer compilers seem to be ok with the code, but nevertheless, it was rewritten to work also with compilers that didn't swallow the old code.
+
+## Features
+
+- The regression tests now run against a newer version of `vtk`, namely `v9.5.2`.
+
 # `GridFormat` 0.4.0
 
 ## Features
