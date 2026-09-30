@@ -217,6 +217,7 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
 
     void _write_meta_data(HDF5File& file) const {
         std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
             const auto field_ptr = this->_get_meta_data_field_ptr(name);
             const bool as_string = VTKHDF::is_string_field(*field_ptr);
             if constexpr (is_transient) {
@@ -244,6 +245,7 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
 
     void _write_point_fields(HDF5File& file, const IOContext& context) const {
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
             if constexpr (is_transient)
                 _write_step_offset(
                     file,
@@ -257,6 +259,7 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
 
     void _write_cell_fields(HDF5File& file, const IOContext& context) const {
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
             if constexpr (is_transient)
                 _write_step_offset(
                     file,

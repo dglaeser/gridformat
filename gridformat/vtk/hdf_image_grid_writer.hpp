@@ -166,6 +166,7 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         file.write_attribute("ImageData", "/VTKHDF/Type");
 
         std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
             auto field_ptr = this->_get_meta_data_field_ptr(name);
             const bool as_string = VTKHDF::is_string_field(*field_ptr);
             if constexpr (is_transient) {
@@ -198,6 +199,7 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         );
 
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
             auto field_ptr = _reshape(
                 VTK::make_vtk_field(this->_get_point_field_ptr(name)),
                 Ranges::incremented(non_zero_extents, 1) | std::views::reverse,
@@ -207,6 +209,7 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         });
 
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
             auto field_ptr = _reshape(
                 VTK::make_vtk_field(this->_get_cell_field_ptr(name)),
                 non_zero_extents | std::views::reverse,

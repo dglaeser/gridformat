@@ -96,6 +96,14 @@ struct IOContext {
     }
 };
 
+//! Throw if the given name cannot be used as a vtk-hdf array name
+inline void check_array_name(const std::string& name) {
+    if (name.empty())
+        throw ValueError("VTKHDF array names must not be empty");
+    if (name.find_first_of("/.") != std::string::npos)
+        throw ValueError("VTKHDF array names must not contain '/' or '.' (received '" + name + "')");
+}
+
 //! Return true if the given field holds a single string (i.e. is a flat array of characters).
 //! Multi-dimensional character fields are not treated as strings, since the number of strings
 //! per time step is not expressible in the offsets that transient files store.
