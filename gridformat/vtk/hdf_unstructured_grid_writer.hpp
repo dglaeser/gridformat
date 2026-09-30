@@ -217,6 +217,8 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
 
     void _write_meta_data(HDF5File& file) const {
         std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
+            const auto field_ptr = this->_get_meta_data_field_ptr(name);
+            const bool as_string = VTKHDF::is_string_field(*field_ptr);
             if constexpr (is_transient) {
                 if (this->_step_count > 0 && _transient_opts.static_meta_data) {
                     file.write(std::array{0}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
@@ -224,11 +226,18 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
                 } else {
                     file.write(std::array{this->_step_count}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
                 }
-                // For transient data, prepend a dimension indicating the step count
-                TransformedField sub{this->_get_meta_data_field_ptr(name), FieldTransformation::as_sub_field};
-                file.write(sub, "/VTKHDF/FieldData/" + name);
+                // Strings occupy a single entry per step, other fields get a prepended step dimension
+                if (as_string)
+                    file.write_strings({VTKHDF::extract_string(*field_ptr)}, "/VTKHDF/FieldData/" + name);
+                else {
+                    TransformedField sub{field_ptr, FieldTransformation::as_sub_field};
+                    file.write(sub, "/VTKHDF/FieldData/" + name);
+                }
             } else {
-                file.write(*this->_get_meta_data_field_ptr(name), "/VTKHDF/FieldData/" + name);
+                if (as_string)
+                    file.write_strings({VTKHDF::extract_string(*field_ptr)}, "/VTKHDF/FieldData/" + name);
+                else
+                    file.write(*field_ptr, "/VTKHDF/FieldData/" + name);
             }
         });
     }

@@ -15,6 +15,8 @@
 #include <string>
 
 #include <gridformat/common/hdf5.hpp>
+#include <gridformat/common/field.hpp>
+#include <gridformat/common/precision.hpp>
 #include <gridformat/common/lazy_field.hpp>
 #include <gridformat/common/string_conversion.hpp>
 
@@ -93,6 +95,23 @@ struct IOContext {
         return std::accumulate(in.begin(), std::next(in.begin(), my_rank), std::size_t{0});
     }
 };
+
+//! Return true if the given field holds a single string (i.e. is a flat array of characters).
+//! Multi-dimensional character fields are not treated as strings, since the number of strings
+//! per time step is not expressible in the offsets that transient files store.
+inline bool is_string_field(const Field& field) {
+    return field.precision().template is<char>() && field.layout().dimension() == 1;
+}
+
+//! Return the string stored in the given character field, stripped of trailing null terminators
+inline std::string extract_string(const Field& field) {
+    const auto serialization = field.serialized();
+    const auto characters = serialization.template as_span_of<const char>();
+    std::string result{characters.begin(), characters.end()};
+    while (!result.empty() && result.back() == '\0')
+        result.pop_back();
+    return result;
+}
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE
 

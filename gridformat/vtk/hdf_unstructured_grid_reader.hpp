@@ -19,6 +19,7 @@
 #include <cassert>
 
 #include <gridformat/common/field.hpp>
+#include <gridformat/common/range_field.hpp>
 #include <gridformat/common/field_transformations.hpp>
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/exceptions.hpp>
@@ -365,6 +366,15 @@ class VTKHDFUnstructuredGridReader : public GridReader {
 
     FieldPtr _meta_data_field(std::string_view name) const override {
         const auto path = "VTKHDF/FieldData/" + std::string{name};
+        if (_file.value().is_string_dataset(path)) {
+            // in transient files, the entries of a string dataset are the individual time steps
+            const auto dims = _file.value().get_dimensions(path).value();
+            if (!_is_transient() && (dims.size() != 1 || dims.at(0) != 1))
+                throw ValueError("Cannot read string data arrays with more than one tuple");
+            return make_field_ptr(RangeField{
+                _file.value().read_string_at(path, _get_field_data_offset(name))
+            });
+        }
         const auto dims = _file.value().get_dimensions(path).value();
         if (dims.size() == 1)
             return make_field_ptr(VTKHDF::DataSetField{_file.value(), path});

@@ -166,6 +166,8 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         file.write_attribute("ImageData", "/VTKHDF/Type");
 
         std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
+            auto field_ptr = this->_get_meta_data_field_ptr(name);
+            const bool as_string = VTKHDF::is_string_field(*field_ptr);
             if constexpr (is_transient) {
                 if (this->_step_count > 0 && _transient_opts.static_meta_data) {
                     file.write(std::array{0}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
@@ -173,12 +175,18 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
                 } else {
                     file.write(std::array{this->_step_count}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
                 }
-                auto field_ptr = this->_get_meta_data_field_ptr(name);
-                auto sub = make_field_ptr(TransformedField{field_ptr, FieldTransformation::as_sub_field});
-                _write_field(file, sub, "/VTKHDF/FieldData/" + name, _slice_from(sub));
+                // Strings occupy a single entry per step, other fields get a prepended step dimension
+                if (as_string)
+                    file.write_strings({VTKHDF::extract_string(*field_ptr)}, "/VTKHDF/FieldData/" + name);
+                else {
+                    auto sub = make_field_ptr(TransformedField{field_ptr, FieldTransformation::as_sub_field});
+                    _write_field(file, sub, "/VTKHDF/FieldData/" + name, _slice_from(sub));
+                }
             } else {
-                auto field_ptr = this->_get_meta_data_field_ptr(name);
-                _write_field(file, field_ptr, "/VTKHDF/FieldData/" + name, _slice_from(field_ptr));
+                if (as_string)
+                    file.write_strings({VTKHDF::extract_string(*field_ptr)}, "/VTKHDF/FieldData/" + name);
+                else
+                    _write_field(file, field_ptr, "/VTKHDF/FieldData/" + name, _slice_from(field_ptr));
             }
 
         });
