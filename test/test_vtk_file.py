@@ -63,6 +63,20 @@ def _get_grid_and_space_dimension(filename: str) -> Tuple[int, int]:
     return int(dim), int(space_dim)
 
 
+def _check_string_field_data(field_data, name: str, expected: str) -> None:
+    """Check that string metadata is read back as a vtkStringArray holding the expected value."""
+    array = field_data.GetAbstractArray(name)
+    if not isinstance(array, vtk.vtkStringArray):
+        raise RuntimeError(
+            f"Expected the metadata '{name}' to be read as a vtkStringArray, but got a "
+            f"{type(array).__name__}. Note that reading string field data from VTKHDF files "
+            "requires VTK 9.4 or newer."
+        )
+    assert array.GetNumberOfValues() == 1, f"Expected a single string in '{name}'"
+    assert array.GetValue(0) == expected, f"Expected '{expected}' in '{name}', got '{array.GetValue(0)}'"
+    print(f"Read '{name}' as a vtkStringArray with value '{expected}'")
+
+
 def _check_vtk_file(vtk_grid,
                     points,
                     space_dim,
@@ -83,6 +97,8 @@ def _check_vtk_file(vtk_grid,
             raise RuntimeError(f"Did not find the following metadata: {expected_field_data}")
         else:
             print("Found all expected field data")
+        _check_string_field_data(field_data, "literal", "some_literal_text")
+        _check_string_field_data(field_data, "string", "some_string_text")
         if field_data.GetArray("TimeValue") is not None:
             assert field_data.GetArray("TimeValue").GetNumberOfTuples() == 1
             assert field_data.GetArray("TimeValue").GetNumberOfComponents() == 1
@@ -242,6 +258,8 @@ def _test_vtk(filename: str, skip_metadata: bool, reference_function: Callable[[
 def test(filename: str, skip_metadata: bool = False) -> int | None:
     if not HAVE_VTK:
         return 42
+    # string field data in VTKHDF files requires VTK 9.4 or newer to be read as vtkStringArray
+    print(f"Testing with VTK {vtk.vtkVersion.GetVTKVersion()}")
 
     ext = splitext(filename)[1]
     if ext == ".pvd":

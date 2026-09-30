@@ -51,6 +51,12 @@ gridformat_add_regression_test_if(
     "reader_vtk_hdf_unstructured_test*hdf"
 )
 
+gridformat_add_test_if(
+    GRIDFORMAT_HAVE_HIGH_FIVE
+    test_vtk_hdf_string_meta_data
+    test_vtk_hdf_string_meta_data.cpp
+)
+
 gridformat_add_parallel_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_parallel_unstructured_grid_reader
