@@ -167,9 +167,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acbd9e6bb48fef0a01c96cee9a82545fa"><td class="memItemLeft" align="right" valign="top"><a id="acbd9e6bb48fef0a01c96cee9a82545fa" name="acbd9e6bb48fef0a01c96cee9a82545fa"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>GridWriterBase</b> (const Grid &amp;grid, std::optional&lt; <a class="el" href="structGridFormat_1_1WriterOptions.html">WriterOptions</a> &gt; opts)</td></tr>
 <tr class="separator:acbd9e6bb48fef0a01c96cee9a82545fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1dc079c56805c64f5950056ad350d969"><td class="memTemplParams" colspan="2"><a id="a1dc079c56805c64f5950056ad350d969" name="a1dc079c56805c64f5950056ad350d969"></a>
-template&lt;std::ranges::range R&gt; </td></tr>
-<tr class="memitem:a1dc079c56805c64f5950056ad350d969"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_meta_data</b> (const std::string &amp;name, R &amp;&amp;range)</td></tr>
+<tr class="memitem:a1dc079c56805c64f5950056ad350d969"><td class="memTemplParams" colspan="2">template&lt;std::ranges::range R&gt; </td></tr>
+<tr class="memitem:a1dc079c56805c64f5950056ad350d969"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classGridFormat_1_1GridWriterBase.html#a1dc079c56805c64f5950056ad350d969">set_meta_data</a> (const std::string &amp;name, R &amp;&amp;range)</td></tr>
 <tr class="separator:a1dc079c56805c64f5950056ad350d969"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05421b84538b7459b5e50ff49c1070ca"><td class="memItemLeft" align="right" valign="top"><a id="a05421b84538b7459b5e50ff49c1070ca" name="a05421b84538b7459b5e50ff49c1070ca"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_meta_data</b> (const std::string &amp;name, std::string text)</td></tr>
@@ -294,6 +293,50 @@ Concepts::RangeOf&lt; std::pair&lt; std::string, FieldPtr &gt; &gt; auto&#160;</
 Concepts::RangeOf&lt; std::pair&lt; std::string, FieldPtr &gt; &gt; auto&#160;</td><td class="memItemRight" valign="bottom"><b>meta_data_fields</b> (const <a class="el" href="classGridFormat_1_1GridWriterBase.html">GridWriterBase</a> &amp;writer)</td></tr>
 <tr class="separator:ae713b5d74676cd35aa30ceb0c5c18c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1dc079c56805c64f5950056ad350d969" name="a1dc079c56805c64f5950056ad350d969"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dc079c56805c64f5950056ad350d969">&#9670;&#160;</a></span>set_meta_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename G &gt; </div>
+<div class="memtemplate">
+template&lt;std::ranges::range R&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classGridFormat_1_1GridWriterBase.html">GridFormat::GridWriterBase</a>&lt; G &gt;::set_meta_data </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">R &amp;&amp;&#160;</td>
+          <td class="paramname"><em>range</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set the meta data with the given name from the values in the given range. </p><dl class="section note"><dt>Note</dt><dd>The VTK formats write ranges of <code>char</code> as strings, which is lossy for values that contain zeros. </dd>
+<dd>
+In parallel writes, meta data is typically assumed to be the same on all ranks. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/__w/gridformat/gridformat/gridformat/grid/<a class="el" href="grid_2writer_8hpp_source.html">writer.hpp</a></li>
 </ul>
