@@ -362,31 +362,6 @@ class File {
         return _visit_data(std::forward<Visitor>(visitor), _file.getGroup(group).getAttribute(name));
     }
 
-    //! Return true if the dataset at the given path stores strings
-    bool is_string_dataset(const std::string& path) const {
-        if (!has_dataset_at(path))
-            return false;
-        const auto [group, name] = Detail::split_group(path);
-        const auto type = _file.getGroup(group).getDataSet(name).getDataType();
-        return type.isVariableStr() || type.isFixedLenStr();
-    }
-
-    //! Read the string stored at the given index of the dataset with the given path
-    std::string read_string_at(const std::string& path, const std::size_t index = 0) const {
-        if (!is_string_dataset(path))
-            throw ValueError("Given data set '" + path + "' does not contain strings");
-        const auto [group, name] = Detail::split_group(path);
-        auto dataset = _file.getGroup(group).getDataSet(name);
-        std::vector<std::string> values;
-        if (dataset.getSpace().getNumberDimensions() == 0)
-            dataset.read(values);
-        else
-            dataset.select({index}, {1}).read(values);
-        if (values.size() != 1)
-            throw SizeError("Unexpected string array size");
-        return std::move(values[0]);
-    }
-
     //! Get the dimensions of a dataset; returns null optional if it doesn't exist.
     std::optional<std::vector<std::size_t>> get_dimensions(const std::string& path) const {
         if (has_dataset_at(path)) {
