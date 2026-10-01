@@ -14,6 +14,8 @@
 #include <concepts>
 #include <ranges>
 #include <cstdint>
+#include <string>
+#include <vector>
 
 #ifdef GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 #pragma GCC diagnostic push
@@ -142,6 +144,29 @@ struct AsciiString : public HighFive::DataType {
     }
 };
 
+//! Variable-length string data type, storing one string per dataspace entry.
+//! This is the layout that VTK uses for string arrays in VTKHDF files.
+struct VariableLengthString : public HighFive::DataType {
+    explicit VariableLengthString(bool ascii = true) {
+        _hid = H5Tcopy(H5T_C_S1);
+        if (H5Tset_size(_hid, H5T_VARIABLE) < 0) {
+            HighFive::HDF5ErrMapper::ToException<HighFive::DataTypeException>(
+                "Unable to define a variable-length string datatype"
+            );
+        }
+        H5Tset_cset(_hid, ascii ? H5T_CSET_ASCII : H5T_CSET_UTF8);
+    }
+
+    //! Return a type that can represent the given strings (ascii-encoded if possible, utf-8 otherwise)
+    static VariableLengthString from(const std::vector<std::string>& values) {
+        return VariableLengthString{std::ranges::all_of(values, [] (const std::string& value) {
+            return std::ranges::all_of(value, [] (char c) {
+                return static_cast<unsigned char>(c) < 128;
+            });
+        })};
+    }
+};
+
 /*!
  * \ingroup Common
  * \brief Helper class for I/O from HDF5 files.
@@ -226,6 +251,25 @@ class File {
         } else {
             _write_to(dataset, values, _slice);
         }
+        _file.flush();
+    }
+
+    /*!
+     * \brief Write the given strings into the dataset with the given path.
+     * \details The dataset is written as a one-dimensional array of variable-length strings,
+     *          holding one string per entry. This is the layout that VTK uses for string arrays.
+     *          In append mode, the given strings are appended to an existing dataset.
+     */
+    void write_strings(const std::vector<std::string>& values, const std::string& path) {
+        _check_writable();
+        const auto [group_name, ds_name] = Detail::split_group(path);
+        auto group = _get_group(group_name);
+        auto [offset, dataset] = _prepare_dataset(
+            group, ds_name, HighFive::DataSpace{values.size()}, VariableLengthString::from(values)
+        );
+        // strings are not distributed over the ranks, write them only once to avoid clashes
+        if (Parallel::size(_comm) <= 1 || Parallel::rank(_comm) == 0)
+            dataset.select({offset}, {values.size()}).write(values);
         _file.flush();
     }
 
@@ -317,6 +361,31 @@ class File {
         return _visit_data(std::forward<Visitor>(visitor), _file.getGroup(group).getAttribute(name));
     }
 
+    //! Return true if the dataset at the given path stores strings
+    bool is_string_dataset(const std::string& path) const {
+        if (!has_dataset_at(path))
+            return false;
+        const auto [group, name] = Detail::split_group(path);
+        const auto type = _file.getGroup(group).getDataSet(name).getDataType();
+        return type.isVariableStr() || type.isFixedLenStr();
+    }
+
+    //! Read the string stored at the given index of the dataset with the given path
+    std::string read_string_at(const std::string& path, const std::size_t index = 0) const {
+        if (!is_string_dataset(path))
+            throw ValueError("Given data set '" + path + "' does not contain strings");
+        const auto [group, name] = Detail::split_group(path);
+        auto dataset = _file.getGroup(group).getDataSet(name);
+        std::vector<std::string> values;
+        if (dataset.getSpace().getNumberDimensions() == 0)
+            dataset.read(values);
+        else
+            dataset.select({index}, {1}).read(values);
+        if (values.size() != 1)
+            throw SizeError("Unexpected string array size");
+        return std::move(values[0]);
+    }
+
     //! Get the dimensions of a dataset; returns null optional if it doesn't exist.
     std::optional<std::vector<std::size_t>> get_dimensions(const std::string& path) const {
         if (has_dataset_at(path)) {
@@ -392,8 +461,15 @@ class File {
     auto _prepare_dataset(HighFive::Group& group,
                           const std::string& name,
                           const HighFive::DataSpace& space) {
+        return _prepare_dataset(group, name, space, HighFive::create_datatype<T>());
+    }
+
+    std::pair<std::size_t, HighFive::DataSet> _prepare_dataset(HighFive::Group& group,
+                                                               const std::string& name,
+                                                               const HighFive::DataSpace& space,
+                                                               const HighFive::DataType& type) {
         if (_mode == overwrite)
-            return std::make_pair(std::size_t{0}, group.createDataSet(name, space, HighFive::create_datatype<T>()));
+            return std::make_pair(std::size_t{0}, group.createDataSet(name, space, type));
         else if (_mode == append) {
             if (group.exist(name)) {
                 auto dataset = group.getDataSet(name);
@@ -431,7 +507,7 @@ class File {
                 props.add(HighFive::Chunking(chunk_dimensions));
                 return std::make_pair(
                     std::size_t{0},
-                    group.createDataSet(name, out_space, HighFive::create_datatype<T>(), props)
+                    group.createDataSet(name, out_space, type, props)
                 );
             }
         } else {
@@ -460,7 +536,7 @@ class File {
     template<typename Visitor, typename Source>
     decltype(auto) _visit_data(Visitor&& visitor, const Source& source) const {
         const auto datatype = source.getDataType();
-        if (datatype.isFixedLenStr()) {
+        if (datatype.isFixedLenStr() || datatype.isVariableStr()) {
             std::vector<std::string> pre_out;
             source.read(pre_out);
             if (pre_out.size() > 1 or pre_out.size() == 0)
