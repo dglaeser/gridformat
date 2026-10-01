@@ -10,6 +10,26 @@ Newer compilers seem to be ok with the code, but nevertheless, it was rewritten 
 
 ## Features
 
+- __VTKHDF__: string meta data is now written as a dataset of variable-length strings instead of an array of ascii
+codes with a trailing null terminator. `VTK`/`ParaView` read such datasets as `vtkStringArray` and show the text in
+the information panel, whereas the previous layout showed up as a numeric char array. This brings the `VTKHDF` writers
+in line with the `VTK-XML` ones, which have always written string meta data as `String` data arrays. Note that reading
+string meta data from `VTKHDF` files requires `VTK` 9.4 or newer; use one of the `VTK-XML` formats if you need to
+support older readers. Numeric field data is written exactly as before.
+
+- __VTKHDF__: as a consequence of the above, meta data fields whose value type is `char` now end up as strings rather
+than as arrays of ascii codes. This is how the `VTK-XML` formats have always treated them, but it is a change for
+`VTKHDF`, and it is lossy for `char` fields that hold numbers instead of text: trailing zeros are dropped, and a zero
+in the middle truncates the value, since variable-length strings in `hdf5` are null-terminated. Give such fields an
+explicit integer precision to keep them numeric.
+
+- __VTKHDF__: the readers now raise an error when reading field data that holds more than one string, instead of
+silently returning only the first one. Both the `VTKHDF` and the `VTK-XML` formats can represent an arbitrary number of
+strings per array, but `GridFormat` currently supports only a single one.
+
+- __VTKHDF__: the writers now reject field names containing `/` or `.`, which cannot be represented as `VTKHDF` array
+names (the `VTK-XML` formats do not have this restriction).
+
 - The regression tests now run against a newer version of `vtk`, namely `v9.5.2`.
 
 # `GridFormat` 0.4.0

@@ -117,8 +117,9 @@ struct Slice {
     std::optional<std::vector<std::size_t>> total_size = {};
 };
 
-//! Custom string data type using ascii encoding.
-//! HighFive uses UTF-8, but VTKHDF, for instance, uses ascii.
+//! Custom fixed-length string data type using ascii encoding, as used for the attributes of
+//! VTKHDF files. HighFive defaults to variable-length utf-8 strings, which VTK accepts as well,
+//! but this matches what VTK itself writes.
 struct AsciiString : public HighFive::DataType {
     explicit AsciiString(std::size_t n) {
         _hid = H5Tcopy(H5T_C_S1);
