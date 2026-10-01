@@ -100,7 +100,7 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
     void _write(const std::string& filename_with_ext) const {
         if constexpr (is_transient)
             throw InvalidState("This overload only works for non-transient output");
-        {
+        {  // scope to close the file before writing meta data on rank 0 with serial I/O
             HDF5File file{filename_with_ext, _comm, HDF5File::overwrite};
             _write_to(file);
         }
@@ -114,7 +114,7 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
         if (this->_step_count == 0)
             HDF5File::clear(_timeseries_filename, _comm);
 
-        {
+        {  // scope to close the file before writing meta data on rank 0 with serial I/O
             HDF5File file{_timeseries_filename, _comm, HDF5File::append};
             const auto offsets = _write_to(file);
 

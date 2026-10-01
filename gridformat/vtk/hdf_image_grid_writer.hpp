@@ -119,7 +119,7 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         if (this->_step_count == 0)
             HDF5File::clear(_timeseries_filename, _comm);
 
-        {
+        {  // scope to close the file before writing meta data on rank 0 with serial I/O
             HDF5File file{_timeseries_filename, _comm, HDF5File::Mode::append};
             _write_to(file);
             file.write_attribute(this->_step_count+1, "/VTKHDF/Steps/NSteps");
@@ -132,7 +132,7 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
     void _write(const std::string& filename_with_ext) const {
         if constexpr (is_transient)
             throw InvalidState("This overload only works for non-transient output");
-        {
+        {  // scope to close the file before writing meta data on rank 0 with serial I/O
             HDF5File file{filename_with_ext, _comm, HDF5File::Mode::overwrite};
             _write_to(file);
         }

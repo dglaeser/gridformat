@@ -46,7 +46,6 @@ int main(int argc, char** argv) {
         GridFormat::Test::write_test_time_series<2>(writer, 5, {.write_meta_data = false}, verbose);
     }
 
-    // strings cannot be written with parallel I/O, rank 0 appends them after each step
     const auto text_at = [] (std::size_t step) { return "step_" + std::to_string(step); };
     const auto check_transient_strings = [&] (auto&& writer, const std::string& filename) {
         for (std::size_t step = 0; step < 3; ++step) {

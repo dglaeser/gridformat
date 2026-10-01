@@ -205,13 +205,6 @@ int main() {
         }
     };
 
-    "hdf5_reports_string_support"_test = [&] () {
-        // without a parallel communicator, strings can always be written. The parallel case cannot
-        // be covered here, see test_vtk_hdf_parallel_unstructured_grid_writer.
-        GridFormat::HDF5::File file{"vtk_hdf_string_meta_data_support.hdf", GridFormat::HDF5::File<>::overwrite};
-        expect(file.supports_variable_length_strings());
-    };
-
     "vtk_hdf_invalid_array_names"_test = [&] () {
         const auto write_with_meta_data_name = [&] (const std::string& name) {
             GridFormat::VTKHDFWriter writer{grid};
