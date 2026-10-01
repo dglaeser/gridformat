@@ -530,12 +530,16 @@ class File {
     decltype(auto) _visit_data(Visitor&& visitor, const Source& source) const {
         const auto datatype = source.getDataType();
         if (datatype.isFixedLenStr() || datatype.isVariableStr()) {
-            std::vector<std::string> pre_out;
-            source.read(pre_out);
-            if (pre_out.size() > 1 or pre_out.size() == 0)
-                throw SizeError("Unexpected string array size");
-
-            std::string out = std::move(std::move(pre_out)[0]);
+            std::string out;
+            if (source.getSpace().getNumberDimensions() == 0)  // scalar, as e.g. VTK writes attributes
+                source.read(out);
+            else {
+                std::vector<std::string> pre_out;
+                source.read(pre_out);
+                if (pre_out.size() > 1 or pre_out.size() == 0)
+                    throw SizeError("Unexpected string array size");
+                out = std::move(std::move(pre_out)[0]);
+            }
             MDLayout layout{{out.size()}};
             return visitor(BufferField{std::move(out), std::move(layout)});
         } else {

@@ -164,9 +164,8 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
                 if (as_string)
                     file.write_strings({VTKHDF::extract_string(*field_ptr)}, "/VTKHDF/FieldData/" + name);
                 else {
-                    // image data stores one (1, N) array per step, in contrast to unstructured grids
-                    auto sub = make_field_ptr(TransformedField{field_ptr, FieldTransformation::as_sub_field});
-                    file.write(TransformedField{sub, FieldTransformation::as_sub_field}, "/VTKHDF/FieldData/" + name);
+                    TransformedField sub{field_ptr, FieldTransformation::as_sub_field};
+                    file.write(sub, "/VTKHDF/FieldData/" + name);
                 }
             } else {
                 if (as_string)

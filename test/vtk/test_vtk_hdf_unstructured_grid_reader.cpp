@@ -2,6 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include <filesystem>
+#include <algorithm>
+#include <iostream>
+#include <ranges>
+#include <string>
+#include <vector>
 
 #include <gridformat/vtk/hdf_unstructured_grid_writer.hpp>
 #include <gridformat/vtk/hdf_unstructured_grid_reader.hpp>
@@ -83,5 +88,50 @@ int main() {
             };
         }
     }
+
+    const std::filesystem::path test_data_path{TEST_DATA_PATH};
+    std::vector<std::string> vtk_files;
+    if (std::filesystem::exists(test_data_path))
+        std::ranges::copy(
+            std::filesystem::directory_iterator{test_data_path}
+            | std::views::transform([] (const auto& entry) { return entry.path(); })
+            | std::views::filter([] (const std::filesystem::path& p) {
+                return p.extension() == ".hdf" && p.filename().string().starts_with("vtk_hdf_test_file_unstructured");
+            })
+            | std::views::transform([] (const std::filesystem::path& p) { return p.string(); }),
+            std::back_inserter(vtk_files)
+        );
+    if (vtk_files.empty()) {
+        std::cout << "No vtk-written test files found in " << test_data_path << ". Skipping..." << std::endl;
+        return 42;
+    }
+
+    "vtk_written_vtk_hdf_unstructured_files"_test = [&] () {
+        for (const auto& filename : vtk_files) {
+            std::cout << "Testing '" << GridFormat::as_highlight(filename) << "'" << std::endl;
+            GridFormat::VTKHDFReader reader;
+            reader.open(filename);
+            expect(eq(reader.number_of_pieces(), std::size_t{1}));
+
+            const auto vtk_grid = [&] () {
+                GridFormat::Test::UnstructuredGridFactory<2, 2> factory;
+                reader.export_grid(factory);
+                return std::move(factory).grid();
+            } ();
+            expect(GridFormat::Test::test_field_values<2>(
+                "pscalar", reader.point_field("pscalar"), vtk_grid, GridFormat::points(vtk_grid)
+            ));
+            expect(GridFormat::Test::test_field_values<2>(
+                "cscalar", reader.cell_field("cscalar"), vtk_grid, GridFormat::cells(vtk_grid)
+            ));
+
+            expect(eq(reader.meta_data_field("text")->template export_to<std::string>(), std::string{"some_text"}));
+            expect(std::ranges::equal(
+                reader.meta_data_field("numbers")->template export_to<std::vector<int>>(),
+                std::vector<int>{1, 2, 3, 4}
+            ));
+        }
+    };
+
     return 0;
 }

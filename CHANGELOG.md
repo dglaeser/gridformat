@@ -8,6 +8,17 @@
 - Some compiler versions raised errors because of the way `Field` instances exported data to `vector<bool>` using `std::ranges`.
 Newer compilers seem to be ok with the code, but nevertheless, it was rewritten to work also with compilers that didn't swallow the old code.
 
+- __VTKHDF__: the readers can now open files written by `VTK`. They failed on the `Type` attribute, which `VTK` writes as a
+scalar, and rejected all files of a newer minor version of the format, although the specification guarantees that
+minor versions are compatible. Only the major version is checked now.
+
+- __VTKHDF__: transient image data files stored numeric meta data with a superfluous dimension, which `VTK` could not
+read. They now use the same layout as transient unstructured grid files. Files written with the previous layout can
+still be read.
+
+- __VTKHDF__: the image data reader ignored `FieldDataOffsets` and read the meta data of a time step at the index of
+the step, which failed for files with static meta data, where it is only written once.
+
 ## Features
 
 - __VTKHDF__: string meta data is now written as a dataset of variable-length strings instead of an array of ascii
