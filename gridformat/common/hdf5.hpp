@@ -107,6 +107,13 @@ namespace Detail {
     template<typename T>
     using HighFiveDataType = std::conditional_t<std::is_same_v<T, bool>, char, T>;
 
+    //! HighFive's DataType::string() omits the signedness of integers
+    std::string as_string(const HighFive::DataType& type) {
+        if (type.getClass() == HighFive::DataTypeClass::Integer)
+            return (H5Tget_sign(type.getId()) == H5T_SGN_NONE ? "Unsigned" : "Signed") + type.string();
+        return type.string();
+    }
+
 }  // namespace Detail
 #endif  // DOXYGEN
 
@@ -450,16 +457,14 @@ class File {
         else if (_mode == append) {
             if (group.exist(name)) {
                 auto dataset = group.getDataSet(name);
-                // Strings and numbers cannot be converted into each other, and the write below would
-                // fail after we have already resized the dataset. Check it here, such that a mismatch
-                // leaves the file untouched. Numeric types are left to hdf5, which converts them.
-                const auto is_string = [] (const HighFive::DataType& t) {
-                    return t.getClass() == HighFive::DataTypeClass::String;
-                };
-                if (is_string(dataset.getDataType()) != is_string(type))
+                // We require the exact same type instead of letting hdf5 convert, which may narrow
+                // silently. Check before resizing, such that a mismatch leaves the file untouched.
+                // Note that 1-byte types are platform-dependent: `char` equals `uint8` on aarch64 but
+                // `int8` on x86-64, so appending to a file written on another platform may fail.
+                if (dataset.getDataType() != type)
                     throw ValueError(
-                        "Cannot extend the dataset '" + name + "' with data of a different type: "
-                        + "strings and numbers are not convertible into each other"
+                        "Cannot extend the dataset '" + name + "' with data of a different type ("
+                        + Detail::as_string(dataset.getDataType()) + " vs. " + Detail::as_string(type) + ")"
                     );
                 auto out_dimensions = dataset.getDimensions();
                 const auto in_dimensions = space.getDimensions();
@@ -486,7 +491,7 @@ class File {
                 const auto chunk_dimensions = std::vector<hsize_t>{init_dimensions.begin(), init_dimensions.end()};
                 const auto max_dimensions = [&] () {
                     auto tmp = init_dimensions;
-                    tmp[0] *= HighFive::DataSpace::UNLIMITED;
+                    tmp[0] = HighFive::DataSpace::UNLIMITED;
                     return tmp;
                 } ();
 

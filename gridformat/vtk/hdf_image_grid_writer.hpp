@@ -155,10 +155,10 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
             const bool as_string = VTKHDF::is_string_field(*field_ptr);
             if constexpr (is_transient) {
                 if (this->_step_count > 0 && _transient_opts.static_meta_data) {
-                    file.write(std::array{0}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
+                    file.write(std::array{std::size_t{0}}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
                     return;
                 } else {
-                    file.write(std::array{this->_step_count}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
+                    file.write(std::array{std::size_t{this->_step_count}}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
                 }
                 // Strings occupy a single entry per step, other fields get a prepended step dimension
                 if (as_string)

@@ -30,6 +30,9 @@ strings per array, but `GridFormat` currently supports only a single one.
 - __VTKHDF__: the writers now reject field names containing `/` or `.`, which cannot be represented as `VTKHDF` array
 names (the `VTK-XML` formats do not have this restriction).
 
+- __VTKHDF__: in transient files, writing a field with a different precision than in a previous step now raises an
+error instead of being converted silently by `hdf5`, which could truncate values (e.g. `double` to `int`).
+
 - The regression tests now run against a newer version of `vtk`, namely `v9.5.2`.
 
 # `GridFormat` 0.4.0
