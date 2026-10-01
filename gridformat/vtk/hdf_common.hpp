@@ -167,13 +167,14 @@ std::string get_file_type(const HDF5::File<C>& file) {
 }
 
 //! Check that the version stated in the file is supported
+//! \note Only the major version is checked, since the specification guarantees that files can be
+//!       read correctly by implementations for a different minor version of the same major.
 template<typename C>
 void check_version_compatibility(const HDF5::File<C>& file, const std::array<std::size_t, 2>& supported) {
     if (file.has_attribute_at("/VTKHDF/Version"))
         file.visit_attribute("/VTKHDF/Version", [&] (auto&& field) {
             const auto version = field.template export_to<std::vector<std::size_t>>();
-            if ((version.size() > 0 && version.at(0) > supported[0]) ||
-                (version.size() > 1 && version.at(0) == supported[0] && version.at(1) > supported[1]))
+            if (version.size() > 0 && version.at(0) > supported[0])
                 throw ValueError(
                     "File version is higher than supported by the reader (" + as_string(supported, ".") + ")"
                 );

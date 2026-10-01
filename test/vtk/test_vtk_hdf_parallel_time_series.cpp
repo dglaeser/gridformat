@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
             MPI_COMM_WORLD,
             "pvtk_hdf_time_series_2d_in_2d_image"
         };
-        GridFormat::Test::write_test_time_series<2>(writer, 5, {.write_meta_data = false}, verbose);
+        GridFormat::Test::write_test_time_series<2>(writer, 5, {}, verbose);
     }
 
     const auto text_at = [] (std::size_t step) { return "step_" + std::to_string(step); };
@@ -71,9 +71,9 @@ int main(int argc, char** argv) {
         check_transient_strings(GridFormat::VTKHDFTimeSeriesWriter{
             grid,
             MPI_COMM_WORLD,
-            "pvtk_hdf_time_series_2d_in_2d_unstructured_strings",
+            "pvtk_hdf_strings_2d_in_2d_unstructured",
             {.static_grid = true, .static_meta_data = false}
-        }, "pvtk_hdf_time_series_2d_in_2d_unstructured_strings.hdf");
+        }, "pvtk_hdf_strings_2d_in_2d_unstructured.hdf");
     }
 
     {
@@ -85,9 +85,9 @@ int main(int argc, char** argv) {
         check_transient_strings(GridFormat::VTKHDFTimeSeriesWriter{
             structured_grid,
             MPI_COMM_WORLD,
-            "pvtk_hdf_time_series_2d_in_2d_image_strings",
+            "pvtk_hdf_strings_2d_in_2d_image",
             {.static_grid = true, .static_meta_data = false}
-        }, "pvtk_hdf_time_series_2d_in_2d_image_strings.hdf");
+        }, "pvtk_hdf_strings_2d_in_2d_image.hdf");
     }
 
     MPI_Finalize();

@@ -50,6 +50,9 @@ gridformat_add_regression_test_if(
     test_vtk_hdf_unstructured_grid_reader.cpp
     "reader_vtk_hdf_unstructured_test*hdf"
 )
+if (TARGET test_vtk_hdf_unstructured_grid_reader)
+    target_compile_definitions(test_vtk_hdf_unstructured_grid_reader PRIVATE TEST_DATA_PATH="${CMAKE_CURRENT_LIST_DIR}/test_data")
+endif ()
 
 gridformat_add_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
@@ -64,21 +67,19 @@ gridformat_add_parallel_test_if(
     2
 )
 
-# TODO: when vtk 9.2.7 is out (with hdftransient support) do regression
-gridformat_add_test_if(
+gridformat_add_regression_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_time_series
     test_vtk_hdf_time_series.cpp
-    # "vtk_hdf_time_series*.hdf"
+    "vtk_hdf_time_series*.hdf"
 )
 
-# TODO: when vtk 9.2.7 is out (with hdftransient support) do regression
-gridformat_add_parallel_test_if(
+gridformat_add_parallel_regression_test_if(
     GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
     test_vtk_hdf_parallel_time_series
     test_vtk_hdf_parallel_time_series.cpp
     2
-    # "pvtk_hdf_time_series*.hdf"
+    "pvtk_hdf_time_series*.hdf"
 )
 
 # TODO: when vtk 9.2.7 is out (with the reader fixes) do regression also in 2D
@@ -98,6 +99,9 @@ gridformat_add_regression_test_if(
     "reader_vtk_hdf_structured_image_test*hdf"
     SCRIPT_ARGS "--skip-metadata"
 )
+if (TARGET test_vtk_hdf_image_grid_reader)
+    target_compile_definitions(test_vtk_hdf_image_grid_reader PRIVATE TEST_DATA_PATH="${CMAKE_CURRENT_LIST_DIR}/test_data")
+endif ()
 
 set(RANKS 2;4)
 foreach (NR IN LISTS RANKS)

@@ -252,7 +252,14 @@ def _test_vtk(filename: str, skip_metadata: bool, reference_function: Callable[[
 
     _, space_dim = _get_grid_and_space_dimension(filename)
     is_discontinuous = "discontinuous" in filename
-    _check_vtk_file(get_grid(reader), point_collector(reader), space_dim, reference_function, skip_metadata, is_discontinuous)
+    # transient files (e.g. VTKHDF) contain all time steps, for which the test function is scaled with the time
+    time_steps = reader.GetOutputInformation(0).Get(vtk.vtkStreamingDemandDrivenPipeline.TIME_STEPS())
+    for time in (time_steps or [None]):
+        if time is not None:
+            print(f"Comparing time step t = {time}")
+            reader.UpdateTimeStep(time)
+            reference_function = TestFunction(time)
+        _check_vtk_file(get_grid(reader), point_collector(reader), space_dim, reference_function, skip_metadata, is_discontinuous)
 
 
 def test(filename: str, skip_metadata: bool = False) -> int | None:
