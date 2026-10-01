@@ -178,6 +178,33 @@ int main() {
         expect(eq(reader.meta_data_field("string")->template export_to<std::string>(), string_text));
     };
 
+    "hdf5_append_rejects_mismatching_type_class"_test = [&] () {
+        using File = GridFormat::HDF5::File<>;
+        const std::string filename = "vtk_hdf_string_meta_data_type_mismatch.hdf";
+        File::clear(filename, GridFormat::NullCommunicator{});
+        {   // create both in append mode, such that they are extendible
+            File file{filename, File::append};
+            file.write(std::vector<int>{1, 2, 3}, "/numeric");
+            file.write_strings({"a"}, "/strings");
+        }
+        {
+            File file{filename, File::append};
+            expect(throws([&] () { file.write_strings({"b"}, "/numeric"); }));
+            expect(throws([&] () { file.write(std::vector<int>{4}, "/strings"); }));
+            // appending numbers of another type stays allowed, hdf5 converts them
+            file.write(std::vector<double>{4.0}, "/numeric");
+            file.write_strings({"b"}, "/strings");
+        }
+        {   // the rejected writes must have left the datasets untouched
+            File file{filename, File::read_only};
+            expect(eq(file.get_dimensions("/numeric").value().at(0), std::size_t{4}));
+            expect(eq(file.get_dimensions("/strings").value().at(0), std::size_t{2}));
+            expect(std::ranges::equal(
+                file.read_dataset_to<std::vector<int>>("/numeric"), std::vector<int>{1, 2, 3, 4}
+            ));
+        }
+    };
+
     "vtk_hdf_invalid_array_names"_test = [&] () {
         const auto write_with_meta_data_name = [&] (const std::string& name) {
             GridFormat::VTKHDFWriter writer{grid};

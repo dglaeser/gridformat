@@ -449,6 +449,17 @@ class File {
         else if (_mode == append) {
             if (group.exist(name)) {
                 auto dataset = group.getDataSet(name);
+                // Strings and numbers cannot be converted into each other, and the write below would
+                // fail after we have already resized the dataset. Check it here, such that a mismatch
+                // leaves the file untouched. Numeric types are left to hdf5, which converts them.
+                const auto is_string = [] (const HighFive::DataType& t) {
+                    return t.getClass() == HighFive::DataTypeClass::String;
+                };
+                if (is_string(dataset.getDataType()) != is_string(type))
+                    throw ValueError(
+                        "Cannot extend the dataset '" + name + "' with data of a different type: "
+                        + "strings and numbers are not convertible into each other"
+                    );
                 auto out_dimensions = dataset.getDimensions();
                 const auto in_dimensions = space.getDimensions();
 
