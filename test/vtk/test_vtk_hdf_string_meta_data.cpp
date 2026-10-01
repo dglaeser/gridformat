@@ -88,19 +88,25 @@ int main() {
         ));
     };
 
+    // the value has to differ per step, otherwise reading the wrong entry goes unnoticed
+    const auto text_at = [] (std::size_t step) { return "step_" + std::to_string(step); };
+    const auto write_transient = [&] (const std::string& base, bool static_meta_data) {
+        GridFormat::VTKHDFTimeSeriesWriter writer{
+            grid, base, GridFormat::VTK::HDFTransientOptions{
+                .static_grid = true,
+                .static_meta_data = static_meta_data
+            }
+        };
+        std::size_t step = 0;
+        for (double t : {0.0, 0.5, 1.0}) {
+            writer.set_meta_data("string", text_at(step++));
+            writer.write(t);
+        }
+    };
+
     "vtk_hdf_transient_string_meta_data"_test = [&] () {
         const std::string base = "vtk_hdf_string_meta_data_transient";
-        {
-            GridFormat::VTKHDFTimeSeriesWriter writer{
-                grid, base, GridFormat::VTK::HDFTransientOptions{
-                    .static_grid = true,
-                    .static_meta_data = false
-                }
-            };
-            set_meta_data(writer);
-            for (double t : {0.0, 0.5, 1.0})
-                writer.write(t);
-        }
+        write_transient(base, false);
 
         // one variable-length string per step, selected via Steps/FieldDataOffsets
         HighFive::File file{base + ".hdf", HighFive::File::ReadOnly};
@@ -109,15 +115,42 @@ int main() {
         expect(eq(dataset.getDimensions().size(), std::size_t{1}));
         expect(eq(dataset.getDimensions().at(0), std::size_t{3}));
         expect(std::ranges::equal(
+            dataset.read<std::vector<std::string>>(),
+            std::vector<std::string>{text_at(0), text_at(1), text_at(2)}
+        ));
+        expect(std::ranges::equal(
             file.getDataSet("/VTKHDF/Steps/FieldDataOffsets/string").read<std::vector<std::size_t>>(),
             std::vector<std::size_t>{0, 1, 2}
         ));
 
         GridFormat::VTKHDFReader reader;
         reader.open(base + ".hdf");
+        expect(eq(reader.number_of_steps(), std::size_t{3}));
         for (std::size_t step = 0; step < reader.number_of_steps(); ++step) {
             reader.set_step(step);
-            expect(eq(reader.meta_data_field("string")->template export_to<std::string>(), string_text));
+            expect(eq(reader.meta_data_field("string")->template export_to<std::string>(), text_at(step)));
+        }
+    };
+
+    "vtk_hdf_static_transient_string_meta_data"_test = [&] () {
+        const std::string base = "vtk_hdf_string_meta_data_transient_static";
+        write_transient(base, true);
+
+        // written once, with all steps pointing at the first entry
+        HighFive::File file{base + ".hdf", HighFive::File::ReadOnly};
+        auto dataset = open_field_data(file, "string");
+        expect(dataset.getDataType().isVariableStr());
+        expect(eq(dataset.getDimensions().at(0), std::size_t{1}));
+        expect(std::ranges::equal(
+            file.getDataSet("/VTKHDF/Steps/FieldDataOffsets/string").read<std::vector<std::size_t>>(),
+            std::vector<std::size_t>{0, 0, 0}
+        ));
+
+        GridFormat::VTKHDFReader reader;
+        reader.open(base + ".hdf");
+        for (std::size_t step = 0; step < reader.number_of_steps(); ++step) {
+            reader.set_step(step);
+            expect(eq(reader.meta_data_field("string")->template export_to<std::string>(), text_at(0)));
         }
     };
 
