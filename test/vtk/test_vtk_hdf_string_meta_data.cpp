@@ -178,7 +178,7 @@ int main() {
         expect(eq(reader.meta_data_field("string")->template export_to<std::string>(), string_text));
     };
 
-    "hdf5_append_rejects_mismatching_type_class"_test = [&] () {
+    "hdf5_append_rejects_mismatching_types"_test = [&] () {
         using File = GridFormat::HDF5::File<>;
         const std::string filename = "vtk_hdf_string_meta_data_type_mismatch.hdf";
         File::clear(filename, GridFormat::NullCommunicator{});
@@ -191,9 +191,11 @@ int main() {
             File file{filename, File::append};
             expect(throws([&] () { file.write_strings({"b"}, "/numeric"); }));
             expect(throws([&] () { file.write(std::vector<int>{4}, "/strings"); }));
-            // appending numbers of another type stays allowed, hdf5 converts them
-            file.write(std::vector<double>{4.0}, "/numeric");
-            file.write_strings({"b"}, "/strings");
+            expect(throws([&] () { file.write(std::vector<double>{4.0}, "/numeric"); }));
+            expect(throws([&] () { file.write(std::vector<long>{4}, "/numeric"); }));
+            file.write(std::vector<int>{4}, "/numeric");
+            // the encoding of variable-length strings may differ between appends
+            file.write_strings({"\xc3\xa4"}, "/strings");
         }
         {   // the rejected writes must have left the datasets untouched
             File file{filename, File::read_only};
@@ -202,6 +204,11 @@ int main() {
             expect(std::ranges::equal(
                 file.read_dataset_to<std::vector<int>>("/numeric"), std::vector<int>{1, 2, 3, 4}
             ));
+        }
+        {   // datasets created in append mode must be extendible without limit
+            HighFive::File file{filename, HighFive::File::ReadOnly};
+            const auto max_dims = file.getDataSet("/numeric").getSpace().getMaxDimensions();
+            expect(max_dims.at(0) == HighFive::DataSpace::UNLIMITED);
         }
     };
 
