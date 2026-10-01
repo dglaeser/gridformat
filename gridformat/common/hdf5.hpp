@@ -256,6 +256,16 @@ class File {
     }
 
     /*!
+     * \brief Return true if this file can store variable-length strings.
+     * \details HDF5 stores variable-length data in the global heap, which it does not support
+     *          accessing with parallel I/O. Strings can therefore only be written to files that
+     *          are not opened with an MPI-based driver (see _open).
+     */
+    bool supports_variable_length_strings() const {
+        return Parallel::size(_comm) <= 1;
+    }
+
+    /*!
      * \brief Write the given strings into the dataset with the given path.
      * \details The dataset is written as a one-dimensional array of variable-length strings,
      *          holding one string per entry. This is the layout that VTK uses for string arrays.
@@ -263,14 +273,14 @@ class File {
      */
     void write_strings(const std::vector<std::string>& values, const std::string& path) {
         _check_writable();
+        if (!supports_variable_length_strings())
+            throw NotImplemented("Writing strings is not supported with parallel I/O");
         const auto [group_name, ds_name] = Detail::split_group(path);
         auto group = _get_group(group_name);
         auto [offset, dataset] = _prepare_dataset(
             group, ds_name, HighFive::DataSpace{values.size()}, VariableLengthString::from(values)
         );
-        // strings are not distributed over the ranks, write them only once to avoid clashes
-        if (Parallel::size(_comm) <= 1 || Parallel::rank(_comm) == 0)
-            dataset.select({offset}, {values.size()}).write(values);
+        dataset.select({offset}, {values.size()}).write(values);
         _file.flush();
     }
 
