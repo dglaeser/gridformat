@@ -14,6 +14,8 @@
 #include <concepts>
 #include <ranges>
 #include <cstdint>
+#include <string>
+#include <vector>
 
 #ifdef GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 #pragma GCC diagnostic push
@@ -115,8 +117,9 @@ struct Slice {
     std::optional<std::vector<std::size_t>> total_size = {};
 };
 
-//! Custom string data type using ascii encoding.
-//! HighFive uses UTF-8, but VTKHDF, for instance, uses ascii.
+//! Custom fixed-length string data type using ascii encoding, as used for the attributes of
+//! VTKHDF files. HighFive defaults to variable-length utf-8 strings, which VTK accepts as well,
+//! but this matches what VTK itself writes.
 struct AsciiString : public HighFive::DataType {
     explicit AsciiString(std::size_t n) {
         _hid = H5Tcopy(H5T_C_S1);
@@ -139,6 +142,29 @@ struct AsciiString : public HighFive::DataType {
 
     static AsciiString from(const std::string& n) {
         return AsciiString{n.size()};
+    }
+};
+
+//! Variable-length string data type, storing one string per dataspace entry.
+//! This is the layout that VTK uses for string arrays in VTKHDF files.
+struct VariableLengthString : public HighFive::DataType {
+    explicit VariableLengthString(bool ascii = true) {
+        _hid = H5Tcopy(H5T_C_S1);
+        if (H5Tset_size(_hid, H5T_VARIABLE) < 0) {
+            HighFive::HDF5ErrMapper::ToException<HighFive::DataTypeException>(
+                "Unable to define a variable-length string datatype"
+            );
+        }
+        H5Tset_cset(_hid, ascii ? H5T_CSET_ASCII : H5T_CSET_UTF8);
+    }
+
+    //! Return a type that can represent the given strings (ascii-encoded if possible, utf-8 otherwise)
+    static VariableLengthString from(const std::vector<std::string>& values) {
+        return VariableLengthString{std::ranges::all_of(values, [] (const std::string& value) {
+            return std::ranges::all_of(value, [] (char c) {
+                return static_cast<unsigned char>(c) < 128;
+            });
+        })};
     }
 };
 
@@ -226,6 +252,26 @@ class File {
         } else {
             _write_to(dataset, values, _slice);
         }
+        _file.flush();
+    }
+
+    /*!
+     * \brief Write the given strings into the dataset with the given path.
+     * \details The dataset is written as a one-dimensional array of variable-length strings,
+     *          holding one string per entry. This is the layout that VTK uses for string arrays.
+     *          In append mode, the given strings are appended to an existing dataset.
+     * \note This does not work in parallel, i.e., is only supported in serial I/O.
+     */
+    void write_strings(const std::vector<std::string>& values, const std::string& path) {
+        _check_writable();
+        if (Parallel::size(_comm) > 1)
+            throw NotImplemented("Writing strings is not supported with parallel I/O");
+        const auto [group_name, ds_name] = Detail::split_group(path);
+        auto group = _get_group(group_name);
+        auto [offset, dataset] = _prepare_dataset(
+            group, ds_name, HighFive::DataSpace{values.size()}, VariableLengthString::from(values)
+        );
+        dataset.select({offset}, {values.size()}).write(values);
         _file.flush();
     }
 
@@ -392,11 +438,29 @@ class File {
     auto _prepare_dataset(HighFive::Group& group,
                           const std::string& name,
                           const HighFive::DataSpace& space) {
+        return _prepare_dataset(group, name, space, HighFive::create_datatype<T>());
+    }
+
+    std::pair<std::size_t, HighFive::DataSet> _prepare_dataset(HighFive::Group& group,
+                                                               const std::string& name,
+                                                               const HighFive::DataSpace& space,
+                                                               const HighFive::DataType& type) {
         if (_mode == overwrite)
-            return std::make_pair(std::size_t{0}, group.createDataSet(name, space, HighFive::create_datatype<T>()));
+            return std::make_pair(std::size_t{0}, group.createDataSet(name, space, type));
         else if (_mode == append) {
             if (group.exist(name)) {
                 auto dataset = group.getDataSet(name);
+                // Strings and numbers cannot be converted into each other, and the write below would
+                // fail after we have already resized the dataset. Check it here, such that a mismatch
+                // leaves the file untouched. Numeric types are left to hdf5, which converts them.
+                const auto is_string = [] (const HighFive::DataType& t) {
+                    return t.getClass() == HighFive::DataTypeClass::String;
+                };
+                if (is_string(dataset.getDataType()) != is_string(type))
+                    throw ValueError(
+                        "Cannot extend the dataset '" + name + "' with data of a different type: "
+                        + "strings and numbers are not convertible into each other"
+                    );
                 auto out_dimensions = dataset.getDimensions();
                 const auto in_dimensions = space.getDimensions();
 
@@ -431,7 +495,7 @@ class File {
                 props.add(HighFive::Chunking(chunk_dimensions));
                 return std::make_pair(
                     std::size_t{0},
-                    group.createDataSet(name, out_space, HighFive::create_datatype<T>(), props)
+                    group.createDataSet(name, out_space, type, props)
                 );
             }
         } else {
@@ -460,7 +524,7 @@ class File {
     template<typename Visitor, typename Source>
     decltype(auto) _visit_data(Visitor&& visitor, const Source& source) const {
         const auto datatype = source.getDataType();
-        if (datatype.isFixedLenStr()) {
+        if (datatype.isFixedLenStr() || datatype.isVariableStr()) {
             std::vector<std::string> pre_out;
             source.read(pre_out);
             if (pre_out.size() > 1 or pre_out.size() == 0)

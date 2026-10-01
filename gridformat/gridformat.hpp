@@ -304,6 +304,9 @@ struct VTKXMLTimeSeries : VTKXMLFormatBase<VTKXMLTimeSeries<VTX>> {};
  * \note A bug in VTK/ParaView related to reading cell data arrays has been fixed in
  *       <a href="https://gitlab.kitware.com/vtk/vtk/-/merge_requests/10147">VTK merge request 10147</a>.
  *       The fix is included in VTK>9.2.6 and ParaView>5.11.0.
+ * \note String meta data is written as a dataset of variable-length strings, which VTK reads as
+ *       `vtkStringArray`. Support for this was added in VTK 9.4; older readers cannot interpret it.
+ *       Use one of the VTK-XML formats if you need string meta data in older readers.
  */
 struct VTKHDFImage {};
 

@@ -79,6 +79,9 @@ class GridWriterBase {
     , _opts{std::move(opts)}
     {}
 
+    //! Set the meta data with the given name from the values in the given range.
+    //! \note The VTK formats write ranges of `char` as strings, which is lossy for values that contain zeros.
+    //! \note In parallel writes, meta data is typically assumed to be the same on all ranks.
     template<std::ranges::range R>
     void set_meta_data(const std::string& name, R&& range) {
         _meta_data.set(name, RangeField{std::forward<R>(range)});

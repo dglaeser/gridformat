@@ -119,18 +119,62 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         if (this->_step_count == 0)
             HDF5File::clear(_timeseries_filename, _comm);
 
-        HDF5File file{_timeseries_filename, _comm, HDF5File::Mode::append};
-        _write_to(file);
-        file.write_attribute(this->_step_count+1, "/VTKHDF/Steps/NSteps");
-        file.write(std::array{t}, "/VTKHDF/Steps/Values");
+        {  // scope to close the file before writing meta data on rank 0 with serial I/O
+            HDF5File file{_timeseries_filename, _comm, HDF5File::Mode::append};
+            _write_to(file);
+            file.write_attribute(this->_step_count+1, "/VTKHDF/Steps/NSteps");
+            file.write(std::array{t}, "/VTKHDF/Steps/Values");
+        }
+        _write_meta_data(_timeseries_filename);
         return _timeseries_filename;
     }
 
     void _write(const std::string& filename_with_ext) const {
         if constexpr (is_transient)
             throw InvalidState("This overload only works for non-transient output");
-        HDF5File file{filename_with_ext, _comm, HDF5File::Mode::overwrite};
-        _write_to(file);
+        {  // scope to close the file before writing meta data on rank 0 with serial I/O
+            HDF5File file{filename_with_ext, _comm, HDF5File::Mode::overwrite};
+            _write_to(file);
+        }
+        _write_meta_data(filename_with_ext);
+    }
+
+    // hdf5 cannot write variable-length strings into files opened for parallel I/O, not even from
+    // a single rank. Therefore, all meta data is written by rank 0 once the (parallel) file is closed,
+    // reopened with the default driver. Meta data is assumed to be the same on all ranks.
+    void _write_meta_data(const std::string& filename) const {
+        VTKHDF::write_on_root(filename, _comm, root_rank, [&] (HDF5::File<>& file) {
+            _write_meta_data(file);
+        });
+    }
+
+    void _write_meta_data(HDF5::File<>& file) const {
+        std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
+            const auto field_ptr = this->_get_meta_data_field_ptr(name);
+            const bool as_string = VTKHDF::is_string_field(*field_ptr);
+            if constexpr (is_transient) {
+                if (this->_step_count > 0 && _transient_opts.static_meta_data) {
+                    file.write(std::array{0}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
+                    return;
+                } else {
+                    file.write(std::array{this->_step_count}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
+                }
+                // Strings occupy a single entry per step, other fields get a prepended step dimension
+                if (as_string)
+                    file.write_strings({VTKHDF::extract_string(*field_ptr)}, "/VTKHDF/FieldData/" + name);
+                else {
+                    // image data stores one (1, N) array per step, in contrast to unstructured grids
+                    auto sub = make_field_ptr(TransformedField{field_ptr, FieldTransformation::as_sub_field});
+                    file.write(TransformedField{sub, FieldTransformation::as_sub_field}, "/VTKHDF/FieldData/" + name);
+                }
+            } else {
+                if (as_string)
+                    file.write_strings({VTKHDF::extract_string(*field_ptr)}, "/VTKHDF/FieldData/" + name);
+                else
+                    file.write(*field_ptr, "/VTKHDF/FieldData/" + name);
+            }
+        });
     }
 
     void _write_to(HDF5File& file) const {
@@ -165,24 +209,6 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         file.write_attribute(_get_direction(), "/VTKHDF/Direction");
         file.write_attribute("ImageData", "/VTKHDF/Type");
 
-        std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
-            if constexpr (is_transient) {
-                if (this->_step_count > 0 && _transient_opts.static_meta_data) {
-                    file.write(std::array{0}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
-                    return;
-                } else {
-                    file.write(std::array{this->_step_count}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
-                }
-                auto field_ptr = this->_get_meta_data_field_ptr(name);
-                auto sub = make_field_ptr(TransformedField{field_ptr, FieldTransformation::as_sub_field});
-                _write_field(file, sub, "/VTKHDF/FieldData/" + name, _slice_from(sub));
-            } else {
-                auto field_ptr = this->_get_meta_data_field_ptr(name);
-                _write_field(file, field_ptr, "/VTKHDF/FieldData/" + name, _slice_from(field_ptr));
-            }
-
-        });
-
         std::vector<std::size_t> non_zero_extents;
         std::ranges::copy(
             my_specs.extents | std::views::filter([] (auto e) { return e != 0; }),
@@ -190,6 +216,7 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         );
 
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
             auto field_ptr = _reshape(
                 VTK::make_vtk_field(this->_get_point_field_ptr(name)),
                 Ranges::incremented(non_zero_extents, 1) | std::views::reverse,
@@ -199,6 +226,7 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
         });
 
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
             auto field_ptr = _reshape(
                 VTK::make_vtk_field(this->_get_cell_field_ptr(name)),
                 non_zero_extents | std::views::reverse,
@@ -358,18 +386,6 @@ class VTKHDFImageGridWriterImpl : public GridDetail::WriterBase<is_transient, Gr
                 .total_size = std::move(size)
             });
         }
-    }
-
-    HDF5::Slice _slice_from(FieldPtr field) const {
-        const auto layout = field->layout();
-        std::vector<std::size_t> dims(layout.dimension());
-        std::vector<std::size_t> offset(layout.dimension(), 0);
-        layout.export_to(dims);
-        return {
-            .offset = std::move(offset),
-            .count = dims,
-            .total_size = dims
-        };
     }
 
     Communicator _comm;

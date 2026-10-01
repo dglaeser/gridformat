@@ -100,8 +100,11 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
     void _write(const std::string& filename_with_ext) const {
         if constexpr (is_transient)
             throw InvalidState("This overload only works for non-transient output");
-        HDF5File file{filename_with_ext, _comm, HDF5File::overwrite};
-        _write_to(file);
+        {  // scope to close the file before writing meta data on rank 0 with serial I/O
+            HDF5File file{filename_with_ext, _comm, HDF5File::overwrite};
+            _write_to(file);
+        }
+        _write_meta_data(filename_with_ext);
     }
 
     std::string _write(double t) {
@@ -111,28 +114,30 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
         if (this->_step_count == 0)
             HDF5File::clear(_timeseries_filename, _comm);
 
-        HDF5File file{_timeseries_filename, _comm, HDF5File::append};
-        const auto offsets = _write_to(file);
+        {  // scope to close the file before writing meta data on rank 0 with serial I/O
+            HDF5File file{_timeseries_filename, _comm, HDF5File::append};
+            const auto offsets = _write_to(file);
 
-        file.write_attribute(this->_step_count+1, "/VTKHDF/Steps/NSteps");
-        file.write(std::array{t}, "VTKHDF/Steps/Values");
-        file.write(std::vector{offsets.point_offset}, "VTKHDF/Steps/PointOffsets");
-        file.write(std::vector{std::array{offsets.cell_offset}}, "/VTKHDF/Steps/CellOffsets");
-        file.write(std::vector{std::array{offsets.connectivity_offset}}, "VTKHDF/Steps/ConnectivityIdOffsets");
+            file.write_attribute(this->_step_count+1, "/VTKHDF/Steps/NSteps");
+            file.write(std::array{t}, "VTKHDF/Steps/Values");
+            file.write(std::vector{offsets.point_offset}, "VTKHDF/Steps/PointOffsets");
+            file.write(std::vector{std::array{offsets.cell_offset}}, "/VTKHDF/Steps/CellOffsets");
+            file.write(std::vector{std::array{offsets.connectivity_offset}}, "VTKHDF/Steps/ConnectivityIdOffsets");
 
-        file.write(std::vector{Parallel::size(_comm)}, "/VTKHDF/Steps/NumberOfParts");
-        if (this->_step_count > 0 && _transient_opts.static_grid) {
-            file.write(
-                std::vector{_get_last_step_data(file, "PartOffsets")},
-                "/VTKHDF/Steps/PartOffsets"
-            );
-        } else {
-            const std::size_t offset = this->_step_count == 0
-                ? 0
-                : _get_last_step_data(file, "PartOffsets") + Parallel::size(_comm);
-            file.write(std::vector{offset}, "/VTKHDF/Steps/PartOffsets");
+            file.write(std::vector{Parallel::size(_comm)}, "/VTKHDF/Steps/NumberOfParts");
+            if (this->_step_count > 0 && _transient_opts.static_grid) {
+                file.write(
+                    std::vector{_get_last_step_data(file, "PartOffsets")},
+                    "/VTKHDF/Steps/PartOffsets"
+                );
+            } else {
+                const std::size_t offset = this->_step_count == 0
+                    ? 0
+                    : _get_last_step_data(file, "PartOffsets") + Parallel::size(_comm);
+                file.write(std::vector{offset}, "/VTKHDF/Steps/PartOffsets");
+            }
         }
-
+        _write_meta_data(_timeseries_filename);
         return _timeseries_filename;
     }
 
@@ -147,7 +152,6 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
         offsets.connectivity_offset = _write_connectivity(file, context);
         offsets.cell_offset = _write_types(file, context);
         _write_offsets(file, context);
-        _write_meta_data(file);
         _write_point_fields(file, context);
         _write_cell_fields(file, context);
 
@@ -215,8 +219,20 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
         return offset;
     }
 
-    void _write_meta_data(HDF5File& file) const {
+    // hdf5 cannot write variable-length strings into files opened for parallel I/O, not even from
+    // a single rank. Therefore, all meta data is written by rank 0 once the (parallel) file is closed,
+    // reopened with the default driver. Meta data is assumed to be the same on all ranks.
+    void _write_meta_data(const std::string& filename) const {
+        VTKHDF::write_on_root(filename, _comm, root_rank, [&] (HDF5::File<>& file) {
+            _write_meta_data(file);
+        });
+    }
+
+    void _write_meta_data(HDF5::File<>& file) const {
         std::ranges::for_each(this->_meta_data_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
+            const auto field_ptr = this->_get_meta_data_field_ptr(name);
+            const bool as_string = VTKHDF::is_string_field(*field_ptr);
             if constexpr (is_transient) {
                 if (this->_step_count > 0 && _transient_opts.static_meta_data) {
                     file.write(std::array{0}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
@@ -224,17 +240,25 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
                 } else {
                     file.write(std::array{this->_step_count}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
                 }
-                // For transient data, prepend a dimension indicating the step count
-                TransformedField sub{this->_get_meta_data_field_ptr(name), FieldTransformation::as_sub_field};
-                file.write(sub, "/VTKHDF/FieldData/" + name);
+                // Strings occupy a single entry per step, other fields get a prepended step dimension
+                if (as_string)
+                    file.write_strings({VTKHDF::extract_string(*field_ptr)}, "/VTKHDF/FieldData/" + name);
+                else {
+                    TransformedField sub{field_ptr, FieldTransformation::as_sub_field};
+                    file.write(sub, "/VTKHDF/FieldData/" + name);
+                }
             } else {
-                file.write(*this->_get_meta_data_field_ptr(name), "/VTKHDF/FieldData/" + name);
+                if (as_string)
+                    file.write_strings({VTKHDF::extract_string(*field_ptr)}, "/VTKHDF/FieldData/" + name);
+                else
+                    file.write(*field_ptr, "/VTKHDF/FieldData/" + name);
             }
         });
     }
 
     void _write_point_fields(HDF5File& file, const IOContext& context) const {
         std::ranges::for_each(this->_point_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
             if constexpr (is_transient)
                 _write_step_offset(
                     file,
@@ -248,6 +272,7 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
 
     void _write_cell_fields(HDF5File& file, const IOContext& context) const {
         std::ranges::for_each(this->_cell_field_names(), [&] (const std::string& name) {
+            VTKHDF::check_array_name(name);
             if constexpr (is_transient)
                 _write_step_offset(
                     file,

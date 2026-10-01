@@ -13,10 +13,15 @@
 #include <cstddef>
 #include <numeric>
 #include <string>
+#include <exception>
 
 #include <gridformat/common/hdf5.hpp>
+#include <gridformat/common/field.hpp>
+#include <gridformat/common/precision.hpp>
 #include <gridformat/common/lazy_field.hpp>
 #include <gridformat/common/string_conversion.hpp>
+#include <gridformat/common/exceptions.hpp>
+#include <gridformat/parallel/communication.hpp>
 
 namespace GridFormat {
 
@@ -94,6 +99,31 @@ struct IOContext {
     }
 };
 
+//! Throw if the given name cannot be used as a vtk-hdf array name
+inline void check_array_name(const std::string& name) {
+    if (name.empty())
+        throw ValueError("VTKHDF array names must not be empty");
+    if (name.find_first_of("/.") != std::string::npos)
+        throw ValueError("VTKHDF array names must not contain '/' or '.' (received '" + name + "')");
+}
+
+//! Return true if the given field holds a single string (i.e. is a flat array of characters).
+//! Multi-dimensional character fields are not treated as strings, since the number of strings
+//! per time step is not expressible in the offsets that transient files store.
+inline bool is_string_field(const Field& field) {
+    return field.precision().template is<char>() && field.layout().dimension() == 1;
+}
+
+//! Return the string stored in the given character field, stripped of trailing null terminators
+inline std::string extract_string(const Field& field) {
+    const auto serialization = field.serialized();
+    const auto characters = serialization.template as_span_of<const char>();
+    std::string result{characters.begin(), characters.end()};
+    while (!result.empty() && result.back() == '\0')
+        result.pop_back();
+    return result;
+}
+
 #if GRIDFORMAT_HAVE_HIGH_FIVE
 
 /*!
@@ -148,6 +178,31 @@ void check_version_compatibility(const HDF5::File<C>& file, const std::array<std
                     "File version is higher than supported by the reader (" + as_string(supported, ".") + ")"
                 );
         });
+}
+
+/*!
+ * \brief Open the given file with the default (non-MPI) driver on the root rank and pass it to `write`.
+ * \details Must be called collectively once all ranks have closed the file. If `write` throws, the
+ *          exception is rethrown on the root rank, and an IOError is thrown on all other ranks.
+ */
+template<Concepts::Communicator C, std::invocable<HDF5::File<>&> Write>
+void write_on_root(const std::string& filename, const C& comm, int root, Write&& write) {
+    Parallel::barrier(comm);
+    std::exception_ptr error;
+    if (Parallel::rank(comm) == root) {
+        try {
+            HDF5::File file{filename, HDF5::File<>::append};
+            write(file);
+        } catch (...) {
+            error = std::current_exception();
+        }
+    }
+    // the broadcast also keeps the other ranks from reopening the file before the root is done
+    if (Parallel::broadcast(comm, static_cast<int>(error != nullptr), root)) {
+        if (error)
+            std::rethrow_exception(error);
+        throw IOError("Writing to '" + filename + "' failed on rank " + std::to_string(root));
+    }
 }
 
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE
