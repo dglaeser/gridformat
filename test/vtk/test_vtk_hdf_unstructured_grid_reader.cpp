@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <algorithm>
+#include <array>
 #include <iostream>
 #include <ranges>
 #include <string>
@@ -11,6 +12,7 @@
 #include <gridformat/vtk/hdf_unstructured_grid_writer.hpp>
 #include <gridformat/vtk/hdf_unstructured_grid_reader.hpp>
 #include <gridformat/vtk/hdf_reader.hpp>
+#include <gridformat/common/multi_string.hpp>
 
 #include "../grid/unstructured_grid.hpp"
 #include "../make_test_data.hpp"
@@ -96,7 +98,9 @@ int main() {
             std::filesystem::directory_iterator{test_data_path}
             | std::views::transform([] (const auto& entry) { return entry.path(); })
             | std::views::filter([] (const std::filesystem::path& p) {
-                return p.extension() == ".hdf" && p.filename().string().starts_with("vtk_hdf_test_file_unstructured");
+                return p.extension() == ".hdf"
+                    && p.filename().string().starts_with("vtk_hdf_test_file_unstructured")
+                    && p.filename().string().find("time_series") == std::string::npos;
             })
             | std::views::transform([] (const std::filesystem::path& p) { return p.string(); }),
             std::back_inserter(vtk_files)
@@ -130,6 +134,25 @@ int main() {
                 reader.meta_data_field("numbers")->template export_to<std::vector<int>>(),
                 std::vector<int>{1, 2, 3, 4}
             ));
+            const auto texts = reader.meta_data_field("texts")->template export_to<GridFormat::MultiString>();
+            expect(texts == GridFormat::MultiString{{"first", "", "third"}});
+        }
+    };
+
+    "vtk_written_vtk_hdf_unstructured_time_series_field_data"_test = [&] () {
+        // the number of strings and tuples differs per step (see make_test_files.py)
+        const std::vector<std::vector<std::string>> texts_at{{"a"}, {"b", "c"}, {"", "d", "e"}};
+        GridFormat::VTKHDFReader reader;
+        reader.open((test_data_path / "vtk_hdf_test_file_unstructured_time_series_2d_in_2d.hdf").string());
+        expect(eq(reader.number_of_steps(), texts_at.size()));
+        for (std::size_t step = 0; step < reader.number_of_steps(); ++step) {
+            reader.set_step(step);
+            const auto texts = reader.meta_data_field("texts")->template export_to<GridFormat::MultiString>();
+            expect(texts == GridFormat::MultiString{texts_at.at(step)});
+
+            using Vector = std::array<double, 3>;
+            const auto vectors = reader.meta_data_field("vectors")->template export_to<std::vector<Vector>>();
+            expect(vectors == std::vector<Vector>(step + 1, Vector{static_cast<double>(step), 1.0, 2.0}));
         }
     };
 

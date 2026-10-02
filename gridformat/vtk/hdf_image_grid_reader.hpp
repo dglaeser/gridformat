@@ -249,52 +249,11 @@ class VTKHDFImageGridReader : public GridReader {
     }
 
     FieldPtr _meta_data_field(std::string_view name) const override {
-        const auto path = "VTKHDF/FieldData/" + std::string{name};
-        if (_file.value().get_precision(path).value().template is<char>()) {
-            // in transient files, the entries of a string dataset are the individual time steps
-            const auto dims = _file.value().get_dimensions(path).value();
-            if (!_is_transient() && (dims.size() != 1 || dims.at(0) != 1))
-                throw ValueError("Cannot read string data arrays with more than one tuple");
-            return make_field_ptr(RangeField{_file.value().template read_dataset_to<std::string>(
-                path, HDF5::Slice{.offset = {_get_field_data_offset(name)}, .count = {1}}
-            )});
-        }
-        const auto dims = _file.value().get_dimensions(path).value();
-        if (dims.size() == 1)
-            return make_field_ptr(VTKHDF::DataSetField{_file.value(), path});
-        // transient files store one row per step; GridFormat <= 0.5 wrote rows of shape (1, N)
-        const bool is_valid = _is_transient()
-            ? dims.size() == 2 || (dims.size() == 3 && dims.at(1) == 1)
-            : dims.size() == 2 && dims.at(0) == 1;
-        if (!is_valid)
-            throw SizeError("Unexpected field data array size");
-
-        auto offset = dims;
-        auto count = offset;
-        std::ranges::fill(offset, 0);
-        count.at(0) = 1;
-        offset.at(0) = _get_field_data_offset(name);
-        return make_field_ptr(VTKHDF::DataSetField{
+        return VTKHDF::read_field_data(
             _file.value(),
-            MDLayout{count | std::views::drop(1)},
-            _file.value().get_precision(path).value(),
-            [p=path, o=offset, c=count] (const HDF5File& f) {
-                return f.visit_dataset(p, [&] <typename F> (F&& field) {
-                    return FlattenedField{make_field_ptr(std::move(field))}.serialized();
-                }, HDF5::Slice{.offset = o, .count = c});
-            }
-        });
-    }
-
-    std::size_t _get_field_data_offset(std::string_view name) const {
-        return _is_transient()
-            ? _file.value().template read_dataset_to<std::size_t>(
-                "VTKHDF/Steps/FieldDataOffsets/" + std::string{name},
-                HDF5::Slice{
-                    .offset = {_step_index.value()},
-                    .count = {1}
-                })
-            : std::size_t{0};
+            std::string{name},
+            _is_transient() ? std::optional{_step_index.value()} : std::nullopt
+        );
     }
 
     std::array<std::size_t, 6> _make_vtk_extents_array() const {

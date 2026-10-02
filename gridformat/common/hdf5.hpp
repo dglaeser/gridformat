@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <optional>
 
 #ifdef GRIDFORMAT_DISABLE_HIGHFIVE_WARNINGS
 #pragma GCC diagnostic push
@@ -349,6 +350,20 @@ class File {
                 _file.getGroup(group).getDataSet(name).select(slice->offset, slice->count)
             );
         return _visit_data(std::forward<Visitor>(visitor), _file.getGroup(group).getDataSet(name));
+    }
+
+    //! Read the strings of the given one-dimensional dataset
+    std::vector<std::string> read_strings(const std::string& path, const std::optional<Slice>& slice = {}) const {
+        if (!has_dataset_at(path))
+            throw ValueError("Given data set '" + path + "' does not exist.");
+        const auto [group, name] = Detail::split_group(path);
+        const auto dataset = _file.getGroup(group).getDataSet(name);
+        std::vector<std::string> result;
+        if (slice)
+            dataset.select(slice->offset, slice->count).read(result);
+        else
+            dataset.read(result);
+        return result;
     }
 
     //! Read attribute values into an instance of the given T
