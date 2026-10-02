@@ -15,6 +15,7 @@
 #include <utility>
 #include <ranges>
 #include <cmath>
+#include <string>
 
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/precision.hpp>
@@ -80,9 +81,20 @@ class Field {
     }
 
     //! Export the field values into the provided range, resize if necessary, and return it
+    //! \note Exporting into a std::string strips a trailing '\0', and throws if the field holds multiple
+    //!       strings, i.e. if any '\0' remains. Export into a MultiString to obtain multiple strings.
     template<std::ranges::range R> requires(Concepts::Scalar<MDRangeValueType<R>>)
     decltype(auto) export_to(R&& output_range) const {
-        return _export_to<true>(std::forward<R>(output_range));
+        if constexpr (std::same_as<std::remove_cvref_t<R>, std::string>) {
+            decltype(auto) result = _export_to<true>(std::forward<R>(output_range));
+            if (!result.empty() && result.back() == '\0')
+                result.pop_back();
+            if (result.find('\0') != std::string::npos)
+                throw ValueError("Field holds multiple strings, export it into a MultiString instead");
+            return std::forward<decltype(result)>(result);
+        } else {
+            return _export_to<true>(std::forward<R>(output_range));
+        }
     }
 
     //! Export the field values into the provided range without resizing (given range must be large enough)

@@ -26,17 +26,20 @@ codes with a trailing null terminator. `VTK`/`ParaView` read such datasets as `v
 the information panel, whereas the previous layout showed up as a numeric char array. This brings the `VTKHDF` writers
 in line with the `VTK-XML` ones, which have always written string meta data as `String` data arrays. Note that reading
 string meta data from `VTKHDF` files requires `VTK` 9.4 or newer; use one of the `VTK-XML` formats if you need to
-support older readers. Numeric field data is written exactly as before.
+support older readers. In transient files, the strings of all steps are stored in the layout written by `VTK`, using
+`FieldDataOffsets` and `FieldDataSizes`.
+
+- __Meta data__: string meta data may now hold multiple strings, in all `VTK` formats. Fields hold them as a single
+sequence of characters in which each string is terminated by `'\0'`, as in the `VTK-XML` formats, and the new
+`MultiString` type helps to create and split them: `writer.set_meta_data("names", MultiString{{"a", "b"}})`, and
+`reader.meta_data_field("names")->export_to<MultiString>().slices()`. Exporting a field into a `std::string` now strips
+the trailing `'\0'` and raises an error if the field holds more than one string. Previously, reading a string from a
+`VTK-XML` file returned it including the terminator.
 
 - __VTKHDF__: as a consequence of the above, meta data fields whose value type is `char` now end up as strings rather
-than as arrays of ascii codes. This is how the `VTK-XML` formats have always treated them, but it is a change for
-`VTKHDF`, and it is lossy for `char` fields that hold numbers instead of text: trailing zeros are dropped, and a zero
-in the middle truncates the value, since variable-length strings in `hdf5` are null-terminated. Give such fields an
-explicit integer precision to keep them numeric.
-
-- __VTKHDF__: the readers now raise an error when reading field data that holds more than one string, instead of
-silently returning only the first one. Both the `VTKHDF` and the `VTK-XML` formats can represent an arbitrary number of
-strings per array, but `GridFormat` currently supports only a single one.
+than as arrays of ascii codes, with every `'\0'` separating two strings. This is how the `VTK-XML` formats have always
+treated them, but it is a change for `VTKHDF`. Give `char` fields that hold numbers instead of text an explicit integer
+precision to keep them numeric.
 
 - __VTKHDF__: the writers now reject field names containing `/` or `.`, which cannot be represented as `VTKHDF` array
 names (the `VTK-XML` formats do not have this restriction).

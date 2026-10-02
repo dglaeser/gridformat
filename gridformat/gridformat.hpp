@@ -25,6 +25,7 @@
 #include <gridformat/grid/image_grid.hpp>
 
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/multi_string.hpp>
 #include <gridformat/parallel/communication.hpp>
 
 #include <gridformat/vtk/vti_reader.hpp>

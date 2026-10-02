@@ -28,6 +28,7 @@
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/logging.hpp>
 #include <gridformat/common/field.hpp>
+#include <gridformat/common/multi_string.hpp>
 #include <gridformat/common/lazy_field.hpp>
 #include <gridformat/common/path.hpp>
 
@@ -305,7 +306,8 @@ class XMLWriterBase
                             array.set_attribute("format", data_format_name(encoder, data_format));
                             if (precision.template is<char>() && layout.dimension() == 1) {
                                 array.set_attribute("type", "String");
-                                array.set_attribute("NumberOfTuples", 1);
+                                const auto strings = field.template export_to<MultiString>();
+                                array.set_attribute("NumberOfTuples", strings.slices().size());
                             } else {
                                 array.set_attribute("NumberOfTuples", layout.extent(0));
                                 array.set_attribute("type", attribute_name(precision));
@@ -908,14 +910,9 @@ class XMLReaderHelper {
     std::size_t _number_of_tuples(const XMLElement& element) const {
         const auto number_of_components = element.get_attribute_or(std::size_t{1}, "NumberOfComponents");
         const auto number_of_values = [&] () {
-            if (element.get_attribute("type") != "String") {
-                if (element.has_attribute("NumberOfTuples"))
-                    return from_string<std::size_t>(element.get_attribute("NumberOfTuples"));
-            } else if (element.has_attribute("NumberOfTuples")) {
-                const auto num_values = from_string<std::size_t>(element.get_attribute("NumberOfTuples"));
-                if (num_values > 1)
-                    throw ValueError("Cannot read string data arrays with more than one tuple");
-            }
+            // for strings, the tuples are the individual strings, but we read all characters
+            if (element.get_attribute("type") != "String" && element.has_attribute("NumberOfTuples"))
+                return from_string<std::size_t>(element.get_attribute("NumberOfTuples"));
             return _deduce_number_of_values(element);
         } ();
 

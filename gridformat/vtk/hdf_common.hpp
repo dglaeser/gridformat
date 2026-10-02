@@ -13,12 +13,16 @@
 #include <cstddef>
 #include <numeric>
 #include <string>
+#include <optional>
+#include <array>
 #include <exception>
 
 #include <gridformat/common/hdf5.hpp>
 #include <gridformat/common/field.hpp>
 #include <gridformat/common/precision.hpp>
 #include <gridformat/common/lazy_field.hpp>
+#include <gridformat/common/range_field.hpp>
+#include <gridformat/common/multi_string.hpp>
 #include <gridformat/common/string_conversion.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/parallel/communication.hpp>
@@ -107,21 +111,16 @@ inline void check_array_name(const std::string& name) {
         throw ValueError("VTKHDF array names must not contain '/' or '.' (received '" + name + "')");
 }
 
-//! Return true if the given field holds a single string (i.e. is a flat array of characters).
-//! Multi-dimensional character fields are not treated as strings, since the number of strings
-//! per time step is not expressible in the offsets that transient files store.
+//! Return true if the given field holds strings (i.e. is a flat array of characters, see MultiString)
 inline bool is_string_field(const Field& field) {
     return field.precision().template is<char>() && field.layout().dimension() == 1;
 }
 
-//! Return the string stored in the given character field, stripped of trailing null terminators
-inline std::string extract_string(const Field& field) {
-    const auto serialization = field.serialized();
-    const auto characters = serialization.template as_span_of<const char>();
-    std::string result{characters.begin(), characters.end()};
-    while (!result.empty() && result.back() == '\0')
-        result.pop_back();
-    return result;
+//! Return the strings stored in the given character field (see MultiString)
+inline std::vector<std::string> extract_strings(const Field& field) {
+    const auto strings = field.template export_to<MultiString>();
+    const auto slices = strings.slices();
+    return {slices.begin(), slices.end()};
 }
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE
@@ -179,6 +178,52 @@ void check_version_compatibility(const HDF5::File<C>& file, const std::array<std
                     "File version is higher than supported by the reader (" + as_string(supported, ".") + ")"
                 );
         });
+}
+
+/*!
+ * \brief Append the strings of a time step to a transient file.
+ * \details Uses the layout written by VTK: the strings of all steps are concatenated, and the offsets
+ *          and sizes (number of components and tuples) of each step are stored in the "Steps" group.
+ *          With `reuse_first_step`, the step refers to the strings of the first step.
+ */
+inline void write_transient_strings(HDF5::File<>& file,
+                                    const std::string& name,
+                                    const std::vector<std::string>& strings,
+                                    bool reuse_first_step) {
+    const std::string path = "/VTKHDF/FieldData/" + name;
+    const std::string offsets_path = "/VTKHDF/Steps/FieldDataOffsets/" + name;
+    const std::string sizes_path = "/VTKHDF/Steps/FieldDataSizes/" + name;
+    if (reuse_first_step) {
+        const auto first_sizes = file.read_dataset_to<std::vector<std::size_t>>(
+            sizes_path, HDF5::Slice{.offset = {0, 0}, .count = {1, 2}}
+        );
+        file.write(std::array{std::size_t{0}}, offsets_path);
+        file.write(std::vector{std::array{first_sizes.at(0), first_sizes.at(1)}}, sizes_path);
+        return;
+    }
+    file.write(std::array{file.get_dimensions(path).value_or(std::vector<std::size_t>{0}).at(0)}, offsets_path);
+    file.write(std::vector{std::array{std::size_t{1}, strings.size()}}, sizes_path);
+    file.write_strings(strings, path);
+}
+
+//! Read the strings of the field data array with the given name, at the given step for transient files
+template<typename C>
+FieldPtr read_strings(const HDF5::File<C>& file, const std::string& name, std::optional<std::size_t> step) {
+    std::optional<HDF5::Slice> slice;
+    if (step) {
+        const auto offset = file.template read_dataset_to<std::size_t>(
+            "VTKHDF/Steps/FieldDataOffsets/" + name, HDF5::Slice{.offset = {*step}, .count = {1}}
+        );
+        // without sizes, there is a single string per step
+        const std::string sizes_path = "VTKHDF/Steps/FieldDataSizes/" + name;
+        const std::size_t count = file.has_dataset_at(sizes_path)
+            ? file.template read_dataset_to<std::vector<std::size_t>>(
+                sizes_path, HDF5::Slice{.offset = {*step, 0}, .count = {1, 2}}
+            ).at(1)
+            : 1;
+        slice = HDF5::Slice{.offset = {offset}, .count = {count}};
+    }
+    return make_field_ptr(RangeField{MultiString{file.read_strings("VTKHDF/FieldData/" + name, slice)}});
 }
 
 /*!

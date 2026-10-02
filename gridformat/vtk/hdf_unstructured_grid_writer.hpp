@@ -234,22 +234,20 @@ class VTKHDFUnstructuredGridWriterImpl : public GridDetail::WriterBase<is_transi
             const auto field_ptr = this->_get_meta_data_field_ptr(name);
             const bool as_string = VTKHDF::is_string_field(*field_ptr);
             if constexpr (is_transient) {
-                if (this->_step_count > 0 && _transient_opts.static_meta_data) {
-                    file.write(std::array{std::size_t{0}}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
-                    return;
-                } else {
-                    file.write(std::array{std::size_t{this->_step_count}}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
-                }
-                // Strings occupy a single entry per step, other fields get a prepended step dimension
+                const bool reuse_first_step = this->_step_count > 0 && _transient_opts.static_meta_data;
                 if (as_string)
-                    file.write_strings({VTKHDF::extract_string(*field_ptr)}, "/VTKHDF/FieldData/" + name);
+                    VTKHDF::write_transient_strings(file, name, VTKHDF::extract_strings(*field_ptr), reuse_first_step);
+                else if (reuse_first_step)
+                    file.write(std::array{std::size_t{0}}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
                 else {
+                    // other fields get a prepended step dimension
+                    file.write(std::array{std::size_t{this->_step_count}}, "/VTKHDF/Steps/FieldDataOffsets/" + name);
                     TransformedField sub{field_ptr, FieldTransformation::as_sub_field};
                     file.write(sub, "/VTKHDF/FieldData/" + name);
                 }
             } else {
                 if (as_string)
-                    file.write_strings({VTKHDF::extract_string(*field_ptr)}, "/VTKHDF/FieldData/" + name);
+                    file.write_strings(VTKHDF::extract_strings(*field_ptr), "/VTKHDF/FieldData/" + name);
                 else
                     file.write(*field_ptr, "/VTKHDF/FieldData/" + name);
             }

@@ -63,8 +63,8 @@ def _get_grid_and_space_dimension(filename: str) -> Tuple[int, int]:
     return int(dim), int(space_dim)
 
 
-def _check_string_field_data(field_data, name: str, expected: str) -> None:
-    """Check that string metadata is read back as a vtkStringArray holding the expected value."""
+def _check_string_field_data(field_data, name: str, expected: str | list[str]) -> None:
+    """Check that string metadata is read back as a vtkStringArray holding the expected value(s)."""
     array = field_data.GetAbstractArray(name)
     if not isinstance(array, vtk.vtkStringArray):
         raise RuntimeError(
@@ -72,9 +72,10 @@ def _check_string_field_data(field_data, name: str, expected: str) -> None:
             f"{type(array).__name__}. Note that reading string field data from VTKHDF files "
             "requires VTK 9.4 or newer."
         )
-    assert array.GetNumberOfValues() == 1, f"Expected a single string in '{name}'"
-    assert array.GetValue(0) == expected, f"Expected '{expected}' in '{name}', got '{array.GetValue(0)}'"
-    print(f"Read '{name}' as a vtkStringArray with value '{expected}'")
+    expected = [expected] if isinstance(expected, str) else expected
+    values = [array.GetValue(i) for i in range(array.GetNumberOfValues())]
+    assert values == expected, f"Expected {expected} in '{name}', got {values}"
+    print(f"Read '{name}' as a vtkStringArray with values {expected}")
 
 
 def _check_vtk_file(vtk_grid,
@@ -88,7 +89,7 @@ def _check_vtk_file(vtk_grid,
 
     if not skip_metadata:
         field_data = vtk_grid.GetFieldData()
-        expected_field_data = ["literal", "string", "numbers"]
+        expected_field_data = ["literal", "string", "numbers", "strings"]
         for i in range(field_data.GetNumberOfArrays()):
             name = field_data.GetAbstractArray(i).GetName()
             if name in expected_field_data:
@@ -99,6 +100,7 @@ def _check_vtk_file(vtk_grid,
             print("Found all expected field data")
         _check_string_field_data(field_data, "literal", "some_literal_text")
         _check_string_field_data(field_data, "string", "some_string_text")
+        _check_string_field_data(field_data, "strings", ["first", "", "third"])
         if field_data.GetArray("TimeValue") is not None:
             assert field_data.GetArray("TimeValue").GetNumberOfTuples() == 1
             assert field_data.GetArray("TimeValue").GetNumberOfComponents() == 1
