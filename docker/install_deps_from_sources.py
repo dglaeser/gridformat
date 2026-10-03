@@ -9,7 +9,7 @@ import os
 
 
 PACKAGES = {
-    "cgal": "5.2.2",
+    "cgal": "6.2.1",
     "dolfinx": "0.6.0",
     "dune": "2.11",
     "mfem": "4.10",
