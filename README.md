@@ -170,7 +170,7 @@ or the predefined <!-- DOXYGEN_MAKE_ABSOLUTE -->[traits for several frameworks](
 [deal.ii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.6.0),
 [cgal](https://www.cgal.org/) triangulations in
 [2d](https://doc.cgal.org/latest/Triangulation_2/index.html) and
-[3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 5.2.2),
+[3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 6.2.1),
 [dolfinx](https://github.com/FEniCS/dolfinx) meshes and function spaces (tested dolfinx version: 0.6.0)
 and [mfem](https://mfem.org/) meshes (tested mfem version: 4.10).
 Users of these frameworks can include these predefined traits and use `GridFormat` directly

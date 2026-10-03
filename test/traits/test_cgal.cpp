@@ -191,7 +191,7 @@ void write(Grid grid, std::string prefix_addition = "") {
 }
 
 int main() {
-    using Kernel = CGAL::Exact_predicates_exact_constructions_kernel;
+    using Kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
     using ExactKernel = CGAL::Exact_predicates_exact_constructions_kernel;
 
     write(CGAL::Triangulation_2<Kernel>{});
