@@ -3,7 +3,8 @@
 /*!
  * \file
  * \ingroup PredefinedTraits
- * \brief Traits specializations for <a href="https://docs.fenicsproject.org/dolfinx/v0.6.0/cpp/">dolfinx meshes</a>
+ * \brief Traits specializations for <a href="https://docs.fenicsproject.org/dolfinx/v0.11.0/cpp/">dolfinx meshes</a>
+ * \note These traits are written for and tested with dolfinx 0.11.
  */
 #ifndef GRIDFORMAT_TRAITS_DOLFINX_HPP_
 #define GRIDFORMAT_TRAITS_DOLFINX_HPP_
@@ -14,6 +15,9 @@
 #include <utility>
 #include <memory>
 #include <algorithm>
+#include <concepts>
+#include <span>
+#include <vector>
 
 #include <dolfinx/io/cells.h>
 #include <dolfinx/io/vtk_utils.h>
@@ -54,14 +58,23 @@ namespace Detail {
         throw NotImplemented("Support for dolfinx cell type '" + dolfinx::mesh::to_string(ct) + "'");
     }
 
-    bool is_cellwise_constant(const dolfinx::fem::FunctionSpace& space) {
+    template<std::floating_point T>
+    bool is_cellwise_constant(const dolfinx::fem::FunctionSpace<T>& space) {
         return space.dofmap()->element_dof_layout().num_dofs() == 1;
     }
 
-    template<typename T>
-    bool is_cellwise_constant(const dolfinx::fem::Function<T>& f) {
+    template<typename T, std::floating_point U>
+    bool is_cellwise_constant(const dolfinx::fem::Function<T, U>& f) {
         assert(f.function_space());
         return is_cellwise_constant(*f.function_space());
+    }
+
+    //! Return the geometry nodes of the given cell (for meshes with a single cell type)
+    template<std::floating_point T>
+    std::span<const std::int32_t> cell_nodes(const dolfinx::mesh::Mesh<T>& mesh, std::int32_t cell) {
+        const auto dofmap = mesh.geometry().dofmaps().front();
+        const auto num_nodes = dofmap.extent(1);
+        return {dofmap.data_handle() + static_cast<std::size_t>(cell)*num_nodes, num_nodes};
     }
 }  // namespace Detail
 #endif  // DOXYGEN
@@ -70,10 +83,10 @@ namespace Detail {
 
 namespace Traits {
 
-template<>
-struct Cells<dolfinx::mesh::Mesh> {
-    static std::ranges::range auto get(const dolfinx::mesh::Mesh& mesh) {
-        auto map = mesh.topology().index_map(mesh.topology().dim());
+template<std::floating_point T>
+struct Cells<dolfinx::mesh::Mesh<T>> {
+    static std::ranges::range auto get(const dolfinx::mesh::Mesh<T>& mesh) {
+        auto map = mesh.topology()->index_map(mesh.topology()->dim());
         if (!map) throw GridFormat::ValueError("Cell index map not available");
         return std::views::iota(0, map->size_local()) | std::views::transform([] (std::int32_t i) {
             return DolfinX::Cell{i};
@@ -81,31 +94,31 @@ struct Cells<dolfinx::mesh::Mesh> {
     }
 };
 
-template<>
-struct CellType<dolfinx::mesh::Mesh, DolfinX::Cell> {
-    static GridFormat::CellType get(const dolfinx::mesh::Mesh& mesh, const DolfinX::Cell&) {
-        return DolfinX::Detail::cell_type(mesh.topology().cell_type());
+template<std::floating_point T>
+struct CellType<dolfinx::mesh::Mesh<T>, DolfinX::Cell> {
+    static GridFormat::CellType get(const dolfinx::mesh::Mesh<T>& mesh, const DolfinX::Cell&) {
+        return DolfinX::Detail::cell_type(mesh.topology()->cell_type());
     }
 };
 
-template<>
-struct CellPoints<dolfinx::mesh::Mesh, DolfinX::Cell> {
-    static std::ranges::range auto get(const dolfinx::mesh::Mesh& mesh, const DolfinX::Cell& cell) {
-        std::span links = mesh.geometry().dofmap().links(cell.index);
+template<std::floating_point T>
+struct CellPoints<dolfinx::mesh::Mesh<T>, DolfinX::Cell> {
+    static std::ranges::range auto get(const dolfinx::mesh::Mesh<T>& mesh, const DolfinX::Cell& cell) {
+        const auto nodes = DolfinX::Detail::cell_nodes(mesh, cell.index);
         auto permutation = dolfinx::io::cells::transpose(
-            dolfinx::io::cells::perm_vtk(mesh.topology().cell_type(), links.size())
+            dolfinx::io::cells::perm_vtk(mesh.topology()->cell_type(), nodes.size())
         );
-        return std::views::iota(std::size_t{0}, links.size())
-            | std::views::transform([perm = std::move(permutation), links=links] (std::size_t i) {
-                return DolfinX::Point{links[perm[i]]};
+        return std::views::iota(std::size_t{0}, nodes.size())
+            | std::views::transform([perm = std::move(permutation), nodes=nodes] (std::size_t i) {
+                return DolfinX::Point{nodes[perm[i]]};
             }
         );
     }
 };
 
-template<>
-struct Points<dolfinx::mesh::Mesh> {
-    static std::ranges::range auto get(const dolfinx::mesh::Mesh& mesh) {
+template<std::floating_point T>
+struct Points<dolfinx::mesh::Mesh<T>> {
+    static std::ranges::range auto get(const dolfinx::mesh::Mesh<T>& mesh) {
         const auto num_points = mesh.geometry().x().size()/3;
         return std::views::iota(std::size_t{0}, num_points) | std::views::transform([] (std::size_t i) {
             return DolfinX::Point{static_cast<std::int32_t>(i)};
@@ -113,44 +126,41 @@ struct Points<dolfinx::mesh::Mesh> {
     }
 };
 
-template<>
-struct PointCoordinates<dolfinx::mesh::Mesh, DolfinX::Point> {
-    static std::ranges::range auto get(const dolfinx::mesh::Mesh& mesh, const DolfinX::Point& point) {
-        return std::array{
-            mesh.geometry().x()[point.index*3],
-            mesh.geometry().x()[point.index*3 + 1],
-            mesh.geometry().x()[point.index*3 + 2]
-        };
+template<std::floating_point T>
+struct PointCoordinates<dolfinx::mesh::Mesh<T>, DolfinX::Point> {
+    static std::ranges::range auto get(const dolfinx::mesh::Mesh<T>& mesh, const DolfinX::Point& point) {
+        const auto x = mesh.geometry().x();
+        return std::array{x[point.index*3], x[point.index*3 + 1], x[point.index*3 + 2]};
     }
 };
 
-template<>
-struct PointId<dolfinx::mesh::Mesh, DolfinX::Point> {
-    static std::integral auto get(const dolfinx::mesh::Mesh&, const DolfinX::Point& point) {
+template<std::floating_point T>
+struct PointId<dolfinx::mesh::Mesh<T>, DolfinX::Point> {
+    static std::integral auto get(const dolfinx::mesh::Mesh<T>&, const DolfinX::Point& point) {
         return point.index;
     }
 };
 
-template<>
-struct NumberOfPoints<dolfinx::mesh::Mesh> {
-    static std::integral auto get(const dolfinx::mesh::Mesh& mesh) {
+template<std::floating_point T>
+struct NumberOfPoints<dolfinx::mesh::Mesh<T>> {
+    static std::integral auto get(const dolfinx::mesh::Mesh<T>& mesh) {
         return mesh.geometry().x().size()/3;
     }
 };
 
-template<>
-struct NumberOfCells<dolfinx::mesh::Mesh> {
-    static std::integral auto get(const dolfinx::mesh::Mesh& mesh) {
-        auto map = mesh.topology().index_map(mesh.topology().dim());
+template<std::floating_point T>
+struct NumberOfCells<dolfinx::mesh::Mesh<T>> {
+    static std::integral auto get(const dolfinx::mesh::Mesh<T>& mesh) {
+        auto map = mesh.topology()->index_map(mesh.topology()->dim());
         if (!map) throw GridFormat::ValueError("Cell index map not available");
         return map->size_local();
     }
 };
 
-template<>
-struct NumberOfCellPoints<dolfinx::mesh::Mesh, DolfinX::Cell> {
-    static std::integral auto get(const dolfinx::mesh::Mesh& mesh, const DolfinX::Cell& cell) {
-        return mesh.geometry().dofmap().links(cell.index).size();
+template<std::floating_point T>
+struct NumberOfCellPoints<dolfinx::mesh::Mesh<T>, DolfinX::Cell> {
+    static std::integral auto get(const dolfinx::mesh::Mesh<T>& mesh, const DolfinX::Cell&) {
+        return mesh.geometry().dofmaps().front().extent(1);
     }
 };
 
@@ -162,15 +172,20 @@ namespace DolfinX {
  * \ingroup PredefinedTraits
  * \brief Wrapper around a nodal dolfinx::FunctionSpace, exposing it as a mesh
  *        composed of lagrange elements with the order of the given function space.
+ * \tparam T The geometry (coordinate) type of the underlying dolfinx mesh.
  */
+template<std::floating_point T>
 class LagrangePolynomialGrid {
  public:
     LagrangePolynomialGrid() = default;
-    LagrangePolynomialGrid(const dolfinx::fem::FunctionSpace& space) {
+    LagrangePolynomialGrid(const dolfinx::fem::FunctionSpace<T>& space) {
         if (!space.mesh() || !space.element())
             throw ValueError("Cannot construct mesh from space without mesh or element");
+        // dolfinx does not check this precondition of vtk_mesh_from_space and fails with undefined behaviour
+        if (Detail::is_cellwise_constant(space))
+            throw ValueError("Cannot construct mesh from a space with cell-wise constant (P0) functions");
 
-        _cell_type = space.mesh()->topology().cell_type();
+        _cell_type = space.mesh()->topology()->cell_type();
         _mesh = space.mesh();
         _element = space.element();
 
@@ -183,7 +198,7 @@ class LagrangePolynomialGrid {
         _set = true;
     }
 
-    void update(const dolfinx::fem::FunctionSpace& space) {
+    void update(const dolfinx::fem::FunctionSpace<T>& space) {
         *this = LagrangePolynomialGrid{space};
     }
 
@@ -196,7 +211,7 @@ class LagrangePolynomialGrid {
         _set = false;
     }
 
-    static LagrangePolynomialGrid from(const dolfinx::fem::FunctionSpace& space) {
+    static LagrangePolynomialGrid from(const dolfinx::fem::FunctionSpace<T>& space) {
         return {space};
     }
 
@@ -240,14 +255,14 @@ class LagrangePolynomialGrid {
             });
     }
 
-    template<int rank = 0, int dim = 3, Concepts::Scalar T>
-    auto evaluate(const dolfinx::fem::Function<T>& f, const Cell& c) const {
+    template<int rank = 0, int dim = 3, Concepts::Scalar V>
+    auto evaluate(const dolfinx::fem::Function<V, T>& f, const Cell& c) const {
         assert(is_compatible(f));
         return _evaluate<rank, dim>(f, c.index);
     }
 
-    template<int rank = 0, int dim = 3, Concepts::Scalar T>
-    auto evaluate(const dolfinx::fem::Function<T>& f, const Point& p) const {
+    template<int rank = 0, int dim = 3, Concepts::Scalar V>
+    auto evaluate(const dolfinx::fem::Function<V, T>& f, const Point& p) const {
         assert(is_compatible(f));
         return _evaluate<rank, dim>(f, p.index);
     }
@@ -256,8 +271,8 @@ class LagrangePolynomialGrid {
         return _cell_type;
     }
 
-    template<Concepts::Scalar T>
-    bool is_compatible(const dolfinx::fem::Function<T>& f) const {
+    template<Concepts::Scalar V>
+    bool is_compatible(const dolfinx::fem::Function<V, T>& f) const {
         if (!_set) return false;
         if (!f.function_space()->mesh()) return false;
         if (f.function_space()->mesh() != _mesh) return false;
@@ -274,39 +289,52 @@ class LagrangePolynomialGrid {
             throw InvalidState("Mesh has not been built");
     }
 
-    template<int rank = 0, int dim = 3, Concepts::Scalar T>
-    auto _evaluate(const dolfinx::fem::Function<T>& f, const std::integral auto i) const {
+    template<int rank = 0, int dim = 3, Concepts::Scalar V>
+    auto _evaluate(const dolfinx::fem::Function<V, T>& f, const std::integral auto i) const {
         const auto f_components = f.function_space()->element()->block_size();
+        const auto& values = f.x()->array();
         assert(f.function_space()->element()->value_shape().size() == rank);
-        assert(f.x()->array().size() >= static_cast<std::size_t>(i*f_components + f_components));
+        assert(values.size() >= static_cast<std::size_t>(i*f_components + f_components));
 
         if constexpr (rank == 0)
-            return f.x()->array()[i*f_components];
+            return values[i*f_components];
         else if constexpr (rank == 1) {
-            auto result = Ranges::filled_array<dim>(T{0});
+            auto result = Ranges::filled_array<dim>(V{0});
             std::copy_n(
-                f.x()->array().data() + i*f_components,
+                values.data() + i*f_components,
                 std::min(dim, f_components),
                 result.begin()
             );
             return result;
         } else {
             throw NotImplemented("Tensor evaluation");
-            return std::array<std::array<T, dim>, dim>{};  // for return type deduction
+            return std::array<std::array<V, dim>, dim>{};  // for return type deduction
         }
     }
 
     dolfinx::mesh::CellType _cell_type;
-    std::shared_ptr<const dolfinx::mesh::Mesh> _mesh{nullptr};
-    std::shared_ptr<const dolfinx::fem::FiniteElement> _element{nullptr};
+    std::shared_ptr<const dolfinx::mesh::Mesh<T>> _mesh{nullptr};
+    std::shared_ptr<const dolfinx::fem::FiniteElement<T>> _element{nullptr};
 
-    std::vector<double> _node_coords;
+    std::vector<T> _node_coords;
     std::array<std::size_t, 2> _node_coords_shape;
     std::vector<std::int64_t> _node_ids;
     std::vector<std::int64_t> _cells;
     std::array<std::size_t, 2> _cells_shape;
     bool _set = false;
 };
+
+template<std::floating_point T>
+LagrangePolynomialGrid(const dolfinx::fem::FunctionSpace<T>&) -> LagrangePolynomialGrid<T>;
+
+/*!
+ * \ingroup PredefinedTraits
+ * \brief Create a LagrangePolynomialGrid from the given function space.
+ */
+template<std::floating_point T>
+LagrangePolynomialGrid<T> make_lagrange_grid(const dolfinx::fem::FunctionSpace<T>& space) {
+    return LagrangePolynomialGrid<T>{space};
+}
 
 /*!
  * \ingroup PredefinedTraits
@@ -316,8 +344,8 @@ class LagrangePolynomialGrid {
  * \param name The name of the field (defaults to `f.name`)
  * \param prec The precision with which to write the field (defaults to the function's scalar type)
  */
-template<typename Writer, Concepts::Scalar T, Concepts::Scalar P = T>
-void set_point_function(const dolfinx::fem::Function<T>& f,
+template<typename Writer, Concepts::Scalar T, std::floating_point U, Concepts::Scalar P = T>
+void set_point_function(const dolfinx::fem::Function<T, U>& f,
                         Writer& writer,
                         std::string name = "",
                         const Precision<P>& prec = {}) {
@@ -345,8 +373,8 @@ void set_point_function(const dolfinx::fem::Function<T>& f,
  * \param name The name of the field (defaults to `f.name`)
  * \param prec The precision with which to write the field (defaults to the function's scalar type)
  */
-template<typename Writer, Concepts::Scalar T, Concepts::Scalar P = T>
-void set_cell_function(const dolfinx::fem::Function<T>& f,
+template<typename Writer, Concepts::Scalar T, std::floating_point U, Concepts::Scalar P = T>
+void set_cell_function(const dolfinx::fem::Function<T, U>& f,
                        Writer& writer,
                        std::string name = "",
                        const Precision<P>& prec = {}) {
@@ -374,8 +402,8 @@ void set_cell_function(const dolfinx::fem::Function<T>& f,
  * \param name The name of the field (defaults to `f.name`)
  * \param prec The precision with which to write the field (defaults to the function's scalar type)
  */
-template<typename Writer, Concepts::Scalar T, Concepts::Scalar P = T>
-void set_function(const dolfinx::fem::Function<T>& f,
+template<typename Writer, Concepts::Scalar T, std::floating_point U, Concepts::Scalar P = T>
+void set_function(const dolfinx::fem::Function<T, U>& f,
                   Writer& writer,
                   const std::string& name = "",
                   const Precision<P>& prec = {}) {
@@ -389,65 +417,65 @@ void set_function(const dolfinx::fem::Function<T>& f,
 
 namespace Traits {
 
-template<>
-struct Cells<DolfinX::LagrangePolynomialGrid> {
-    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid& mesh) {
+template<std::floating_point T>
+struct Cells<DolfinX::LagrangePolynomialGrid<T>> {
+    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid<T>& mesh) {
         return mesh.cells();
     }
 };
 
-template<>
-struct CellType<DolfinX::LagrangePolynomialGrid, DolfinX::Cell> {
-    static GridFormat::CellType get(const DolfinX::LagrangePolynomialGrid& mesh, const DolfinX::Cell&) {
+template<std::floating_point T>
+struct CellType<DolfinX::LagrangePolynomialGrid<T>, DolfinX::Cell> {
+    static GridFormat::CellType get(const DolfinX::LagrangePolynomialGrid<T>& mesh, const DolfinX::Cell&) {
         return DolfinX::Detail::cell_type(mesh.cell_type());
     }
 };
 
-template<>
-struct CellPoints<DolfinX::LagrangePolynomialGrid, DolfinX::Cell> {
-    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid& mesh, const DolfinX::Cell& cell) {
+template<std::floating_point T>
+struct CellPoints<DolfinX::LagrangePolynomialGrid<T>, DolfinX::Cell> {
+    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid<T>& mesh, const DolfinX::Cell& cell) {
         return mesh.points(cell);
     }
 };
 
-template<>
-struct Points<DolfinX::LagrangePolynomialGrid> {
-    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid& mesh) {
+template<std::floating_point T>
+struct Points<DolfinX::LagrangePolynomialGrid<T>> {
+    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid<T>& mesh) {
         return mesh.points();
     }
 };
 
-template<>
-struct PointCoordinates<DolfinX::LagrangePolynomialGrid, DolfinX::Point> {
-    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid& mesh, const DolfinX::Point& point) {
+template<std::floating_point T>
+struct PointCoordinates<DolfinX::LagrangePolynomialGrid<T>, DolfinX::Point> {
+    static std::ranges::range auto get(const DolfinX::LagrangePolynomialGrid<T>& mesh, const DolfinX::Point& point) {
         return mesh.position(point);
     }
 };
 
-template<>
-struct PointId<DolfinX::LagrangePolynomialGrid, DolfinX::Point> {
-    static std::integral auto get(const DolfinX::LagrangePolynomialGrid& mesh, const DolfinX::Point& point) {
+template<std::floating_point T>
+struct PointId<DolfinX::LagrangePolynomialGrid<T>, DolfinX::Point> {
+    static std::integral auto get(const DolfinX::LagrangePolynomialGrid<T>& mesh, const DolfinX::Point& point) {
         return mesh.id(point);
     }
 };
 
-template<>
-struct NumberOfPoints<DolfinX::LagrangePolynomialGrid> {
-    static std::integral auto get(const DolfinX::LagrangePolynomialGrid& mesh) {
+template<std::floating_point T>
+struct NumberOfPoints<DolfinX::LagrangePolynomialGrid<T>> {
+    static std::integral auto get(const DolfinX::LagrangePolynomialGrid<T>& mesh) {
         return mesh.number_of_points();
     }
 };
 
-template<>
-struct NumberOfCells<DolfinX::LagrangePolynomialGrid> {
-    static std::integral auto get(const DolfinX::LagrangePolynomialGrid& mesh) {
+template<std::floating_point T>
+struct NumberOfCells<DolfinX::LagrangePolynomialGrid<T>> {
+    static std::integral auto get(const DolfinX::LagrangePolynomialGrid<T>& mesh) {
         return mesh.number_of_cells();
     }
 };
 
-template<>
-struct NumberOfCellPoints<DolfinX::LagrangePolynomialGrid, DolfinX::Cell> {
-    static std::integral auto get(const DolfinX::LagrangePolynomialGrid& mesh, const DolfinX::Cell&) {
+template<std::floating_point T>
+struct NumberOfCellPoints<DolfinX::LagrangePolynomialGrid<T>, DolfinX::Cell> {
+    static std::integral auto get(const DolfinX::LagrangePolynomialGrid<T>& mesh, const DolfinX::Cell&) {
         return mesh.number_of_cell_points();
     }
 };

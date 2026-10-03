@@ -10,7 +10,7 @@ import os
 
 PACKAGES = {
     "cgal": "6.2.1",
-    "dolfinx": "0.6.0",
+    "dolfinx": "0.11.0",
     "dune": "2.11",
     "mfem": "4.10",
     "doxygen": "Release_1_18_0"
@@ -55,10 +55,11 @@ def _install_pkg(name, opts: dict) -> None:
             "branch": f"v{PACKAGES['cgal']}"
         } | opts)
     elif name == "dolfinx":
+        # the top-level directory builds the python bindings as well, the c++ library is in cpp
         _install_from_source({
             "origin": "https://github.com/FEniCS/basix.git",
             "branch": f"v{PACKAGES['dolfinx']}"
-        } | opts)
+        } | opts, subdir="cpp")
         _install_from_source({
             "origin": "https://github.com/FEniCS/dolfinx.git",
             "branch": f"v{PACKAGES['dolfinx']}"
