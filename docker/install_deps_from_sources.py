@@ -11,7 +11,7 @@ import os
 PACKAGES = {
     "cgal": "5.2.2",
     "dolfinx": "0.6.0",
-    "dune": "2.9",
+    "dune": "2.11",
     "mfem": "4.5.2",
     "doxygen": "Release_1_9_6"
 }
@@ -94,6 +94,8 @@ def _install_pkg(name, opts: dict) -> None:
         _clone_sources("https://github.com/dune-project/dune-istl.git", f"releases/{PACKAGES['dune']}")
         _clone_sources("https://github.com/dune-mirrors/dune-alugrid.git", f"releases/{PACKAGES['dune']}")
         _clone_sources("https://github.com/dune-project/dune-typetree.git", f"releases/{PACKAGES['dune']}")
+        # required by dune-functions since dune 2.10
+        _clone_sources("https://github.com/dune-project/dune-uggrid.git", f"releases/{PACKAGES['dune']}")
         _clone_sources("https://github.com/dune-project/dune-functions.git", f"releases/{PACKAGES['dune']}")
         subprocess.run(["dune-common/bin/dunecontrol", "--opts=dune.opts", "configure"], check=True)
         subprocess.run(["dune-common/bin/dunecontrol", "--opts=dune.opts", "make", "-j4"], check=True)

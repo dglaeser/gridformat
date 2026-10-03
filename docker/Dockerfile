@@ -9,7 +9,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-FROM base as minimal
+FROM base AS minimal
 RUN apt-get update \
     && apt-get install --no-install-recommends --yes \
         build-essential \
@@ -31,7 +31,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-FROM minimal as full
+FROM minimal AS full
 RUN apt-get update \
     && apt-get install --no-install-recommends --yes \
         zlib1g \
