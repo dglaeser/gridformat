@@ -59,6 +59,9 @@ RUN apt-get update \
         libboost-timer-dev \
         libboost-filesystem-dev \
         petsc-dev \
+        libspdlog-dev \
+        # dolfinx requires a graph partitioner, and only finds scotch via its (missing) cmake config
+        libparmetis-dev \
         # fenics wheel builds with ninja
         ninja-build \
     # deal.ii
@@ -69,9 +72,11 @@ RUN apt-get update \
 
 COPY install_deps_from_sources.py .
 RUN . /gfmt-venv/bin/activate \
-    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-12 100 \
-    && pip install "setuptools<82" fenics-ffcx==0.6.0 pybind11 \
+    # dolfinx >= 0.10 uses std::format, which libstdc++ provides since gcc 13
+    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-14 100 \
+    # keep the ffcx version in sync with PACKAGES['dolfinx'] in install_deps_from_sources.py
+    && pip install fenics-ffcx==0.11.0 pybind11 \
     && python3 install_deps_from_sources.py --all \
                                             --install-prefix=/gfmt-dependencies \
-                                            --c-compiler=/usr/bin/gcc-12 \
-                                            --cxx-compiler=/usr/bin/g++-12
+                                            --c-compiler=/usr/bin/gcc-14 \
+                                            --cxx-compiler=/usr/bin/g++-14

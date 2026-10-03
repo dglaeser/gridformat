@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.18)
 project(gridformat_dolfinx_example)
 
 include(../find_gridformat.cmake)
-find_package(DOLFINX 0.6.0 REQUIRED)
+find_package(DOLFINX 0.11 REQUIRED)
 
 add_executable(dolfinx_traits dolfinx_traits.cpp)
 add_test(NAME dolfinx_traits COMMAND ./dolfinx_traits)
