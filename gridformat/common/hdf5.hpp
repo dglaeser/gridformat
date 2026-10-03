@@ -148,10 +148,6 @@ struct AsciiString : public HighFive::DataType {
             return AsciiString{N-1};
         return AsciiString{N};
     }
-
-    static AsciiString from(const std::string& n) {
-        return AsciiString{n.size()};
-    }
 };
 
 //! Variable-length string data type, storing one string per dataspace entry.

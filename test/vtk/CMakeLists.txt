@@ -43,12 +43,11 @@ gridformat_add_regression_test_if(
     "vtk_hdf_unstructured*hdf"
 )
 
-# TODO: when vtk 9.2.7 is out (with hdftransient support) do regression with time series also
 gridformat_add_regression_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_unstructured_grid_reader
     test_vtk_hdf_unstructured_grid_reader.cpp
-    "reader_vtk_hdf_unstructured_test*hdf"
+    "reader_vtk_hdf_unstructured_*hdf"
 )
 if (TARGET test_vtk_hdf_unstructured_grid_reader)
     target_compile_definitions(test_vtk_hdf_unstructured_grid_reader PRIVATE TEST_DATA_PATH="${CMAKE_CURRENT_LIST_DIR}/test_data")
@@ -82,22 +81,18 @@ gridformat_add_parallel_regression_test_if(
     "pvtk_hdf_time_series*.hdf"
 )
 
-# TODO: when vtk 9.2.7 is out (with the reader fixes) do regression also in 2D
 gridformat_add_regression_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_image_grid_writer
     test_vtk_hdf_image_grid_writer.cpp
-    "vtk_hdf_image_3d*hdf"
-    SCRIPT_ARGS "--skip-metadata"
+    "vtk_hdf_image_*hdf"
 )
 
-# TODO: when vtk 9.2.7 is out (with hdftransient support) do regression for time series also
 gridformat_add_regression_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
     test_vtk_hdf_image_grid_reader
     test_vtk_hdf_image_grid_reader.cpp
-    "reader_vtk_hdf_structured_image_test*hdf"
-    SCRIPT_ARGS "--skip-metadata"
+    "reader_vtk_hdf_structured_*hdf"
 )
 if (TARGET test_vtk_hdf_image_grid_reader)
     target_compile_definitions(test_vtk_hdf_image_grid_reader PRIVATE TEST_DATA_PATH="${CMAKE_CURRENT_LIST_DIR}/test_data")
@@ -117,13 +112,11 @@ foreach (NR IN LISTS RANKS)
         "pvtk_*unstructured*nranks_${NR}*hdf"
     )
 
-    # TODO: once vtk9.2.7 (with the reader fixes) is out, regression-test 2d files also
     gridformat_add_parallel_regression_test_if(
         GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
         test_vtk_hdf_parallel_image_grid_writer_nranks_${NR}
         test_vtk_hdf_parallel_image_grid_writer.cpp
         ${NR}
-        "pvtk_3d_*image*nranks_${NR}*hdf"
-        SCRIPT_ARGS "--skip-metadata"
+        "pvtk_*image*nranks_${NR}*hdf"
     )
 endforeach ()

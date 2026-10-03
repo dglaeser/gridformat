@@ -17,10 +17,7 @@ void _test(const Grid& grid, const Communicator& comm, const std::string& filena
     GridFormat::Test::write_test_file<GridFormat::dimension<Grid>>(
         writer,
         filename,
-        {
-            .write_cell_data = false,
-            .write_meta_data = false
-        },
+        {},
         verbose
     );
 }
@@ -78,11 +75,6 @@ int main(int argc, char** argv) {
                 );
             }
 
-    // TODO: the vtkHDFReader in python, at least the way we use it, does not yield the correct
-    //       point coordinates, but still the axis-aligned ones. Interestingly, ParaView correctly
-    //       displays the files we produce. Also, we obtain the points of a read .vti files in the
-    //       same way in our test script and that works fine. For now, we only test if the files
-    //       are successfully written, but we use filenames such that they are not regression-tested.
     constexpr auto sqrt2_half = 1.0/std::numbers::sqrt2;
     double oriented_xoffset = xoffset*sqrt2_half - yoffset*sqrt2_half;
     double oriented_yoffset = xoffset*sqrt2_half + yoffset*sqrt2_half;
@@ -97,7 +89,7 @@ int main(int argc, char** argv) {
             {{oriented_xoffset, oriented_yoffset}}
         },
         MPI_COMM_WORLD,
-        "_ignore_regression_pvtk_2d_in_2d_image_oriented_nranks_" + std::to_string(num_ranks)
+        "pvtk_2d_in_2d_image_oriented_nranks_" + std::to_string(num_ranks)
     );
 
     _test(
@@ -112,7 +104,7 @@ int main(int argc, char** argv) {
             {{oriented_xoffset, oriented_yoffset, 0.0}}
         },
         MPI_COMM_WORLD,
-        "_ignore_regression_pvtk_3d_in_3d_image_oriented_nranks_" + std::to_string(num_ranks)
+        "pvtk_3d_in_3d_image_oriented_nranks_" + std::to_string(num_ranks)
     );
 
     MPI_Finalize();

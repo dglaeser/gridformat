@@ -12,20 +12,10 @@
 
 template<typename Grid>
 void _test(Grid&& grid, const std::string& filename) {
-    // TODO: There is a (fixed) issue in the vtkHDFReader when reading cell arrays from image grids:
-    //       see https://gitlab.kitware.com/vtk/vtk/-/issues/18860
-    //       Once this is in a release version we should also add cell data
-    // TODO: There is an issue with field data (https://gitlab.kitware.com/vtk/vtk/-/issues/19030)
-    //       Once fixed, add meta data as well
     GridFormat::VTKHDFWriter writer{grid};
     GridFormat::Test::write_test_file<GridFormat::dimension<Grid>>(
         writer,
-        filename,
-        {
-            .write_cell_data = false,
-            .write_meta_data = false
-        }
-    );
+        filename);
 }
 
 int main() {
@@ -49,11 +39,6 @@ int main() {
                     + "_" + std::to_string(nz)
                 );
 
-    // TODO: the vtkHDFReader in python, at least the way we use it, does not yield the correct
-    //       point coordinates, but still the axis-aligned ones. Interestingly, ParaView correctly
-    //       displays the files we produce. Also, we obtain the points of a read .vti files in the
-    //       same way in our test script and that works fine. For now, we only test if the files
-    //       are successfully written, but we use filenames such that they are not regression-tested.
     constexpr auto sqrt2_half = 1.0/std::numbers::sqrt2;
     _test(
         GridFormat::Test::OrientedStructuredGrid<2>{
@@ -64,7 +49,7 @@ int main() {
             {{1.0, 1.0}},
             {{3, 4}}
         },
-        "_ignore_regression_vtk_2d_in_2d_image_oriented"
+        "vtk_hdf_image_2d_in_2d_oriented"
     );
 
     _test(
@@ -77,7 +62,7 @@ int main() {
             {{1.0, 1.0, 1.0}},
             {{2, 3, 4}}
         },
-        "_ignore_regression_vtk_3d_in_3d_image_oriented"
+        "vtk_hdf_image_3d_in_3d_oriented"
     );
 
     return 0;
