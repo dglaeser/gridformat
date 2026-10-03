@@ -12,7 +12,7 @@ PACKAGES = {
     "cgal": "5.2.2",
     "dolfinx": "0.6.0",
     "dune": "2.11",
-    "mfem": "4.5.2",
+    "mfem": "4.10",
     "doxygen": "Release_1_9_6"
 }
 
