@@ -38,6 +38,7 @@ endfunction()
 
 add_custom_target(memcheck)
 find_program(VALGRIND_PATH valgrind)
+set(GRIDFORMAT_VALGRIND_SUPPRESSIONS ${CMAKE_CURRENT_LIST_DIR}/valgrind_mpi.supp)
 function(gridformat_add_test_exe NAME SOURCE)
     cmake_parse_arguments(EXTRA_ARGS "SKIP_MEMCHECK" "" "" ${ARGN})
     add_executable(${NAME} ${SOURCE})
@@ -51,7 +52,8 @@ function(gridformat_add_test_exe NAME SOURCE)
         set(MEMCHECK_TARGET ${NAME}_memcheck)
         add_custom_target(
             ${MEMCHECK_TARGET}
-            COMMAND ${VALGRIND_PATH} --leak-check=yes --error-exitcode=1 $<TARGET_FILE:${NAME}>
+            COMMAND ${VALGRIND_PATH} --leak-check=yes --error-exitcode=1
+                    --suppressions=${GRIDFORMAT_VALGRIND_SUPPRESSIONS} $<TARGET_FILE:${NAME}>
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
         add_dependencies(memcheck ${MEMCHECK_TARGET})
