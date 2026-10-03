@@ -22,7 +22,7 @@ namespace GridFormat {
 /*!
  * \ingroup VTK
  * \brief Reader for .pvtr file format
- * \copydetails VTK::PXMLStructuredGridReader
+ * \copydetails GridFormat::VTK::PXMLStructuredGridReader
  */
 class PVTRReader : public VTK::PXMLStructuredGridReader<VTRReader> {
     using ParentType = VTK::PXMLStructuredGridReader<VTRReader>;
