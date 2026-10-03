@@ -16,7 +16,7 @@ namespace GridFormat {
 /*!
  * \ingroup VTK
  * \brief Reader for .pvts file format
- * \copydetails VTK::PXMLStructuredGridReader
+ * \copydetails GridFormat::VTK::PXMLStructuredGridReader
  */
 class PVTSReader : public VTK::PXMLStructuredGridReader<VTSReader> {
     using ParentType = VTK::PXMLStructuredGridReader<VTSReader>;

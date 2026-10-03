@@ -191,3 +191,26 @@ if (${DUNE_FOUND})
         endif ()
     endforeach ()
 endif ()
+
+# convenience targets to build the tests of one framework, e.g. `cmake --build build --target build_dune_tests`
+function (gridformat_add_traits_tests_target FRAMEWORK)
+    add_custom_target(build_${FRAMEWORK}_tests)
+    foreach (test ${ARGN})
+        if (TARGET ${test})
+            add_dependencies(build_${FRAMEWORK}_tests ${test})
+        endif ()
+    endforeach ()
+endfunction ()
+
+gridformat_add_traits_tests_target(cgal test_cgal)
+gridformat_add_traits_tests_target(dolfinx test_dolfinx test_dolfinx_sequential)
+gridformat_add_traits_tests_target(dealii test_dealii_sequential test_dealii_parallel)
+gridformat_add_traits_tests_target(mfem test_mfem)
+gridformat_add_traits_tests_target(dune
+    test_dune_unstructured
+    test_dune_yasp_image_grid
+    test_dune_yasp_rectilinear_grid
+    test_dune_unstructured_parallel
+    test_dune_yasp_parallel_image_grid
+    test_dune_yasp_parallel_rectilinear_grid
+)

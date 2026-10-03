@@ -99,7 +99,7 @@ In case you want to use `GridFormat` in parallel computations, please make sure 
 
 <!-- DOXYGEN_ONLY [TOC] -->
 
-### Mandatory Traits
+## Mandatory Traits
 
 - `template<typename Grid> struct Cells;`
 
@@ -145,7 +145,7 @@ above, `GridFormat` deduces these types from the `Cells` and `Points` traits. In
 and `Point`.
 
 
-### Traits for Unstructured Grids
+## Traits for Unstructured Grids
 
 - `template<typename Grid, typename Cell> struct CellPoints;`
 
@@ -232,7 +232,7 @@ struct PointId<SomeUnstructuredGrid, int> {
 ```
 
 
-### Traits for Structured Grids
+## Traits for Structured Grids
 
 In addition to the traits below, the `StructuredGrid` concept also requires that the `PointCoordinates` trait is implemented
 (see above).
@@ -289,7 +289,7 @@ struct Location<SomeStructuredGrid, Entity> {
 ```
 
 
-### Traits for Rectilinear Grids
+## Traits for Rectilinear Grids
 
 In addition to the `Ordinates` trait below, the `RectilinearGrid` concept also requires that the `Extents` and `Location` traits
 are implemented (see above).
@@ -318,7 +318,7 @@ struct Ordinates<SomeRectilinearGrid> {
 ```
 
 
-### Traits for Image Grids
+## Traits for Image Grids
 
 In addition to the traits below, the `ImageGrid` concept also requires that the `Extents` and `Location` traits are
 implemented (see above).
@@ -368,7 +368,7 @@ struct Spacing<SomeImageGrid> {
 }  // namespace GridFormat::Traits
 ```
 
-### Optional Traits
+## Optional Traits
 
 - `template<typename Grid> struct NumberOfPoints;`
 
@@ -437,7 +437,7 @@ struct StaticSize<Vector<dim>> {
 ```
 
 
-### Notes for Parallel Grids
+## Notes for Parallel Grids
 
 In order to use `GridFormat` to write grid files from parallel computations using [MPI](https://de.wikipedia.org/wiki/Message_Passing_Interface),
 make sure that you implement the above traits such that they __only__ return information on one __partition__. Moreover,

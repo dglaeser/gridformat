@@ -55,6 +55,8 @@ USE_MDFILE_AS_MAINPAGE = @CMAKE_SOURCE_DIR@/README.md
 TOC_INCLUDE_HEADINGS   = 4
 FILTER_PATTERNS        = *.md="python3 @DOXYGEN_SOURCE_DIR@/markdown_filter.py"
 FILE_PATTERNS          = *.md,*.hpp
+# undocumented entities are not shown anyway, warnings about them would hide the relevant ones
+WARN_IF_UNDOCUMENTED   = NO
 EXTRA_PACKAGES        += amsmath,amssymb,units
 ENABLE_PREPROCESSING   = YES
 PREDEFINED             = DOXYGEN \
@@ -89,6 +91,8 @@ TREEVIEW_WIDTH         = 320
 DISABLE_INDEX          = NO
 FULL_SIDEBAR           = NO
 HTML_COLORSTYLE        = LIGHT # required with Doxygen >= 1.9.5
+HTML_COPY_CLIPBOARD    = NO # doxygen-awesome provides the copy button
+PAGE_OUTLINE_PANEL     = NO # keep the table of contents at the top right of the page
 REPEAT_BRIEF           = NO
 BRIEF_MEMBER_DESC      = YES
 ALWAYS_DETAILED_SEC    = NO

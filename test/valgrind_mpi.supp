@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2026 Dennis Gläser <dennis.glaeser@iws.uni-stuttgart.de>
+# SPDX-License-Identifier: MIT
+#
+# The MPI stack (OpenMPI, PMIx, UCX) does not release all memory it allocates during initialization,
+# which valgrind reports as leaks in any test that initializes MPI. These are unrelated to GridFormat.
+{
+   mpi_stack_libmpi
+   Memcheck:Leak
+   ...
+   obj:*/libmpi.so*
+}
+{
+   mpi_stack_libopen_pal
+   Memcheck:Leak
+   ...
+   obj:*/libopen-pal.so*
+}
+{
+   mpi_stack_libpmix
+   Memcheck:Leak
+   ...
+   obj:*/libpmix.so*
+}
+{
+   mpi_stack_ucx
+   Memcheck:Leak
+   ...
+   obj:*/libuc[pst].so*
+}
+{
+   mpi_stack_libopen_pal_uninitialised
+   Memcheck:Cond
+   ...
+   obj:*/libopen-pal.so*
+}
+{
+   mpi_stack_libmpi_uninitialised
+   Memcheck:Cond
+   ...
+   obj:*/libmpi.so*
+}
