@@ -128,7 +128,7 @@ inline std::vector<std::string> extract_strings(const Field& field) {
 #if GRIDFORMAT_HAVE_HIGH_FIVE
 
 /*!
- * \ingroup VTKHDF
+ * \ingroup VTK
  * \brief Field implementation that draws values from an open HDF5 file upon request.
  */
 template<typename C>

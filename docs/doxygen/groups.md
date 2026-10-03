@@ -3,7 +3,7 @@
 
 # Doxygen groups
 
-@defgroup API
+@defgroup API API
 @brief The high-level API and recommended way of using `GridFormat`
 @details The high-level API exposes all available @ref FileFormats and the generic
          GridFormat::Writer (and GridFormat::Reader, see below), which takes an
@@ -66,20 +66,20 @@
            For examples on how to use them, see @ref API.
     @ingroup API
 
-@defgroup Encoding
+@defgroup Encoding Encoding
 @brief Encoders that can be used for I/O.
 
-@defgroup Compression
+@defgroup Compression Compression
 @brief Compressors that can be used to compress data before writing.
 
-@defgroup VTK
+@defgroup VTK VTK
 @brief Classes & functions related to writing VTK files.
 
-@defgroup Grid
+@defgroup Grid Grid
 @brief Classes & functions related to grids and operations on them.
 
-@defgroup PredefinedTraits
+@defgroup PredefinedTraits Predefined Traits
 @brief Traits specializations and helper classes for frameworks
 
-@defgroup Adapters
+@defgroup Adapters Adapters
 @brief Adapters around readers/writers for tweaking behaviour

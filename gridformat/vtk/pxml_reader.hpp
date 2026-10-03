@@ -3,7 +3,7 @@
 /*!
  * \file
  * \ingroup VTK
- * \copydoc GridFormat::VTK::PXMLReader
+ * \copydoc GridFormat::VTK::PXMLReaderBase
  */
 #ifndef GRIDFORMAT_VTK_PXML_READER_HPP_
 #define GRIDFORMAT_VTK_PXML_READER_HPP_
@@ -247,7 +247,7 @@ class PXMLReaderBase : public GridReader {
 /*!
  * \ingroup VTK
  * \brief Base class for readers of parallel vtk-xml file formats for unstructured grids.
- * \copydetails PXMLReaderBase
+ * \copydetails GridFormat::VTK::PXMLReaderBase
  */
 template<std::derived_from<GridReader> PieceReader>
 class PXMLUnstructuredGridReader : public PXMLReaderBase<PieceReader> {
@@ -287,7 +287,7 @@ class PXMLUnstructuredGridReader : public PXMLReaderBase<PieceReader> {
 /*!
  * \ingroup VTK
  * \brief Base class for readers of parallel vtk-xml file formats for structured grids.
- * \copydetails PXMLReaderBase
+ * \copydetails GridFormat::VTK::PXMLReaderBase
  * \note This implementation does not support overlapping partitions
  */
 template<std::derived_from<GridReader> PieceReader>
