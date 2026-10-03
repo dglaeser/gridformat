@@ -3,6 +3,7 @@
 #ifndef GRIDFORMAT_TEST_TESTING_HPP_
 #define GRIDFORMAT_TEST_TESTING_HPP_
 
+#define BOOST_UT_DISABLE_MODULE
 #include <boost/ut.hpp>
 
 namespace GridFormat::Testing {
