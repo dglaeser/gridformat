@@ -141,6 +141,7 @@ jobs:
           c_compiler: /usr/bin/${{ matrix.c_compiler }}
           cxx_compiler: /usr/bin/${{ matrix.cxx_compiler }}
           allow_skipped_tests: false
+          generate_vtk_test_files: true
 
 
   test-minimal-installation:
@@ -159,3 +160,6 @@ jobs:
           c_compiler: /usr/bin/$DEFAULT_C_COMPILER
           cxx_compiler: /usr/bin/$DEFAULT_CXX_COMPILER
           allow_skipped_tests: true
+          # the minimal setup verifies that optional dependencies are guarded, the vtk-written
+          # test files (which may use compression) are covered by the full setup
+          generate_vtk_test_files: false

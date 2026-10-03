@@ -9,7 +9,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ut)
 
-option(GRIDFORMAT_DO_COVERAGE OFF "Turn on to add coverage-specific compiler flags & targets")
+option(GRIDFORMAT_GENERATE_VTK_TEST_FILES "whether test files should be written with vtk (if available) to test the readers" ON)
+option(GRIDFORMAT_DO_COVERAGE "Turn on to add coverage-specific compiler flags & targets" OFF)
 set(GRIDFORMAT_SKIP_REGRESSION ${GRIDFORMAT_DO_COVERAGE})
 
 # make sure ut headers are not installed alongside ours
@@ -18,7 +19,7 @@ if (IS_DIRECTORY "${ut_SOURCE_DIR}")
 endif ()
 
 find_package(Python COMPONENTS Interpreter)
-if (Python_FOUND)
+if (Python_FOUND AND GRIDFORMAT_GENERATE_VTK_TEST_FILES)
     message(STATUS "Preparing test vtk files")
     execute_process(
         COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/make_test_files.py
