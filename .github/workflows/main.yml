@@ -68,7 +68,7 @@ jobs:
         run: |
           python3 test/test_readme_quick_start.py \
             -r $GFMT_SOURCE_TREE \
-            -e "-DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12" \
+            -e "-DCMAKE_C_COMPILER=/usr/bin/gcc-14 -DCMAKE_CXX_COMPILER=/usr/bin/g++-14" \
             -o "${GFMT_SOURCE_REMOTE}"
           python3 test/test_readme_tested_versions.py --cmake-log-file gfmt_cmake_log.txt
         shell: bash
@@ -119,16 +119,16 @@ jobs:
     container: dglaeser/gridformat-action-images:full
     strategy:
       matrix:
-        compiler_pkg: [g++-14, clang-18]
+        compiler_pkg: [g++-14, clang-22]
         include:
           - c_compiler: gcc-14
             compiler_pkg: g++-14
           - cxx_compiler: g++-14
             compiler_pkg: g++-14
-          - c_compiler: clang-18
-            compiler_pkg: clang-18
-          - cxx_compiler: clang++-18
-            compiler_pkg: clang-18
+          - c_compiler: clang-22
+            compiler_pkg: clang-22
+          - cxx_compiler: clang++-22
+            compiler_pkg: clang-22
     steps:
       - name: checkout-repository
         uses: actions/checkout@v2
