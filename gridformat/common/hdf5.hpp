@@ -41,6 +41,7 @@
 #include <gridformat/common/concepts.hpp>
 #include <gridformat/common/md_layout.hpp>
 #include <gridformat/common/buffer_field.hpp>
+#include <gridformat/common/multi_string.hpp>
 #include <gridformat/common/precision.hpp>
 
 #include <gridformat/parallel/communication.hpp>
@@ -352,20 +353,6 @@ class File {
         return _visit_data(std::forward<Visitor>(visitor), _file.getGroup(group).getDataSet(name));
     }
 
-    //! Read the strings of the given one-dimensional dataset
-    std::vector<std::string> read_strings(const std::string& path, const std::optional<Slice>& slice = {}) const {
-        if (!has_dataset_at(path))
-            throw ValueError("Given data set '" + path + "' does not exist.");
-        const auto [group, name] = Detail::split_group(path);
-        const auto dataset = _file.getGroup(group).getDataSet(name);
-        std::vector<std::string> result;
-        if (slice)
-            dataset.select(slice->offset, slice->count).read(result);
-        else
-            dataset.read(result);
-        return result;
-    }
-
     //! Read attribute values into an instance of the given T
     template<typename T>
         requires(Concepts::ResizableMDRange<T> or Concepts::Scalar<T>)
@@ -545,16 +532,14 @@ class File {
     decltype(auto) _visit_data(Visitor&& visitor, const Source& source) const {
         const auto datatype = source.getDataType();
         if (datatype.isFixedLenStr() || datatype.isVariableStr()) {
-            std::string out;
+            // strings are exposed as characters, with each string terminated by '\0' (see MultiString)
+            std::vector<std::string> strings;
             if (source.getSpace().getNumberDimensions() == 0)  // scalar, as e.g. VTK writes attributes
-                source.read(out);
-            else {
-                std::vector<std::string> pre_out;
-                source.read(pre_out);
-                if (pre_out.size() > 1 or pre_out.size() == 0)
-                    throw SizeError("Unexpected string array size");
-                out = std::move(std::move(pre_out)[0]);
-            }
+                source.read(strings.emplace_back());
+            else
+                source.read(strings);
+            const MultiString characters{strings};
+            std::string out{characters.begin(), characters.end()};
             MDLayout layout{{out.size()}};
             return visitor(BufferField{std::move(out), std::move(layout)});
         } else {

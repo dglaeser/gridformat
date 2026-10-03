@@ -246,7 +246,7 @@ FieldPtr read_field_data(const HDF5::File<C>& file, const std::string& name, std
     const auto precision = file.get_precision(path).value();
     const bool is_string = precision.template is<char>();
     if (!step)
-        return is_string ? make_field_ptr(RangeField{MultiString{file.read_strings(path)}})
+        return is_string ? make_field_ptr(RangeField{file.template read_dataset_to<MultiString>(path)})
                          : make_field_ptr(DataSetField{file, path});
 
     // Without sizes (written by GridFormat <= 0.5), each step is a single row of the dataset
@@ -261,9 +261,9 @@ FieldPtr read_field_data(const HDF5::File<C>& file, const std::string& name, std
         : std::nullopt;
     if (is_string) {
         const std::size_t count = sizes ? sizes->at(0)*sizes->at(1) : 1;
-        return make_field_ptr(RangeField{MultiString{
-            file.read_strings(path, HDF5::Slice{.offset = {offset}, .count = {count}})
-        }});
+        return make_field_ptr(RangeField{file.template read_dataset_to<MultiString>(
+            path, HDF5::Slice{.offset = {offset}, .count = {count}}
+        )});
     }
 
     const auto dims = file.get_dimensions(path).value();
