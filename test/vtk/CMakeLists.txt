@@ -56,8 +56,8 @@ endif ()
 
 gridformat_add_test_if(
     GRIDFORMAT_HAVE_HIGH_FIVE
-    test_vtk_hdf_string_meta_data
-    test_vtk_hdf_string_meta_data.cpp
+    test_vtk_hdf_field_data
+    test_vtk_hdf_field_data.cpp
 )
 
 gridformat_add_parallel_test_if(

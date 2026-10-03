@@ -68,6 +68,50 @@ def _write_vtk_hdf_files(base_filename: str) -> None:
     # As of vtk 9.7.1, vtk cannot read back the 2d images it writes, and it drops their field data
     _write_vtk_hdf_file(_make_image_grid(nz=3), f"{base_filename}_image_3d_in_3d")
 
+    source = _TransientFieldDataSource()  # keep a reference, the writer does not own it
+    writer = vtk.vtkHDFWriter()
+    writer.SetInputConnection(source.GetOutputPort())
+    writer.SetWriteAllTimeSteps(True)
+    writer.SetFileName(f"{base_filename}_unstructured_time_series_2d_in_2d.hdf")
+    writer.Write()
+
+
+TRANSIENT_STRINGS = [["a"], ["b", "c"], ["", "d", "e"]]
+
+
+if _HAVE_VTK:
+    from vtkmodules.util.vtkAlgorithm import VTKPythonAlgorithmBase
+
+    class _TransientFieldDataSource(VTKPythonAlgorithmBase):
+        """Unstructured grid whose field data arrays have a different number of tuples at each time step"""
+        def __init__(self):
+            super().__init__(nInputPorts=0, nOutputPorts=1, outputType="vtkUnstructuredGrid")
+
+        def RequestInformation(self, request, in_info, out_info):
+            times = [float(i) for i in range(len(TRANSIENT_STRINGS))]
+            info = out_info.GetInformationObject(0)
+            info.Set(vtk.vtkStreamingDemandDrivenPipeline.TIME_STEPS(), times, len(times))
+            info.Set(vtk.vtkStreamingDemandDrivenPipeline.TIME_RANGE(), [times[0], times[-1]], 2)
+            return 1
+
+        def RequestData(self, request, in_info, out_info):
+            info = out_info.GetInformationObject(0)
+            step = int(round(info.Get(vtk.vtkStreamingDemandDrivenPipeline.UPDATE_TIME_STEP())))
+            output = vtk.vtkUnstructuredGrid.GetData(out_info)
+            output.ShallowCopy(_make_unstructured_grid())
+            texts = vtk.vtkStringArray()
+            texts.SetName("texts")
+            for value in TRANSIENT_STRINGS[step]:
+                texts.InsertNextValue(value)
+            vectors = vtk.vtkDoubleArray()
+            vectors.SetName("vectors")
+            vectors.SetNumberOfComponents(3)
+            for _ in range(step + 1):
+                vectors.InsertNextTuple3(float(step), 1.0, 2.0)
+            output.GetFieldData().AddArray(texts)
+            output.GetFieldData().AddArray(vectors)
+            return 1
+
 
 def _write_vtk_hdf_file(grid, base_filename: str) -> None:
     writer = vtk.vtkHDFWriter()
@@ -172,8 +216,14 @@ def _add_meta_data(grid):
     for value in [1, 2, 3, 4]:
         numbers.InsertNextValue(value)
 
+    texts = vtk.vtkStringArray()
+    texts.SetName("texts")
+    for value in ["first", "", "third"]:
+        texts.InsertNextValue(value)
+
     grid.GetFieldData().AddArray(text)
     grid.GetFieldData().AddArray(numbers)
+    grid.GetFieldData().AddArray(texts)
 
 
 def _make_points(n: int, dx: float):

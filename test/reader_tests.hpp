@@ -11,6 +11,7 @@
 #include <cmath>
 
 #include <gridformat/common/string_conversion.hpp>
+#include <gridformat/common/multi_string.hpp>
 #include <gridformat/common/logging.hpp>
 #include <gridformat/common/ranges.hpp>
 
@@ -130,6 +131,16 @@ bool check_equal_fields(const Writer& writer, const Reader& reader, const bool v
     if (!std::ranges::equal(writer_mfields, reader_mfields)) {
         if (verbose) std::cout << "Metadata fields not equal" << std::endl;
         return false;
+    }
+
+    // all readers must return strings in the same form as they were given to the writer
+    for (const auto& [name, field_ptr] : meta_data_fields(writer)) {
+        if (!field_ptr->precision().template is<char>())
+            continue;
+        if (field_ptr->template export_to<MultiString>() != reader.meta_data_field(name)->template export_to<MultiString>()) {
+            if (verbose) std::cout << "String metadata '" << name << "' not equal" << std::endl;
+            return false;
+        }
     }
 
     return true;

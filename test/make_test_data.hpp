@@ -10,6 +10,7 @@
 #include <functional>
 
 #include <gridformat/common/range_field.hpp>
+#include <gridformat/common/multi_string.hpp>
 #include <gridformat/common/logging.hpp>
 
 #include <gridformat/grid/type_traits.hpp>
@@ -182,6 +183,7 @@ void add_meta_data(Writer& w) {
     w.set_meta_data("literal", "some_literal_text");
     w.set_meta_data("string", std::string{"some_string_text"});
     w.set_meta_data("numbers", RangeField{std::vector<int>{1, 2, 3, 4}});
+    w.set_meta_data("strings", MultiString{{"first", "", "third"}});
 }
 
 template<typename Writer>

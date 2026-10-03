@@ -3,10 +3,12 @@
 
 #include <string>
 #include <vector>
+#include <array>
 #include <cstddef>
 #include <filesystem>
 
 #include <gridformat/common/hdf5.hpp>
+#include <gridformat/common/multi_string.hpp>
 #include <gridformat/vtk/hdf_writer.hpp>
 #include <gridformat/vtk/hdf_reader.hpp>
 
@@ -154,28 +156,152 @@ int main() {
         }
     };
 
-    "vtk_hdf_multi_string_field_data_is_rejected"_test = [&] () {
-        // VTK writes a vtkStringArray with N values as a dataset with N entries. We cannot
-        // represent that as a field, so reading it must fail instead of silently truncating.
-        const std::string filename = "vtk_hdf_string_meta_data_multi.hdf";
-        std::filesystem::copy_file(
-            "vtk_hdf_string_meta_data_string_array.hdf",
-            filename,
-            std::filesystem::copy_options::overwrite_existing
-        );
+    "vtk_hdf_multi_string_meta_data"_test = [&] () {
+        // VTK writes a vtkStringArray with N values as a dataset with N variable-length strings
+        const std::vector<std::string> values{"alpha", "", "gamma"};
+        GridFormat::VTKHDFWriter writer{grid};
+        writer.set_meta_data("names", GridFormat::MultiString{values});
+        const auto filename = writer.write("vtk_hdf_string_meta_data_multi");
         {
-            HighFive::File file{filename, HighFive::File::ReadWrite};
-            const std::vector<std::string> names{"alpha", "beta", "gamma"};
-            file.getGroup("/VTKHDF/FieldData")
-                .createDataSet("names", HighFive::DataSpace{names.size()}, GridFormat::HDF5::VariableLengthString{})
-                .write(names);
+            HighFive::File file{filename, HighFive::File::ReadOnly};
+            auto dataset = open_field_data(file, "names");
+            expect(dataset.getDataType().isVariableStr());
+            expect(std::ranges::equal(dataset.read<std::vector<std::string>>(), values));
         }
 
         GridFormat::VTKHDFReader reader;
         reader.open(filename);
-        expect(throws([&] () { reader.meta_data_field("names"); }));
-        // the single-string fields in the same file remain readable
-        expect(eq(reader.meta_data_field("string")->template export_to<std::string>(), string_text));
+        const auto field = reader.meta_data_field("names");
+        const auto strings = field->template export_to<GridFormat::MultiString>();
+        expect(std::ranges::equal(strings.slices(), values));
+        expect(throws([&] () { field->template export_to<std::string>(); }));
+    };
+
+    // the number of strings differs per step, which requires the offsets and sizes of each step
+    const std::vector<std::vector<std::string>> strings_at{{"a"}, {"b", "c"}, {"", "d", "e"}};
+    const auto write_transient_multi = [&] (const std::string& base, bool static_meta_data) {
+        GridFormat::VTKHDFTimeSeriesWriter writer{
+            grid, base, GridFormat::VTK::HDFTransientOptions{
+                .static_grid = true,
+                .static_meta_data = static_meta_data
+            }
+        };
+        for (std::size_t step = 0; step < strings_at.size(); ++step) {
+            writer.set_meta_data("names", GridFormat::MultiString{strings_at[step]});
+            writer.write(static_cast<double>(step));
+        }
+        return base + ".hdf";
+    };
+    const auto read_names = [&] (const std::string& filename) {
+        std::vector<std::vector<std::string>> result;
+        GridFormat::VTKHDFReader reader;
+        reader.open(filename);
+        for (std::size_t step = 0; step < reader.number_of_steps(); ++step) {
+            reader.set_step(step);
+            const auto strings = reader.meta_data_field("names")->template export_to<GridFormat::MultiString>();
+            const auto slices = strings.slices();
+            result.emplace_back(slices.begin(), slices.end());
+        }
+        return result;
+    };
+    const auto read_sizes = [&] (HighFive::File& file, const std::string& name = "names") {
+        return file.getDataSet("/VTKHDF/Steps/FieldDataSizes/" + name).read<std::vector<std::vector<std::size_t>>>();
+    };
+    const auto read_offsets = [&] (HighFive::File& file, const std::string& name) {
+        return file.getDataSet("/VTKHDF/Steps/FieldDataOffsets/" + name).read<std::vector<std::size_t>>();
+    };
+
+    "vtk_hdf_transient_multi_string_meta_data"_test = [&] () {
+        const auto filename = write_transient_multi("vtk_hdf_string_meta_data_transient_multi", false);
+        {   // same layout as written by VTK: concatenated strings, with offsets and (components, tuples) per step
+            HighFive::File file{filename, HighFive::File::ReadOnly};
+            expect(eq(open_field_data(file, "names").getDimensions().at(0), std::size_t{6}));
+            expect(std::ranges::equal(
+                file.getDataSet("/VTKHDF/Steps/FieldDataOffsets/names").read<std::vector<std::size_t>>(),
+                std::vector<std::size_t>{0, 1, 3}
+            ));
+            expect(read_sizes(file) == std::vector<std::vector<std::size_t>>{{1, 1}, {1, 2}, {1, 3}});
+        }
+        expect(read_names(filename) == strings_at);
+    };
+
+    "vtk_hdf_transient_multi_component_strings"_test = [&] () {
+        // other writers may store strings with multiple components per tuple
+        const auto filename = write_transient_multi("vtk_hdf_string_meta_data_transient_multi_component", false);
+        {
+            HighFive::File file{filename, HighFive::File::ReadWrite};
+            file.getDataSet("/VTKHDF/Steps/FieldDataSizes/names").write(
+                std::vector<std::vector<std::size_t>>{{1, 1}, {2, 1}, {1, 3}}
+            );
+        }
+        expect(read_names(filename) == strings_at);
+    };
+
+    "vtk_hdf_static_transient_multi_string_meta_data"_test = [&] () {
+        const auto filename = write_transient_multi("vtk_hdf_string_meta_data_static_transient_multi", true);
+        {   // written once, with all steps pointing at the strings of the first step
+            HighFive::File file{filename, HighFive::File::ReadOnly};
+            expect(eq(open_field_data(file, "names").getDimensions().at(0), std::size_t{1}));
+            expect(read_sizes(file) == std::vector<std::vector<std::size_t>>{{1, 1}, {1, 1}, {1, 1}});
+        }
+        expect(read_names(filename) == std::vector<std::vector<std::string>>(3, strings_at.front()));
+    };
+
+    // numeric field data with a different number of tuples per step, and with multiple components
+    using Vector = std::array<double, 3>;
+    const auto vectors_at = [] (std::size_t step) {
+        return std::vector<Vector>(step + 1, Vector{static_cast<double>(step), 1.0, 2.0});
+    };
+    const auto write_transient_numbers = [&] (const std::string& base, bool static_meta_data) {
+        GridFormat::VTKHDFTimeSeriesWriter writer{
+            grid, base, GridFormat::VTK::HDFTransientOptions{
+                .static_grid = true,
+                .static_meta_data = static_meta_data
+            }
+        };
+        for (std::size_t step = 0; step < 3; ++step) {
+            writer.set_meta_data("vectors", vectors_at(step));
+            writer.set_meta_data("scalar", static_cast<int>(step));
+            writer.write(static_cast<double>(step));
+        }
+        return base + ".hdf";
+    };
+    const auto expect_numbers = [&] (const std::string& filename, auto&& step_of) {
+        GridFormat::VTKHDFReader reader;
+        reader.open(filename);
+        expect(eq(reader.number_of_steps(), std::size_t{3}));
+        for (std::size_t step = 0; step < reader.number_of_steps(); ++step) {
+            reader.set_step(step);
+            const auto vectors = reader.meta_data_field("vectors");
+            expect(eq(vectors->layout().extent(0), step_of(step) + 1));
+            expect(vectors->template export_to<std::vector<Vector>>() == vectors_at(step_of(step)));
+            expect(eq(reader.meta_data_field("scalar")->template export_to<int>(), static_cast<int>(step_of(step))));
+        }
+    };
+
+    "vtk_hdf_transient_numeric_field_data"_test = [&] () {
+        const auto filename = write_transient_numbers("vtk_hdf_field_data_transient_numbers", false);
+        {   // same layout as written by VTK: concatenated tuples, with offsets and (components, tuples) per step
+            HighFive::File file{filename, HighFive::File::ReadOnly};
+            expect(open_field_data(file, "vectors").getDimensions() == std::vector<std::size_t>{6, 3});
+            expect(read_offsets(file, "vectors") == std::vector<std::size_t>{0, 1, 3});
+            expect(read_sizes(file, "vectors") == std::vector<std::vector<std::size_t>>{{3, 1}, {3, 2}, {3, 3}});
+            expect(open_field_data(file, "scalar").getDimensions() == std::vector<std::size_t>{3});
+            expect(read_offsets(file, "scalar") == std::vector<std::size_t>{0, 1, 2});
+            expect(read_sizes(file, "scalar") == std::vector<std::vector<std::size_t>>{{1, 1}, {1, 1}, {1, 1}});
+        }
+        expect_numbers(filename, [] (std::size_t step) { return step; });
+    };
+
+    "vtk_hdf_static_transient_numeric_field_data"_test = [&] () {
+        const auto filename = write_transient_numbers("vtk_hdf_field_data_static_transient_numbers", true);
+        {
+            HighFive::File file{filename, HighFive::File::ReadOnly};
+            expect(open_field_data(file, "vectors").getDimensions() == std::vector<std::size_t>{1, 3});
+            expect(read_offsets(file, "vectors") == std::vector<std::size_t>{0, 0, 0});
+            expect(read_sizes(file, "vectors") == std::vector<std::vector<std::size_t>>{{3, 1}, {3, 1}, {3, 1}});
+        }
+        expect_numbers(filename, [] (std::size_t) { return std::size_t{0}; });
     };
 
     "hdf5_append_rejects_mismatching_types"_test = [&] () {

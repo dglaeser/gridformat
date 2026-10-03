@@ -128,14 +128,19 @@ int main() {
 
     "vtk_hdf_image_time_series_legacy_meta_data_layout"_test = [&] () {
         const auto filename = write_transient("reader_vtk_hdf_image_legacy_meta_data", false);
-        {   // GridFormat <= 0.5 stored the rows with an additional dimension: (num_steps, 1, N)
+        {   // GridFormat <= 0.5 stored one row per step, with an additional dimension: (num_steps, 1, N),
+            // and the step index as offset, without sizes
             HighFive::File file{filename, HighFive::File::ReadWrite};
-            auto group = file.getGroup("/VTKHDF/FieldData");
             std::vector<std::vector<std::vector<int>>> legacy;
-            for (auto& row : group.getDataSet("numbers").read<std::vector<std::vector<int>>>())
-                legacy.push_back({std::move(row)});
+            for (int step : {0, 1, 2})
+                legacy.push_back({numbers_at(step)});
+            auto group = file.getGroup("/VTKHDF/FieldData");
             group.unlink("numbers");
             group.createDataSet("numbers", legacy);
+            file.getGroup("/VTKHDF/Steps/FieldDataSizes").unlink("numbers");
+            auto offsets = file.getGroup("/VTKHDF/Steps/FieldDataOffsets");
+            offsets.unlink("numbers");
+            offsets.createDataSet("numbers", std::vector<std::size_t>{0, 1, 2});
         }
         check_numbers(filename, numbers_at);
     };
