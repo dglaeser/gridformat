@@ -33,7 +33,8 @@ names (the `VTK-XML` formats do not have this restriction).
 - __VTKHDF__: in transient files, writing a field with a different precision than in a previous step now raises an
 error instead of being converted silently by `hdf5`, which could truncate values (e.g. `double` to `int`).
 
-- The regression tests now run against a newer version of `vtk`, namely `v9.5.2`.
+- The regression tests now run against a newer version of `vtk`, namely `v9.7.1`, which is now pinned in the docker
+image. Generating the `VTKHDF` test data requires `vtk` 9.7 or newer.
 
 # `GridFormat` 0.4.0
 

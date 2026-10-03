@@ -27,7 +27,7 @@ RUN apt-get update \
         rsync \
         # for deal.ii
         software-properties-common \
-    && python3 -m venv /gfmt-venv && . /gfmt-venv/bin/activate && pip install vtk \
+    && python3 -m venv /gfmt-venv && . /gfmt-venv/bin/activate && pip install vtk==9.7.1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

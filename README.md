@@ -217,8 +217,9 @@ ctest
 ```
 
 Note that an internet connection is required for the call to `cmake` as it pulls in [ut](https://github.com/boost-ext/ut) on-the-fly.
-Moreover, in the configure step a Python script is invoked that produces some test data using [VTK](https://pypi.org/project/vtk/).
-If your Python environment does not have `VTK`, this step is skipped. Note that some tests in the test suite will be skipped in this case.
+Moreover, in the configure step a Python script is invoked that produces some test data using [VTK](https://pypi.org/project/vtk/)
+(tested vtk version: 9.7.1). If your Python environment does not have `VTK`, this step is skipped. Note that some tests in the
+test suite will be skipped in this case, and also with `VTK` versions before 9.7, which cannot write all of the test data.
 
 ### Creating a release
 
