@@ -13,7 +13,7 @@ PACKAGES = {
     "dolfinx": "0.6.0",
     "dune": "2.11",
     "mfem": "4.10",
-    "doxygen": "Release_1_9_6"
+    "doxygen": "Release_1_18_0"
 }
 
 
