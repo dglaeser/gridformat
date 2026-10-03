@@ -17,6 +17,7 @@ def _get_pkg_versions_from_readme(readme_path: str) -> dict:
     result["cgal"] = _split_version("cgal")
     result["dolfinx"] = _split_version("dolfinx")
     result["mfem"] = _split_version("mfem")
+    result["vtk"] = _split_version("vtk")
     return result;
 
 
@@ -39,7 +40,14 @@ def _get_pkg_versions_from_cmake_log(cmake_log: str) -> dict:
     result["cgal"] = _split_version("CGAL")
     result["dolfinx"] = _split_version("dolfinx")
     result["mfem"] = _split_version("mfem")
+    result["vtk"] = content.split("Writing test files with VTK version")[1].split("\n")[0].strip()
     return result;
+
+
+def _matches(readme_version: str, found_version: str) -> bool:
+    """The readme may state fewer components than found, e.g. 2.9 for 2.9.1"""
+    readme_components = readme_version.split(".")
+    return readme_components == found_version.split(".")[:len(readme_components)]
 
 
 parser = ArgumentParser()
@@ -51,3 +59,10 @@ cmake_log_versions = _get_pkg_versions_from_cmake_log(args["cmake_log_file"])
 
 print("Versions found by cmake: ", cmake_log_versions)
 print("Versions stated in the readme: ", readme_versions)
+
+mismatches = [
+    f"{pkg}: readme states {readme_versions[pkg]}, but {cmake_log_versions[pkg]} was found"
+    for pkg in readme_versions if not _matches(readme_versions[pkg], cmake_log_versions[pkg])
+]
+if mismatches:
+    raise RuntimeError("Versions stated in the readme are outdated:\n" + "\n".join(mismatches))

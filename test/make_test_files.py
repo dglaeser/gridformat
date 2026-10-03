@@ -250,6 +250,8 @@ if __name__ == "__main__":
         print("Skipping vtk test file generation because vtk package was not found")
         sys.exit(0)
 
+    # this line is parsed by test_readme_tested_versions.py
+    print(f"Writing test files with VTK version {vtk.vtkVersion.GetVTKVersion()}")
     test_data_path = join(join(abspath(dirname(__file__)), "vtk"), "test_data")
     makedirs(test_data_path, exist_ok=True)
 
