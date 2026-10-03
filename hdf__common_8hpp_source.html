@@ -335,7 +335,7 @@ $(document).ready(function(){initNavTree('hdf__common_8hpp_source.html',''); ini
 <div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keyword">const</span> <span class="keyword">auto</span> precision = file.get_precision(path).value();</div>
 <div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> is_string = precision.template is&lt;char&gt;();</div>
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    <span class="keywordflow">if</span> (!step)</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        <span class="keywordflow">return</span> is_string ? <a class="code hl_function" href="group__Common.html#ga1534902c178a406df403a52223f04e63">make_field_ptr</a>(RangeField{MultiString{file.read_strings(path)}})</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        <span class="keywordflow">return</span> is_string ? <a class="code hl_function" href="group__Common.html#ga1534902c178a406df403a52223f04e63">make_field_ptr</a>(RangeField{file.template read_dataset_to&lt;MultiString&gt;(path)})</div>
 <div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>                         : <a class="code hl_function" href="group__Common.html#ga1534902c178a406df403a52223f04e63">make_field_ptr</a>(<a class="code hl_class" href="classGridFormat_1_1VTKHDF_1_1DataSetField.html">DataSetField</a>{file, path});</div>
 <div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
 <div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="comment">// Without sizes (written by GridFormat &lt;= 0.5), each step is a single row of the dataset</span></div>
@@ -350,9 +350,9 @@ $(document).ready(function(){initNavTree('hdf__common_8hpp_source.html',''); ini
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        : std::nullopt;</div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    <span class="keywordflow">if</span> (is_string) {</div>
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        <span class="keyword">const</span> std::size_t count = sizes ? sizes-&gt;at(0)*sizes-&gt;at(1) : 1;</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="group__Common.html#ga1534902c178a406df403a52223f04e63">make_field_ptr</a>(RangeField{MultiString{</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            file.read_strings(path, HDF5::Slice{.offset = {offset}, .count = {count}})</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        }});</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="group__Common.html#ga1534902c178a406df403a52223f04e63">make_field_ptr</a>(RangeField{file.template read_dataset_to&lt;MultiString&gt;(</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            path, HDF5::Slice{.offset = {offset}, .count = {count}}</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        )});</div>
 <div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    }</div>
 <div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
 <div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dims = file.get_dimensions(path).value();</div>

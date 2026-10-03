@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2026-10-03 15:12:02</td>
+      <td>2026-10-03 15:53:36</td>
     </tr>
   </table>
 </div>
@@ -41,9 +41,9 @@
     </tr>
     <tr>
       <th scope="row">Lines:</th>
-      <td>150</td>
-      <td>160</td>
-      <td class="coverage-high">93.8%</td>
+      <td>149</td>
+      <td>159</td>
+      <td class="coverage-high">93.7%</td>
     </tr>
     <tr>
       <th scope="row">Functions:</th>
@@ -53,9 +53,9 @@
     </tr>
     <tr>
       <th scope="row">Branches:</th>
-      <td>234</td>
-      <td>1008</td>
-      <td class="coverage-low">23.2%</td>
+      <td>230</td>
+      <td>1000</td>
+      <td class="coverage-low">23.0%</td>
     </tr>
   </table>
 </div>
@@ -2751,31 +2751,25 @@
       <td class="lineno"><a id="l249" href="#l249">249</a></td>
       <td class="linebranch">
         <details class="linebranchDetails">
-        <summary class="linebranchSummary">8/18</summary>
+        <summary class="linebranchSummary">5/12</summary>
         <div class="linebranchContents">
           <div class="takenBranch">&check; Branch 2 taken 43 times.</div>
           <div class="notTakenBranch">&cross; Branch 3 not taken.</div>
-          <div class="takenBranch">&check; Branch 5 taken 43 times.</div>
-          <div class="notTakenBranch">&cross; Branch 6 not taken.</div>
+          <div class="takenBranch">&check; Branch 6 taken 43 times.</div>
+          <div class="takenBranch">&check; Branch 7 taken 9 times.</div>
           <div class="takenBranch">&check; Branch 9 taken 43 times.</div>
           <div class="takenBranch">&check; Branch 10 taken 9 times.</div>
-          <div class="takenBranch">&check; Branch 12 taken 43 times.</div>
-          <div class="takenBranch">&check; Branch 13 taken 9 times.</div>
-          <div class="takenBranch">&check; Branch 15 taken 43 times.</div>
-          <div class="takenBranch">&check; Branch 16 taken 9 times.</div>
+          <div class="notTakenBranch">&cross; Branch 12 not taken.</div>
+          <div class="notTakenBranch">&cross; Branch 13 not taken.</div>
+          <div class="notTakenBranch">&cross; Branch 15 not taken.</div>
+          <div class="notTakenBranch">&cross; Branch 16 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 18 not taken.</div>
           <div class="notTakenBranch">&cross; Branch 19 not taken.</div>
-          <div class="notTakenBranch">&cross; Branch 21 not taken.</div>
-          <div class="notTakenBranch">&cross; Branch 22 not taken.</div>
-          <div class="notTakenBranch">&cross; Branch 24 not taken.</div>
-          <div class="notTakenBranch">&cross; Branch 25 not taken.</div>
-          <div class="notTakenBranch">&cross; Branch 27 not taken.</div>
-          <div class="notTakenBranch">&cross; Branch 28 not taken.</div>
         </div>
         </details>
       </td>
       <td class="linecount partialCoveredLine">147</td>
-      <td class="src partialCoveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">is_string</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">make_field_ptr</span><span class="p">(</span><span class="n">RangeField</span><span class="p">{</span><span class="n">MultiString</span><span class="p">{</span><span class="n">file</span><span class="p">.</span><span class="n">read_strings</span><span class="p">(</span><span class="n">path</span><span class="p">)}})</span></td>
+      <td class="src partialCoveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">is_string</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">make_field_ptr</span><span class="p">(</span><span class="n">RangeField</span><span class="p">{</span><span class="n">file</span><span class="p">.</span><span class="k">template</span><span class="w"> </span><span class="n">read_dataset_to</span><span class="o">&lt;</span><span class="n">MultiString</span><span class="o">&gt;</span><span class="p">(</span><span class="n">path</span><span class="p">)})</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l250" href="#l250">250</a></td>
@@ -2973,21 +2967,14 @@
         </details>
       </td>
       <td class="linecount partialCoveredLine">840</td>
-      <td class="src partialCoveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">make_field_ptr</span><span class="p">(</span><span class="n">RangeField</span><span class="p">{</span><span class="n">MultiString</span><span class="p">{</span></td>
+      <td class="src partialCoveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">make_field_ptr</span><span class="p">(</span><span class="n">RangeField</span><span class="p">{</span><span class="n">file</span><span class="p">.</span><span class="k">template</span><span class="w"> </span><span class="n">read_dataset_to</span><span class="o">&lt;</span><span class="n">MultiString</span><span class="o">&gt;</span><span class="p">(</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l265" href="#l265">265</a></td>
       <td class="linebranch">
-        <details class="linebranchDetails">
-        <summary class="linebranchSummary">1/2</summary>
-        <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 288 times.</div>
-          <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-        </div>
-        </details>
       </td>
-      <td class="linecount partialCoveredLine">840</td>
-      <td class="src partialCoveredLine"><span class="w">            </span><span class="n">file</span><span class="p">.</span><span class="n">read_strings</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">HDF5</span><span class="o">::</span><span class="n">Slice</span><span class="p">{.</span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">offset</span><span class="p">},</span><span class="w"> </span><span class="p">.</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">count</span><span class="p">}})</span></td>
+      <td class="linecount "></td>
+      <td class="src "><span class="w">            </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">HDF5</span><span class="o">::</span><span class="n">Slice</span><span class="p">{.</span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">offset</span><span class="p">},</span><span class="w"> </span><span class="p">.</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">count</span><span class="p">}}</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l266" href="#l266">266</a></td>
@@ -3001,7 +2988,7 @@
         </details>
       </td>
       <td class="linecount partialCoveredLine">420</td>
-      <td class="src partialCoveredLine"><span class="w">        </span><span class="p">}});</span></td>
+      <td class="src partialCoveredLine"><span class="w">        </span><span class="p">)});</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l267" href="#l267">267</a></td>
