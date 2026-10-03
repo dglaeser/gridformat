@@ -173,10 +173,8 @@ template&lt;typename C &gt; </td></tr>
 <tr class="memitem:a6e7214ca418a6b8d6850513e929d468d"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::VTKHDF::get_file_type</b> (const HDF5::File&lt; C &gt; &amp;file)</td></tr>
 <tr class="memdesc:a6e7214ca418a6b8d6850513e929d468d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the vtk-hdf file type from an hdf5 file. <br /></td></tr>
 <tr class="separator:a6e7214ca418a6b8d6850513e929d468d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a142373cff142be920f5afb60aa21f974"><td class="memTemplParams" colspan="2"><a id="a142373cff142be920f5afb60aa21f974" name="a142373cff142be920f5afb60aa21f974"></a>
-template&lt;typename C &gt; </td></tr>
-<tr class="memitem:a142373cff142be920f5afb60aa21f974"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::VTKHDF::check_version_compatibility</b> (const HDF5::File&lt; C &gt; &amp;file, const std::array&lt; std::size_t, 2 &gt; &amp;supported)</td></tr>
-<tr class="memdesc:a142373cff142be920f5afb60aa21f974"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check that the version stated in the file is supported. <br /></td></tr>
+<tr class="memitem:a142373cff142be920f5afb60aa21f974"><td class="memTemplParams" colspan="2">template&lt;typename C &gt; </td></tr>
+<tr class="memitem:a142373cff142be920f5afb60aa21f974"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="hdf__common_8hpp.html#a142373cff142be920f5afb60aa21f974">GridFormat::VTKHDF::check_version_compatibility</a> (const HDF5::File&lt; C &gt; &amp;file, const std::array&lt; std::size_t, 2 &gt; &amp;supported)</td></tr>
 <tr class="separator:a142373cff142be920f5afb60aa21f974"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80ca30834dab3b25dec5a9818ba47f36"><td class="memTemplParams" colspan="2">template&lt;Concepts::Communicator C, std::invocable&lt; HDF5::File&lt;&gt; &amp; &gt; Write&gt; </td></tr>
 <tr class="memitem:a80ca30834dab3b25dec5a9818ba47f36"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="hdf__common_8hpp.html#a80ca30834dab3b25dec5a9818ba47f36">GridFormat::VTKHDF::write_on_root</a> (const std::string &amp;filename, const C &amp;comm, int root, Write &amp;&amp;write)</td></tr>
@@ -184,6 +182,37 @@ template&lt;typename C &gt; </td></tr>
 <tr class="separator:a80ca30834dab3b25dec5a9818ba47f36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a142373cff142be920f5afb60aa21f974" name="a142373cff142be920f5afb60aa21f974"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a142373cff142be920f5afb60aa21f974">&#9670;&#160;</a></span>check_version_compatibility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void GridFormat::VTKHDF::check_version_compatibility </td>
+          <td>(</td>
+          <td class="paramtype">const HDF5::File&lt; C &gt; &amp;&#160;</td>
+          <td class="paramname"><em>file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::array&lt; std::size_t, 2 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>supported</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check that the version stated in the file is supported </p><dl class="section note"><dt>Note</dt><dd>Only the major version is checked, since the specification guarantees that files can be read correctly by implementations for a different minor version of the same major. </dd></dl>
+
+</div>
+</div>
 <a id="abd8f0a5162fc7995ad9ec3ec625fec36" name="abd8f0a5162fc7995ad9ec3ec625fec36"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abd8f0a5162fc7995ad9ec3ec625fec36">&#9670;&#160;</a></span>is_string_field()</h2>
 
