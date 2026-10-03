@@ -24,11 +24,7 @@ void test(Reader&& reader, const std::string& suffix = "") {
     const GridFormat::Test::StructuredGrid<3> grid{{1.0, 1.0, 1.0}, {4, 5, 6}};
     GridFormat::VTKHDFImageGridWriter writer{grid};
 
-    // TODO: Test cell&field data once a new VTK version is released that fixes issues
-    test_reader<3, 3>(writer, reader, "reader_vtk_hdf_structured_image_test_file_3d_in_3d" + suffix, {
-        .write_cell_data = false,
-        .write_meta_data = false
-    });
+    test_reader<3, 3>(writer, reader, "reader_vtk_hdf_structured_image_test_file_3d_in_3d" + suffix);
 
     using GridFormat::Testing::operator""_test;
     using GridFormat::Testing::expect;
@@ -77,7 +73,6 @@ void test(Reader&& reader, const std::string& suffix = "") {
     };
 
     {  // test time series as well
-        // TODO: use filenames that include these in the regression tests once the VTK fixes are available
         GridFormat::VTKHDFImageGridTimeSeriesWriter writer{
             grid,
             "reader_vtk_hdf_structured_time_series_image_3d_in_3d" + suffix

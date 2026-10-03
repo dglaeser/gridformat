@@ -25,6 +25,7 @@
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/grid/reader.hpp>
 #include <gridformat/parallel/concepts.hpp>
+#include <gridformat/vtk/common.hpp>
 #include <gridformat/vtk/hdf_common.hpp>
 
 namespace GridFormat {

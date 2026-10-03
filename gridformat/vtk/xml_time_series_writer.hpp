@@ -14,6 +14,8 @@
 #include <string>
 #include <type_traits>
 
+#include <gridformat/grid/writer.hpp>
+
 namespace GridFormat {
 
 /*!
