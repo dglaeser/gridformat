@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2026-10-03 15:53:36</td>
+      <td>2026-10-03 16:36:24</td>
     </tr>
   </table>
 </div>
@@ -77,8 +77,8 @@
     <tr><td><a href="#l239">GridFormat::ParallelTraits::Barrier&lt;ompi_communicator_t*&gt;::get(ompi_communicator_t*) (line 239)</a></td><td>called 12788 times, returned 12788 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l82">GridFormat::ParallelTraits::Rank&lt;GridFormat::NullCommunicator&gt;::get(GridFormat::NullCommunicator const&amp;) (line 82)</a></td><td>called 385 times, returned 385 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l230">GridFormat::ParallelTraits::Rank&lt;ompi_communicator_t*&gt;::get(ompi_communicator_t*) (line 230)</a></td><td>called 36969 times, returned 36969 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l77">GridFormat::ParallelTraits::Size&lt;GridFormat::NullCommunicator&gt;::get(GridFormat::NullCommunicator const&amp;) (line 77)</a></td><td>called 5092 times, returned 5092 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l221">GridFormat::ParallelTraits::Size&lt;ompi_communicator_t*&gt;::get(ompi_communicator_t*) (line 221)</a></td><td>called 68511 times, returned 68511 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l77">GridFormat::ParallelTraits::Size&lt;GridFormat::NullCommunicator&gt;::get(GridFormat::NullCommunicator const&amp;) (line 77)</a></td><td>called 5308 times, returned 5308 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l221">GridFormat::ParallelTraits::Size&lt;ompi_communicator_t*&gt;::get(ompi_communicator_t*) (line 221)</a></td><td>called 68943 times, returned 68943 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l318">auto GridFormat::ParallelTraits::BroadCast&lt;ompi_communicator_t*&gt;::get&lt;std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; &gt;(ompi_communicator_t*, std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; const&amp;, int) (line 318)</a></td><td>called 68 times, returned 68 times</td><td>74.0%</td></tr>
     <tr><td><a href="#l334">auto GridFormat::ParallelTraits::BroadCast&lt;ompi_communicator_t*&gt;::get&lt;std::array&lt;double, 2ul&gt; &gt;(ompi_communicator_t*, std::array&lt;double, 2ul&gt; const&amp;, int) (line 334)</a></td><td>called 538 times, returned 538 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l334">auto GridFormat::ParallelTraits::BroadCast&lt;ompi_communicator_t*&gt;::get&lt;std::array&lt;double, 3ul&gt; &gt;(ompi_communicator_t*, std::array&lt;double, 3ul&gt; const&amp;, int) (line 334)</a></td><td>called 1694 times, returned 1694 times</td><td>100.0%</td></tr>
@@ -672,7 +672,7 @@
       <td class="lineno"><a id="l77" href="#l77">77</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">5092</td>
+      <td class="linecount coveredLine">5308</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">NullCommunicator</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
@@ -1701,7 +1701,7 @@
       <td class="lineno"><a id="l221" href="#l221">221</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">68511</td>
+      <td class="linecount coveredLine">68943</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -1717,19 +1717,19 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 68511 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 68943 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">68511</td>
+      <td class="linecount partialCoveredLine">68943</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="n">MPI_Comm_size</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">s</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l224" href="#l224">224</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">68511</td>
+      <td class="linecount coveredLine">68943</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">s</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">

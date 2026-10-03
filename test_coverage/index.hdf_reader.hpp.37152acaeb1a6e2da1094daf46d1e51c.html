@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2026-10-03 15:53:36</td>
+      <td>2026-10-03 16:36:24</td>
     </tr>
   </table>
 </div>
@@ -75,14 +75,14 @@
     </tr>
     <tr><td><a href="#l34">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::VTKHDFReader(GridFormat::NullCommunicator const&amp;) (line 34)</a></td><td>called 8 times, returned 8 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l160">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_access() (line 160)</a></td><td>called 540 times, returned 540 times</td><td>45.0%</td></tr>
-    <tr><td><a href="#l154">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_access() const (line 154)</a></td><td>called 1871 times, returned 1871 times</td><td>45.0%</td></tr>
+    <tr><td><a href="#l154">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_access() const (line 154)</a></td><td>called 1884 times, returned 1884 times</td><td>45.0%</td></tr>
     <tr><td><a href="#l126">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_basis_vector(unsigned int) const (line 126)</a></td><td>called 6 times, returned 6 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l86">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_cell_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 86)</a></td><td>called 394 times, returned 394 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l86">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_cell_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 86)</a></td><td>called 400 times, returned 400 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l72">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_close() (line 72)</a></td><td>called 18 times, returned 18 times</td><td>67.0%</td></tr>
     <tr><td><a href="#l148">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_copy_fields(GridFormat::GridReader::FieldNames&amp;) (line 148)</a></td><td>called 152 times, returned 152 times</td><td>68.0%</td></tr>
     <tr><td><a href="#l130">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_is_sequence() const (line 130)</a></td><td>called 18 times, returned 18 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l110">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_location() const (line 110)</a></td><td>called 4 times, returned 4 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l94">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_meta_data_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 94)</a></td><td>called 132 times, returned 132 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l94">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_meta_data_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 94)</a></td><td>called 139 times, returned 139 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l66">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_name[abi:cxx11]() const (line 66)</a></td><td>called 2 times, returned 2 times</td><td>46.0%</td></tr>
     <tr><td><a href="#l98">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_number_of_cells() const (line 98)</a></td><td>called 213 times, returned 213 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l106">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_number_of_pieces() const (line 106)</a></td><td>called 7 times, returned 7 times</td><td>100.0%</td></tr>
@@ -825,14 +825,14 @@
       <td class="lineno"><a id="l86" href="#l86">86</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1726</td>
+      <td class="linecount coveredLine">1732</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">FieldPtr</span><span class="w"> </span><span class="n">_cell_field</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l87" href="#l87">87</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1726</td>
+      <td class="linecount coveredLine">1732</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_access</span><span class="p">().</span><span class="n">cell_field</span><span class="p">(</span><span class="n">name</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -881,14 +881,14 @@
       <td class="lineno"><a id="l94" href="#l94">94</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">312</td>
+      <td class="linecount coveredLine">319</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">FieldPtr</span><span class="w"> </span><span class="n">_meta_data_field</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l95" href="#l95">95</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">312</td>
+      <td class="linecount coveredLine">319</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_access</span><span class="p">().</span><span class="n">meta_data_field</span><span class="p">(</span><span class="n">name</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -1334,7 +1334,7 @@
       <td class="lineno"><a id="l154" href="#l154">154</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6740</td>
+      <td class="linecount coveredLine">6753</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">GridReader</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_access</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -1344,11 +1344,11 @@
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
           <div class="notTakenBranch">&cross; Branch 1 not taken.</div>
-          <div class="takenBranch">&check; Branch 2 taken 4243 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 4256 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">6740</td>
+      <td class="linecount partialCoveredLine">6753</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">_reader</span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
@@ -1362,7 +1362,7 @@
       <td class="lineno"><a id="l157" href="#l157">157</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6740</td>
+      <td class="linecount coveredLine">6753</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="n">_reader</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
