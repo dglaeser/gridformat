@@ -35,8 +35,8 @@ see below for information on how to contribute.
 
 Prerequisites:
 
-- C++-compiler with C++-20-support (tests run with `gcc-12/13`, `clang++-16`)
-- `cmake` (tests run with cmake-3.26)
+- C++-compiler with C++-20-support (tests run with `gcc-14`, `clang++-22`)
+- `cmake` (tests run with cmake-4.2)
 
 It is easiest to integrate `GridFormat` either as a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
 or via the `FetchContent` module of `cmake`. A minimal example (using `FetchContent`) of a project using `GridFormat` to
@@ -108,8 +108,8 @@ folder and type
 
 ```bash
 cmake -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
-      -DCMAKE_C_COMPILER=/usr/bin/gcc-12 \
-      -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 \
+      -DCMAKE_C_COMPILER=/usr/bin/gcc-14 \
+      -DCMAKE_CXX_COMPILER=/usr/bin/g++-14 \
       -B build
 cmake --install build
 ```
@@ -167,7 +167,7 @@ or the predefined <!-- DOXYGEN_MAKE_ABSOLUTE -->[traits for several frameworks](
 
 `GridFormat` comes with predefined traits for
 [dune grid views](https://www.dune-project.org/doxygen/2.8.0/classDune_1_1GridView.html) (tested dune version: 2.11),
-[deal.ii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.6.0),
+[deal.ii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.7.1),
 [cgal](https://www.cgal.org/) triangulations in
 [2d](https://doc.cgal.org/latest/Triangulation_2/index.html) and
 [3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 6.2.1),

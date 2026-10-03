@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 # Dockerfile for the GridFormat GitHub actions
-FROM ubuntu:24.04 AS base
+FROM ubuntu:26.04 AS base
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get upgrade -y -o Dpkg::Options::="--force-confold" \
@@ -14,8 +14,9 @@ RUN apt-get update \
     && apt-get install --no-install-recommends --yes \
         build-essential \
         cmake \
-        g++-12 g++-14 \
-        clang-16 clang-18 \
+        # the compilers we test with (oldest gcc, newest clang)
+        g++-14 \
+        clang-22 \
         python3 \
         python3-pip \
         python3-dev \
@@ -25,8 +26,6 @@ RUN apt-get update \
         apt-utils \
         # for pages job
         rsync \
-        # for deal.ii
-        software-properties-common \
     && python3 -m venv /gfmt-venv && . /gfmt-venv/bin/activate && pip install vtk==9.7.1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -60,13 +59,12 @@ RUN apt-get update \
         libboost-filesystem-dev \
         petsc-dev \
         libspdlog-dev \
-        # dolfinx requires a graph partitioner, and only finds scotch via its (missing) cmake config
-        libparmetis-dev \
+        # dolfinx requires a graph partitioner (parmetis is not packaged in ubuntu 26.04)
+        libscotch-dev \
+        libptscotch-dev \
         # fenics wheel builds with ninja
         ninja-build \
-    # deal.ii
-    && add-apt-repository --yes ppa:ginggs/deal.ii-9.6.0-backports \
-    && apt-get install --yes libdeal.ii-dev \
+        libdeal.ii-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
