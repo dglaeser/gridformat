@@ -27,7 +27,7 @@ RUN apt-get update \
         rsync \
         # for deal.ii
         software-properties-common \
-    && python3 -m venv /gfmt-venv && . /gfmt-venv/bin/activate && pip install vtk \
+    && python3 -m venv /gfmt-venv && . /gfmt-venv/bin/activate && pip install vtk==9.7.1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -70,7 +70,7 @@ RUN apt-get update \
 COPY install_deps_from_sources.py .
 RUN . /gfmt-venv/bin/activate \
     && update-alternatives --install /usr/bin/c++ c++ /usr/bin/gcc-12 100 \
-    && pip install fenics-ffcx==0.6.0 pybind11 \
+    && pip install "setuptools<82" fenics-ffcx==0.6.0 pybind11 \
     && python3 install_deps_from_sources.py --all \
                                             --install-prefix=/gfmt-dependencies \
                                             --c-compiler=/usr/bin/gcc-12 \
