@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['name_0',['name',['../classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f',1,'GridFormat::GridReader']]],
-  ['number_5fof_5fcells_1',['number_of_cells',['../classGridFormat_1_1GridReader.html#abc668e99c9a53df337797cdcdeb9a9d3',1,'GridFormat::GridReader']]],
-  ['number_5fof_5fpieces_2',['number_of_pieces',['../classGridFormat_1_1GridReader.html#a1ddb71f9a8f815e62eb89787df5df891',1,'GridFormat::GridReader']]],
-  ['number_5fof_5fpoints_3',['number_of_points',['../classGridFormat_1_1GridReader.html#ad6ab48d38abf1273d9642082ec8f7459',1,'GridFormat::GridReader']]],
-  ['number_5fof_5fsteps_4',['number_of_steps',['../classGridFormat_1_1GridReader.html#aefef1efe22a2e1adb76ed7015f95842e',1,'GridFormat::GridReader']]]
+  ['make_5fdata_5farray_5ffield_0',['make_data_array_field',['../classGridFormat_1_1VTK_1_1XMLReaderHelper.html#afaf2ff313ae7cbfd2cb06864936d2e2c',1,'GridFormat::VTK::XMLReaderHelper::make_data_array_field(std::string_view name, std::string_view section_path, const std::optional&lt; std::size_t &gt; number_of_tuples={}) const'],['../classGridFormat_1_1VTK_1_1XMLReaderHelper.html#a1383e5a8cbd10f9691ea396b414f1605',1,'GridFormat::VTK::XMLReaderHelper::make_data_array_field(const XMLElement &amp;element, const std::optional&lt; std::size_t &gt; number_of_tuples={}) const']]],
+  ['make_5ffield_5fptr_1',['make_field_ptr',['../group__Common.html#ga1534902c178a406df403a52223f04e63',1,'GridFormat']]],
+  ['make_5fpoints_5ffield_2',['make_points_field',['../classGridFormat_1_1VTK_1_1XMLReaderHelper.html#a66e75bccd644cb5acfe9798b373d6f42',1,'GridFormat::VTK::XMLReaderHelper']]],
+  ['meta_5fdata_5ffield_3',['meta_data_field',['../classGridFormat_1_1GridReader.html#a47c771e2676bf620a35bc97c932da170',1,'GridFormat::GridReader']]]
 ];

@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['id_0',['id',['../classGridFormat_1_1ImageGrid.html#a06d54c3771c74d5883e44995226b6e42',1,'GridFormat::ImageGrid']]],
-  ['imagegrid_1',['ImageGrid',['../classGridFormat_1_1ImageGrid.html#a05fe714198fcb7bb3881e922cd00f38b',1,'GridFormat::ImageGrid::ImageGrid(Size &amp;&amp;size, Cells &amp;&amp;cells)'],['../classGridFormat_1_1ImageGrid.html#a7ee7f78e11f0c7e9db98b4ca4281dd95',1,'GridFormat::ImageGrid::ImageGrid(Origin &amp;&amp;origin, Size &amp;&amp;size, Cells &amp;&amp;cells)'],['../classGridFormat_1_1ImageGrid.html#a9cda67bafaeec9c20141fbe8ce91691f',1,'GridFormat::ImageGrid::ImageGrid(std::array&lt; CoordinateType, dim &gt; size, std::array&lt; std::size_t, dim &gt; cells)'],['../classGridFormat_1_1ImageGrid.html#a3d2cebf39ddad7f09290e5642bd762a0',1,'GridFormat::ImageGrid::ImageGrid(std::array&lt; CoordinateType, dim &gt; origin, std::array&lt; CoordinateType, dim &gt; size, std::array&lt; std::size_t, dim &gt; cells)']]],
-  ['is_5fsequence_2',['is_sequence',['../classGridFormat_1_1GridReader.html#a029f6fb959fd98718508f714cf870966',1,'GridFormat::GridReader']]],
-  ['is_5fstring_5ffield_3',['is_string_field',['../hdf__common_8hpp.html#abd8f0a5162fc7995ad9ec3ec625fec36',1,'GridFormat::VTKHDF']]]
+  ['get_5fdata_5farray_0',['get_data_array',['../group__VTK.html#ga366c38cd2ebfa955b93b2a9a667e927a',1,'GridFormat::VTK::XML']]],
+  ['get_5ffile_5ftype_1',['get_file_type',['../hdf__common_8hpp.html#a6e7214ca418a6b8d6850513e929d468d',1,'GridFormat::VTKHDF']]],
+  ['grid_2',['grid',['../classGridFormat_1_1Writer.html#a7b2d2f15b874cc2958df8c4abb922998',1,'GridFormat::Writer']]]
 ];

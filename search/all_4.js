@@ -9,5 +9,5 @@ var searchData=
   ['extents_6',['extents',['../classGridFormat_1_1ImageGrid.html#a24ec0554685c775cdcd95a6361b85508',1,'GridFormat::ImageGrid::extents()'],['../classGridFormat_1_1GridReader.html#a183ca596c6582ab5245466a5019fab48',1,'GridFormat::GridReader::extents()']]],
   ['extents_3c_20converterdetail_3a_3aconvertergrid_20_3e_7',['Extents&lt; ConverterDetail::ConverterGrid &gt;',['../structGridFormat_1_1Traits_1_1Extents_3_01ConverterDetail_1_1ConverterGrid_01_4.html',1,'GridFormat::Traits']]],
   ['extents_3c_20dune_3a_3agridview_3c_20traits_20_3e_20_3e_8',['Extents&lt; Dune::GridView&lt; Traits &gt; &gt;',['../structGridFormat_1_1Traits_1_1Extents_3_01Dune_1_1GridView_3_01Traits_01_4_01_4.html',1,'GridFormat::Traits']]],
-  ['extract_5fstring_9',['extract_string',['../hdf__common_8hpp.html#a2afd5c3e4a5a47261b37399596f4f640',1,'GridFormat::VTKHDF']]]
+  ['extract_5fstrings_9',['extract_strings',['../hdf__common_8hpp.html#a531e8e755a3b05f1d16974b7b786f630',1,'GridFormat::VTKHDF']]]
 ];

@@ -125,11 +125,17 @@ $(document).ready(function(){initNavTree('hdf__common_8hpp.html',''); initResiza
 <code>#include &lt;cstddef&gt;</code><br />
 <code>#include &lt;numeric&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;ranges&gt;</code><br />
+<code>#include &lt;array&gt;</code><br />
 <code>#include &lt;exception&gt;</code><br />
 <code>#include &lt;gridformat/common/hdf5.hpp&gt;</code><br />
 <code>#include &lt;<a class="el" href="field_8hpp_source.html">gridformat/common/field.hpp</a>&gt;</code><br />
 <code>#include &lt;gridformat/common/precision.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/lazy_field.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/range_field.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/field_transformations.hpp&gt;</code><br />
+<code>#include &lt;gridformat/common/multi_string.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/string_conversion.hpp&gt;</code><br />
 <code>#include &lt;gridformat/common/exceptions.hpp&gt;</code><br />
 <code>#include &lt;gridformat/parallel/communication.hpp&gt;</code><br />
@@ -154,12 +160,14 @@ Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTKHDF::check_array_name</b> (const std::string &amp;name)</td></tr>
 <tr class="memdesc:a4775cbc2ce9425008fceb2a03de1f16d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Throw if the given name cannot be used as a vtk-hdf array name. <br /></td></tr>
 <tr class="separator:a4775cbc2ce9425008fceb2a03de1f16d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd8f0a5162fc7995ad9ec3ec625fec36"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf__common_8hpp.html#abd8f0a5162fc7995ad9ec3ec625fec36">GridFormat::VTKHDF::is_string_field</a> (const Field &amp;field)</td></tr>
+<tr class="memitem:abd8f0a5162fc7995ad9ec3ec625fec36"><td class="memItemLeft" align="right" valign="top"><a id="abd8f0a5162fc7995ad9ec3ec625fec36" name="abd8f0a5162fc7995ad9ec3ec625fec36"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTKHDF::is_string_field</b> (const Field &amp;field)</td></tr>
+<tr class="memdesc:abd8f0a5162fc7995ad9ec3ec625fec36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the given field holds strings (i.e. is a flat array of characters, see MultiString) <br /></td></tr>
 <tr class="separator:abd8f0a5162fc7995ad9ec3ec625fec36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2afd5c3e4a5a47261b37399596f4f640"><td class="memItemLeft" align="right" valign="top"><a id="a2afd5c3e4a5a47261b37399596f4f640" name="a2afd5c3e4a5a47261b37399596f4f640"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTKHDF::extract_string</b> (const Field &amp;field)</td></tr>
-<tr class="memdesc:a2afd5c3e4a5a47261b37399596f4f640"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the string stored in the given character field, stripped of trailing null terminators. <br /></td></tr>
-<tr class="separator:a2afd5c3e4a5a47261b37399596f4f640"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a531e8e755a3b05f1d16974b7b786f630"><td class="memItemLeft" align="right" valign="top"><a id="a531e8e755a3b05f1d16974b7b786f630" name="a531e8e755a3b05f1d16974b7b786f630"></a>
+std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTKHDF::extract_strings</b> (const Field &amp;field)</td></tr>
+<tr class="memdesc:a531e8e755a3b05f1d16974b7b786f630"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the strings stored in the given character field (see MultiString) <br /></td></tr>
+<tr class="separator:a531e8e755a3b05f1d16974b7b786f630"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44ced24161c932402c79590024671360"><td class="memTemplParams" colspan="2"><a id="a44ced24161c932402c79590024671360" name="a44ced24161c932402c79590024671360"></a>
 template&lt;typename C &gt; </td></tr>
 <tr class="memitem:a44ced24161c932402c79590024671360"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::VTKHDF::DataSetField</b> (const HDF5::File&lt; C &gt; &amp;, std::string) -&gt; DataSetField&lt; C &gt;</td></tr>
@@ -176,6 +184,26 @@ template&lt;typename C &gt; </td></tr>
 <tr class="memitem:a142373cff142be920f5afb60aa21f974"><td class="memTemplParams" colspan="2">template&lt;typename C &gt; </td></tr>
 <tr class="memitem:a142373cff142be920f5afb60aa21f974"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="hdf__common_8hpp.html#a142373cff142be920f5afb60aa21f974">GridFormat::VTKHDF::check_version_compatibility</a> (const HDF5::File&lt; C &gt; &amp;file, const std::array&lt; std::size_t, 2 &gt; &amp;supported)</td></tr>
 <tr class="separator:a142373cff142be920f5afb60aa21f974"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade61d37bd54c269057bf807bc7a79339"><td class="memItemLeft" align="right" valign="top"><a id="ade61d37bd54c269057bf807bc7a79339" name="ade61d37bd54c269057bf807bc7a79339"></a>
+FieldPtr&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTKHDF::as_field_data_tuples</b> (FieldPtr field)</td></tr>
+<tr class="memdesc:ade61d37bd54c269057bf807bc7a79339"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the given field data in the shape of tuples, i.e. (tuples) or (tuples, components) <br /></td></tr>
+<tr class="separator:ade61d37bd54c269057bf807bc7a79339"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a223167932b3e8f8a6d7414af96e1e718"><td class="memItemLeft" align="right" valign="top"><a id="a223167932b3e8f8a6d7414af96e1e718" name="a223167932b3e8f8a6d7414af96e1e718"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTKHDF::write_field_data</b> (HDF5::File&lt;&gt; &amp;file, const std::string &amp;name, FieldPtr field)</td></tr>
+<tr class="memdesc:a223167932b3e8f8a6d7414af96e1e718"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a field data array into a file that is not transient. <br /></td></tr>
+<tr class="separator:a223167932b3e8f8a6d7414af96e1e718"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ce24607047ae283646cacd9b6d70766"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf__common_8hpp.html#a0ce24607047ae283646cacd9b6d70766">GridFormat::VTKHDF::write_field_data_step</a> (HDF5::File&lt;&gt; &amp;file, const std::string &amp;name, FieldPtr field)</td></tr>
+<tr class="memdesc:a0ce24607047ae283646cacd9b6d70766"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a time step to a field data array of a transient file.  <br /></td></tr>
+<tr class="separator:a0ce24607047ae283646cacd9b6d70766"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e79bcc209e523d1d4185be68767fa94"><td class="memItemLeft" align="right" valign="top"><a id="a0e79bcc209e523d1d4185be68767fa94" name="a0e79bcc209e523d1d4185be68767fa94"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>GridFormat::VTKHDF::write_field_data_step_referencing</b> (std::size_t step_index, HDF5::File&lt;&gt; &amp;file, const std::string &amp;name)</td></tr>
+<tr class="memdesc:a0e79bcc209e523d1d4185be68767fa94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a time step to a field data array of a transient file, referring to the data of an earlier step. <br /></td></tr>
+<tr class="separator:a0e79bcc209e523d1d4185be68767fa94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8f74fea44a324328b7ff21b656f5834"><td class="memTemplParams" colspan="2"><a id="aa8f74fea44a324328b7ff21b656f5834" name="aa8f74fea44a324328b7ff21b656f5834"></a>
+template&lt;typename C &gt; </td></tr>
+<tr class="memitem:aa8f74fea44a324328b7ff21b656f5834"><td class="memTemplItemLeft" align="right" valign="top">FieldPtr&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GridFormat::VTKHDF::read_field_data</b> (const HDF5::File&lt; C &gt; &amp;file, const std::string &amp;name, std::optional&lt; std::size_t &gt; step)</td></tr>
+<tr class="memdesc:aa8f74fea44a324328b7ff21b656f5834"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the field data array with the given name, at the given step for transient files. <br /></td></tr>
+<tr class="separator:aa8f74fea44a324328b7ff21b656f5834"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80ca30834dab3b25dec5a9818ba47f36"><td class="memTemplParams" colspan="2">template&lt;Concepts::Communicator C, std::invocable&lt; HDF5::File&lt;&gt; &amp; &gt; Write&gt; </td></tr>
 <tr class="memitem:a80ca30834dab3b25dec5a9818ba47f36"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="hdf__common_8hpp.html#a80ca30834dab3b25dec5a9818ba47f36">GridFormat::VTKHDF::write_on_root</a> (const std::string &amp;filename, const C &amp;comm, int root, Write &amp;&amp;write)</td></tr>
 <tr class="memdesc:a80ca30834dab3b25dec5a9818ba47f36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open the given file with the default (non-MPI) driver on the root rank and pass it to <code>write</code>.  <br /></td></tr>
@@ -213,8 +241,8 @@ template&lt;typename C &gt; </div>
 
 </div>
 </div>
-<a id="abd8f0a5162fc7995ad9ec3ec625fec36" name="abd8f0a5162fc7995ad9ec3ec625fec36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abd8f0a5162fc7995ad9ec3ec625fec36">&#9670;&#160;</a></span>is_string_field()</h2>
+<a id="a0ce24607047ae283646cacd9b6d70766" name="a0ce24607047ae283646cacd9b6d70766"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ce24607047ae283646cacd9b6d70766">&#9670;&#160;</a></span>write_field_data_step()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -223,11 +251,27 @@ template&lt;typename C &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool GridFormat::VTKHDF::is_string_field </td>
+          <td class="memname">void GridFormat::VTKHDF::write_field_data_step </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classGridFormat_1_1Field.html">Field</a> &amp;&#160;</td>
-          <td class="paramname"><em>field</em></td><td>)</td>
+          <td class="paramtype">HDF5::File&lt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Common.html#ga06474c8fd20c465d2ea250e7749f68b9">FieldPtr</a>&#160;</td>
+          <td class="paramname"><em>field</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -236,7 +280,7 @@ template&lt;typename C &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Return true if the given field holds a single string (i.e. is a flat array of characters). Multi-dimensional character fields are not treated as strings, since the number of strings per time step is not expressible in the offsets that transient files store. </p>
+<p>Uses the layout written by VTK: the tuples of all steps are concatenated, and the offset (in tuples) and the sizes (number of components and tuples) of each step are stored in the "Steps" group. Strings are stored as one tuple per string. </p>
 
 </div>
 </div>

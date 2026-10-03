@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2026-10-03 14:04:28</td>
+      <td>2026-10-03 15:12:02</td>
     </tr>
   </table>
 </div>
@@ -76,7 +76,7 @@
     <tr><td><a href="#l94">GridFormat::VTUReader::_cell_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 94)</a></td><td>called 693 times, returned 693 times</td><td>80.0%</td></tr>
     <tr><td><a href="#l40">GridFormat::VTUReader::_close() (line 40)</a></td><td>called 53 times, returned 53 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l62">GridFormat::VTUReader::_is_sequence() const (line 62)</a></td><td>called 87 times, returned 87 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l102">GridFormat::VTUReader::_meta_data_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 102)</a></td><td>called 57 times, returned 57 times</td><td>88.0%</td></tr>
+    <tr><td><a href="#l102">GridFormat::VTUReader::_meta_data_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 102)</a></td><td>called 142 times, returned 142 times</td><td>88.0%</td></tr>
     <tr><td><a href="#l46">GridFormat::VTUReader::_name[abi:cxx11]() const (line 46)</a></td><td>called 43 times, returned 43 times</td><td>78.0%</td></tr>
     <tr><td><a href="#l50">GridFormat::VTUReader::_number_of_cells() const (line 50)</a></td><td>called 8355 times, returned 8355 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l58">GridFormat::VTUReader::_number_of_pieces() const (line 58)</a></td><td>called 10 times, returned 10 times</td><td>100.0%</td></tr>
@@ -1001,7 +1001,7 @@
       <td class="lineno"><a id="l102" href="#l102">102</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">57</td>
+      <td class="linecount coveredLine">142</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">FieldPtr</span><span class="w"> </span><span class="n">_meta_data_field</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -1010,12 +1010,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 4 taken 57 times.</div>
+          <div class="takenBranch">&check; Branch 4 taken 142 times.</div>
           <div class="notTakenBranch">&cross; Branch 5 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">57</td>
+      <td class="linecount partialCoveredLine">142</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_helper</span><span class="p">.</span><span class="n">value</span><span class="p">().</span><span class="n">make_data_array_field</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;UnstructuredGrid/FieldData&quot;</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">

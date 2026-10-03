@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['open_0',['open',['../classGridFormat_1_1GridReader.html#a6dc525bc4e87929a93ed07f60f7e95b9',1,'GridFormat::GridReader']]],
-  ['operator_28_29_1',['operator()',['../structGridFormat_1_1FileFormat_1_1FormatWithOptions.html#a992f4d97822f3bd87129d0fb7c4d4fda',1,'GridFormat::FileFormat::FormatWithOptions::operator()()'],['../structGridFormat_1_1Encoding_1_1Ascii.html#a34f11d4b786bbc8ff59ee01b0cc85822',1,'GridFormat::Encoding::Ascii::operator()()'],['../structGridFormat_1_1Encoding_1_1Base64.html#a40cd9b8fb1e7e574666a74c3b36493e7',1,'GridFormat::Encoding::Base64::operator()(Stream &amp;s) const noexcept'],['../structGridFormat_1_1Encoding_1_1Base64.html#acf09995d558e20f7b94e23781d447f5a',1,'GridFormat::Encoding::Base64::operator()(Base64EncoderOptions opts) const']]],
-  ['options_2',['options',['../structGridFormat_1_1Encoding_1_1Ascii.html#a6052411ab879536cf9a598a2635b7c0b',1,'GridFormat::Encoding::Ascii']]],
-  ['ordinates_3',['ordinates',['../classGridFormat_1_1ImageGrid.html#ae2c9061a39f4335a01da01336b6d0953',1,'GridFormat::ImageGrid::ordinates()'],['../classGridFormat_1_1GridReader.html#aaffc5117c36765ef91dd2ba842d860b4',1,'GridFormat::GridReader::ordinates(unsigned int direction) const']]],
-  ['origin_4',['origin',['../classGridFormat_1_1GridReader.html#a68779b9dc1d5f103d52a1dfc86146467',1,'GridFormat::GridReader']]]
+  ['name_0',['name',['../classGridFormat_1_1GridReader.html#a516bc066601c9020b97113cc3151373f',1,'GridFormat::GridReader']]],
+  ['number_5fof_5fcells_1',['number_of_cells',['../classGridFormat_1_1GridReader.html#abc668e99c9a53df337797cdcdeb9a9d3',1,'GridFormat::GridReader']]],
+  ['number_5fof_5fpieces_2',['number_of_pieces',['../classGridFormat_1_1GridReader.html#a1ddb71f9a8f815e62eb89787df5df891',1,'GridFormat::GridReader']]],
+  ['number_5fof_5fpoints_3',['number_of_points',['../classGridFormat_1_1GridReader.html#ad6ab48d38abf1273d9642082ec8f7459',1,'GridFormat::GridReader']]],
+  ['number_5fof_5fsteps_4',['number_of_steps',['../classGridFormat_1_1GridReader.html#aefef1efe22a2e1adb76ed7015f95842e',1,'GridFormat::GridReader']]]
 ];
