@@ -9,6 +9,8 @@ inputs:
     required: true
   allow_skipped_tests:
     required: true
+  generate_vtk_test_files:
+    required: true
 runs:
   using: composite
   steps:
@@ -26,6 +28,7 @@ runs:
               -DCMAKE_BUILD_TYPE=Release \
               -DGRIDFORMAT_BUILD_TESTS=ON \
               -DGRIDFORMAT_BUILD_BINARIES=ON \
+              -DGRIDFORMAT_GENERATE_VTK_TEST_FILES=${{inputs.generate_vtk_test_files}} \
               -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
               -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
               -B build
@@ -64,6 +67,7 @@ runs:
           echo "find_package(gridformat REQUIRED)" >> CMakeLists.txt
           echo "add_subdirectory(test)" >> CMakeLists.txt
           cmake -Dgridformat_ROOT=$(pwd)/../install \
+                -DGRIDFORMAT_GENERATE_VTK_TEST_FILES=${{inputs.generate_vtk_test_files}} \
                 -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
                 -DCMAKE_PREFIX_PATH=/gfmt-dependencies \

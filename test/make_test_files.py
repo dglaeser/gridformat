@@ -59,10 +59,31 @@ def _write_vti_files(base_filename: str) -> None:
     _write_xml_files(writer, base_filename, ".vti")
 
 
-def _make_image_grid(n: int = 5, dx: float = 0.1):
+def _write_vtk_hdf_files(base_filename: str) -> None:
+    assert _HAVE_VTK
+    unstructured = _make_unstructured_grid()
+    _add_meta_data(unstructured)
+    _write_vtk_hdf_file(unstructured, f"{base_filename}_unstructured_2d_in_2d")
+
+    # As of vtk 9.7.1, vtk cannot read back the 2d images it writes, and it drops their field data
+    _write_vtk_hdf_file(_make_image_grid(nz=3), f"{base_filename}_image_3d_in_3d")
+
+
+def _write_vtk_hdf_file(grid, base_filename: str) -> None:
+    writer = vtk.vtkHDFWriter()
+    writer.SetInputData(grid)
+    writer.SetFileName(f"{base_filename}.hdf")
+    writer.Write()
+
+    writer.SetCompressionLevel(4)
+    writer.SetFileName(f"{base_filename}_compressed.hdf")
+    writer.Write()
+
+
+def _make_image_grid(n: int = 5, dx: float = 0.1, nz: int = 0):
     assert _HAVE_VTK
     grid = vtk.vtkImageData()
-    grid.SetExtent(0, n, 0, n, 0, 0)
+    grid.SetExtent(0, n, 0, n, 0, nz)
     grid.SetSpacing(dx, dx, dx)
     _add_fields(grid)
     return grid
@@ -141,6 +162,20 @@ def _add_fields(grid):
     return grid
 
 
+def _add_meta_data(grid):
+    text = vtk.vtkStringArray()
+    text.SetName("text")
+    text.InsertNextValue("some_text")
+
+    numbers = vtk.vtkIntArray()
+    numbers.SetName("numbers")
+    for value in [1, 2, 3, 4]:
+        numbers.InsertNextValue(value)
+
+    grid.GetFieldData().AddArray(text)
+    grid.GetFieldData().AddArray(numbers)
+
+
 def _make_points(n: int, dx: float):
     points = vtk.vtkPoints()
     for y in range(n+1):
@@ -215,6 +250,8 @@ if __name__ == "__main__":
         print("Skipping vtk test file generation because vtk package was not found")
         sys.exit(0)
 
+    # this line is parsed by test_readme_tested_versions.py
+    print(f"Writing test files with VTK version {vtk.vtkVersion.GetVTKVersion()}")
     test_data_path = join(join(abspath(dirname(__file__)), "vtk"), "test_data")
     makedirs(test_data_path, exist_ok=True)
 
@@ -228,3 +265,5 @@ if __name__ == "__main__":
     _write_vtr_files(join(test_data_path, "vtr_test_file_2d_in_2d"))
     print("Writing test vti files")
     _write_vti_files(join(test_data_path, "vti_test_file_2d_in_2d"))
+    print("Writing test vtk-hdf files")
+    _write_vtk_hdf_files(join(test_data_path, "vtk_hdf_test_file"))

@@ -4,6 +4,10 @@
 #include <vector>
 #include <ranges>
 #include <cmath>
+#include <string>
+#include <iostream>
+#include <algorithm>
+#include <filesystem>
 
 #include <gridformat/vtk/hdf_unstructured_grid_writer.hpp>
 #include <gridformat/vtk/hdf_image_grid_writer.hpp>
@@ -88,5 +92,92 @@ void test(Reader&& reader, const std::string& suffix = "") {
 int main() {
     test(GridFormat::VTKHDFImageGridReader{});
     test(GridFormat::VTKHDFReader{}, "_from_generic");
+
+    using GridFormat::Testing::operator""_test;
+    using GridFormat::Testing::expect;
+    using GridFormat::Testing::eq;
+
+    // the values differ per step, such that reading the wrong step goes not unnoticed
+    const auto numbers_at = [] (int step) { return std::vector<int>{step, step + 1, step + 2}; };
+    const auto write_transient = [&] (const std::string& base, bool static_meta_data) {
+        const GridFormat::Test::StructuredGrid<3> grid{{1.0, 1.0, 1.0}, {2, 2, 2}};
+        GridFormat::VTKHDFImageGridTimeSeriesWriter writer{grid, base, {.static_grid = true, .static_meta_data = static_meta_data}};
+        for (int step : {0, 1, 2}) {
+            writer.set_meta_data("numbers", numbers_at(step));
+            writer.write(static_cast<double>(step));
+        }
+        return base + ".hdf";
+    };
+    const auto check_numbers = [&] (const std::string& filename, auto&& expected_at) {
+        GridFormat::VTKHDFImageGridReader reader;
+        reader.open(filename);
+        expect(eq(reader.number_of_steps(), std::size_t{3}));
+        for (std::size_t step = 0; step < reader.number_of_steps(); ++step) {
+            reader.set_step(step);
+            expect(std::ranges::equal(
+                reader.meta_data_field("numbers")->template export_to<std::vector<int>>(),
+                expected_at(static_cast<int>(step))
+            ));
+        }
+    };
+
+    "vtk_hdf_image_time_series_static_meta_data"_test = [&] () {
+        const auto filename = write_transient("reader_vtk_hdf_image_static_meta_data", true);
+        check_numbers(filename, [&] (int) { return numbers_at(0); });
+    };
+
+    "vtk_hdf_image_time_series_legacy_meta_data_layout"_test = [&] () {
+        const auto filename = write_transient("reader_vtk_hdf_image_legacy_meta_data", false);
+        {   // GridFormat <= 0.5 stored the rows with an additional dimension: (num_steps, 1, N)
+            HighFive::File file{filename, HighFive::File::ReadWrite};
+            auto group = file.getGroup("/VTKHDF/FieldData");
+            std::vector<std::vector<std::vector<int>>> legacy;
+            for (auto& row : group.getDataSet("numbers").read<std::vector<std::vector<int>>>())
+                legacy.push_back({std::move(row)});
+            group.unlink("numbers");
+            group.createDataSet("numbers", legacy);
+        }
+        check_numbers(filename, numbers_at);
+    };
+
+    const std::filesystem::path test_data_path{TEST_DATA_PATH};
+    std::vector<std::string> vtk_files;
+    if (std::filesystem::exists(test_data_path))
+        std::ranges::copy(
+            std::filesystem::directory_iterator{test_data_path}
+            | std::views::transform([] (const auto& entry) { return entry.path(); })
+            | std::views::filter([] (const std::filesystem::path& p) {
+                return p.extension() == ".hdf" && p.filename().string().starts_with("vtk_hdf_test_file_image");
+            })
+            | std::views::transform([] (const std::filesystem::path& p) { return p.string(); }),
+            std::back_inserter(vtk_files)
+        );
+    if (vtk_files.empty()) {
+        std::cout << "No vtk-written test files found in " << test_data_path << ". Skipping..." << std::endl;
+        return 42;
+    }
+
+    "vtk_written_vtk_hdf_image_files"_test = [&] () {
+        for (const auto& filename : vtk_files) {
+            std::cout << "Testing '" << GridFormat::as_highlight(filename) << "'" << std::endl;
+            GridFormat::VTKHDFReader reader;
+            reader.open(filename);
+            expect(eq(reader.number_of_pieces(), std::size_t{1}));
+
+            const auto vtk_grid = [&] () {
+                GridFormat::Test::UnstructuredGridFactory<3, 3> factory;
+                reader.export_grid(factory);
+                return std::move(factory).grid();
+            } ();
+            expect(eq(GridFormat::number_of_cells(vtk_grid), std::size_t{5*5*3}));
+            expect(GridFormat::Test::test_field_values<3>(
+                "pscalar", reader.point_field("pscalar"), vtk_grid, GridFormat::points(vtk_grid)
+            ));
+            expect(GridFormat::Test::test_field_values<3>(
+                "cscalar", reader.cell_field("cscalar"), vtk_grid, GridFormat::cells(vtk_grid)
+            ));
+        }
+    };
+
     return 0;
 }

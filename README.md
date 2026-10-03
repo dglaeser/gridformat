@@ -170,7 +170,7 @@ or the predefined <!-- DOXYGEN_MAKE_ABSOLUTE -->[traits for several frameworks](
 [deal.ii triangulations](https://www.dealii.org/current/doxygen/deal.II/classTriangulation.html) (tested deal.ii version: 9.6.0),
 [cgal](https://www.cgal.org/) triangulations in
 [2d](https://doc.cgal.org/latest/Triangulation_2/index.html) and
-[3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 5.5.2),
+[3d](https://doc.cgal.org/latest/Triangulation_3/index.html) (tested cgal version: 5.2.2),
 [dolfinx](https://github.com/FEniCS/dolfinx) meshes and function spaces (tested dolfinx version: 0.6.0)
 and [mfem](https://mfem.org/) meshes (tested mfem version: 4.5.2).
 Users of these frameworks can include these predefined traits and use `GridFormat` directly
@@ -218,8 +218,9 @@ ctest
 
 Note that an internet connection is required for the call to `cmake` as it pulls in [ut](https://github.com/boost-ext/ut) on-the-fly.
 Moreover, in the configure step a Python script is invoked that produces some test data using [VTK](https://pypi.org/project/vtk/)
-(tested vtk version: 9.7.1). If your Python environment does not have `VTK`, this step is skipped. Note that some tests in the
-test suite will be skipped in this case, and also with `VTK` versions before 9.7, which cannot write all of the test data.
+(tested vtk version: 9.7.1). This step is skipped if your Python environment does not have `VTK`, or if you configure with
+`-DGRIDFORMAT_GENERATE_VTK_TEST_FILES=OFF`. Note that some tests in the test suite will be skipped in this case, and also
+with `VTK` versions before 9.7, which cannot write all of the test data.
 
 ### Creating a release
 
