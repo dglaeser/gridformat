@@ -9,6 +9,8 @@
 #include <utility>
 #include <optional>
 #include <iterator>
+#include <numeric>
+#include <span>
 
 #include <dolfinx.h>
 
@@ -22,36 +24,39 @@
 #include "../testing.hpp"
 
 
+// create a mesh consisting of a single second-order cell with the given node coordinates
+auto single_cell_mesh(dolfinx::mesh::CellType ct,
+                      const std::vector<double>& x,
+                      basix::element::lagrange_variant variant = basix::element::lagrange_variant::unset) {
+    const std::size_t num_nodes = x.size()/3;
+    std::vector<std::int64_t> cell(num_nodes);
+    std::iota(cell.begin(), cell.end(), std::int64_t{0});
+    return dolfinx::mesh::create_mesh(
+        MPI_COMM_WORLD,
+        std::span<const std::int64_t>{cell},
+        dolfinx::fem::CoordinateElement<double>(ct, 2, variant),
+        x,
+        {num_nodes, 3},
+        dolfinx::mesh::GhostMode::none
+    );
+}
+
 template<int dim>
 auto higher_order_mesh([[maybe_unused]] std::optional<dolfinx::mesh::CellType> ct = {}) {
     if constexpr (dim == 1) {
-        return dolfinx::mesh::create_mesh(
-            MPI_COMM_WORLD,
-            dolfinx::graph::AdjacencyList<std::int64_t>{
-                std::vector<std::vector<std::size_t>>{{0, 1, 2}}
-            },
-            dolfinx::fem::CoordinateElement(dolfinx::mesh::CellType::interval, 2),
-            std::vector{
+        return single_cell_mesh(
+            dolfinx::mesh::CellType::interval,
+            std::vector<double>{
                 0., 0., 0.,
                 0.5, 0., 0.,
                 1., 0., 0.
-            },
-            {3, 3},
-            dolfinx::mesh::GhostMode::none
+            }
         );
     } else if constexpr (dim == 2) {
         if (ct.value() == dolfinx::mesh::CellType::triangle)
-            return dolfinx::mesh::create_mesh(
-                MPI_COMM_WORLD,
-                dolfinx::graph::AdjacencyList<std::int64_t>{
-                    std::vector<std::vector<std::size_t>>{{0, 1, 2, 3, 4, 5}}
-                },
-                dolfinx::fem::CoordinateElement(
-                    dolfinx::mesh::CellType::triangle,
-                    /*order*/2,
-                    basix::element::lagrange_variant::equispaced
-                ),
-                std::vector{
+            return single_cell_mesh(
+                dolfinx::mesh::CellType::triangle,
+                std::vector<double>{
                     0., 0., 0.,
                     1., 0., 0.,
                     0., 1., 0.,
@@ -59,17 +64,12 @@ auto higher_order_mesh([[maybe_unused]] std::optional<dolfinx::mesh::CellType> c
                     0., 0.5, 0.,
                     0.5, 0., 0.
                 },
-                {6, 3},
-                dolfinx::mesh::GhostMode::none
+                basix::element::lagrange_variant::equispaced
             );
         else  // quadrilateral
-            return dolfinx::mesh::create_mesh(
-                MPI_COMM_WORLD,
-                dolfinx::graph::AdjacencyList<std::int64_t>{
-                    std::vector<std::vector<std::size_t>>{{0, 1, 2, 3, 4, 5, 6, 7, 8}}
-                },
-                dolfinx::fem::CoordinateElement(dolfinx::mesh::CellType::quadrilateral, 2),
-                std::vector{
+            return single_cell_mesh(
+                dolfinx::mesh::CellType::quadrilateral,
+                std::vector<double>{
                     0., 0., 0.,
                     1., 0., 0.,
                     0., 1., 0.,
@@ -79,23 +79,13 @@ auto higher_order_mesh([[maybe_unused]] std::optional<dolfinx::mesh::CellType> c
                     1., 0.5, 0.,
                     0.5, 1., 0.,
                     0.5, 0.5, 0.
-                },
-                {9, 3},
-                dolfinx::mesh::GhostMode::none
+                }
             );
     } else {
         if (ct.value() == dolfinx::mesh::CellType::tetrahedron)
-            return dolfinx::mesh::create_mesh(
-                MPI_COMM_WORLD,
-                dolfinx::graph::AdjacencyList<std::int64_t>{
-                    std::vector<std::vector<std::size_t>>{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}}
-                },
-                dolfinx::fem::CoordinateElement(
-                    dolfinx::mesh::CellType::tetrahedron,
-                    /*order*/2,
-                    basix::element::lagrange_variant::equispaced
-                ),
-                std::vector{
+            return single_cell_mesh(
+                dolfinx::mesh::CellType::tetrahedron,
+                std::vector<double>{
                     0., 0., 0.,
                     1., 0., 0.,
                     0.5, 1., 0.,
@@ -107,19 +97,12 @@ auto higher_order_mesh([[maybe_unused]] std::optional<dolfinx::mesh::CellType> c
                     0.25, 0.5, 0.0,
                     0.5, 0.0, 0.0
                 },
-                {10, 3},
-                dolfinx::mesh::GhostMode::none
+                basix::element::lagrange_variant::equispaced
             );
-        else {  // hexahedron
-            std::vector<std::size_t> corners;
-            std::ranges::copy(std::views::iota(0, 27), std::back_inserter(corners));
-            return dolfinx::mesh::create_mesh(
-                MPI_COMM_WORLD,
-                dolfinx::graph::AdjacencyList<std::int64_t>{
-                    std::vector<std::vector<std::size_t>>{corners}
-                },
-                dolfinx::fem::CoordinateElement(dolfinx::mesh::CellType::hexahedron, 2),
-                std::vector{
+        else  // hexahedron
+            return single_cell_mesh(
+                dolfinx::mesh::CellType::hexahedron,
+                std::vector<double>{
                     0., 0., 0.,
                     1., 0., 0.,
                     0., 1., 0.,
@@ -155,11 +138,8 @@ auto higher_order_mesh([[maybe_unused]] std::optional<dolfinx::mesh::CellType> c
                     0.5, 0.5, 1.0, // 25
 
                     0.5, 0.5, 0.5  // 26
-                },
-                {27, 3},
-                dolfinx::mesh::GhostMode::none
+                }
             );
-        }
     }
 }
 
@@ -226,11 +206,11 @@ void write_with(Writer writer, const std::string& filename) {
     };
 }
 
-void write(const dolfinx::mesh::Mesh& mesh, std::string suffix = "") {
+void write(const dolfinx::mesh::Mesh<double>& mesh, std::string suffix = "") {
     const auto added_suffix = suffix.empty() ? "" : "_" + suffix;
-    write_with(GridFormat::PVTUWriter{mesh, MPI_COMM_WORLD}, get_filename(mesh.topology().cell_type(), added_suffix));
+    write_with(GridFormat::PVTUWriter{mesh, MPI_COMM_WORLD}, get_filename(mesh.topology()->cell_type(), added_suffix));
     if (is_sequential())
-        write_with(GridFormat::VTUWriter{mesh}, get_filename(mesh.topology().cell_type(), "sequential" + added_suffix));
+        write_with(GridFormat::VTUWriter{mesh}, get_filename(mesh.topology()->cell_type(), "sequential" + added_suffix));
 }
 
 template<int dim>
@@ -239,12 +219,9 @@ void write() {
         write(dolfinx::mesh::create_interval(MPI_COMM_WORLD, 5, {0., 1.0}));
         write(dolfinx::mesh::create_interval(
             MPI_COMM_WORLD, 5, {0., 1.0},
-            dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_facet)
-        ));
-        write(dolfinx::mesh::create_interval(
-            MPI_COMM_WORLD, 5, {0., 1.0},
-            dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_vertex)
-        ));
+            dolfinx::mesh::GhostMode::shared_facet,
+            dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_facet, 2)
+        ), "shared_facet");
 
         if (is_sequential()) {
             const auto& mesh = higher_order_mesh<dim>();
@@ -261,12 +238,8 @@ void write() {
             write(dolfinx::mesh::create_rectangle(MPI_COMM_WORLD, {min, max}, {4, 4}, ct));
             write(dolfinx::mesh::create_rectangle(
                 MPI_COMM_WORLD, {min, max}, {4, 4}, ct,
-                dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_facet)
+                dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_facet, 2)
             ), "shared_facet");
-            write(dolfinx::mesh::create_rectangle(
-                MPI_COMM_WORLD, {min, max}, {4, 4}, ct,
-                dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_vertex)
-            ), "shared_vertex");
 
             if (is_sequential()) {
                 const auto& mesh = higher_order_mesh<dim>(ct);
@@ -284,12 +257,8 @@ void write() {
             write(dolfinx::mesh::create_box(MPI_COMM_WORLD, {min, max}, {4, 4, 4}, ct));
             write(dolfinx::mesh::create_box(
                 MPI_COMM_WORLD, {min, max}, {4, 4, 4}, ct,
-                dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_facet)
+                dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_facet, 2)
             ), "shared_facet");
-            write(dolfinx::mesh::create_box(
-                MPI_COMM_WORLD, {min, max}, {4, 4, 4}, ct,
-                dolfinx::mesh::create_cell_partitioner(dolfinx::mesh::GhostMode::shared_vertex)
-            ), "shared_vertex");
 
             if (is_sequential()) {
                 const auto mesh = higher_order_mesh<dim>(ct);
@@ -302,22 +271,24 @@ void write() {
     }
 }
 
-auto make_hex_function_space(std::shared_ptr<dolfinx::mesh::Mesh> mesh, int order, int block_size) {
-    return std::make_shared<const dolfinx::fem::FunctionSpace>(dolfinx::fem::create_functionspace(
-        mesh,
-        basix::create_element(
-            basix::element::family::P,
-            dolfinx::mesh::cell_type_to_basix_type(dolfinx::mesh::CellType::hexahedron),
-            order,
-            basix::element::lagrange_variant::unset,
-            basix::element::dpc_variant::unset,
-            (order == 0 ? true : false) // discontinuous?
-        ),
-        block_size
+auto make_hex_function_space(std::shared_ptr<dolfinx::mesh::Mesh<double>> mesh, int order, int block_size) {
+    const auto basix_element = basix::create_element<double>(
+        basix::element::family::P,
+        dolfinx::mesh::cell_type_to_basix_type(dolfinx::mesh::CellType::hexahedron),
+        order,
+        basix::element::lagrange_variant::unset,
+        basix::element::dpc_variant::unset,
+        (order == 0 ? true : false) // discontinuous?
+    );
+    const auto value_shape = block_size > 1
+        ? std::optional{std::vector<std::size_t>{static_cast<std::size_t>(block_size)}}
+        : std::nullopt;
+    return std::make_shared<const dolfinx::fem::FunctionSpace<double>>(dolfinx::fem::create_functionspace<double>(
+        mesh, std::make_shared<const dolfinx::fem::FiniteElement<double>>(basix_element, value_shape)
     ));
 }
 
-auto make_function(std::shared_ptr<const dolfinx::fem::FunctionSpace> space) {
+auto make_function(std::shared_ptr<const dolfinx::fem::FunctionSpace<double>> space) {
     dolfinx::fem::Function<double> function{space};
     function.interpolate([&] (auto x) {
         const auto n_points = x.extent(1);
@@ -337,7 +308,7 @@ auto make_function(std::shared_ptr<const dolfinx::fem::FunctionSpace> space) {
 }
 
 int main(int argc, char** argv) {
-    PetscInitialize(&argc, &argv, nullptr, nullptr);
+    MPI_Init(&argc, &argv);
     write<1>();
     write<2>();
     write<3>();
@@ -345,7 +316,7 @@ int main(int argc, char** argv) {
     {
         // test writing from a higher-order functions
         // we need the braces so that everything goes out of scope before we call finalize
-        const auto mesh = std::make_shared<dolfinx::mesh::Mesh>(dolfinx::mesh::create_box(
+        const auto mesh = std::make_shared<dolfinx::mesh::Mesh<double>>(dolfinx::mesh::create_box(
             MPI_COMM_WORLD,
             {
                 std::array{0.0, 0.0, 0.0},
@@ -359,7 +330,7 @@ int main(int argc, char** argv) {
         auto scalar_cell_function = make_function(make_hex_function_space(mesh, 0, 1));
         auto vector_cell_function = make_function(make_hex_function_space(mesh, 0, 3));
 
-        auto lagrange_grid = GridFormat::DolfinX::LagrangePolynomialGrid::from(*scalar_nodal_function.function_space());
+        auto lagrange_grid = GridFormat::DolfinX::make_lagrange_grid(*scalar_nodal_function.function_space());
         GridFormat::PVTUWriter writer{lagrange_grid, MPI_COMM_WORLD};
         GridFormat::Test::add_meta_data(writer);
         writer.set_point_field("pfunc", [&] (const auto& p) { return lagrange_grid.evaluate(scalar_nodal_function, p); });
@@ -380,7 +351,7 @@ int main(int argc, char** argv) {
         GridFormat::DolfinX::set_cell_function(scalar_cell_function, writer, "cfunc_float32_via_freefunction", prec);
         GridFormat::DolfinX::set_function(scalar_cell_function, writer, "cfunc_float32_via_auto_freefunction", prec);
 
-        const auto filename = writer.write(get_filename(mesh->topology().cell_type(), "from_space"));
+        const auto filename = writer.write(get_filename(mesh->topology()->cell_type(), "from_space"));
         if (GridFormat::Parallel::rank(MPI_COMM_WORLD) == 0)
             std::cout << "Wrote '" << filename << "'" << std::endl;
 
@@ -420,7 +391,7 @@ int main(int argc, char** argv) {
             lagrange_grid.points();
         };
 
-        const auto different_mesh = std::make_shared<dolfinx::mesh::Mesh>(dolfinx::mesh::create_box(
+        const auto different_mesh = std::make_shared<dolfinx::mesh::Mesh<double>>(dolfinx::mesh::create_box(
             MPI_COMM_WORLD,
             {
                 std::array{0.0, 0.0, 0.0},
@@ -454,10 +425,10 @@ int main(int argc, char** argv) {
         };
 
         "dolfinx_lagrange_grid_fails_to_construct_from_p0_space"_test = [&] () {
-            expect(throws([&] () { GridFormat::DolfinX::LagrangePolynomialGrid::from(*scalar_cell_function.function_space()); }));
+            expect(throws([&] () { GridFormat::DolfinX::LagrangePolynomialGrid<double>::from(*scalar_cell_function.function_space()); }));
         };
     }
 
-    PetscFinalize();
+    MPI_Finalize();
     return 0;
 }

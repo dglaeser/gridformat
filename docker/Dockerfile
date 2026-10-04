@@ -2,20 +2,21 @@
 # SPDX-License-Identifier: MIT
 
 # Dockerfile for the GridFormat GitHub actions
-FROM ubuntu:24.04 AS base
+FROM ubuntu:26.04 AS base
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get upgrade -y -o Dpkg::Options::="--force-confold" \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-FROM base as minimal
+FROM base AS minimal
 RUN apt-get update \
     && apt-get install --no-install-recommends --yes \
         build-essential \
         cmake \
-        g++-12 g++-14 \
-        clang-16 clang-18 \
+        # the compilers we test with (oldest gcc, newest clang)
+        g++-14 \
+        clang-22 \
         python3 \
         python3-pip \
         python3-dev \
@@ -25,13 +26,11 @@ RUN apt-get update \
         apt-utils \
         # for pages job
         rsync \
-        # for deal.ii
-        software-properties-common \
     && python3 -m venv /gfmt-venv && . /gfmt-venv/bin/activate && pip install vtk==9.7.1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-FROM minimal as full
+FROM minimal AS full
 RUN apt-get update \
     && apt-get install --no-install-recommends --yes \
         zlib1g \
@@ -59,19 +58,23 @@ RUN apt-get update \
         libboost-timer-dev \
         libboost-filesystem-dev \
         petsc-dev \
+        libspdlog-dev \
+        # dolfinx requires a graph partitioner (parmetis is not packaged in ubuntu 26.04)
+        libscotch-dev \
+        libptscotch-dev \
         # fenics wheel builds with ninja
         ninja-build \
-    # deal.ii
-    && add-apt-repository --yes ppa:ginggs/deal.ii-9.6.0-backports \
-    && apt-get install --yes libdeal.ii-dev \
+        libdeal.ii-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY install_deps_from_sources.py .
 RUN . /gfmt-venv/bin/activate \
-    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/gcc-12 100 \
-    && pip install "setuptools<82" fenics-ffcx==0.6.0 pybind11 \
+    # dolfinx >= 0.10 uses std::format, which libstdc++ provides since gcc 13
+    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-14 100 \
+    # keep the ffcx version in sync with PACKAGES['dolfinx'] in install_deps_from_sources.py
+    && pip install fenics-ffcx==0.11.0 pybind11 \
     && python3 install_deps_from_sources.py --all \
                                             --install-prefix=/gfmt-dependencies \
-                                            --c-compiler=/usr/bin/gcc-12 \
-                                            --cxx-compiler=/usr/bin/g++-12
+                                            --c-compiler=/usr/bin/gcc-14 \
+                                            --cxx-compiler=/usr/bin/g++-14

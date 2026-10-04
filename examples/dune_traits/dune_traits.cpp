@@ -4,6 +4,7 @@
 #include <vector>
 #include <ranges>
 
+#include <dune/common/parallel/mpihelper.hh>
 #include <dune/grid/yaspgrid.hh>
 #include <dune/functions/gridfunctions/analyticgridviewfunction.hh>
 
@@ -129,7 +130,8 @@ void write_higher_order_dune_function() {
 }
 
 
-int main() {
+int main(int argc, char** argv) {
+    Dune::MPIHelper::instance(argc, argv);
     write_grid_view();
     write_discontinuous_grid_view();
     write_higher_order_dune_function();

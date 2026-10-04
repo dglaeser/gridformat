@@ -18,7 +18,7 @@ namespace GridFormat {
 /*!
  * \ingroup VTK
  * \brief Reader for .pvtp file format
- * \copydetails VTK::PXMLUnstructuredGridReader
+ * \copydetails GridFormat::VTK::PXMLUnstructuredGridReader
  */
 class PVTPReader : public VTK::PXMLUnstructuredGridReader<VTPReader> {
     using ParentType = VTK::PXMLUnstructuredGridReader<VTPReader>;
