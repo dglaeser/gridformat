@@ -11,6 +11,11 @@ gridformat_add_regression_test_if(CGAL_FOUND
 if (CGAL_FOUND)
     message(STATUS "Testing CGAL traits with CGAL version ${CGAL_VERSION}")
     target_link_libraries(test_cgal CGAL::CGAL)
+    # if dune is found (top-level), CGAL picks up dune's FindGMP, which doesn't set the
+    # GMP_LIBRARIES that CGAL links against, but it defines the GMP::gmp target
+    if (TARGET GMP::gmp)
+        target_link_libraries(test_cgal GMP::gmp)
+    endif ()
     target_compile_options(test_cgal PRIVATE -frounding-math)
     target_compile_definitions(test_cgal PRIVATE GRIDFORMAT_IGNORE_CGAL_WARNINGS=1)
 endif ()
