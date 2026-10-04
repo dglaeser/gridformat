@@ -170,14 +170,9 @@ if (${DUNE_FOUND})
         )
 
         if (dune-alugrid_FOUND)
-            # clang-16 fails to compile with alugrid included :/
-            set(GRIDFORMAT_HAVE_ALUGRID true)
-            if (${CMAKE_CXX_COMPILER} MATCHES "clang")
-                set(GRIDFORMAT_HAVE_ALUGRID false)
-            endif ()
             target_link_libraries(${dune_target} dunealugrid)
             target_include_directories(${dune_target} PRIVATE ${dune-alugrid_INCLUDE_DIRS})
-            target_compile_definitions(${dune_target} PUBLIC GRIDFORMAT_HAVE_DUNE_ALUGRID=${GRIDFORMAT_HAVE_ALUGRID})
+            target_compile_definitions(${dune_target} PUBLIC GRIDFORMAT_HAVE_DUNE_ALUGRID=1)
         endif ()
 
         if (dune-functions_FOUND)
