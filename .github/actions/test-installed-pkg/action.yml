@@ -11,6 +11,12 @@ inputs:
     required: true
   generate_vtk_test_files:
     required: true
+  cxx_flags:
+    required: false
+    default: ''
+  linker_flags:
+    required: false
+    default: ''
 runs:
   using: composite
   steps:
@@ -25,6 +31,8 @@ runs:
       run: |
         cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
               -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
+              -DCMAKE_CXX_FLAGS="${{inputs.cxx_flags}}" \
+              -DCMAKE_EXE_LINKER_FLAGS="${{inputs.linker_flags}}" \
               -DCMAKE_BUILD_TYPE=Release \
               -DGRIDFORMAT_BUILD_TESTS=ON \
               -DGRIDFORMAT_BUILD_BINARIES=ON \
@@ -70,6 +78,8 @@ runs:
                 -DGRIDFORMAT_GENERATE_VTK_TEST_FILES=${{inputs.generate_vtk_test_files}} \
                 -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
                 -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
+                -DCMAKE_CXX_FLAGS="${{inputs.cxx_flags}}" \
+                -DCMAKE_EXE_LINKER_FLAGS="${{inputs.linker_flags}}" \
                 -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                 -DCMAKE_BUILD_TYPE=Release \
                 -B build
@@ -101,6 +111,8 @@ runs:
           pushd examples
             cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
                   -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
+                  -DCMAKE_CXX_FLAGS="${{inputs.cxx_flags}}" \
+                  -DCMAKE_EXE_LINKER_FLAGS="${{inputs.linker_flags}}" \
                   -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                   -Dgridformat_ROOT=$(pwd)/../install \
                   -B build
@@ -116,6 +128,8 @@ runs:
           rm -rf examples/build && pushd examples
             cmake -DCMAKE_C_COMPILER=${{inputs.c_compiler}} \
                   -DCMAKE_CXX_COMPILER=${{inputs.cxx_compiler}} \
+                  -DCMAKE_CXX_FLAGS="${{inputs.cxx_flags}}" \
+                  -DCMAKE_EXE_LINKER_FLAGS="${{inputs.linker_flags}}" \
                   -DCMAKE_BUILD_TYPE=Release \
                   -DCMAKE_PREFIX_PATH=/gfmt-dependencies \
                   -DGRIDFORMAT_FETCH_TREE="$GFMT_SOURCE_TREE" \
