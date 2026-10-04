@@ -70,8 +70,6 @@ RUN apt-get update \
 
 COPY install_deps_from_sources.py .
 RUN . /gfmt-venv/bin/activate \
-    # dolfinx >= 0.10 uses std::format, which libstdc++ provides since gcc 13
-    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-14 100 \
     # keep the ffcx version in sync with PACKAGES['dolfinx'] in install_deps_from_sources.py
     && pip install fenics-ffcx==0.11.0 pybind11 \
     && python3 install_deps_from_sources.py --all \
