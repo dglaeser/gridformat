@@ -25,6 +25,9 @@ in point and cell data are written as well. Reading such a file back yields the 
 - __VTKHDF__: the image data reader ignored `FieldDataOffsets` and read the meta data of a time step at the index of
 the step, which failed for files with static meta data, where it is only written once.
 
+- __VTKHDF__: `gridformat/vtk/hdf_reader.hpp` can now be included on its own; it previously relied on
+`gridformat/vtk/common.hpp` being included before.
+
 ## Features
 
 - __VTKHDF__: string meta data is now written as a dataset of variable-length strings instead of an array of ascii
@@ -57,8 +60,14 @@ error instead of being converted silently by `hdf5`, which could truncate values
 `GridFormat::DolfinX::LagrangePolynomialGrid` is now a class template `LagrangePolynomialGrid<T>`. It can be constructed
 from a function space without specifying `T`, or created via the new `GridFormat::DolfinX::make_lagrange_grid(space)`.
 
+- __Traits__: the predefined traits are now tested with `dune` 2.11, `deal.II` 9.7.1, `CGAL` 6.2.1 and `mfem` 4.10.
+The `dune` traits are now also tested with `dune-alugrid` grids when compiling with `clang`.
+
 - The regression tests now run against a newer version of `vtk`, namely `v9.7.1`, which is now pinned in the docker
 image. Generating the `VTKHDF` test data requires `vtk` 9.7 or newer.
+
+- The test suite has a new `cmake` option `GRIDFORMAT_GENERATE_VTK_TEST_FILES` (default: `ON`), which can be used
+to skip the generation of test files with `VTK`. The tests now run with `gcc-14` and `clang-22` on `ubuntu 26.04`.
 
 # `GridFormat` 0.4.0
 
