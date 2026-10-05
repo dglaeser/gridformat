@@ -27,7 +27,6 @@ var menudata={children:[
 {text:"API",url:"group__API.html"},
 {text:"Grid Traits",url:"grid-traits.html"},
 {text:"Grid Concepts",url:"grid-concepts.html"},
-{text:"Modules",url:"modules.html"},
 {text:"Concepts",url:"concepts.html"},
 {text:"Classes",url:"annotated.html",children:[
 {text:"Class List",url:"annotated.html"},
@@ -72,7 +71,7 @@ var menudata={children:[
 {text:"w",url:"functions_func.html#index_w"}]},
 {text:"Variables",url:"functions_vars.html"},
 {text:"Typedefs",url:"functions_type.html"},
-{text:"Related Functions",url:"functions_rela.html"}]}]},
+{text:"Related Symbols",url:"functions_rela.html"}]}]},
 {text:"Files",url:"files.html",children:[
 {text:"File List",url:"files.html"}]},
 {text:"Documentation for other versions",url:"^https://github.com/dglaeser/gridformat/releases"}]}

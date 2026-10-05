@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['predefinedtraits_0',['PredefinedTraits',['../group__PredefinedTraits.html',1,'']]]
+  ['predefined_20traits_0',['Predefined Traits',['../group__PredefinedTraits.html',1,'']]]
 ];

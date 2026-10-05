@@ -7,5 +7,6 @@ var searchData=
   ['hdf_5funstructured_5fgrid_5freader_2ehpp_4',['hdf_unstructured_grid_reader.hpp',['../hdf__unstructured__grid__reader_8hpp.html',1,'']]],
   ['hdf_5funstructured_5fgrid_5fwriter_2ehpp_5',['hdf_unstructured_grid_writer.hpp',['../hdf__unstructured__grid__writer_8hpp.html',1,'']]],
   ['hdf_5fwriter_2ehpp_6',['hdf_writer.hpp',['../hdf__writer_8hpp.html',1,'']]],
-  ['hdftransientoptions_7',['HDFTransientOptions',['../structGridFormat_1_1VTK_1_1HDFTransientOptions.html',1,'GridFormat::VTK']]]
+  ['hdftransientoptions_7',['HDFTransientOptions',['../structGridFormat_1_1VTK_1_1HDFTransientOptions.html',1,'GridFormat::VTK']]],
+  ['help_8',['Getting help',['../index.html#getting-help',1,'']]]
 ];
