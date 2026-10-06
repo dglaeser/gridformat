@@ -10,13 +10,13 @@
 
 #include <iomanip>
 #include <sstream>
-#include <fstream>
 #include <utility>
 #include <string>
 #include <ranges>
 #include <type_traits>
 #include <filesystem>
 
+#include <gridformat/common/output_file.hpp>
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/xml/element.hpp>
 #include <gridformat/grid/writer.hpp>
@@ -74,8 +74,9 @@ class PVDWriter : public PVDDetail::WriterStorage<VTKWriter>,
 
         const auto& communicator = Traits::CommunicatorAccess<VTKWriter>::get(this->_writer());
         if (Parallel::rank(communicator) == 0) {
-            std::ofstream pvd_file(_pvd_filename, std::ios::out);
-            write_xml_with_version_header(_xml, pvd_file, Indentation{{.width = 2}});
+            write_to(_pvd_filename, [&] (std::ostream& s) {
+                write_xml_with_version_header(_xml, s, Indentation{{.width = 2}});
+            });
         }
         Parallel::barrier(communicator);  // make sure all process exit here after the pvd file is written
 

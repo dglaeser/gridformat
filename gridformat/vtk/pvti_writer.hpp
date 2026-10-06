@@ -10,7 +10,6 @@
 
 #include <ostream>
 #include <string>
-#include <fstream>
 #include <algorithm>
 #include <filesystem>
 #include <array>
@@ -21,6 +20,7 @@
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/lvalue_reference.hpp>
+#include <gridformat/common/output_file.hpp>
 
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/parallel/helpers.hpp>
@@ -112,8 +112,6 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
                           const std::array<std::size_t, dim>& extents,
                           const std::vector<std::array<std::size_t, dim>>& proc_extents_begin,
                           const std::vector<std::array<std::size_t, dim>>& proc_extents_end) const {
-        std::ofstream file_stream(filename_with_ext, std::ios::out);
-
         XMLElement pvtk_xml("VTKFile");
         pvtk_xml.set_attribute("type", "PImageData");
 
@@ -154,7 +152,9 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         });
 
         this->_set_default_active_fields(pvtk_xml.get_child("PImageData"));
-        write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
+        write_to(filename_with_ext, [&] (std::ostream& s) {
+            write_xml_with_version_header(pvtk_xml, s, Indentation{{.width = 2}});
+        });
     }
 };
 
