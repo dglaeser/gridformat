@@ -3,6 +3,12 @@
 
 # `GridFormat` 0.6.0
 
+## Fixes
+
+- Several free functions defined in headers were not marked `inline`, which caused linker errors (multiple definitions)
+when including `GridFormat` headers in more than one translation unit of the same program. A test now includes all
+headers in two translation units linked into one executable.
+
 # `GridFormat` 0.5.0
 
 ## Fixes

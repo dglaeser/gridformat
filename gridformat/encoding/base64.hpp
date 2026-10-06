@@ -42,14 +42,14 @@ static constexpr std::array<unsigned char, 256> letter_to_index = [] {
 namespace Base64 {
 
 //! Return the number of decoded bytes for the given number of encoded bytes
-std::size_t decoded_size(std::size_t encoded_size) {
+inline std::size_t decoded_size(std::size_t encoded_size) {
     if (encoded_size%4 != 0)
         throw SizeError("Given size is not a multiple of 4");
     return encoded_size*3/4;
 }
 
 //! Return the number of encoded bytes for the given number of raw bytes
-std::size_t encoded_size(std::size_t raw_size) {
+inline std::size_t encoded_size(std::size_t raw_size) {
     return 4*static_cast<std::size_t>(
         std::ceil(static_cast<double>(raw_size)/3.0)
     );

@@ -442,7 +442,7 @@ namespace XMLDetail {
         helper.shift_by(offset_in_appendix);
     }
 
-    void _move_to_data(const DataArrayStreamLocation& location, std::istream& s) {
+    inline void _move_to_data(const DataArrayStreamLocation& location, std::istream& s) {
         if (location.offset)
             _move_to_appendix_position(s, location.begin, location.offset.value());
         else {
@@ -667,7 +667,7 @@ namespace XML {
  * \ingroup VTK
  * \brief Return a range over all data array elements in the given xml section.
  */
-std::ranges::range auto data_arrays(const XMLElement& e) {
+inline std::ranges::range auto data_arrays(const XMLElement& e) {
     return children(e) | std::views::filter([] (const XMLElement& child) {
         return child.name() == "DataArray";
     });
@@ -677,7 +677,7 @@ std::ranges::range auto data_arrays(const XMLElement& e) {
  * \ingroup VTK
  * \brief Return a range over the names of all data array elements in the given xml section.
  */
-std::ranges::range auto data_array_names(const XMLElement& e) {
+inline std::ranges::range auto data_array_names(const XMLElement& e) {
     return data_arrays(e) | std::views::transform([] (const XMLElement& data_array) {
         return data_array.get_attribute("Name");
     });
@@ -687,7 +687,7 @@ std::ranges::range auto data_array_names(const XMLElement& e) {
  * \ingroup VTK
  * \brief Return the data array element with the given name within the given xml section.
  */
-const XMLElement& get_data_array(std::string_view name, const XMLElement& section) {
+inline const XMLElement& get_data_array(std::string_view name, const XMLElement& section) {
     for (const auto& da
             : data_arrays(section)
             | std::views::filter([&] (const auto& e) { return e.get_attribute("Name") == name; }))

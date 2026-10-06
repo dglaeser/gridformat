@@ -952,7 +952,7 @@ template<> struct WriterFactory<FileFormat::AnyTimeSeries> {
 
 #ifndef DOXYGEN
 namespace APIDetail {
-    bool has_hdf_file_extension(const std::string& filename) {
+    inline bool has_hdf_file_extension(const std::string& filename) {
         return filename.ends_with(".hdf")
             || filename.ends_with(".hdf5")
             || filename.ends_with(".he5")

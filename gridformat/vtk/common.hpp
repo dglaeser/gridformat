@@ -118,7 +118,7 @@ inline constexpr CellType cell_type(std::uint8_t vtk_id) {
     throw NotImplemented("Cell type for the given VTK cell type number: " + std::to_string(vtk_id));
 }
 
-FieldPtr make_vtk_field(FieldPtr field) {
+inline FieldPtr make_vtk_field(FieldPtr field) {
     const auto layout = field->layout();
     if (layout.dimension() < 2)
         return field;
@@ -319,13 +319,13 @@ namespace CommonDetail {
         return result;
     }
 
-    std::size_t number_of_entities(const std::array<std::size_t, 6>& extents) {
+    inline std::size_t number_of_entities(const std::array<std::size_t, 6>& extents) {
         return std::max(extents[1] - extents[0], std::size_t{1})
                 *std::max(extents[3] - extents[2], std::size_t{1})
                 *std::max(extents[5] - extents[4], std::size_t{1});
     }
 
-    unsigned int structured_grid_dimension(const std::array<std::size_t, 3>& cells_per_direction) {
+    inline unsigned int structured_grid_dimension(const std::array<std::size_t, 3>& cells_per_direction) {
         return std::ranges::count_if(cells_per_direction, [] (const std::size_t e) { return e > 0; });
     }
 
