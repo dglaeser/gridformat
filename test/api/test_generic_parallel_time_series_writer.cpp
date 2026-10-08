@@ -149,6 +149,27 @@ int main(int argc, char** argv) {
         MPI_COMM_WORLD,
         "_ignore_regression_generic_parallel_time_series_2d_in_2d_transient_unstructured_explicit"
     }, MPI_COMM_WORLD);
+
+    // the transient formats must also accept grids that are not image grids
+    const auto unstructured_grid = GridFormat::Test::make_unstructured_2d(rank);
+    const auto write_unstructured = [] (auto&& writer) {
+        writer.set_point_field("point_func", [] (const auto&) { return 1.0; });
+        writer.set_cell_field("cell_func", [] (const auto&) { return 1.0; });
+        for (double time_value : {0.0, 1.0})
+            writer.write(time_value);
+    };
+    write_unstructured(GridFormat::Writer{
+        GridFormat::vtk_hdf_transient,
+        unstructured_grid,
+        MPI_COMM_WORLD,
+        "_ignore_regression_generic_parallel_time_series_2d_in_2d_unstructured_grid_transient"
+    });
+    write_unstructured(GridFormat::Writer{
+        GridFormat::FileFormat::VTKHDFUnstructuredTransient{},
+        unstructured_grid,
+        MPI_COMM_WORLD,
+        "_ignore_regression_generic_parallel_time_series_2d_in_2d_unstructured_grid_transient_explicit"
+    });
 #endif
 
     MPI_Finalize();
