@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('base64_8hpp_so
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">namespace </span>Base64 {</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span></div>
 <div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="base64_8hpp.html#a7a2246a3d97f48fb1d89cb09f1afaefd">   45</a></span>std::size_t <a class="code hl_function" href="base64_8hpp.html#a7a2246a3d97f48fb1d89cb09f1afaefd">decoded_size</a>(std::size_t <a class="code hl_function" href="base64_8hpp.html#a6dee68a142481856c840910465aeb176">encoded_size</a>) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="base64_8hpp.html#a7a2246a3d97f48fb1d89cb09f1afaefd">   45</a></span><span class="keyword">inline</span> std::size_t <a class="code hl_function" href="base64_8hpp.html#a7a2246a3d97f48fb1d89cb09f1afaefd">decoded_size</a>(std::size_t <a class="code hl_function" href="base64_8hpp.html#a6dee68a142481856c840910465aeb176">encoded_size</a>) {</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="base64_8hpp.html#a6dee68a142481856c840910465aeb176">encoded_size</a>%4 != 0)</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">throw</span> SizeError(<span class="stringliteral">&quot;Given size is not a multiple of 4&quot;</span>);</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="base64_8hpp.html#a6dee68a142481856c840910465aeb176">encoded_size</a>*3/4;</div>
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('base64_8hpp_so
 </div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span></div>
 <div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="base64_8hpp.html#a6dee68a142481856c840910465aeb176">   52</a></span>std::size_t <a class="code hl_function" href="base64_8hpp.html#a6dee68a142481856c840910465aeb176">encoded_size</a>(std::size_t raw_size) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="base64_8hpp.html#a6dee68a142481856c840910465aeb176">   52</a></span><span class="keyword">inline</span> std::size_t <a class="code hl_function" href="base64_8hpp.html#a6dee68a142481856c840910465aeb176">encoded_size</a>(std::size_t raw_size) {</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">return</span> 4*<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        std::ceil(<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(raw_size)/3.0)</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    );</div>

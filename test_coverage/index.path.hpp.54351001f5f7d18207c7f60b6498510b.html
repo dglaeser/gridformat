@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2026-10-05 06:15:51</td>
+      <td>2026-10-08 23:41:22</td>
     </tr>
   </table>
 </div>
@@ -73,10 +73,10 @@
       <th>Call count</th>
       <th>Block coverage</th>
     </tr>
-    <tr><td><a href="#l23">GridFormat::Path::elements_of(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;, char) (line 23)</a></td><td>called 232022 times, returned 232022 times</td><td>78.0%</td></tr>
-    <tr><td><a href="#l33">GridFormat::Path::exists(std::filesystem::__cxx11::path const&amp;) (line 33)</a></td><td>called 1940 times, returned 1940 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l38">GridFormat::Path::is_file(std::filesystem::__cxx11::path const&amp;) (line 38)</a></td><td>called 1939 times, returned 1939 times</td><td>55.0%</td></tr>
-    <tr><td><a href="#l25">auto GridFormat::Path::elements_of(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;, char)::{lambda(auto:1 const&amp;)#1}::operator()&lt;std::ranges::subrange&lt;char const*, char const*, (std::ranges::subrange_kind)1&gt; &gt;(std::ranges::subrange&lt;char const*, char const*, (std::ranges::subrange_kind)1&gt; const&amp;) const (line 25)</a></td><td>called 405363 times, returned 405363 times</td><td>86.0%</td></tr>
+    <tr><td><a href="#l23">GridFormat::Path::elements_of(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;, char) (line 23)</a></td><td>called 232034 times, returned 232034 times</td><td>78.0%</td></tr>
+    <tr><td><a href="#l33">GridFormat::Path::exists(std::filesystem::__cxx11::path const&amp;) (line 33)</a></td><td>called 1942 times, returned 1942 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l38">GridFormat::Path::is_file(std::filesystem::__cxx11::path const&amp;) (line 38)</a></td><td>called 1941 times, returned 1941 times</td><td>55.0%</td></tr>
+    <tr><td><a href="#l25">auto GridFormat::Path::elements_of(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;, char)::{lambda(auto:1 const&amp;)#1}::operator()&lt;std::ranges::subrange&lt;char const*, char const*, (std::ranges::subrange_kind)1&gt; &gt;(std::ranges::subrange&lt;char const*, char const*, (std::ranges::subrange_kind)1&gt; const&amp;) const (line 25)</a></td><td>called 405377 times, returned 405377 times</td><td>86.0%</td></tr>
   </table>
 </details>
 
@@ -249,8 +249,8 @@
       <td class="lineno"><a id="l23" href="#l23">23</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">232022</td>
-      <td class="src coveredLine"><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">range</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">elements_of</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">delimiter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;/&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+      <td class="linecount coveredLine">232034</td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">range</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">elements_of</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">delimiter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;/&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l24" href="#l24">24</a></td>
@@ -263,7 +263,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">232022</td>
+      <td class="linecount partialCoveredLine">232034</td>
       <td class="src partialCoveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">views</span><span class="o">::</span><span class="n">split</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">delimiter</span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
@@ -272,19 +272,19 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 232022 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 232034 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">464044</td>
+      <td class="linecount partialCoveredLine">464068</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">views</span><span class="o">::</span><span class="n">transform</span><span class="p">([]</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">range</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">element</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l26" href="#l26">26</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">405363</td>
+      <td class="linecount coveredLine">405377</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -293,21 +293,21 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/4</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 405363 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 405377 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-          <div class="takenBranch">&check; Branch 4 taken 405363 times.</div>
+          <div class="takenBranch">&check; Branch 4 taken 405377 times.</div>
           <div class="notTakenBranch">&cross; Branch 5 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">405363</td>
+      <td class="linecount partialCoveredLine">405377</td>
       <td class="src partialCoveredLine"><span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">element</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">back_inserter</span><span class="p">(</span><span class="n">name</span><span class="p">));</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l28" href="#l28">28</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">405363</td>
+      <td class="linecount coveredLine">405377</td>
       <td class="src coveredLine"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">name</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -316,12 +316,12 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 232022 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 232034 times.</div>
           <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">464044</td>
+      <td class="linecount partialCoveredLine">464068</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="p">});</span></td>
     </tr>
     <tr class="source-line">
@@ -349,14 +349,14 @@
       <td class="lineno"><a id="l33" href="#l33">33</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1940</td>
-      <td class="src coveredLine"><span class="kt">bool</span><span class="w"> </span><span class="n">exists</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+      <td class="linecount coveredLine">1942</td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">exists</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l34" href="#l34">34</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1940</td>
+      <td class="linecount coveredLine">1942</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -384,8 +384,8 @@
       <td class="lineno"><a id="l38" href="#l38">38</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1939</td>
-      <td class="src coveredLine"><span class="kt">bool</span><span class="w"> </span><span class="n">is_file</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+      <td class="linecount coveredLine">1941</td>
+      <td class="src coveredLine"><span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_file</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l39" href="#l39">39</a></td>
@@ -393,19 +393,19 @@
         <details class="linebranchDetails">
         <summary class="linebranchSummary">2/2</summary>
         <div class="linebranchContents">
-          <div class="takenBranch">&check; Branch 1 taken 1938 times.</div>
+          <div class="takenBranch">&check; Branch 1 taken 1940 times.</div>
           <div class="takenBranch">&check; Branch 2 taken 1 times.</div>
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">1939</td>
+      <td class="linecount coveredLine">1941</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">is_regular_file</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l40" href="#l40">40</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1938</td>
+      <td class="linecount coveredLine">1940</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">

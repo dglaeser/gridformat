@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2026-10-05 06:15:51</td>
+      <td>2026-10-08 23:41:22</td>
     </tr>
   </table>
 </div>
@@ -99,12 +99,12 @@
     <tr><td><a href="#l163">GridFormat::MDIndexRange::Iterator::_increment_at(unsigned int) (line 163)</a></td><td>called 652146 times, returned 652146 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l167">GridFormat::MDIndexRange::Iterator::_is_end() const (line 167)</a></td><td>called 477341 times, returned 477341 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l143">GridFormat::MDIndexRange::Iterator::_is_equal(GridFormat::MDIndexRange::Iterator const&amp;) const (line 143)</a></td><td>called 668122 times, returned 668122 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l177">GridFormat::MDIndexRange::MDIndexRange(GridFormat::MDLayout) (line 177)</a></td><td>called 1880 times, returned 1880 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l177">GridFormat::MDIndexRange::MDIndexRange(GridFormat::MDLayout) (line 177)</a></td><td>called 1886 times, returned 1886 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l185">GridFormat::MDIndexRange::MDIndexRange(std::initializer_list&lt;unsigned long&gt; const&amp;) (line 185)</a></td><td>called 3 times, returned 3 times</td><td>71.0%</td></tr>
     <tr><td><a href="#l189">GridFormat::MDIndexRange::begin() const (line 189)</a></td><td>called 46265 times, returned 46265 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l190">GridFormat::MDIndexRange::end() const (line 190)</a></td><td>called 59058 times, returned 59058 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l196">GridFormat::MDIndexRange::size() const (line 196)</a></td><td>called 28542 times, returned 28542 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l200">GridFormat::MDIndexRange::size(unsigned int) const (line 200)</a></td><td>called 834 times, returned 834 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l200">GridFormat::MDIndexRange::size(unsigned int) const (line 200)</a></td><td>called 842 times, returned 842 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l230">GridFormat::flat_index(GridFormat::MDIndex const&amp;, GridFormat::MDLayout const&amp;) (line 230)</a></td><td>called 37934 times, returned 37934 times</td><td>67.0%</td></tr>
     <tr><td><a href="#l105">GridFormat::operator&lt;&lt;(std::ostream&amp;, GridFormat::MDIndex const&amp;) (line 105)</a></td><td>called 1 time, returned 1 time</td><td>87.0%</td></tr>
     <tr><td><a href="#l216">auto GridFormat::Detail::flat_index_from_sub_sizes&lt;std::ranges::transform_view&lt;std::ranges::iota_view&lt;unsigned long, unsigned long&gt;, GridFormat::flat_index(GridFormat::MDIndex const&amp;, GridFormat::MDLayout const&amp;)::{lambda(auto:1)#1}&gt;&amp;&gt;(GridFormat::MDIndex const&amp;, std::ranges::transform_view&lt;std::ranges::iota_view&lt;unsigned long, unsigned long&gt;, GridFormat::flat_index(GridFormat::MDIndex const&amp;, GridFormat::MDLayout const&amp;)::{lambda(auto:1)#1}&gt;&amp;)::{lambda(auto:1)#1}::operator()&lt;unsigned long&gt;(unsigned long) const (line 216)</a></td><td>called 95969 times, returned 95969 times</td><td>100.0%</td></tr>
@@ -1486,21 +1486,21 @@
       <td class="lineno"><a id="l177" href="#l177">177</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1880</td>
+      <td class="linecount coveredLine">1886</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">MDIndexRange</span><span class="p">(</span><span class="n">MDLayout</span><span class="w"> </span><span class="n">layout</span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l178" href="#l178">178</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1880</td>
+      <td class="linecount coveredLine">1886</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">_layout</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">layout</span><span class="p">)}</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l179" href="#l179">179</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1880</td>
+      <td class="linecount coveredLine">1886</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">{}</span></td>
     </tr>
     <tr class="source-line">
@@ -1656,14 +1656,14 @@
       <td class="lineno"><a id="l200" href="#l200">200</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">834</td>
+      <td class="linecount coveredLine">842</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">codim</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l201" href="#l201">201</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">834</td>
+      <td class="linecount coveredLine">842</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_layout</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="n">codim</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
