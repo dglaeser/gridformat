@@ -77,5 +77,23 @@ int main() {
         }
     };
 
+    "xml_parser_unescapes_attribute_values"_test = [] () {
+        std::stringstream s;
+        s << "<element attr=\"&quot;&lt;&amp;&gt;&apos; &amp;amp; &#65;\"/>";
+        GridFormat::XMLParser parser{s};
+        const auto& element = parser.get_xml().get_child("element");
+        expect(eq(element.get_attribute("attr"), std::string{"\"<&>' &amp; &#65;"}));
+    };
+
+    "xml_parser_reads_back_written_attribute_values"_test = [] () {
+        const std::string value = "a\"<&>'b &amp;";
+        GridFormat::XMLElement element("element");
+        element.set_attribute("attr", value);
+        std::stringstream s;
+        GridFormat::write_xml(element, s);
+        GridFormat::XMLParser parser{s};
+        expect(eq(parser.get_xml().get_child("element").get_attribute("attr"), value));
+    };
+
     return 0;
 }

@@ -17,6 +17,8 @@
 #include <memory>
 #include <list>
 #include <any>
+#include <array>
+#include <algorithm>
 
 #include <gridformat/common/path.hpp>
 #include <gridformat/common/concepts.hpp>
@@ -234,6 +236,44 @@ inline XMLElement& access_or_create_at(std::string_view path, XMLElement& elemen
 #ifndef DOXYGEN
 namespace XML::Detail {
 
+//! Replace characters that are not allowed in (double-quoted) attribute values by entity references
+inline std::string escaped_attribute_value(std::string_view value) {
+    std::string result;
+    result.reserve(value.size());
+    for (const char c : value) {
+        switch (c) {
+            case '&': result += "&amp;"; break;
+            case '<': result += "&lt;"; break;
+            case '>': result += "&gt;"; break;
+            case '"': result += "&quot;"; break;
+            default: result += c;
+        }
+    }
+    return result;
+}
+
+//! Replace the predefined xml entity references by the characters they represent
+inline std::string unescaped(std::string_view value) {
+    static constexpr std::array<std::pair<std::string_view, char>, 5> entities{{
+        {"&amp;", '&'}, {"&lt;", '<'}, {"&gt;", '>'}, {"&quot;", '"'}, {"&apos;", '\''}
+    }};
+    std::string result;
+    result.reserve(value.size());
+    while (!value.empty()) {
+        const auto it = std::ranges::find_if(entities, [&] (const auto& entity) {
+            return value.starts_with(entity.first);
+        });
+        if (it != entities.end()) {
+            result += it->second;
+            value.remove_prefix(it->first.size());
+        } else {
+            result += value.front();
+            value.remove_prefix(1);
+        }
+    }
+    return result;
+}
+
 inline void write_xml_tag_open(const XMLElement& e,
                         std::ostream& s,
                         std::string_view close_char) {
@@ -242,7 +282,7 @@ inline void write_xml_tag_open(const XMLElement& e,
         [&] (const std::string& attr_name) {
             s << " " << attr_name
                      << "=\""
-                     << e.get_attribute(attr_name)
+                     << escaped_attribute_value(e.get_attribute(attr_name))
                      << "\"";
     });
     s << close_char;

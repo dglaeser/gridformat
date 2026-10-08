@@ -124,5 +124,13 @@ int main() {
         expect(eq(formatted_stream_with_content.str(), std::string{"<some_element attr=\"value\">\n  <some_child>\n42\n  </some_child>\n</some_element>"}));
     };
 
+    "xml_element_write_escapes_attribute_values"_test = [] () {
+        GridFormat::XMLElement element("element");
+        element.set_attribute("attr", "a\"<&>'b");
+        std::ostringstream s;
+        GridFormat::write_xml(element, s);
+        expect(s.str().find("attr=\"a&quot;&lt;&amp;&gt;'b\"") != std::string::npos);
+    };
+
     return 0;
 }
