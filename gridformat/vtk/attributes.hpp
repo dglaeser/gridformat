@@ -26,27 +26,27 @@ namespace GridFormat::VTK {
 //! \addtogroup VTK
 //! \{
 
-std::string attribute_name(const DynamicPrecision& prec) {
+inline std::string attribute_name(const DynamicPrecision& prec) {
     std::string prefix = prec.is_integral() ? (prec.is_signed() ? "Int" : "UInt") : "Float";
     return prefix + std::to_string(prec.size_in_bytes()*8);
 }
 
-std::string attribute_name(std::endian e) {
+inline std::string attribute_name(std::endian e) {
     return e == std::endian::little ? "LittleEndian" : "BigEndian";
 }
 
-std::string attribute_name(const Encoding::Ascii&) { return "ascii"; }
-std::string attribute_name(const Encoding::Base64&) { return "base64"; }
-std::string attribute_name(const Encoding::RawBinary&) { return "raw"; }
+inline std::string attribute_name(const Encoding::Ascii&) { return "ascii"; }
+inline std::string attribute_name(const Encoding::Base64&) { return "base64"; }
+inline std::string attribute_name(const Encoding::RawBinary&) { return "raw"; }
 
-std::string attribute_name(const Compression::LZMA&) { return "vtkLZMADataCompressor"; };
-std::string attribute_name(const Compression::ZLIB&) { return "vtkZLibDataCompressor"; };
-std::string attribute_name(const Compression::LZ4&) { return "vtkLZ4DataCompressor"; };
+inline std::string attribute_name(const Compression::LZMA&) { return "vtkLZMADataCompressor"; };
+inline std::string attribute_name(const Compression::ZLIB&) { return "vtkZLibDataCompressor"; };
+inline std::string attribute_name(const Compression::LZ4&) { return "vtkLZ4DataCompressor"; };
 
-std::string data_format_name(const Encoding::RawBinary&, const DataFormat::Appended&) { return "appended"; }
-std::string data_format_name(const Encoding::Base64&, const DataFormat::Appended&) { return "appended"; }
-std::string data_format_name(const Encoding::Base64&, const DataFormat::Inlined&) { return "binary"; }
-std::string data_format_name(const Encoding::Ascii&, const DataFormat::Inlined&) { return "ascii"; }
+inline std::string data_format_name(const Encoding::RawBinary&, const DataFormat::Appended&) { return "appended"; }
+inline std::string data_format_name(const Encoding::Base64&, const DataFormat::Appended&) { return "appended"; }
+inline std::string data_format_name(const Encoding::Base64&, const DataFormat::Inlined&) { return "binary"; }
+inline std::string data_format_name(const Encoding::Ascii&, const DataFormat::Inlined&) { return "ascii"; }
 
 template<typename Enc, typename Format>
 std::string data_format_name(const Enc& e, const Format& format) {
@@ -65,7 +65,7 @@ std::string data_format_name(const Enc& e, const Format& format) {
     );
 }
 
-std::endian from_endian_attribute(const std::string& endian) {
+inline std::endian from_endian_attribute(const std::string& endian) {
     if (endian == "LittleEndian")
         return std::endian::little;
     if (endian == "BigEndian")
@@ -73,7 +73,7 @@ std::endian from_endian_attribute(const std::string& endian) {
     throw ValueError("Unsupported endian attribute: '" + endian + "'");
 }
 
-DynamicPrecision from_precision_attribute(const std::string& prec) {
+inline DynamicPrecision from_precision_attribute(const std::string& prec) {
     if (prec.starts_with("Int")) {
         const auto bytes = prec.substr(3);
         if (bytes == "8") return int8;

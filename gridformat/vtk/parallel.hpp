@@ -35,7 +35,7 @@
 namespace GridFormat::PVTK {
 
 //! Return the piece filename (w/o extension) for the given rank
- std::string piece_basefilename(const std::string& par_filename, int rank) {
+ inline std::string piece_basefilename(const std::string& par_filename, int rank) {
     const std::string base_name = par_filename.substr(0, par_filename.find_last_of("."));
     return base_name + "-" + std::to_string(rank);
 }

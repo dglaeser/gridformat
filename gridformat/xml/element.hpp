@@ -219,7 +219,7 @@ OptionalReference<Element> access_at(std::string_view path, Element& element, ch
  * \note If an element has multiple children with the same (matching) name,
  *       the first one will be selected.
  */
-XMLElement& access_or_create_at(std::string_view path, XMLElement& element, char delimiter = '/') {
+inline XMLElement& access_or_create_at(std::string_view path, XMLElement& element, char delimiter = '/') {
     if (path == "")
         return element;
     XMLElement* result = &element;
@@ -234,7 +234,7 @@ XMLElement& access_or_create_at(std::string_view path, XMLElement& element, char
 #ifndef DOXYGEN
 namespace XML::Detail {
 
-void write_xml_tag_open(const XMLElement& e,
+inline void write_xml_tag_open(const XMLElement& e,
                         std::ostream& s,
                         std::string_view close_char) {
     s << "<" << e.name();
@@ -248,22 +248,22 @@ void write_xml_tag_open(const XMLElement& e,
     s << close_char;
 }
 
-void write_xml_tag_open(const XMLElement& e,
+inline void write_xml_tag_open(const XMLElement& e,
                         std::ostream& s) {
     write_xml_tag_open(e, s, ">");
 }
 
-void write_empty_xml_tag(const XMLElement& e,
+inline void write_empty_xml_tag(const XMLElement& e,
                          std::ostream& s) {
     write_xml_tag_open(e, s, "/>");
 }
 
-void write_xml_tag_close(const XMLElement& e,
+inline void write_xml_tag_close(const XMLElement& e,
                         std::ostream& s) {
     s << "</" << e.name() << ">";
 }
 
-void write_xml_element(const XMLElement& e,
+inline void write_xml_element(const XMLElement& e,
                        std::ostream& s,
                        Indentation& ind) {
     if (!e.has_content() && e.number_of_children() == 0) {

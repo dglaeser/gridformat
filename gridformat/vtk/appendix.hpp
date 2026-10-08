@@ -132,7 +132,7 @@ namespace XML::Detail {
         }
     };
 
-    void write_xml_element_with_offsets(const XMLElement& e,
+    inline void write_xml_element_with_offsets(const XMLElement& e,
                                         std::ostream& s,
                                         Indentation& ind,
                                         std::vector<std::size_t>& offset_positions) {
@@ -178,7 +178,7 @@ namespace XML::Detail {
         }
     }
 
-    std::vector<std::size_t> write_xml_element_with_offsets(const XMLElement& e,
+    inline std::vector<std::size_t> write_xml_element_with_offsets(const XMLElement& e,
                                                             std::ostream& s,
                                                             Indentation& ind) {
         std::vector<std::size_t> offset_positions;

@@ -53,7 +53,7 @@ namespace GridFormat::HDF5 {
 #ifndef DOXYGEN
 namespace Detail {
 
-    HighFive::DataTransferProps parallel_transfer_props() {
+    inline HighFive::DataTransferProps parallel_transfer_props() {
         HighFive::DataTransferProps xfer_props;
 #if GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
         xfer_props.add(HighFive::UseCollectiveIO{});
@@ -79,7 +79,7 @@ namespace Detail {
         return fapl;
     }
 
-    void check_successful_collective_io([[maybe_unused]] const HighFive::DataTransferProps& xfer_props) {
+    inline void check_successful_collective_io([[maybe_unused]] const HighFive::DataTransferProps& xfer_props) {
 #if GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
         auto mnccp = HighFive::MpioNoCollectiveCause(xfer_props);
         if (mnccp.getLocalCause() || mnccp.getGlobalCause())
@@ -93,7 +93,7 @@ namespace Detail {
 #endif
     }
 
-    std::pair<std::string, std::string> split_group(const std::string& in) {
+    inline std::pair<std::string, std::string> split_group(const std::string& in) {
         if (in.ends_with('/'))
             return {in, ""};
 
@@ -110,7 +110,7 @@ namespace Detail {
     using HighFiveDataType = std::conditional_t<std::is_same_v<T, bool>, char, T>;
 
     //! HighFive's DataType::string() omits the signedness of integers
-    std::string as_string(const HighFive::DataType& type) {
+    inline std::string as_string(const HighFive::DataType& type) {
         if (type.getClass() == HighFive::DataTypeClass::Integer)
             return (H5Tget_sign(type.getId()) == H5T_SGN_NONE ? "Unsigned" : "Signed") + type.string();
         return type.string();
