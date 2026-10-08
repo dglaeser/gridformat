@@ -80,8 +80,7 @@ int main(int argc, char** argv) {
     write(
         GridFormat::Writer{GridFormat::FileFormat::VTKHDFImage{}, grid, MPI_COMM_WORLD},
         MPI_COMM_WORLD,
-        "image_explicit",
-        "_ignore_regression"
+        "image_explicit"
     );
 #endif
 

@@ -38,37 +38,36 @@ int main() {
     write(GridFormat::Writer{GridFormat::time_series(GridFormat::vtu), grid, "generic_time_series_2d_in_2d_pvd"});
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE
-    // TODO: include in regression test-suite once new VTK version is published
     write(GridFormat::Writer{
         GridFormat::time_series(GridFormat::vtk_hdf),
         grid,
-        "_ignore_regression_generic_time_series_2d_in_2d"
+        "generic_time_series_2d_in_2d_unstructured"
     });
     write(GridFormat::Writer{
         GridFormat::time_series(GridFormat::FileFormat::VTKHDFImage{}),
         grid,
-        "_ignore_regression_generic_time_series_2d_in_2d_image"
+        "generic_time_series_2d_in_2d_image_explicit"
     });
     write(GridFormat::Writer{
         GridFormat::time_series(GridFormat::FileFormat::VTKHDFUnstructured{}),
         grid,
-        "_ignore_regression_generic_time_series_2d_in_2d_unstructured_explicit"
+        "generic_time_series_2d_in_2d_unstructured_explicit"
     });
 
     write(GridFormat::Writer{
         GridFormat::vtk_hdf_transient,
         grid,
-        "_ignore_regression_generic_time_series_2d_in_2d_transient_explicit"
+        "generic_time_series_2d_in_2d_transient_unstructured"
     });
     write(GridFormat::Writer{
         GridFormat::FileFormat::VTKHDFImageTransient{},
         grid,
-        "_ignore_regression_generic_time_series_2d_in_2d_transient_image_explicit"
+        "generic_time_series_2d_in_2d_transient_image_explicit"
     });
     write(GridFormat::Writer{
         GridFormat::FileFormat::VTKHDFUnstructuredTransient{},
         grid,
-        "_ignore_regression_generic_time_series_2d_in_2d_transient_unstructured_explicit"
+        "generic_time_series_2d_in_2d_transient_unstructured_explicit"
     });
 
     // the transient formats must also accept grids that are not image grids

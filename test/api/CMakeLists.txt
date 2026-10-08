@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 gridformat_add_regression_test(test_generic_writer test_generic_writer.cpp "generic_2d_in_2d*")
-gridformat_add_regression_test(test_generic_time_series_writer test_generic_time_series_writer.cpp "generic_time_series_2d_in_2d*pvd*")
+gridformat_add_regression_test(test_generic_time_series_writer test_generic_time_series_writer.cpp "generic_time_series_2d_in_2d*pvd*||generic_time_series_2d_in_2d*.hdf")
 gridformat_add_regression_test(
     test_generic_converter
     test_generic_converter.cpp
@@ -10,8 +10,8 @@ gridformat_add_regression_test(
     SCRIPT_ARGS "--skip-metadata"
 )
 
-gridformat_add_parallel_regression_test(test_generic_parallel_writer test_generic_parallel_writer.cpp 2 "generic_parallel_2d_in_2d*.p*")
-gridformat_add_parallel_regression_test(test_generic_parallel_time_series_writer test_generic_parallel_time_series_writer.cpp 2 "generic_parallel_time_series_2d_in_2d*pvd*")
+gridformat_add_parallel_regression_test(test_generic_parallel_writer test_generic_parallel_writer.cpp 2 "generic_parallel_2d_in_2d*.p*||generic_parallel_2d_in_2d*.hdf")
+gridformat_add_parallel_regression_test(test_generic_parallel_time_series_writer test_generic_parallel_time_series_writer.cpp 2 "generic_parallel_time_series_2d_in_2d*pvd*||generic_parallel_time_series_2d_in_2d*.hdf")
 gridformat_add_parallel_regression_test(
     test_generic_parallel_converter
     test_generic_converter.cpp
