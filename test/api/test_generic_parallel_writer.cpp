@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     write(
         GridFormat::Writer{GridFormat::vtk_hdf, grid, MPI_COMM_WORLD},
         MPI_COMM_WORLD,
-        "unstructured"
+        "image"
     );
     write(
         GridFormat::Writer{GridFormat::FileFormat::VTKHDFUnstructured{}, grid, MPI_COMM_WORLD},

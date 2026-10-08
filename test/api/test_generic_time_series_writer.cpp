@@ -41,7 +41,7 @@ int main() {
     write(GridFormat::Writer{
         GridFormat::time_series(GridFormat::vtk_hdf),
         grid,
-        "generic_time_series_2d_in_2d_unstructured"
+        "generic_time_series_2d_in_2d_image"
     });
     write(GridFormat::Writer{
         GridFormat::time_series(GridFormat::FileFormat::VTKHDFImage{}),
@@ -57,7 +57,7 @@ int main() {
     write(GridFormat::Writer{
         GridFormat::vtk_hdf_transient,
         grid,
-        "generic_time_series_2d_in_2d_transient_unstructured"
+        "generic_time_series_2d_in_2d_transient_image"
     });
     write(GridFormat::Writer{
         GridFormat::FileFormat::VTKHDFImageTransient{},

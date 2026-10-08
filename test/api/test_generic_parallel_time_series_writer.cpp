@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
         GridFormat::time_series(GridFormat::vtk_hdf),
         grid,
         MPI_COMM_WORLD,
-        "generic_parallel_time_series_2d_in_2d_unstructured"
+        "generic_parallel_time_series_2d_in_2d_image"
     }, MPI_COMM_WORLD);
     write(GridFormat::Writer{
         GridFormat::time_series(GridFormat::FileFormat::VTKHDFImage{}),
@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
         GridFormat::vtk_hdf_transient,
         grid,
         MPI_COMM_WORLD,
-        "generic_parallel_time_series_2d_in_2d_transient_unstructured"
+        "generic_parallel_time_series_2d_in_2d_transient_image"
     }, MPI_COMM_WORLD);
     write(GridFormat::Writer{
         GridFormat::FileFormat::VTKHDFImageTransient{},

@@ -17,6 +17,7 @@
 #include <memory>
 #include <optional>
 #include <type_traits>
+#include <concepts>
 
 #include <gridformat/reader.hpp>
 #include <gridformat/writer.hpp>
@@ -58,6 +59,10 @@ namespace GridFormat::APIDetail {
 
     template<typename... T>
     inline constexpr bool always_false = false;
+
+    // The converter grid satisfies all grid concepts, but its actual type is only known at runtime
+    template<typename G>
+    inline constexpr bool is_converter_grid = std::same_as<G, ConverterDetail::ConverterGrid>;
 
     template<typename... T>
     struct DefaultAsserter {
@@ -352,8 +357,10 @@ struct VTKHDFUnstructuredTransient
 struct VTKHDFTransient : FormatWithOptions<VTKHDFTransient, VTK::HDFTransientOptions> {
     template<typename Grid>
     constexpr auto from(const Grid&) const {
-        // TODO: Once the VTKHDFImageGridReader is stable, use image format for image grids
-        return VTKHDFUnstructuredTransient{this->opts};
+        if constexpr (Concepts::ImageGrid<Grid> && !APIDetail::is_converter_grid<Grid>)
+            return VTKHDFImageTransient{this->opts};
+        else
+            return VTKHDFUnstructuredTransient{this->opts};
     }
 };
 
@@ -370,8 +377,10 @@ struct VTKHDFTransient : FormatWithOptions<VTKHDFTransient, VTK::HDFTransientOpt
 struct VTKHDF {
     template<typename Grid>
     static constexpr auto from(const Grid&) {
-        // TODO: Once the VTKHDFImageGridReader is stable, use image format for image grids
-        return VTKHDFUnstructured{};
+        if constexpr (Concepts::ImageGrid<Grid> && !APIDetail::is_converter_grid<Grid>)
+            return VTKHDFImage{};
+        else
+            return VTKHDFUnstructured{};
     }
 
     //! Return the transient variant of this format with the given options
@@ -892,9 +901,6 @@ struct ReaderFactory<FileFormat::PVDClosure>
 //! Specialization of the WriterFactory for the any format selector.
 template<> struct WriterFactory<FileFormat::Any> {
  private:
-    template<typename G>
-    static constexpr bool is_converter_grid = std::same_as<G, ConverterDetail::ConverterGrid>;
-
     template<typename F, typename... Args>
     static auto _make(F&& format, Args&&... args) {
         return WriterFactory<F>::make(format, std::forward<Args>(args)...);
@@ -903,11 +909,11 @@ template<> struct WriterFactory<FileFormat::Any> {
  public:
     template<Concepts::Grid G>
     static constexpr auto default_format_for() {
-        if constexpr (Concepts::ImageGrid<G> && !is_converter_grid<G>)
+        if constexpr (Concepts::ImageGrid<G> && !APIDetail::is_converter_grid<G>)
             return FileFormat::VTI{};
-        else if constexpr (Concepts::RectilinearGrid<G> && !is_converter_grid<G>)
+        else if constexpr (Concepts::RectilinearGrid<G> && !APIDetail::is_converter_grid<G>)
             return FileFormat::VTR{};
-        else if constexpr (Concepts::StructuredGrid<G> && !is_converter_grid<G>)
+        else if constexpr (Concepts::StructuredGrid<G> && !APIDetail::is_converter_grid<G>)
             return FileFormat::VTS{};
         else if constexpr (Concepts::UnstructuredGrid<G>)
             return FileFormat::VTU{};
