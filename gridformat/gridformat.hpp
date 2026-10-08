@@ -384,7 +384,7 @@ struct VTKHDF {
     }
 
     //! Return the transient variant of this format with the given options
-    constexpr VTKHDFTransient with(VTK::HDFTransientOptions opts) {
+    constexpr VTKHDFTransient with(VTK::HDFTransientOptions opts) const {
         return {std::move(opts)};
     }
 };
