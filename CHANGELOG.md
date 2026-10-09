@@ -13,6 +13,10 @@ headers in two translation units linked into one executable.
 a non-existing directory or onto a full disk silently produced no output. All file writers now throw an `IOError` in
 these cases.
 
+- __VTK-XML__: attribute values were written without escaping special characters, such that e.g. field names containing
+`"`, `<` or `&` produced invalid xml files. Attribute values are now escaped on writing, and the predefined xml entities
+(`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`) are decoded in attribute values when reading.
+
 # `GridFormat` 0.5.0
 
 ## Fixes

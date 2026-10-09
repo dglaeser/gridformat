@@ -264,7 +264,7 @@ class XMLParser {
 
         _helper.shift_until_any_of("\"");
         _helper.shift_by(1);
-        std::string attr_value = _helper.read_until_any_of("\"");
+        std::string attr_value = XML::Detail::unescaped(_helper.read_until_any_of("\""));
         _helper.shift_by(1);
 
         return std::make_pair(std::move(attr_name), std::move(attr_value));
