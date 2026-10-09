@@ -10,11 +10,11 @@
 
 #include <ostream>
 #include <string>
-#include <fstream>
 #include <filesystem>
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/lvalue_reference.hpp>
+#include <gridformat/common/output_file.hpp>
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/parallel/helpers.hpp>
 
@@ -75,8 +75,6 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
     }
 
     void _write_pvtu_file(const std::string& filename_with_ext) const {
-        std::ofstream file_stream(filename_with_ext, std::ios::out);
-
         XMLElement pvtk_xml("VTKFile");
         pvtk_xml.set_attribute("type", "PUnstructuredGrid");
 
@@ -109,7 +107,9 @@ class PVTUWriter : public VTK::XMLWriterBase<Grid, PVTUWriter<Grid, Communicator
         });
 
         this->_set_default_active_fields(pvtk_xml.get_child("PUnstructuredGrid"));
-        write_xml_with_version_header(pvtk_xml, file_stream, Indentation{{.width = 2}});
+        write_to(filename_with_ext, [&] (std::ostream& s) {
+            write_xml_with_version_header(pvtk_xml, s, Indentation{{.width = 2}});
+        });
     }
 };
 

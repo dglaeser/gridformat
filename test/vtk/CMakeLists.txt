@@ -120,3 +120,5 @@ foreach (NR IN LISTS RANKS)
         "pvtk_*image*nranks_${NR}*hdf"
     )
 endforeach ()
+
+gridformat_add_test(test_write_errors test_write_errors.cpp)

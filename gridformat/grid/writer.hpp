@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 #include <ranges>
-#include <fstream>
 #include <ostream>
 #include <concepts>
 #include <type_traits>
@@ -24,6 +23,7 @@
 #include <gridformat/common/range_field.hpp>
 #include <gridformat/common/scalar_field.hpp>
 #include <gridformat/common/logging.hpp>
+#include <gridformat/common/output_file.hpp>
 
 #include <gridformat/grid/grid.hpp>
 #include <gridformat/grid/_detail.hpp>
@@ -335,8 +335,7 @@ class GridWriter : public GridWriterBase<Grid> {
     std::string _extension;
 
     virtual void _write(const std::string& filename_with_ext) const {
-        std::ofstream result_file(filename_with_ext, std::ios::out);
-        _write(result_file);
+        write_to(filename_with_ext, [&] (std::ostream& s) { _write(s); });
     }
 
     virtual void _write(std::ostream&) const = 0;

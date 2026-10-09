@@ -9,6 +9,10 @@
 when including `GridFormat` headers in more than one translation unit of the same program. A test now includes all
 headers in two translation units linked into one executable.
 
+- Writers did not check if the output file could be opened or if writing to it succeeded, such that e.g. writing into
+a non-existing directory or onto a full disk silently produced no output. All file writers now throw an `IOError` in
+these cases.
+
 # `GridFormat` 0.5.0
 
 ## Fixes
