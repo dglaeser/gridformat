@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include <iostream>
+#include <stdexcept>
+#include <string>
 
 #include <gridformat/gridformat.hpp>
 
@@ -67,6 +69,35 @@ int main() {
         GridFormat::FileFormat::VTKHDFUnstructuredTransient{},
         grid,
         "_ignore_regression_generic_time_series_2d_in_2d_transient_unstructured_explicit"
+    });
+
+    // the transient formats must also accept grids that are not image grids
+    const auto unstructured_grid = GridFormat::Test::make_unstructured_2d();
+    const auto write_and_check_unstructured = [&] (auto&& writer) {
+        writer.set_point_field("point_func", [] (const auto&) { return 1.0; });
+        writer.set_cell_field("cell_func", [] (const auto&) { return 1.0; });
+        std::string filename;
+        for (double sim_time : {0.0, 1.0})
+            filename = writer.write(sim_time);
+        GridFormat::Reader reader;
+        reader.open(filename);
+        if (reader.number_of_steps() != 2 || reader.number_of_cells() != GridFormat::number_of_cells(unstructured_grid))
+            throw std::runtime_error("Unexpected data read from '" + filename + "'");
+    };
+    write_and_check_unstructured(GridFormat::Writer{
+        GridFormat::vtk_hdf_transient,
+        unstructured_grid,
+        "_ignore_regression_generic_time_series_2d_in_2d_unstructured_grid_transient"
+    });
+    write_and_check_unstructured(GridFormat::Writer{
+        GridFormat::time_series(GridFormat::vtk_hdf),
+        unstructured_grid,
+        "_ignore_regression_generic_time_series_2d_in_2d_unstructured_grid_time_series"
+    });
+    write_and_check_unstructured(GridFormat::Writer{
+        GridFormat::FileFormat::VTKHDFUnstructuredTransient{},
+        unstructured_grid,
+        "_ignore_regression_generic_time_series_2d_in_2d_unstructured_grid_transient_explicit"
     });
 #endif
     return 0;

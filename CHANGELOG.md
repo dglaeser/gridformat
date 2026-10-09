@@ -17,6 +17,10 @@ these cases.
 `"`, `<` or `&` produced invalid xml files. Attribute values are now escaped on writing, and the predefined xml entities
 (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`) are decoded in attribute values when reading.
 
+- __VTKHDF__: the transient unstructured grid format (used by `vtk_hdf_transient` and `time_series(vtk_hdf)` for
+unstructured grids) could only be constructed with image grids, such that the `Writer` failed to compile for actual
+unstructured grids.
+
 # `GridFormat` 0.5.0
 
 ## Fixes

@@ -786,14 +786,14 @@ struct ReaderFactory<FileFormat::VTKHDFUnstructured>
 //! Specialization of the WriterFactory for the transient vtk-hdf unstructured grid format
 template<> struct WriterFactory<FileFormat::VTKHDFUnstructuredTransient> {
     static auto make(const FileFormat::VTKHDFUnstructuredTransient& f,
-                     const Concepts::ImageGrid auto& grid,
+                     const Concepts::UnstructuredGrid auto& grid,
                      const std::string& base_filename) {
         if (f.opts.has_value())
             return VTKHDFUnstructuredTimeSeriesWriter{grid, base_filename, f.opts.value()};
         return VTKHDFUnstructuredTimeSeriesWriter{grid, base_filename};
     }
     static auto make(const FileFormat::VTKHDFUnstructuredTransient& f,
-                     const Concepts::ImageGrid auto& grid,
+                     const Concepts::UnstructuredGrid auto& grid,
                      const Concepts::Communicator auto& comm,
                      const std::string& base_filename) {
         if (f.opts.has_value())
