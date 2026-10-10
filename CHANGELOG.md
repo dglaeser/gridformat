@@ -21,6 +21,13 @@ these cases.
 unstructured grids) could only be constructed with image grids, such that the `Writer` failed to compile for actual
 unstructured grids.
 
+## Features
+
+- __VTKHDF__: `vtk_hdf` and `vtk_hdf_transient` now select the image data flavour for image grids, as stated in their
+documentation. Previously, they always selected the unstructured grid flavour. Note that this changes the files written
+for image grids with these selectors; use `FileFormat::VTKHDFUnstructured` or `FileFormat::VTKHDFUnstructuredTransient`
+explicitly to keep the previous behaviour.
+
 # `GridFormat` 0.5.0
 
 ## Fixes

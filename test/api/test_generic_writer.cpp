@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <algorithm>
+#include <concepts>
+#include <utility>
 
 #include <gridformat/common/ranges.hpp>
 #include <gridformat/gridformat.hpp>
@@ -49,7 +51,22 @@ int main() {
     );
 
 #if GRIDFORMAT_HAVE_HIGH_FIVE
-    write(GridFormat::Writer{GridFormat::vtk_hdf, grid}, "unstructured");
+    {  // the vtk-hdf formats select the image flavour for image grids only
+        using GridFormat::FileFormat::VTKHDFImage;
+        using GridFormat::FileFormat::VTKHDFUnstructured;
+        using GridFormat::FileFormat::VTKHDFImageTransient;
+        using GridFormat::FileFormat::VTKHDFUnstructuredTransient;
+        using ImageGrid = decltype(grid);
+        using UnstructuredGrid = decltype(GridFormat::Test::make_unstructured_2d());
+        using ConverterGrid = GridFormat::ConverterDetail::ConverterGrid;
+        static_assert(std::same_as<decltype(GridFormat::vtk_hdf.from(std::declval<const ImageGrid&>())), VTKHDFImage>);
+        static_assert(std::same_as<decltype(GridFormat::vtk_hdf.from(std::declval<const UnstructuredGrid&>())), VTKHDFUnstructured>);
+        static_assert(std::same_as<decltype(GridFormat::vtk_hdf.from(std::declval<const ConverterGrid&>())), VTKHDFUnstructured>);
+        static_assert(std::same_as<decltype(GridFormat::vtk_hdf_transient.from(std::declval<const ImageGrid&>())), VTKHDFImageTransient>);
+        static_assert(std::same_as<decltype(GridFormat::vtk_hdf_transient.from(std::declval<const UnstructuredGrid&>())), VTKHDFUnstructuredTransient>);
+        static_assert(std::same_as<decltype(GridFormat::vtk_hdf_transient.from(std::declval<const ConverterGrid&>())), VTKHDFUnstructuredTransient>);
+    }
+    write(GridFormat::Writer{GridFormat::vtk_hdf, grid}, "image");
     write(GridFormat::Writer{GridFormat::FileFormat::VTKHDFImage{}, grid}, "image_explicit");
 #endif
 
