@@ -60,6 +60,11 @@ int main() {
         "generic_time_series_2d_in_2d_transient_image"
     });
     write(GridFormat::Writer{
+        GridFormat::vtk_hdf.with({.static_grid = true}),
+        grid,
+        "generic_time_series_2d_in_2d_transient_with_opts_image"
+    });
+    write(GridFormat::Writer{
         GridFormat::FileFormat::VTKHDFImageTransient{},
         grid,
         "generic_time_series_2d_in_2d_transient_image_explicit"

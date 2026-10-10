@@ -21,6 +21,8 @@ these cases.
 unstructured grids) could only be constructed with image grids, such that the `Writer` failed to compile for actual
 unstructured grids.
 
+- __VTKHDF__: `vtk_hdf.with(opts)` did not compile because `FileFormat::VTKHDF::with` was not `const`.
+
 ## Features
 
 - __VTKHDF__: `vtk_hdf` and `vtk_hdf_transient` now select the image data flavour for image grids, as stated in their
