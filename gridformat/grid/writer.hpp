@@ -8,6 +8,7 @@
 #ifndef GRIDFORMAT_GRID_WRITER_HPP_
 #define GRIDFORMAT_GRID_WRITER_HPP_
 
+#include <array>
 #include <string>
 #include <utility>
 #include <ranges>
@@ -82,9 +83,25 @@ class GridWriterBase {
     //! Set the meta data with the given name from the values in the given range.
     //! \note The VTK formats write ranges of `char` as strings, which is lossy for values that contain zeros.
     //! \note In parallel writes, meta data is typically assumed to be the same on all ranks.
+    //! \note Ranges must be moved in. To write a range without transferring ownership, pass a view,
+    //!       e.g. `std::views::all(range)`. Strings, string literals and scalars are copied.
     template<std::ranges::range R>
     void set_meta_data(const std::string& name, R&& range) {
-        _meta_data.set(name, RangeField{std::forward<R>(range)});
+        static_assert(
+            !std::is_array_v<std::remove_cvref_t<R>>,
+            "Built-in arrays are not supported, please use std::array (e.g. via std::to_array)"
+        );
+        static_assert(
+            !std::is_lvalue_reference_v<R>,
+            "Cannot take ranges by reference, please move or pass a view (e.g. std::views::all) "
+            "to data that outlives the writer"
+        );
+        _meta_data.set(name, RangeField{std::move(range)});
+    }
+
+    template<std::size_t N>
+    void set_meta_data(const std::string& name, const char (&text)[N]) {
+        _meta_data.set(name, RangeField{std::to_array(text)});
     }
 
     void set_meta_data(const std::string& name, std::string text) {

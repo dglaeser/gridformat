@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 #include <algorithm>
 #include <utility>
@@ -284,6 +285,30 @@ int main() {
         writer.set_meta_data("test", 1.0);
         auto field = writer.remove_meta_data("test");
         expect(throws([&] () { writer.remove_meta_data("test"); }));
+    };
+
+    "grid_writer_meta_data_range_outlives_argument"_test = [&] () {
+        MyWriter writer{grid};
+        const auto set_local_meta_data = [&] () {
+            std::vector<int> values{1, 2, 3};
+            writer.set_meta_data("test", std::move(values));
+        };
+        set_local_meta_data();
+        check_serialization(*writer.remove_meta_data("test"), std::vector<int>{1, 2, 3});
+    };
+
+    "grid_writer_meta_data_range_by_view"_test = [&] () {
+        MyWriter writer{grid};
+        std::vector<int> values{1, 2, 3};
+        writer.set_meta_data("test", std::views::all(values));
+        values[0] = 42;
+        check_serialization(*writer.remove_meta_data("test"), std::vector<int>{42, 2, 3});
+    };
+
+    "grid_writer_meta_data_char_array"_test = [&] () {
+        MyWriter writer{grid};
+        writer.set_meta_data("test", "ab");
+        check_serialization(*writer.remove_meta_data("test"), std::vector<char>{'a', 'b', '\0'});
     };
 
     "grid_writer_get_fields_of_rank"_test = [&] () {
