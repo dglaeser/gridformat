@@ -18,6 +18,7 @@
 
 #include <gridformat/common/output_file.hpp>
 #include <gridformat/parallel/communication.hpp>
+#include <gridformat/parallel/helpers.hpp>
 #include <gridformat/xml/element.hpp>
 #include <gridformat/grid/writer.hpp>
 #include <gridformat/grid.hpp>
@@ -73,12 +74,14 @@ class PVDWriter : public PVDDetail::WriterStorage<VTKWriter>,
         _add_dataset(_time, vtk_filename);
 
         const auto& communicator = Traits::CommunicatorAccess<VTKWriter>::get(this->_writer());
-        if (Parallel::rank(communicator) == 0) {
-            write_to(_pvd_filename, [&] (std::ostream& s) {
-                write_xml_with_version_header(_xml, s, Indentation{{.width = 2}});
-            });
-        }
-        Parallel::barrier(communicator);  // make sure all process exit here after the pvd file is written
+        // the collective invocation also makes sure all processes exit here after the pvd file is written
+        Parallel::invoke_collectively(communicator, [&] () {
+            if (Parallel::rank(communicator) == 0) {
+                write_to(_pvd_filename, [&] (std::ostream& s) {
+                    write_xml_with_version_header(_xml, s, Indentation{{.width = 2}});
+                });
+            }
+        }, "Writing '" + _pvd_filename.string() + "'");
 
         return _pvd_filename;
     }

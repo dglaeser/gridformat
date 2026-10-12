@@ -61,11 +61,15 @@ class PVTPWriter : public VTK::XMLWriterBase<Grid, PVTPWriter<Grid, Communicator
     }
 
     virtual void _write(const std::string& filename_with_ext) const override {
-        _write_piece(filename_with_ext);
-        Parallel::barrier(_comm);  // ensure all pieces finished successfully
-        if (Parallel::rank(_comm) == 0)
-            _write_pvtu_file(filename_with_ext);
-        Parallel::barrier(_comm);  // ensure .pvtu file is written before returning
+        // the collective invocations also ensure that all pieces are written before the main file,
+        // and that the main file is written before returning
+        Parallel::invoke_collectively(_comm, [&] () {
+            _write_piece(filename_with_ext);
+        }, "Writing the pieces of '" + filename_with_ext + "'");
+        Parallel::invoke_collectively(_comm, [&] () {
+            if (Parallel::rank(_comm) == 0)
+                _write_pvtu_file(filename_with_ext);
+        }, "Writing '" + filename_with_ext + "'");
     }
 
     void _write_piece(const std::string& par_filename) const {
