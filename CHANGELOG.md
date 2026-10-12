@@ -29,6 +29,10 @@ error. To write a range without transferring ownership (as before), pass a view,
 arrays are no longer accepted (use `std::array`), except for string literals, which are copied. Strings and scalars
 are copied as before.
 
+- __VTK-XML__: if writing failed on one rank in the parallel writers (`.pvtu`, `.pvtp`, `.pvti`, `.pvtr`, `.pvts`)
+or in the parallel `.pvd` writer, the other ranks waited forever. Errors are now communicated, such that all ranks
+throw: the original exception is rethrown on the ranks where it occurred, and an `IOError` is thrown on all others.
+
 ## Features
 
 - __VTKHDF__: `vtk_hdf` and `vtk_hdf_transient` now select the image data flavour for image grids, as stated in their

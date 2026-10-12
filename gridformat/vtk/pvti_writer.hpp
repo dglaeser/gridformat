@@ -90,11 +90,15 @@ class PVTIWriter : public VTK::XMLWriterBase<Grid, PVTIWriter<Grid, Communicator
         const auto my_whole_origin = Parallel::broadcast(_comm, origin, root_rank);
         const auto my_extent_offset = Parallel::scatter(_comm, Ranges::flat(exts_begin), root_rank);
 
-        _write_piece(filename_with_ext, Ranges::to_array<dim>(my_extent_offset), {my_whole_origin, my_whole_extent});
-        Parallel::barrier(_comm);  // ensure all pieces finished successfully
-        if (Parallel::rank(_comm) == 0)
-            _write_pvti_file(filename_with_ext, my_whole_origin, my_whole_extent, exts_begin, exts_end);
-        Parallel::barrier(_comm);  // ensure .pvti file is written before returning
+        // the collective invocations also ensure that all pieces are written before the main file,
+        // and that the main file is written before returning
+        Parallel::invoke_collectively(_comm, [&] () {
+            _write_piece(filename_with_ext, Ranges::to_array<dim>(my_extent_offset), {my_whole_origin, my_whole_extent});
+        }, "Writing the pieces of '" + filename_with_ext + "'");
+        Parallel::invoke_collectively(_comm, [&] () {
+            if (Parallel::rank(_comm) == 0)
+                _write_pvti_file(filename_with_ext, my_whole_origin, my_whole_extent, exts_begin, exts_end);
+        }, "Writing '" + filename_with_ext + "'");
     }
 
     void _write_piece(const std::string& par_filename,
