@@ -23,6 +23,12 @@ unstructured grids.
 
 - __VTKHDF__: `vtk_hdf.with(opts)` did not compile because `FileFormat::VTKHDF::with` was not `const`.
 
+- `set_meta_data` stored a reference to ranges passed as lvalues, which dangled if the range went out of scope before
+writing. Consistent with point and cell fields, ranges now have to be moved in, and passing an lvalue range is a compile
+error. To write a range without transferring ownership (as before), pass a view, e.g. `std::views::all(range)`. Built-in
+arrays are no longer accepted (use `std::array`), except for string literals, which are copied. Strings and scalars
+are copied as before.
+
 ## Features
 
 - __VTKHDF__: `vtk_hdf` and `vtk_hdf_transient` now select the image data flavour for image grids, as stated in their
