@@ -259,36 +259,39 @@ class StructuredParallelGridHelper {
         std::array<std::size_t, dim> whole_extent;
         std::array<CT, dim> origin;
 
-        if (Parallel::rank(_comm) == _root_rank) {
-            const auto default_epsilon = 1e-6*std::ranges::max(all_origins | std::views::transform([] (CT v) {
-                using std::abs;
-                return abs(v);
-            }));
-            const auto mapper_helper = _make_mapper_helper(basis, all_origins, is_negative_axis, default_epsilon);
-            const auto rank_mapper = mapper_helper.make_mapper();
-            origin = mapper_helper.compute_origin();
+        // only the root computes the extents, but all ranks must throw if this fails
+        Parallel::invoke_collectively(_comm, [&] () {
+            if (Parallel::rank(_comm) == _root_rank) {
+                const auto default_epsilon = 1e-6*std::ranges::max(all_origins | std::views::transform([] (CT v) {
+                    using std::abs;
+                    return abs(v);
+                }));
+                const auto mapper_helper = _make_mapper_helper(basis, all_origins, is_negative_axis, default_epsilon);
+                const auto rank_mapper = mapper_helper.make_mapper();
+                origin = mapper_helper.compute_origin();
 
-            for (unsigned dir = 0; dir < dim; ++dir) {
-                for (int rank = 0; rank < num_ranks; ++rank) {
-                    auto ranks_below = rank_mapper.ranks_below(rank_mapper.location(rank), dir);
-                    const std::size_t offset = std::accumulate(
-                        std::ranges::begin(ranks_below),
-                        std::ranges::end(ranks_below),
-                        std::size_t{0},
-                        [&] (const std::size_t current, int r) {
-                            return current + Parallel::access_gathered<dim>(all_extents, _comm, {dir, r});
-                        }
-                    );
-                    pieces_begin[rank][dir] = offset;
-                    pieces_end[rank][dir] = offset + Parallel::access_gathered<dim>(all_extents, _comm, {dir, rank});
+                for (unsigned dir = 0; dir < dim; ++dir) {
+                    for (int rank = 0; rank < num_ranks; ++rank) {
+                        auto ranks_below = rank_mapper.ranks_below(rank_mapper.location(rank), dir);
+                        const std::size_t offset = std::accumulate(
+                            std::ranges::begin(ranks_below),
+                            std::ranges::end(ranks_below),
+                            std::size_t{0},
+                            [&] (const std::size_t current, int r) {
+                                return current + Parallel::access_gathered<dim>(all_extents, _comm, {dir, r});
+                            }
+                        );
+                        pieces_begin[rank][dir] = offset;
+                        pieces_end[rank][dir] = offset + Parallel::access_gathered<dim>(all_extents, _comm, {dir, rank});
+                    }
+
+                    whole_extent[dir] = (*std::max_element(
+                        pieces_end.begin(), pieces_end.end(),
+                        [&] (const auto& a1, const auto& a2) { return a1[dir] < a2[dir]; }
+                    ))[dir];
                 }
-
-                whole_extent[dir] = (*std::max_element(
-                    pieces_end.begin(), pieces_end.end(),
-                    [&] (const auto& a1, const auto& a2) { return a1[dir] < a2[dir]; }
-                ))[dir];
             }
-        }
+        }, "Computing the extents of the parallel grid");
 
         return std::make_tuple(
             std::move(pieces_begin),

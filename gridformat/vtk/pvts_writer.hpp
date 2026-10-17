@@ -74,7 +74,12 @@ class PVTSWriter : public VTK::XMLWriterBase<Grid, PVTSWriter<Grid, Communicator
 
     virtual void _write(const std::string& filename_with_ext) const override {
         const auto& local_extents = extents(this->grid());
-        const auto [origin, is_negative_axis] = _get_origin_and_orientations(local_extents);
+        // determining the origin can fail on single ranks, which must not leave the others waiting below
+        std::array<CT, dim> origin{};
+        std::array<bool, dim> is_negative_axis{};
+        Parallel::invoke_collectively(_comm, [&] () {
+            std::tie(origin, is_negative_axis) = _get_origin_and_orientations(local_extents);
+        }, "Determining the origin of the local grid");
 
         PVTK::StructuredParallelGridHelper helper{_comm};
         const auto all_origins = Parallel::gather(_comm, origin, root_rank);

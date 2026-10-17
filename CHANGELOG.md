@@ -32,6 +32,10 @@ are copied as before.
 - __VTK-XML__: if writing failed on one rank in the parallel writers (`.pvtu`, `.pvtp`, `.pvti`, `.pvtr`, `.pvts`)
 or in the parallel `.pvd` writer, the other ranks waited forever. Errors are now communicated, such that all ranks
 throw: the original exception is rethrown on the ranks where it occurred, and an `IOError` is thrown on all others.
+The same applies to errors while computing the extents of the whole grid in the `.pvti`, `.pvtr` and `.pvts` writers.
+
+- __VTKHDF__: if clearing the file at the first step of a parallel time series failed on the root rank, the other ranks
+waited forever. They now throw an `IOError`.
 
 ## Features
 
