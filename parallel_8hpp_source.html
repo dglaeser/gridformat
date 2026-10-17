@@ -386,71 +386,74 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('parallel_8hpp_
 <div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        std::array&lt;std::size_t, dim&gt; whole_extent;</div>
 <div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        std::array&lt;CT, dim&gt; origin;</div>
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keywordflow">if</span> (Parallel::rank(_comm) == _root_rank) {</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            <span class="keyword">const</span> <span class="keyword">auto</span> default_epsilon = 1e-6*std::ranges::max(all_origins | std::views::transform([] (CT v) {</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>                <span class="keyword">using </span>std::abs;</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                <span class="keywordflow">return</span> abs(v);</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            }));</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            <span class="keyword">const</span> <span class="keyword">auto</span> mapper_helper = _make_mapper_helper(basis, all_origins, is_negative_axis, default_epsilon);</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            <span class="keyword">const</span> <span class="keyword">auto</span> rank_mapper = mapper_helper.make_mapper();</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            origin = mapper_helper.compute_origin();</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>            <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> dir = 0; dir &lt; dim; ++dir) {</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> rank = 0; rank &lt; num_ranks; ++rank) {</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                    <span class="keyword">auto</span> ranks_below = rank_mapper.ranks_below(rank_mapper.location(rank), dir);</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>                    <span class="keyword">const</span> std::size_t offset = std::accumulate(</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>                        std::ranges::begin(ranks_below),</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>                        std::ranges::end(ranks_below),</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>                        std::size_t{0},</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                        [&amp;] (<span class="keyword">const</span> std::size_t current, <span class="keywordtype">int</span> r) {</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                            <span class="keywordflow">return</span> current + Parallel::access_gathered&lt;dim&gt;(all_extents, _comm, {dir, r});</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                        }</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>                    );</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                    pieces_begin[rank][dir] = offset;</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                    pieces_end[rank][dir] = offset + Parallel::access_gathered&lt;dim&gt;(all_extents, _comm, {dir, rank});</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                }</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                whole_extent[dir] = (*std::max_element(</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>                    pieces_end.begin(), pieces_end.end(),</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>                    [&amp;] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; a1, <span class="keyword">const</span> <span class="keyword">auto</span>&amp; a2) { return a1[dir] &lt; a2[dir]; }</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>                ))[dir];</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>            }</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>        }</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        <span class="keywordflow">return</span> std::make_tuple(</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>            std::move(pieces_begin),</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            std::move(pieces_end),</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            std::move(whole_extent),</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>            std::move(origin)</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        );</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    }</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <span class="keyword">template</span>&lt;Concepts::StaticallySizedMDRange&lt;2&gt; Basis, Concepts::Scalar CT, std::<span class="keywordtype">size_t</span> dim&gt;</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    <span class="keyword">auto</span> _make_mapper_helper(<span class="keyword">const</span> Basis&amp; basis,</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>                             <span class="keyword">const</span> std::vector&lt;CT&gt;&amp; all_origins,</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>                             <span class="keyword">const</span> std::array&lt;bool, dim&gt;&amp; is_negative_axis,</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>                             CT default_eps)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        <a class="code hl_class" href="classGridFormat_1_1PVTK_1_1StructuredGridMapperHelper.html">StructuredGridMapperHelper&lt;CT, dim&gt;</a> helper(Parallel::size(_comm), basis, default_eps);</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        std::ranges::for_each(Parallel::ranks(_comm), [&amp;] (<span class="keywordtype">int</span> rank) {</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>            helper.set_origin_for(rank, Parallel::access_gathered&lt;dim&gt;(all_origins, _comm, rank));</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        });</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span> </div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> dir = 0; dir &lt; dim; ++dir)</div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>            <span class="keywordflow">if</span> (is_negative_axis[dir])</div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>                helper.reverse(dir);</div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span> </div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        <span class="keywordflow">return</span> helper;</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    }</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="comment">// only the root computes the extents, but all ranks must throw if this fails</span></div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        Parallel::invoke_collectively(_comm, [&amp;] () {</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            <span class="keywordflow">if</span> (Parallel::rank(_comm) == _root_rank) {</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                <span class="keyword">const</span> <span class="keyword">auto</span> default_epsilon = 1e-6*std::ranges::max(all_origins | std::views::transform([] (CT v) {</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>                    <span class="keyword">using </span>std::abs;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                    <span class="keywordflow">return</span> abs(v);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>                }));</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>                <span class="keyword">const</span> <span class="keyword">auto</span> mapper_helper = _make_mapper_helper(basis, all_origins, is_negative_axis, default_epsilon);</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>                <span class="keyword">const</span> <span class="keyword">auto</span> rank_mapper = mapper_helper.make_mapper();</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                origin = mapper_helper.compute_origin();</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> dir = 0; dir &lt; dim; ++dir) {</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> rank = 0; rank &lt; num_ranks; ++rank) {</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>                        <span class="keyword">auto</span> ranks_below = rank_mapper.ranks_below(rank_mapper.location(rank), dir);</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>                        <span class="keyword">const</span> std::size_t offset = std::accumulate(</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>                            std::ranges::begin(ranks_below),</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                            std::ranges::end(ranks_below),</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                            std::size_t{0},</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                            [&amp;] (<span class="keyword">const</span> std::size_t current, <span class="keywordtype">int</span> r) {</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>                                <span class="keywordflow">return</span> current + Parallel::access_gathered&lt;dim&gt;(all_extents, _comm, {dir, r});</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                            }</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                        );</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                        pieces_begin[rank][dir] = offset;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>                        pieces_end[rank][dir] = offset + Parallel::access_gathered&lt;dim&gt;(all_extents, _comm, {dir, rank});</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                    }</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span> </div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>                    whole_extent[dir] = (*std::max_element(</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>                        pieces_end.begin(), pieces_end.end(),</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                        [&amp;] (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; a1, <span class="keyword">const</span> <span class="keyword">auto</span>&amp; a2) { return a1[dir] &lt; a2[dir]; }</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                    ))[dir];</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                }</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>            }</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        }, <span class="stringliteral">&quot;Computing the extents of the parallel grid&quot;</span>);</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>        <span class="keywordflow">return</span> std::make_tuple(</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>            std::move(pieces_begin),</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>            std::move(pieces_end),</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>            std::move(whole_extent),</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>            std::move(origin)</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        );</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    }</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    <span class="keyword">template</span>&lt;Concepts::StaticallySizedMDRange&lt;2&gt; Basis, Concepts::Scalar CT, std::<span class="keywordtype">size_t</span> dim&gt;</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="keyword">auto</span> _make_mapper_helper(<span class="keyword">const</span> Basis&amp; basis,</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>                             <span class="keyword">const</span> std::vector&lt;CT&gt;&amp; all_origins,</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>                             <span class="keyword">const</span> std::array&lt;bool, dim&gt;&amp; is_negative_axis,</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>                             CT default_eps)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        <a class="code hl_class" href="classGridFormat_1_1PVTK_1_1StructuredGridMapperHelper.html">StructuredGridMapperHelper&lt;CT, dim&gt;</a> helper(Parallel::size(_comm), basis, default_eps);</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        std::ranges::for_each(Parallel::ranks(_comm), [&amp;] (<span class="keywordtype">int</span> rank) {</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>            helper.set_origin_for(rank, Parallel::access_gathered&lt;dim&gt;(all_origins, _comm, rank));</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        });</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span> </div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> dir = 0; dir &lt; dim; ++dir)</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>            <span class="keywordflow">if</span> (is_negative_axis[dir])</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>                helper.reverse(dir);</div>
 <div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span> </div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    <span class="keyword">const</span> Communicator&amp; _comm;</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    <span class="keywordtype">int</span> _root_rank;</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>};</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        <span class="keywordflow">return</span> helper;</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    }</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span> </div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    <span class="keyword">const</span> Communicator&amp; _comm;</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    <span class="keywordtype">int</span> _root_rank;</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>};</div>
 </div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span> </div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>}  <span class="comment">// namespace GridFormat::PVTK</span></div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_PARALLEL_HPP_</span></div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span> </div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>}  <span class="comment">// namespace GridFormat::PVTK</span></div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span><span class="preprocessor">#endif  </span><span class="comment">// GRIDFORMAT_VTK_PARALLEL_HPP_</span></div>
 <div class="ttc" id="aattributes_8hpp_html"><div class="ttname"><a href="attributes_8hpp.html">attributes.hpp</a></div><div class="ttdoc">Helper functions to get the VTK-specific names of things.</div></div>
 <div class="ttc" id="aclassGridFormat_1_1Field_html"><div class="ttname"><a href="classGridFormat_1_1Field.html">GridFormat::Field</a></div><div class="ttdoc">Abstract interface for fields of values that is used by writers/readers to store fields.</div><div class="ttdef"><b>Definition</b> field.hpp:38</div></div>
 <div class="ttc" id="aclassGridFormat_1_1Field_html_abab5bc70a8636b2b35cfc5488007c776"><div class="ttname"><a href="classGridFormat_1_1Field.html#abab5bc70a8636b2b35cfc5488007c776">GridFormat::Field::precision</a></div><div class="ttdeci">DynamicPrecision precision() const</div><div class="ttdoc">Return the precision of the scalar field values.</div><div class="ttdef"><b>Definition</b> field.hpp:57</div></div>
