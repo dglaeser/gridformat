@@ -71,9 +71,10 @@ namespace ReaderDetail {
 
     template<Concepts::Communicator C = NullCommunicator>
     ReaderFactoryFunctor default_reader_factory(const C& c = {}) {
-        if (!std::same_as<C, NullCommunicator>)
+        if constexpr (!std::same_as<C, NullCommunicator>)
             return [fac = AnyReaderFactory<C>{c}] (const std::string& f) { return fac.make_for(f); };
-        return [fac = AnyReaderFactory<>{}] (const std::string& f) { return fac.make_for(f); };
+        else
+            return [fac = AnyReaderFactory<>{}] (const std::string& f) { return fac.make_for(f); };
     }
 
 }  // namespace ReaderDetail
