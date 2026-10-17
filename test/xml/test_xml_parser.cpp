@@ -95,5 +95,36 @@ int main() {
         expect(eq(parser.get_xml().get_child("element").get_attribute("attr"), value));
     };
 
+    "xml_parser_single_quoted_attribute_values"_test = [] () {
+        std::stringstream s;
+        s << "<element a='say \"hi\"' b=\"it's\" c='' d='&apos;'/>";
+        GridFormat::XMLParser parser{s};
+        const auto& element = parser.get_xml().get_child("element");
+        expect(eq(element.get_attribute("a"), std::string{"say \"hi\""}));
+        expect(eq(element.get_attribute("b"), std::string{"it's"}));
+        expect(eq(element.get_attribute("c"), std::string{""}));
+        expect(eq(element.get_attribute("d"), std::string{"'"}));
+    };
+
+    "xml_parser_whitespace_in_tags"_test = [] () {
+        std::stringstream s;
+        s << "<element\ta\t=\t'1'\r\n\tb = \"2\"\r\n>\r\n\t<child\n/>\r\n</element>";
+        GridFormat::XMLParser parser{s};
+        const auto& element = parser.get_xml().get_child("element");
+        expect(eq(element.get_attribute("a"), std::string{"1"}));
+        expect(eq(element.get_attribute("b"), std::string{"2"}));
+        expect(eq(element.number_of_children(), std::size_t{1}));
+        expect(element.has_child("child"));
+    };
+
+    "xml_parser_rejects_malformed_attributes"_test = [] () {
+        for (const std::string xml : {"<e a=1/>", "<e a/>", "<e a='1\"/>", "<e a=\"1"}) {
+            std::stringstream s;
+            s << xml;
+            expect(GridFormat::Testing::throws<GridFormat::IOError>([&] () { GridFormat::XMLParser{s}; }))
+                << xml;
+        }
+    };
+
     return 0;
 }

@@ -234,11 +234,11 @@ class XMLParser {
 
         _helper.seek_position(begin_pos);
         _helper.shift_by(1);
-        std::string name = _helper.read_until_any_of(" />");
+        std::string name = _helper.read_until_any_of(std::string{InputStreamHelper::default_whitespace_chars} + "/>");
         auto& element = parent.add_child(std::move(name));
 
         while (true) {
-            _helper.shift_until_not_any_of(" \n");
+            _helper.shift_whitespace();
             const auto cur_pos = _helper.position();
             if (_helper.read_chunk(2) == "/>")
                 break;
@@ -258,14 +258,22 @@ class XMLParser {
     }
 
     std::pair<std::string, std::string> _read_attribute() {
-        std::string attr_name = _helper.read_until_any_of("= ");
+        std::string attr_name = _helper.read_until_any_of(std::string{InputStreamHelper::default_whitespace_chars} + "=");
         if (attr_name.empty())
             throw IOError("Could not parse attribute name");
 
-        _helper.shift_until_any_of("\"");
-        _helper.shift_by(1);
-        std::string attr_value = XML::Detail::unescaped(_helper.read_until_any_of("\""));
-        _helper.shift_by(1);
+        _helper.shift_whitespace();
+        if (_helper.read_chunk(1) != "=")
+            throw IOError("Expected '=' after attribute '" + attr_name + "'");
+
+        // values may be enclosed in double or single quotes
+        _helper.shift_whitespace();
+        const std::string quote = _helper.read_chunk(1);
+        if (quote != "\"" && quote != "'")
+            throw IOError("Expected quoted value for attribute '" + attr_name + "'");
+        std::string attr_value = XML::Detail::unescaped(_helper.read_until_any_of(quote));
+        if (_helper.is_end_of_file() || _helper.read_chunk(1) != quote)
+            throw IOError("Missing closing quote for attribute '" + attr_name + "'");
 
         return std::make_pair(std::move(attr_name), std::move(attr_value));
     }

@@ -18,6 +18,7 @@
 #include <iterator>
 #include <string_view>
 #include <concepts>
+#include <limits>
 
 #include <gridformat/common/detail/crtp.hpp>
 #include <gridformat/common/callable_overload_set.hpp>
@@ -436,7 +437,7 @@ namespace XMLDetail {
     void _move_to_appendix_position(std::istream& stream, I appendix_begin, O offset_in_appendix) {
         InputStreamHelper helper{stream};
         helper.seek_position(appendix_begin);
-        helper.shift_until_not_any_of(" \n\t");
+        helper.shift_whitespace();
         if (helper.read_chunk(1) != "_")
             throw IOError("VTK-XML appendix must start with '_'");
         helper.shift_by(offset_in_appendix);
@@ -449,6 +450,32 @@ namespace XMLDetail {
             InputStreamHelper helper{s};
             helper.seek_position(location.begin);
             helper.shift_whitespace();
+        }
+    }
+
+    //! Return the number of uncompressed bytes described by the header of a compressed data array
+    template<std::unsigned_integral T>
+    T _number_of_uncompressed_bytes(T number_of_blocks, T block_size, T residual_block_size) {
+        if (number_of_blocks == 0) {
+            if (residual_block_size > 0)
+                throw IOError("Invalid compression header: residual block size given without any blocks");
+            return 0;
+        }
+        if (block_size == 0 || residual_block_size > block_size)
+            throw IOError("Invalid compression header: inconsistent block sizes");
+        const T last_block_size = residual_block_size > 0 ? residual_block_size : block_size;
+        if (number_of_blocks - 1 > (std::numeric_limits<T>::max() - last_block_size)/block_size)
+            throw IOError("Invalid compression header: number of bytes exceeds the range of the header type");
+        return block_size*(number_of_blocks - 1) + last_block_size;
+    }
+
+    //! Invoke the given action and add the name of the data array to any error it raises
+    template<std::invocable Action>
+    decltype(auto) _read_data_array(const std::string& name, Action&& action) {
+        try {
+            return action();
+        } catch (const std::exception& e) {
+            throw IOError("Could not read data array '" + name + "': " + e.what());
         }
     }
 
@@ -567,6 +594,7 @@ namespace XMLDetail {
                 if (out_values) {
                     _stream.seekg(pos);
                     const auto number_of_bytes = header.as_span_of(header_precision)[0];
+                    _check_available(number_of_bytes, "data array");
                     const auto number_of_bytes_with_header = number_of_bytes + sizeof(HeaderType);
                     Serialization& header_and_values = out_values.unwrap();
                     header_and_values = decoder.decode_from(_stream, number_of_bytes_with_header);
@@ -581,6 +609,7 @@ namespace XMLDetail {
 
                 if (out_values) {
                     const auto number_of_bytes = header.as_span_of(header_precision)[0];
+                    _check_available(number_of_bytes, "data array");
                     Serialization& values = out_values.unwrap();
                     values = decoder.decode_from(_stream, number_of_bytes);
                     change_byte_order(values.as_span_of(Precision<TargetType>{}), {.from = _endian});
@@ -610,9 +639,11 @@ namespace XMLDetail {
             const auto number_of_blocks = header_data[0];
             const auto full_block_size = header_data[1];
             const auto residual_block_size = header_data[2];
-            const HeaderType number_of_raw_bytes = residual_block_size > 0
-                ? full_block_size*(number_of_blocks-1) + residual_block_size
-                : full_block_size*number_of_blocks;
+            const HeaderType number_of_raw_bytes = _number_of_uncompressed_bytes(
+                number_of_blocks, full_block_size, residual_block_size
+            );
+            if (number_of_blocks > _remaining_bytes()/sizeof(HeaderType))
+                throw IOError("Number of compressed blocks stated in the header exceeds the remaining file size");
 
             Serialization block_sizes;
             const std::size_t block_sizes_bytes = sizeof(HeaderType)*number_of_blocks;
@@ -623,6 +654,10 @@ namespace XMLDetail {
             } else {
                 block_sizes = decoder.decode_from(_stream, block_sizes_bytes);
             }
+
+            if (block_sizes.size() < block_sizes_bytes)
+                throw IOError("Could not read the compressed block sizes");
+            block_sizes.resize(block_sizes_bytes);
 
             std::vector<HeaderType> compressed_block_sizes(number_of_blocks);
             change_byte_order(block_sizes.as_span_of(header_precision), {.from = _endian});
@@ -637,19 +672,49 @@ namespace XMLDetail {
             }
 
             if (out_values) {
-                Serialization& values = out_values.unwrap();
-                values = decoder.decode_from(_stream, std::accumulate(
-                    compressed_block_sizes.begin(),
-                    compressed_block_sizes.end(),
-                    HeaderType{0}
-                ));
+                const std::size_t remaining_bytes = _remaining_bytes();
+                std::size_t compressed_bytes = 0;
+                for (const auto bytes : compressed_block_sizes) {
+                    if (bytes > remaining_bytes - compressed_bytes)
+                        throw IOError("Size of the compressed data stated in the header exceeds the remaining file size");
+                    compressed_bytes += bytes;
+                }
 
+                Serialization& values = out_values.unwrap();
+                if (number_of_raw_bytes == 0) {
+                    values = Serialization{};
+                    return;
+                }
+
+                values = decoder.decode_from(_stream, compressed_bytes);
+                if (values.size() < compressed_bytes)
+                    throw IOError("Could not read the compressed data");
                 _decompress_with(_compressor, values, Compression::CompressedBlocks{
                     {number_of_raw_bytes, full_block_size},
                     std::move(compressed_block_sizes)
                 });
                 change_byte_order(values.as_span_of(target_precision), {.from = _endian});
             }
+        }
+
+        // return the number of bytes left in the stream (or the maximum value if this cannot be determined)
+        std::size_t _remaining_bytes() const {
+            const auto pos = _stream.tellg();
+            if (pos < 0)
+                return std::numeric_limits<std::size_t>::max();
+            _stream.seekg(0, std::ios::end);
+            const auto end = _stream.tellg();
+            _stream.seekg(pos);
+            return end >= pos ? static_cast<std::size_t>(end - pos) : std::numeric_limits<std::size_t>::max();
+        }
+
+        // throw if the given number of bytes (as read from a header) exceeds the remaining stream size
+        void _check_available(std::size_t number_of_bytes, std::string_view what) const {
+            if (number_of_bytes > _remaining_bytes())
+                throw IOError(
+                    "Size of the " + std::string{what} + " (" + std::to_string(number_of_bytes) + " bytes) "
+                    + "stated in the header exceeds the remaining file size"
+                );
         }
 
         std::istream& _stream;
@@ -814,7 +879,10 @@ class XMLReaderHelper {
             throw ValueError("Data array element does not specify its format (e.g. ascii/binary)");
         if (number_of_tuples.has_value())
             return _make_data_array_field(element, number_of_tuples.value());
-        return _make_data_array_field(element, _number_of_tuples(element));
+        const auto name = element.get_attribute_or(std::string{""}, "Name");
+        return _make_data_array_field(element, XMLDetail::_read_data_array(name, [&] () {
+            return _number_of_tuples(element);
+        }));
     }
 
  private:
@@ -851,12 +919,18 @@ class XMLReaderHelper {
                 std::string{_filename},
                 std::move(expected_layout),
                 prec,
-                [_nv=num_values, _begin=_parser.get_content_bounds(e).begin_pos] (std::string filename) {
-                    std::ifstream file{filename};
-                    file.seekg(_begin);
-                    Serialization result{_nv*sizeof(T)};
-                    XMLDetail::DataArrayReader<T>{file}.read_ascii(_nv, result);
-                    return result;
+                [
+                    _nv=num_values,
+                    _begin=_parser.get_content_bounds(e).begin_pos,
+                    _name=e.get_attribute_or(std::string{""}, "Name")
+                ] (std::string filename) {
+                    return XMLDetail::_read_data_array(_name, [&] () {
+                        std::ifstream file{filename};
+                        file.seekg(_begin);
+                        Serialization result{_nv*sizeof(T)};
+                        XMLDetail::DataArrayReader<T>{file}.read_ascii(_nv, result);
+                        return result;
+                    });
                 }
             });
         });
@@ -876,14 +950,17 @@ class XMLReaderHelper {
                         _header_prec=_header_precision(),
                         _endian=from_endian_attribute(get().get_attribute("byte_order")),
                         _comp=get().get_attribute_or(std::string{""}, "compressor"),
-                        _decoder=std::move(decoder)
+                        _decoder=std::move(decoder),
+                        _name=e.get_attribute_or(std::string{""}, "Name")
                     ] (std::string filename) {
-                        std::ifstream file{filename};
-                        XMLDetail::_move_to_data(_loc, file);
-                        return _header_prec.visit([&] <typename H> (const Precision<H>&) {
-                            Serialization result;
-                            XMLDetail::DataArrayReader<T, H>{file, _endian, _comp}.read_binary(_decoder, {}, result);
-                            return result;
+                        return XMLDetail::_read_data_array(_name, [&] () {
+                            std::ifstream file{filename};
+                            XMLDetail::_move_to_data(_loc, file);
+                            return _header_prec.visit([&] <typename H> (const Precision<H>&) {
+                                Serialization result;
+                                XMLDetail::DataArrayReader<T, H>{file, _endian, _comp}.read_binary(_decoder, {}, result);
+                                return result;
+                            });
                         });
                     }
                 });
@@ -947,14 +1024,8 @@ class XMLReaderHelper {
         if (get().has_attribute("compressor") && header.size() < 3)
             throw ValueError("Could not read compression header");
         const std::size_t number_of_bytes = [&] () {
-            if (get().has_attribute("compressor")) {
-                const auto num_full_blocks = header.at(0);
-                const auto full_block_size = header.at(1);
-                const auto residual_block_size = header.at(2);
-                return residual_block_size > 0
-                    ? full_block_size*(num_full_blocks - 1) + residual_block_size
-                    : full_block_size*num_full_blocks;
-            }
+            if (get().has_attribute("compressor"))
+                return XMLDetail::_number_of_uncompressed_bytes(header.at(0), header.at(1), header.at(2));
             return header.at(0);
         } ();
         const std::size_t value_type_number_of_bytes = from_precision_attribute(
