@@ -326,7 +326,8 @@ class GridWriter : public GridWriterBase<Grid> {
 
     GridWriter(GridWriter&&) = default;
     GridWriter(const GridWriter&) = delete;
-    GridWriter& operator=(GridWriter&&) = default;
+    // not assignable since the grid is stored by reference
+    GridWriter& operator=(GridWriter&&) = delete;
     GridWriter& operator=(const GridWriter&) = delete;
 
     explicit GridWriter(const Grid& grid, std::string extension, std::optional<WriterOptions> opts)
@@ -366,7 +367,8 @@ class TimeSeriesGridWriter : public GridWriterBase<Grid> {
 
     TimeSeriesGridWriter(TimeSeriesGridWriter&&) = default;
     TimeSeriesGridWriter(const TimeSeriesGridWriter&) = delete;
-    TimeSeriesGridWriter& operator=(TimeSeriesGridWriter&&) = default;
+    // not assignable since the grid is stored by reference
+    TimeSeriesGridWriter& operator=(TimeSeriesGridWriter&&) = delete;
     TimeSeriesGridWriter& operator=(const TimeSeriesGridWriter&) = delete;
 
     explicit TimeSeriesGridWriter(const Grid& grid, std::optional<WriterOptions> opts)
