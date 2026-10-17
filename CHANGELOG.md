@@ -51,6 +51,9 @@ that contain appended or inline base64-encoded data.
 matching its signature implicitly converted into a `Reader`. It is now `explicit`; pass custom factories explicitly,
 e.g. `Reader{factory}`.
 
+- __VTKHDF__: `gridformat/vtk/hdf_common.hpp` did not compile on its own if `HighFive` was not available, since it
+relied on headers being included before.
+
 ## Features
 
 - __VTKHDF__: `vtk_hdf` and `vtk_hdf_transient` now select the image data flavour for image grids, as stated in their

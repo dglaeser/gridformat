@@ -26,6 +26,9 @@
 #include <gridformat/common/multi_string.hpp>
 #include <gridformat/common/string_conversion.hpp>
 #include <gridformat/common/exceptions.hpp>
+#include <gridformat/common/logging.hpp>
+#include <gridformat/grid/concepts.hpp>
+#include <gridformat/grid/grid.hpp>
 #include <gridformat/parallel/communication.hpp>
 #include <gridformat/parallel/helpers.hpp>
 
