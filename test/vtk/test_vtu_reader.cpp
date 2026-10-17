@@ -9,6 +9,8 @@
 #include <fstream>
 #include <vector>
 #include <regex>
+#include <sstream>
+#include <utility>
 
 #include <gridformat/common/logging.hpp>
 #include <gridformat/vtk/vtu_reader.hpp>
@@ -56,7 +58,9 @@ int main() {
             std::string content;
             {
                 std::ifstream in{filename, std::ios::binary};
-                content.assign(std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{});
+                std::ostringstream buffer;
+                buffer << in.rdbuf();
+                content = std::move(buffer).str();
             }
             const auto appendix_pos = content.find("<AppendedData");
             const auto xml_end = appendix_pos == std::string::npos ? content.size() : content.find('_', appendix_pos);

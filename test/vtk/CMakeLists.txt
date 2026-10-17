@@ -122,6 +122,7 @@ foreach (NR IN LISTS RANKS)
 endforeach ()
 
 gridformat_add_test(test_write_errors test_write_errors.cpp)
+gridformat_add_test(test_vtk_xml_corrupt_headers test_vtk_xml_corrupt_headers.cpp)
 gridformat_add_test(test_xml_special_characters test_xml_special_characters.cpp)
 gridformat_add_parallel_test(test_parallel_write_errors test_parallel_write_errors.cpp 2)
 

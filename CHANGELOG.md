@@ -37,6 +37,11 @@ The same applies to errors while computing the extents of the whole grid in the 
 - __VTKHDF__: if clearing the file at the first step of a parallel time series failed on the root rank, the other ranks
 waited forever. They now throw an `IOError`.
 
+- __VTK-XML__: the readers trusted the sizes stated in the headers of binary data arrays, such that corrupt or truncated
+files could cause huge allocations (and out-of-memory crashes) or a division by zero for compressed arrays. These sizes
+are now checked for consistency and against the remaining file size. Moreover, errors raised while reading a data array
+are now rethrown as `IOError` with a message that names the array.
+
 - __XML__: the parser silently misread attribute values enclosed in single quotes, and failed on tabs or carriage
 returns (e.g. Windows line endings) inside tags. Both are valid xml and are now supported, and malformed attributes,
 e.g. without quotes, raise an `IOError`. Moreover, the __VTK-XML__ readers failed on files with Windows line endings
