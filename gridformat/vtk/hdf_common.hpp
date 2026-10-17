@@ -16,7 +16,6 @@
 #include <optional>
 #include <ranges>
 #include <array>
-#include <exception>
 
 #include <gridformat/common/hdf5.hpp>
 #include <gridformat/common/field.hpp>
@@ -28,6 +27,7 @@
 #include <gridformat/common/string_conversion.hpp>
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/parallel/communication.hpp>
+#include <gridformat/parallel/helpers.hpp>
 
 namespace GridFormat {
 
@@ -294,21 +294,13 @@ FieldPtr read_field_data(const HDF5::File<C>& file, const std::string& name, std
 template<Concepts::Communicator C, std::invocable<HDF5::File<>&> Write>
 void write_on_root(const std::string& filename, const C& comm, int root, Write&& write) {
     Parallel::barrier(comm);
-    std::exception_ptr error;
-    if (Parallel::rank(comm) == root) {
-        try {
+    // the collective invocation also keeps the other ranks from reopening the file before the root is done
+    Parallel::invoke_collectively(comm, [&] () {
+        if (Parallel::rank(comm) == root) {
             HDF5::File file{filename, HDF5::File<>::append};
             write(file);
-        } catch (...) {
-            error = std::current_exception();
         }
-    }
-    // the broadcast also keeps the other ranks from reopening the file before the root is done
-    if (Parallel::broadcast(comm, static_cast<int>(error != nullptr), root)) {
-        if (error)
-            std::rethrow_exception(error);
-        throw IOError("Writing to '" + filename + "' failed on rank " + std::to_string(root));
-    }
+    }, "Writing to '" + filename + "'");
 }
 
 #endif  // GRIDFORMAT_HAVE_HIGH_FIVE

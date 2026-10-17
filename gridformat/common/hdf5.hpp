@@ -45,6 +45,7 @@
 #include <gridformat/common/precision.hpp>
 
 #include <gridformat/parallel/communication.hpp>
+#include <gridformat/parallel/helpers.hpp>
 #include <gridformat/grid/grid.hpp>
 
 
@@ -201,9 +202,10 @@ class File {
 
     //! Clear the contents of the file with the given name
     static void clear(const std::string& filename, const Communicator& comm) {
-        if (Parallel::rank(comm) == 0)  // clear file by open it in overwrite mode
-            HighFive::File{filename, HighFive::File::Overwrite};
-        Parallel::barrier(comm);
+        Parallel::invoke_collectively(comm, [&] () {
+            if (Parallel::rank(comm) == 0)  // clear file by open it in overwrite mode
+                HighFive::File{filename, HighFive::File::Overwrite};
+        }, "Clearing '" + filename + "'");
     }
 
     //! Write the given values to the attribute with the given name into the given group

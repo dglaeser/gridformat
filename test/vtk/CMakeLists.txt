@@ -124,7 +124,10 @@ endforeach ()
 gridformat_add_test(test_write_errors test_write_errors.cpp)
 gridformat_add_test(test_xml_special_characters test_xml_special_characters.cpp)
 gridformat_add_parallel_test(test_parallel_write_errors test_parallel_write_errors.cpp 2)
-if (MPI_FOUND)
-    # a failure on one rank used to leave the others waiting forever
-    set_tests_properties(test_parallel_write_errors PROPERTIES TIMEOUT 60)
-endif ()
+
+gridformat_add_parallel_test_if(
+    GRIDFORMAT_HAVE_PARALLEL_HIGH_FIVE
+    test_vtk_hdf_parallel_write_errors
+    test_vtk_hdf_parallel_write_errors.cpp
+    2
+)

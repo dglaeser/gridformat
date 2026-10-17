@@ -31,7 +31,8 @@ endif ()
 add_custom_target(build_tests)
 function(gridformat_set_test_props NAME)
     add_dependencies(build_tests ${NAME})
-    set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE 42)
+    # turn hangs (e.g. deadlocks in parallel tests) into failures
+    set_tests_properties(${NAME} PROPERTIES SKIP_RETURN_CODE 42 TIMEOUT 600)
     set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL 1)
 endfunction()
 

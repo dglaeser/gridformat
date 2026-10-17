@@ -3,6 +3,9 @@
 
 #include <string>
 #include <filesystem>
+#include <vector>
+#include <array>
+#include <cstddef>
 
 #include <mpi.h>
 
@@ -77,6 +80,19 @@ int main(int argc, char** argv) {
             block_file("test_parallel_write_errors_series.pvd");
         GridFormat::PVDWriter writer{GridFormat::PVTUWriter{grid, comm}, "test_parallel_write_errors_series"};
         expect(throws<GridFormat::IOError>([&] () { writer.write(0.0); }));
+    };
+
+    "structured_grid_helper_throws_on_all_ranks"_test = [&] () {
+        // the extents are computed on the root only, which throws because of the missing extents
+        const GridFormat::PVTK::StructuredParallelGridHelper helper{comm};
+        const auto compute = [&] () {
+            const std::vector<double> all_origins{0.0, 0.0, 1.0, 0.0};
+            helper.compute_extents_and_origin(all_origins, std::vector<std::size_t>{}, std::array{false, false});
+        };
+        if (rank == 0)
+            expect(throws<GridFormat::SizeError>(compute));
+        else
+            expect(throws<GridFormat::IOError>(compute));
     };
 
     MPI_Finalize();
