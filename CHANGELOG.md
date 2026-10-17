@@ -47,6 +47,13 @@ returns (e.g. Windows line endings) inside tags. Both are valid xml and are now 
 e.g. without quotes, raise an `IOError`. Moreover, the __VTK-XML__ readers failed on files with Windows line endings
 that contain appended or inline base64-encoded data.
 
+- __Reader__: the constructor of `Reader` taking a `ReaderFactoryFunctor` was not `explicit`, such that any callable
+matching its signature implicitly converted into a `Reader`. It is now `explicit`; pass custom factories explicitly,
+e.g. `Reader{factory}`.
+
+- __VTKHDF__: `gridformat/vtk/hdf_common.hpp` did not compile on its own if `HighFive` was not available, since it
+relied on headers being included before.
+
 ## Features
 
 - __VTKHDF__: `vtk_hdf` and `vtk_hdf_transient` now select the image data flavour for image grids, as stated in their

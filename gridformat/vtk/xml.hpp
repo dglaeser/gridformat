@@ -207,10 +207,10 @@ class XMLWriterBase
     , _xml_settings{XMLDetail::XMLSettings::from<GridCoordinateType>(_xml_opts)}
     {}
 
-    XMLWriterBase() = default;
     XMLWriterBase(XMLWriterBase&&) = default;
     XMLWriterBase(const XMLWriterBase&) = delete;
-    XMLWriterBase& operator=(XMLWriterBase&&) = default;
+    // not assignable since the grid is stored by reference
+    XMLWriterBase& operator=(XMLWriterBase&&) = delete;
     XMLWriterBase& operator=(const XMLWriterBase&) = delete;
 
     Impl with(XMLOptions opts) const {

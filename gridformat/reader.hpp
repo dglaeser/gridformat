@@ -71,9 +71,10 @@ namespace ReaderDetail {
 
     template<Concepts::Communicator C = NullCommunicator>
     ReaderFactoryFunctor default_reader_factory(const C& c = {}) {
-        if (!std::same_as<C, NullCommunicator>)
+        if constexpr (!std::same_as<C, NullCommunicator>)
             return [fac = AnyReaderFactory<C>{c}] (const std::string& f) { return fac.make_for(f); };
-        return [fac = AnyReaderFactory<>{}] (const std::string& f) { return fac.make_for(f); };
+        else
+            return [fac = AnyReaderFactory<>{}] (const std::string& f) { return fac.make_for(f); };
     }
 
 }  // namespace ReaderDetail
@@ -95,8 +96,12 @@ class Reader : public GridReader {
  public:
     using ReaderFactoryFunctor = ReaderDetail::ReaderFactoryFunctor;
 
-    Reader(ReaderFactoryFunctor f = ReaderDetail::default_reader_factory())
-    : _reader_factory{f}
+    Reader()
+    : Reader(ReaderDetail::default_reader_factory())
+    {}
+
+    explicit Reader(ReaderFactoryFunctor f)
+    : _reader_factory{std::move(f)}
     {}
 
     explicit Reader(const FileFormat::Any&, ReaderFactoryFunctor f = ReaderDetail::default_reader_factory())
