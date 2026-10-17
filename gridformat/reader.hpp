@@ -95,8 +95,12 @@ class Reader : public GridReader {
  public:
     using ReaderFactoryFunctor = ReaderDetail::ReaderFactoryFunctor;
 
-    Reader(ReaderFactoryFunctor f = ReaderDetail::default_reader_factory())
-    : _reader_factory{f}
+    Reader()
+    : Reader(ReaderDetail::default_reader_factory())
+    {}
+
+    explicit Reader(ReaderFactoryFunctor f)
+    : _reader_factory{std::move(f)}
     {}
 
     explicit Reader(const FileFormat::Any&, ReaderFactoryFunctor f = ReaderDetail::default_reader_factory())

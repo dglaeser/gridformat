@@ -11,6 +11,7 @@
 #include <vector>
 #include <ranges>
 #include <cmath>
+#include <type_traits>
 
 #include <gridformat/common/exceptions.hpp>
 #include <gridformat/common/logging.hpp>
@@ -30,6 +31,11 @@
 #include "../make_test_data.hpp"
 #include "../reader_tests.hpp"
 #include "../testing.hpp"
+
+// a reader factory must not implicitly convert into a reader
+static_assert(!std::is_convertible_v<GridFormat::Reader::ReaderFactoryFunctor, GridFormat::Reader>);
+static_assert(std::is_constructible_v<GridFormat::Reader, GridFormat::Reader::ReaderFactoryFunctor>);
+static_assert(std::is_default_constructible_v<GridFormat::Reader>);
 
 #ifndef TEST_VTK_DATA_PATH
 #define TEST_VTK_DATA_PATH ""
