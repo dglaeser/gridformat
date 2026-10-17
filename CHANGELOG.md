@@ -37,6 +37,11 @@ The same applies to errors while computing the extents of the whole grid in the 
 - __VTKHDF__: if clearing the file at the first step of a parallel time series failed on the root rank, the other ranks
 waited forever. They now throw an `IOError`.
 
+- __XML__: the parser silently misread attribute values enclosed in single quotes, and failed on tabs or carriage
+returns (e.g. Windows line endings) inside tags. Both are valid xml and are now supported, and malformed attributes,
+e.g. without quotes, raise an `IOError`. Moreover, the __VTK-XML__ readers failed on files with Windows line endings
+that contain appended or inline base64-encoded data.
+
 ## Features
 
 - __VTKHDF__: `vtk_hdf` and `vtk_hdf_transient` now select the image data flavour for image grids, as stated in their

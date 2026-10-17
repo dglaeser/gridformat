@@ -28,8 +28,9 @@ namespace GridFormat {
 class InputStreamHelper {
  public:
     static constexpr std::size_t default_chunk_size = 5000;
+    static constexpr const char* default_whitespace_chars = " \t\r\n";
 
-    explicit InputStreamHelper(std::istream& s, std::string whitespace_chars = " \n\t")
+    explicit InputStreamHelper(std::istream& s, std::string whitespace_chars = default_whitespace_chars)
     : _stream{s}
     , _whitespace_chars{std::move(whitespace_chars)}
     {}

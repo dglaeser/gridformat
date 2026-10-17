@@ -6,6 +6,9 @@
 #include <iterator>
 #include <algorithm>
 #include <ranges>
+#include <fstream>
+#include <vector>
+#include <regex>
 
 #include <gridformat/common/logging.hpp>
 #include <gridformat/vtk/vtu_reader.hpp>
@@ -42,6 +45,44 @@ int main() {
         expect(std::ranges::all_of(false_field, [] (bool value) { return not value; }));
 
         std::filesystem::remove("vtu_bool_test.vtu");
+    };
+
+    "vtu_reader_crlf_line_endings"_test = [&] () {
+        const auto test = [&] (auto writer, const std::string& name) {
+            writer.set_point_field("pfield", [] (const auto& p) { return static_cast<double>(p.id); });
+            const std::string filename = writer.write(name);
+
+            // convert the line endings of the xml part, keeping the (possibly raw binary) appended data intact
+            std::string content;
+            {
+                std::ifstream in{filename, std::ios::binary};
+                content.assign(std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{});
+            }
+            const auto appendix_pos = content.find("<AppendedData");
+            const auto xml_end = appendix_pos == std::string::npos ? content.size() : content.find('_', appendix_pos);
+            const std::string converted = std::regex_replace(content.substr(0, xml_end), std::regex{"\n"}, "\r\n")
+                                        + content.substr(xml_end);
+            std::ofstream{name + "_crlf.vtu", std::ios::binary} << converted;
+            expect(converted.find("\r\n") != std::string::npos);
+
+            GridFormat::VTUReader reader;
+            reader.open(filename);
+            const auto expected = reader.point_field("pfield")->template export_to<std::vector<double>>();
+            reader.open(name + "_crlf.vtu");
+            expect(eq(reader.number_of_points(), GridFormat::number_of_points(grid)));
+            expect(std::ranges::equal(reader.point_field("pfield")->template export_to<std::vector<double>>(), expected));
+
+            std::filesystem::remove(filename);
+            std::filesystem::remove(name + "_crlf.vtu");
+        };
+        test(GridFormat::VTUWriter{grid}.with_encoding(GridFormat::Encoding::raw)
+                                        .with_data_format(GridFormat::VTK::DataFormat::appended),
+             "vtu_crlf_appended_raw");
+        test(GridFormat::VTUWriter{grid}.with_encoding(GridFormat::Encoding::base64)
+                                        .with_data_format(GridFormat::VTK::DataFormat::inlined),
+             "vtu_crlf_inlined_base64");
+        test(GridFormat::VTUWriter{grid}.with_encoding(GridFormat::Encoding::ascii),
+             "vtu_crlf_ascii");
     };
 
     GridFormat::VTUWriter writer{grid};

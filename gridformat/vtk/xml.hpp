@@ -436,7 +436,7 @@ namespace XMLDetail {
     void _move_to_appendix_position(std::istream& stream, I appendix_begin, O offset_in_appendix) {
         InputStreamHelper helper{stream};
         helper.seek_position(appendix_begin);
-        helper.shift_until_not_any_of(" \n\t");
+        helper.shift_whitespace();
         if (helper.read_chunk(1) != "_")
             throw IOError("VTK-XML appendix must start with '_'");
         helper.shift_by(offset_in_appendix);
