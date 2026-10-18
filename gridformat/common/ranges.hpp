@@ -32,8 +32,8 @@ namespace GridFormat::Ranges {
  */
 template<std::ranges::sized_range R>
     requires(!Concepts::StaticallySizedRange<R>)
-inline constexpr auto size(R&& r) {
-    return std::ranges::size(r);
+inline constexpr std::size_t size(R&& r) {
+    return static_cast<std::size_t>(std::ranges::size(r));
 }
 
 /*!
@@ -44,8 +44,8 @@ inline constexpr auto size(R&& r) {
 template<std::ranges::range R>
     requires(!std::ranges::sized_range<R> and
              !Concepts::StaticallySizedRange<R>)
-inline constexpr auto size(R&& r) {
-    return std::ranges::distance(r);
+inline constexpr std::size_t size(R&& r) {
+    return static_cast<std::size_t>(std::ranges::distance(r));
 }
 
 /*!
@@ -53,8 +53,8 @@ inline constexpr auto size(R&& r) {
  * \brief Return the size of a range with size known at compile time.
  */
 template<Concepts::StaticallySizedRange R>
-inline constexpr auto size(R&&) {
-    return static_size<R>;
+inline constexpr std::size_t size(R&&) {
+    return static_cast<std::size_t>(static_size<R>);
 }
 
 /*!
