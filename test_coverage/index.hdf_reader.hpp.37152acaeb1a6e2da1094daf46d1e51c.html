@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2026-10-17 22:33:56</td>
+      <td>2026-10-18 00:09:19</td>
     </tr>
   </table>
 </div>
@@ -47,9 +47,9 @@
     </tr>
     <tr>
       <th scope="row">Functions:</th>
-      <td>41</td>
-      <td>48</td>
-      <td class="coverage-medium">85.4%</td>
+      <td>42</td>
+      <td>49</td>
+      <td class="coverage-medium">85.7%</td>
     </tr>
     <tr>
       <th scope="row">Branches:</th>
@@ -98,6 +98,7 @@
     <tr><td><a href="#l138">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_time_at_step(unsigned long) const (line 138)</a></td><td>called 60 times, returned 60 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l78">GridFormat::VTKHDFReader&lt;GridFormat::NullCommunicator&gt;::_visit_cells(std::function&lt;void (GridFormat::CellType, std::vector&lt;unsigned long, std::allocator&lt;unsigned long&gt; &gt; const&amp;)&gt; const&amp;) const (line 78)</a></td><td>called 154 times, returned 154 times</td><td>100.0%</td></tr>
     <tr><td><a href="#l34">GridFormat::VTKHDFReader&lt;ompi_communicator_t*&gt;::VTKHDFReader(ompi_communicator_t* const&amp;) (line 34)</a></td><td>called 40 times, returned 40 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l160">GridFormat::VTKHDFReader&lt;ompi_communicator_t*&gt;::_access() (line 160)</a></td><td>called 12 times, returned 12 times</td><td>45.0%</td></tr>
     <tr><td><a href="#l154">GridFormat::VTKHDFReader&lt;ompi_communicator_t*&gt;::_access() const (line 154)</a></td><td>called 2372 times, returned 2372 times</td><td>45.0%</td></tr>
     <tr><td><a href="#l126">GridFormat::VTKHDFReader&lt;ompi_communicator_t*&gt;::_basis_vector(unsigned int) const (line 126)</a></td><td>not called</td><td>0.0%</td></tr>
     <tr><td><a href="#l86">GridFormat::VTKHDFReader&lt;ompi_communicator_t*&gt;::_cell_field(std::basic_string_view&lt;char, std::char_traits&lt;char&gt; &gt;) const (line 86)</a></td><td>called 648 times, returned 648 times</td><td>100.0%</td></tr>
@@ -391,21 +392,21 @@
       <td class="lineno"><a id="l37" href="#l37">37</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">127</td>
+      <td class="linecount coveredLine">123</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">_open</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">GridReader</span><span class="o">::</span><span class="n">FieldNames</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fields</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l38" href="#l38">38</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">127</td>
+      <td class="linecount coveredLine">123</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">image_err</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l39" href="#l39">39</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">127</td>
+      <td class="linecount coveredLine">123</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">unstructured_err</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -426,7 +427,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">127</td>
+      <td class="linecount partialCoveredLine">123</td>
       <td class="src partialCoveredLine"><span class="w">            </span><span class="n">VTKHDFImageGridReader</span><span class="w"> </span><span class="n">reader</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -440,7 +441,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount coveredLine">127</td>
+      <td class="linecount coveredLine">123</td>
       <td class="src coveredLine"><span class="w">            </span><span class="n">reader</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -468,7 +469,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">287</td>
+      <td class="linecount partialCoveredLine">275</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Exception</span><span class="o">&amp;</span><span class="w"> </span><span class="n">image_e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -482,7 +483,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">80</td>
+      <td class="linecount partialCoveredLine">76</td>
       <td class="src partialCoveredLine"><span class="w">            </span><span class="n">image_err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">image_e</span><span class="p">.</span><span class="n">what</span><span class="p">();</span></td>
     </tr>
     <tr class="source-line">
@@ -510,7 +511,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">80</td>
+      <td class="linecount partialCoveredLine">76</td>
       <td class="src partialCoveredLine"><span class="w">                </span><span class="n">VTKHDFUnstructuredGridReader</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">reader</span><span class="p">{</span><span class="n">_comm</span><span class="p">};</span></td>
     </tr>
     <tr class="source-line">
@@ -524,7 +525,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">80</td>
+      <td class="linecount partialCoveredLine">76</td>
       <td class="src partialCoveredLine"><span class="w">                </span><span class="n">reader</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -538,7 +539,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">80</td>
+      <td class="linecount partialCoveredLine">76</td>
       <td class="src partialCoveredLine"><span class="w">                </span><span class="n">_reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">VTKHDFUnstructuredGridReader</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">reader</span><span class="p">));</span></td>
     </tr>
     <tr class="source-line">
@@ -552,7 +553,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">80</td>
+      <td class="linecount partialCoveredLine">76</td>
       <td class="src partialCoveredLine"><span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Exception</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unstructured_e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -594,7 +595,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">127</td>
+      <td class="linecount partialCoveredLine">123</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">_reader</span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
@@ -650,14 +651,14 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">127</td>
+      <td class="linecount partialCoveredLine">123</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="n">_copy_fields</span><span class="p">(</span><span class="n">fields</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l64" href="#l64">64</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">127</td>
+      <td class="linecount coveredLine">123</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
@@ -720,7 +721,7 @@
       <td class="lineno"><a id="l72" href="#l72">72</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">93</td>
+      <td class="linecount coveredLine">89</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">_close</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -734,7 +735,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">93</td>
+      <td class="linecount partialCoveredLine">89</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_reader</span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
@@ -748,14 +749,14 @@
       <td class="lineno"><a id="l75" href="#l75">75</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">93</td>
+      <td class="linecount coveredLine">89</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">_reader</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l76" href="#l76">76</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">93</td>
+      <td class="linecount coveredLine">89</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
@@ -769,21 +770,21 @@
       <td class="lineno"><a id="l78" href="#l78">78</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">622</td>
+      <td class="linecount coveredLine">620</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">_visit_cells</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">CellVisitor</span><span class="o">&amp;</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l79" href="#l79">79</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">622</td>
+      <td class="linecount coveredLine">620</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">_access</span><span class="p">().</span><span class="n">visit_cells</span><span class="p">(</span><span class="n">v</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l80" href="#l80">80</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">622</td>
+      <td class="linecount coveredLine">620</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
@@ -797,14 +798,14 @@
       <td class="lineno"><a id="l82" href="#l82">82</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">210</td>
+      <td class="linecount coveredLine">208</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">FieldPtr</span><span class="w"> </span><span class="n">_points</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l83" href="#l83">83</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">210</td>
+      <td class="linecount coveredLine">208</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_access</span><span class="p">().</span><span class="n">points</span><span class="p">();</span></td>
     </tr>
     <tr class="source-line">
@@ -853,14 +854,14 @@
       <td class="lineno"><a id="l90" href="#l90">90</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1797</td>
+      <td class="linecount coveredLine">1793</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">FieldPtr</span><span class="w"> </span><span class="n">_point_field</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l91" href="#l91">91</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">1797</td>
+      <td class="linecount coveredLine">1793</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_access</span><span class="p">().</span><span class="n">point_field</span><span class="p">(</span><span class="n">name</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -909,14 +910,14 @@
       <td class="lineno"><a id="l98" href="#l98">98</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">682</td>
+      <td class="linecount coveredLine">656</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_number_of_cells</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l99" href="#l99">99</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">682</td>
+      <td class="linecount coveredLine">656</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_access</span><span class="p">().</span><span class="n">number_of_cells</span><span class="p">();</span></td>
     </tr>
     <tr class="source-line">
@@ -937,14 +938,14 @@
       <td class="lineno"><a id="l102" href="#l102">102</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">867</td>
+      <td class="linecount coveredLine">849</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_number_of_points</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l103" href="#l103">103</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">867</td>
+      <td class="linecount coveredLine">849</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_access</span><span class="p">().</span><span class="n">number_of_points</span><span class="p">();</span></td>
     </tr>
     <tr class="source-line">
@@ -965,14 +966,14 @@
       <td class="lineno"><a id="l106" href="#l106">106</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">23</td>
+      <td class="linecount coveredLine">19</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">_number_of_pieces</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l107" href="#l107">107</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">23</td>
+      <td class="linecount coveredLine">19</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_access</span><span class="p">().</span><span class="n">number_of_pieces</span><span class="p">();</span></td>
     </tr>
     <tr class="source-line">
@@ -1133,14 +1134,14 @@
       <td class="lineno"><a id="l130" href="#l130">130</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">86</td>
+      <td class="linecount coveredLine">84</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">_is_sequence</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l131" href="#l131">131</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">86</td>
+      <td class="linecount coveredLine">84</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">_access</span><span class="p">().</span><span class="n">is_sequence</span><span class="p">();</span></td>
     </tr>
     <tr class="source-line">
@@ -1259,7 +1260,7 @@
       <td class="lineno"><a id="l148" href="#l148">148</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">462</td>
+      <td class="linecount coveredLine">458</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">_copy_fields</span><span class="p">(</span><span class="k">typename</span><span class="w"> </span><span class="nc">GridReader</span><span class="o">::</span><span class="n">FieldNames</span><span class="o">&amp;</span><span class="w"> </span><span class="n">names</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -1277,7 +1278,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">462</td>
+      <td class="linecount partialCoveredLine">458</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">cell_field_names</span><span class="p">(</span><span class="n">_access</span><span class="p">()),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">back_inserter</span><span class="p">(</span><span class="n">names</span><span class="p">.</span><span class="n">cell_fields</span><span class="p">));</span></td>
     </tr>
     <tr class="source-line">
@@ -1295,7 +1296,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">462</td>
+      <td class="linecount partialCoveredLine">458</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">point_field_names</span><span class="p">(</span><span class="n">_access</span><span class="p">()),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">back_inserter</span><span class="p">(</span><span class="n">names</span><span class="p">.</span><span class="n">point_fields</span><span class="p">));</span></td>
     </tr>
     <tr class="source-line">
@@ -1313,14 +1314,14 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">462</td>
+      <td class="linecount partialCoveredLine">458</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">meta_data_field_names</span><span class="p">(</span><span class="n">_access</span><span class="p">()),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">back_inserter</span><span class="p">(</span><span class="n">names</span><span class="p">.</span><span class="n">meta_data_fields</span><span class="p">));</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l152" href="#l152">152</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">462</td>
+      <td class="linecount coveredLine">458</td>
       <td class="src coveredLine"><span class="w">    </span><span class="p">}</span></td>
     </tr>
     <tr class="source-line">
@@ -1334,7 +1335,7 @@
       <td class="lineno"><a id="l154" href="#l154">154</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6759</td>
+      <td class="linecount coveredLine">6701</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">GridReader</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_access</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
@@ -1348,7 +1349,7 @@
         </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">6759</td>
+      <td class="linecount partialCoveredLine">6701</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">_reader</span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
@@ -1362,7 +1363,7 @@
       <td class="lineno"><a id="l157" href="#l157">157</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6759</td>
+      <td class="linecount coveredLine">6701</td>
       <td class="src coveredLine"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="n">_reader</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1393,7 +1394,7 @@
         <summary class="linebranchSummary">1/2</summary>
         <div class="linebranchContents">
           <div class="notTakenBranch">&cross; Branch 1 not taken.</div>
-          <div class="takenBranch">&check; Branch 2 taken 549 times.</div>
+          <div class="takenBranch">&check; Branch 2 taken 561 times.</div>
         </div>
         </details>
       </td>

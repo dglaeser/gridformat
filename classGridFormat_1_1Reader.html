@@ -153,7 +153,7 @@ Inheritance diagram for GridFormat::Reader:</div>
 </div></div>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Typically you would construct this class with one of the predefined file format instances. For example, with the .vtu file format: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classGridFormat_1_1Reader.html">GridFormat::Reader</a> reader{GridFormat::vtu};</div>
-<div class="ttc" id="aclassGridFormat_1_1Reader_html"><div class="ttname"><a href="classGridFormat_1_1Reader.html">GridFormat::Reader</a></div><div class="ttdoc">Interface to the readers for all supported file formats.</div><div class="ttdef"><b>Definition</b> reader.hpp:94</div></div>
+<div class="ttc" id="aclassGridFormat_1_1Reader_html"><div class="ttname"><a href="classGridFormat_1_1Reader.html">GridFormat::Reader</a></div><div class="ttdoc">Interface to the readers for all supported file formats.</div><div class="ttdef"><b>Definition</b> reader.hpp:95</div></div>
 </div><!-- fragment --> <dl class="section note"><dt>Note</dt><dd>Unless you pass in a custom ReaderFactoryFunctor, this class requires the <a class="el" href="classGridFormat_1_1AnyReaderFactory.html">AnyReaderFactory</a> to be defined. Thus, this header cannot be included without the general API header <a class="el" href="gridformat_8hpp.html" title="This file is the entrypoint to the high-level API exposing all provided readers/writers through a uni...">gridformat.hpp</a> which defines all formats. </dd></dl>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
@@ -168,8 +168,8 @@ using&#160;</td><td class="memItemRight"><b>CellVisitor</b> = std::function&lt;v
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9226754915b811b6408c9d06e50e7ee1" id="r_a9226754915b811b6408c9d06e50e7ee1"><td class="memItemLeft"><a id="a9226754915b811b6408c9d06e50e7ee1" name="a9226754915b811b6408c9d06e50e7ee1"></a>
-&#160;</td><td class="memItemRight"><b>Reader</b> (ReaderFactoryFunctor f=ReaderDetail::default_reader_factory())</td></tr>
+<tr class="memitem:a471ebd414d711e49b1f6d2b8b28d1d14" id="r_a471ebd414d711e49b1f6d2b8b28d1d14"><td class="memItemLeft"><a id="a471ebd414d711e49b1f6d2b8b28d1d14" name="a471ebd414d711e49b1f6d2b8b28d1d14"></a>
+&#160;</td><td class="memItemRight"><b>Reader</b> (ReaderFactoryFunctor f)</td></tr>
 <tr class="memitem:a134f62dfc7aad44e0070dbd2a93258c5" id="r_a134f62dfc7aad44e0070dbd2a93258c5"><td class="memItemLeft"><a id="a134f62dfc7aad44e0070dbd2a93258c5" name="a134f62dfc7aad44e0070dbd2a93258c5"></a>
 &#160;</td><td class="memItemRight"><b>Reader</b> (const <a class="el" href="structGridFormat_1_1FileFormat_1_1Any.html">FileFormat::Any</a> &amp;, ReaderFactoryFunctor f=ReaderDetail::default_reader_factory())</td></tr>
 <tr class="memitem:a7d2ede5c3e8f4ef4b4128f0dcbc61aba" id="r_a7d2ede5c3e8f4ef4b4128f0dcbc61aba"><td class="memTemplParams" colspan="2"><a id="a7d2ede5c3e8f4ef4b4128f0dcbc61aba" name="a7d2ede5c3e8f4ef4b4128f0dcbc61aba"></a>
